@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.simulate.popgensim: Population Genetics Simulations &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats" href="../schemas/index.html" />
+    <link rel="prev" title="dendropy.simulate.treesim: Unified Namespace Aggregating Functions and Classes for Tree Simulations" href="treesim.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../schemas/index.html" title="DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="treesim.html" title="dendropy.simulate.treesim: Unified Namespace Aggregating Functions and Classes for Tree Simulations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.simulate.popgensim</span></code>: Population Genetics Simulations</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.simulate.popgensim">
+<span id="dendropy-simulate-popgensim-population-genetics-simulations"></span><h1><a class="reference internal" href="#module-dendropy.simulate.popgensim" title="dendropy.simulate.popgensim"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.simulate.popgensim</span></code></a>: Population Genetics Simulations<a class="headerlink" href="#module-dendropy.simulate.popgensim" title="Link to this heading">¶</a></h1>
+<p>Population genetic simlations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.simulate.popgensim.pop_gen_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.simulate.popgensim.</span></span><span class="sig-name descname"><span class="pre">pop_gen_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_genes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_sizes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_genes_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'num_genes'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pop_size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/simulate/popgensim.html#pop_gen_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.simulate.popgensim.pop_gen_tree" title="Link to this definition">¶</a></dt>
+<dd><p>This will simulate and return a tree with edges decorated with
+population sizes and leaf nodes decorated by the number of genes
+(samples or lineages) in each leaf.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">tree</span></code> is given, then this is used as the tree to be decorated.
+Otherwise, a Yule tree is generated based on the given taxon_namespace.
+Either <code class="docutils literal notranslate"><span class="pre">tree</span></code> or <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> must be given.</p>
+<p>The timing of the divergences can be controlled by specifying a vector of
+ages, <code class="docutils literal notranslate"><span class="pre">ages</span></code>. This should be sequences of values specifying the ages of the
+first, second, third etc. divergence events, in terms of time from the
+present, specified either in generations (if the <code class="docutils literal notranslate"><span class="pre">pop_sizes</span></code> vector is
+given) or population units (if the pop_size vector is not given).
+If an ages vector is given and there are less than num_pops-1 of these,
+then an exception is raised.</p>
+<p>The number of gene lineages per population can be specified through
+the ‘num_genes’, which can either be an scalar integer or a list.
+If it is an integer, all the population get the same number of
+genes. If it is a list, it must be at least as long as num_pops.</p>
+<p>The population sizes of each edge can be specified using the <code class="docutils literal notranslate"><span class="pre">pop_sizes</span></code>
+vector, which should be a sequence of values specifying the population
+sizes of the edges in postorder. If the pop_size vector is given, then it
+must be at least as long as there are branches on a tree, i.e. 2 * num_pops
++ 1, otherwise it is an error.  The population size should be the effective
+<em>haploid</em> population size; i.e., number of gene copies in the population: 2
+* N in a diploid population of N individuals, or N in a haploid population
+* of N individuals.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> is 1 or 0 or None, then edge lengths of the tree are in
+haploid population units; i.e. where 1 unit of time equals 2N generations
+for a diploid population of size N, or N generations for a haploid
+population of size N. Otherwise edge lengths of the tree are in
+generations.</p>
+<p>This function first generates a tree using a pure-birth model with a
+uniform birth rate of 1.0. If an ages vector is given, it then sweeps
+through the internal nodes, assigning branch lengths such that the
+divergence events correspond to the ages in the vector. If a population
+sizes vector is given, it then visits all the edges in postorder, assigning
+population sizes to the attribute with the name specified in
+‘pop_size_attr’ (which is persisted as an annotation). During this, if an
+ages vector was <em>not</em> given, then the edge lengths are multiplied by the
+population size of the edge so the branch length units will be in
+generations. If an ages vector was given, then it is assumed that the ages
+are already in the proper scale/units.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.simulate.popgensim</span></code>: Population Genetics Simulations</a><ul>
+<li><a class="reference internal" href="#dendropy.simulate.popgensim.pop_gen_tree"><code class="docutils literal notranslate"><span class="pre">pop_gen_tree</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="treesim.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.simulate.treesim</span></code>: Unified Namespace Aggregating Functions and Classes for Tree Simulations</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../schemas/index.html"
+                          title="next chapter">DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../schemas/index.html" title="DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="treesim.html" title="dendropy.simulate.treesim: Unified Namespace Aggregating Functions and Classes for Tree Simulations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.simulate.popgensim</span></code>: Population Genetics Simulations</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

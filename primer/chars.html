@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Character Matrices &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Phylogenetic Character Analyses" href="phylogenetic_character_analyses.html" />
+    <link rel="prev" title="Tree Simulation and Generation" href="treesims.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="phylogenetic_character_analyses.html" title="Phylogenetic Character Analyses"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="treesims.html" title="Tree Simulation and Generation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Character Matrices</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="character-matrices">
+<h1>Character Matrices<a class="headerlink" href="#character-matrices" title="Link to this heading">¶</a></h1>
+<section id="types-of-character-matrices">
+<h2>Types of Character Matrices<a class="headerlink" href="#types-of-character-matrices" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> object represents character data in DendroPy.
+In most cases, you will not deal with objects of the <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> class directly, but rather with objects of one of the classes specialized to handle specific data types:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a>, for DNA nucleotide sequence data</p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">RnaCharacterMatrix</span></code></a>, for RNA nucleodtide sequence data</p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinCharacterMatrix</span></code></a>, for amino acid sequence data</p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardCharacterMatrix</span></code></a>, for discrete-value data</p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousCharacterMatrix</span></code></a>, for continuous-valued data</p></li>
+</ul>
+</div></blockquote>
+<p>The <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousCharacterMatrix</span></code></a> class represents its character values directly.
+Typically, all other classes represent its character values as special <a class="reference internal" href="../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> instances, <em>not</em> as strings.
+So, for example, the DNA character “A” is modeled by a special <a class="reference internal" href="../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> instance (created by the DendroPy library).
+While it is represented by the string “A”, and can be converted to the string and back again, it is not the same as the string “A”.
+Each discrete <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> instance has one or more <a class="reference internal" href="../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet" title="dendropy.datamodel.charstatemodel.StateAlphabet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateAlphabet</span></code></a> instances associated with it that manage the collection of letters that make up the character data.
+In the case of, e.g. DNA, RNA, protein and other specialized discrete data, this are pre-defined by DendroPy: <code class="docutils literal notranslate"><span class="pre">dendropy.DNA_STATE_ALPHABET</span></code>, <code class="docutils literal notranslate"><span class="pre">dendropy.RNA_STATE_ALPHABET</span></code>, etc.
+In the case of “standard” character data, these are created for each matrix separately. Facilities are provided for the creation of custom state alphabets and for the sharing of state alphabets between different <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardCharacterMatrix</span></code></a> instances.</p>
+</section>
+<section id="reading-and-writing-character-data">
+<h2>Reading and Writing Character Data<a class="headerlink" href="#reading-and-writing-character-data" title="Link to this heading">¶</a></h2>
+<p>As with most other phylogenetic data objects, objects of the <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived classes support the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” factory method to populate objects from a data source.
+This method takes a data source as the first keyword argument and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> (”<code class="docutils literal notranslate"><span class="pre">nexus</span></code>”, “<code class="docutils literal notranslate"><span class="pre">newick</span></code>”, “<code class="docutils literal notranslate"><span class="pre">nexml</span></code>”, “<code class="docutils literal notranslate"><span class="pre">fasta</span></code>”, or “<code class="docutils literal notranslate"><span class="pre">phylip</span></code>”, etc.) as the second:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">dna1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.fasta&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+<span class="n">dna2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://purl.org/phylo/treebase/phylows/matrix/TB2:M2610?format=nexus&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">aa1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">ProteinCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.dat&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;phylip&quot;</span><span class="p">)</span>
+<span class="n">std1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">StandardCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;python_morph.nex&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">std2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">StandardCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;&gt;t1</span><span class="se">\n</span><span class="s2">01011</span><span class="se">\n\n</span><span class="s2">&gt;t2</span><span class="se">\n</span><span class="s2">11100&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The “<code class="xref py py-meth docutils literal notranslate"><span class="pre">write</span></code>” method allows you to write the data of a <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> to a file-like object or a file path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dna1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.nex&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">dna1</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;out.nexml&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexml&quot;</span><span class="p">)</span>
+<span class="n">dna1</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out.fasta&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also represent the data as a string using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">as_string</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dna1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.nex&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">dna1</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In addition, fine-grained control over the reading and writing of data is available through various keyword arguments as described in the <a class="reference internal" href="reading_and_writing.html"><span class="doc">Reading and Writing Phylogenetic Data</span></a> section.</p>
+</section>
+<section id="creating-a-character-data-matrix-from-a-dictionary-of-strings">
+<h2>Creating a Character Data Matrix from a Dictionary of Strings<a class="headerlink" href="#creating-a-character-data-matrix-from-a-dictionary-of-strings" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.from_dict" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.from_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_dict</span></code></a> factory method creates a new <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> from a dictionary mapping taxon labels to sequences represented as strings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;s1&quot;</span> <span class="p">:</span> <span class="s2">&quot;TCCAA&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;s2&quot;</span> <span class="p">:</span> <span class="s2">&quot;TGCAA&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;s3&quot;</span> <span class="p">:</span> <span class="s2">&quot;TG-AA&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">dna</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="taxon-management-with-character-matrices">
+<h2>Taxon Management with Character Matrices<a class="headerlink" href="#taxon-management-with-character-matrices" title="Link to this heading">¶</a></h2>
+<p>Taxon management with <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived objects work very much the same as it does with <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> or <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> objects every time a <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived object is independentally created or read, a new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> is created, unless an existing one is specified.
+Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> reference:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">dna1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae_cytb.fasta&quot;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">prot1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">ProteinCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae_morph.nex&quot;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.trees.nex&quot;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="concatenating-multiple-data-matrices">
+<h2>Concatenating Multiple Data Matrices<a class="headerlink" href="#concatenating-multiple-data-matrices" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>A new <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> can be created from multiple existing matrices using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">concatentate</span></code> factory method, which takes a list or an iterable of <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> instances as an argument.</dt><dd><p>All the CharacterMatrix objects in the list must be of the
+same type, and share the same TaxonNamespace reference. All taxa
+must be present in all alignments, all all alignments must
+be of the same length. Component parts will be recorded as
+character subsets.</p>
+</dd>
+</dl>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.chars.subsets-1stpos.nexus&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;d1: </span><span class="si">{}</span><span class="s2"> sequences, </span><span class="si">{}</span><span class="s2"> characters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d1</span><span class="p">),</span> <span class="n">d1</span><span class="o">.</span><span class="n">max_sequence_size</span><span class="p">))</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.chars.subsets-2ndpos.nexus&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;d2: </span><span class="si">{}</span><span class="s2"> sequences, </span><span class="si">{}</span><span class="s2"> characters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d2</span><span class="p">),</span> <span class="n">d2</span><span class="o">.</span><span class="n">max_sequence_size</span><span class="p">))</span>
+<span class="n">d3</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.chars.subsets-3rdpos.nexus&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;d3: </span><span class="si">{}</span><span class="s2"> sequences, </span><span class="si">{}</span><span class="s2"> characters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d3</span><span class="p">),</span> <span class="n">d3</span><span class="o">.</span><span class="n">max_sequence_size</span><span class="p">))</span>
+<span class="n">d_all</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">d1</span><span class="p">,</span><span class="n">d2</span><span class="p">,</span><span class="n">d3</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;d_all: </span><span class="si">{}</span><span class="s2"> sequences, </span><span class="si">{}</span><span class="s2"> characters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d_all</span><span class="p">),</span> <span class="n">d_all</span><span class="o">.</span><span class="n">max_sequence_size</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Subsets: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d_all</span><span class="o">.</span><span class="n">character_subsets</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>results in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">d1</span><span class="p">:</span> <span class="mi">12</span> <span class="n">sequences</span><span class="p">,</span> <span class="mi">231</span> <span class="n">characters</span>
+<span class="n">d2</span><span class="p">:</span> <span class="mi">12</span> <span class="n">sequences</span><span class="p">,</span> <span class="mi">231</span> <span class="n">characters</span>
+<span class="n">d3</span><span class="p">:</span> <span class="mi">12</span> <span class="n">sequences</span><span class="p">,</span> <span class="mi">231</span> <span class="n">characters</span>
+<span class="n">d_all</span><span class="p">:</span> <span class="mi">12</span> <span class="n">sequences</span><span class="p">,</span> <span class="mi">693</span> <span class="n">characters</span>
+<span class="n">Subsets</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;locus002&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">dendropy</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">charmatrixmodel</span><span class="o">.</span><span class="n">CharacterSubset</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x101d792d0</span><span class="o">&gt;</span><span class="p">,</span> <span class="s1">&#39;locus000&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">dendropy</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">charmatrixmodel</span><span class="o">.</span><span class="n">CharacterSubset</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x101d79250</span><span class="o">&gt;</span><span class="p">,</span> <span class="s1">&#39;locus001&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">dendropy</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">charmatrixmodel</span><span class="o">.</span><span class="n">CharacterSubset</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x101d79290</span><span class="o">&gt;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>You can instantiate a concatenated matrix from multiple sources using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">concatentate_from_paths</span></code> or <code class="xref py py-meth docutils literal notranslate"><span class="pre">concatentate_from_streams</span></code> factory methods:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;primates.chars.subsets-1stpos.nexus&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;primates.chars.subsets-2ndpos.nexus&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;primates.chars.subsets-3rdpos.nexus&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+<span class="n">d_all</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">concatenate_from_paths</span><span class="p">(</span>
+        <span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;d_all: </span><span class="si">{}</span><span class="s2"> sequences, </span><span class="si">{}</span><span class="s2"> characters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d_all</span><span class="p">),</span> <span class="n">d_all</span><span class="o">.</span><span class="n">max_sequence_size</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Subsets: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d_all</span><span class="o">.</span><span class="n">character_subsets</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="sequence-management">
+<h2>Sequence Management<a class="headerlink" href="#sequence-management" title="Link to this heading">¶</a></h2>
+<p>A range of methods also exist for importing data from another matrix object.
+These vary depending on how “new” and “existing” are treated.  A “new”
+sequence is a sequence in the other matrix associated with a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+object for which there is no sequence defined in the current matrix.  An
+“existing” sequence is a sequence in the other matrix associated with a
+<a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object for which there <em>is</em> a sequence defined in the
+current matrix.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>New Sequences: IGNORED</p></th>
+<th class="head"><p>New Sequences: ADDED</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Existing Sequences: IGNORED</p></td>
+<td><p>[NO-OP]</p></td>
+<td><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.add_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.add_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_sequences</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Existing Sequences: OVERWRITTEN</p></td>
+<td><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.replace_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.replace_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">replace_sequences</span></code></a></p></td>
+<td><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.update_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.update_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_sequences</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Existing Sequences: EXTENDED</p></td>
+<td><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">extend_sequences</span></code></a></p></td>
+<td><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_matrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">extend_matrix</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+<p>More information cane be found in the source documentation:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.add_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.add_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_sequences</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.replace_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.replace_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">replace_sequences</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.update_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.update_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_sequences</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">extend_sequences</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_matrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.extend_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">extend_matrix</span></code></a></p></li>
+</ul>
+<p>In addition there are methods for selecting removing sequences:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.remove_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.remove_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove_sequences</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.discard_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.discard_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">discard_sequences</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.keep_sequences" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.keep_sequences"><code class="xref py py-meth docutils literal notranslate"><span class="pre">keep_sequences</span></code></a></p></li>
+</ul>
+<p>As well as “filling out” a matrix by adding columns or rows:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill_taxa" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill_taxa"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fill_taxa</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.fill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fill</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix.pack" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix.pack"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pack</span></code></a></p></li>
+</ul>
+</section>
+<section id="accessing-data">
+<h2>Accessing Data<a class="headerlink" href="#accessing-data" title="Link to this heading">¶</a></h2>
+<p>A <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> behaves very much like a dictionary, where the “keys” are <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances, which can be dereferenced using the instance itself, the taxon label, or the index of the taxon in the collection (note: this is <em>not</em> neccessarily the same as the accession index, which is the basis for bipartition collection).</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">dna</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.chars.nexus&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+
+<span class="c1"># access by dereferencing taxon label</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">dna</span><span class="p">[</span><span class="s2">&quot;Macaca sylvanus&quot;</span><span class="p">]</span>
+
+<span class="c1"># access by taxon index</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">dna</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">dna</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">s4</span> <span class="o">=</span> <span class="n">dna</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="c1"># access by taxon instance</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">dna</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Macaca sylvanus&quot;</span><span class="p">)</span>
+<span class="n">s5</span> <span class="o">=</span> <span class="n">dna</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+
+</pre></div>
+</div>
+<p>You can also iterate over the matrix in a number of ways:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">dna</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.chars.nexus&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+
+<span class="c1"># iterate over taxa</span>
+<span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">dna</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">dna</span><span class="p">[</span><span class="n">taxon</span><span class="p">]))</span>
+
+<span class="c1"># iterate over the sequences</span>
+<span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">dna</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+
+<span class="c1"># iterate over taxon/sequence pairs</span>
+<span class="k">for</span> <span class="n">taxon</span><span class="p">,</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">dna</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">seq</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<p>The “values” return by dereferencing the “keys” of a <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>  objects are <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterDataSequence" title="dendropy.datamodel.charmatrixmodel.CharacterDataSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterDataSequence</span></code></a> objects.
+Objects of this class behave very much like lists, where the elements are either numeric values for <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousCharacterMatrix</span></code></a> matrices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">cc</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">ContinuousCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae_continuous.chars.nexml&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexml&quot;</span><span class="p">)</span>
+
+<span class="n">s1</span> <span class="o">=</span> <span class="n">cc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
+<span class="c1"># &lt;class &#39;dendropy.datamodel.charmatrixmodel.ContinuousCharacterDataSequence&#39;&gt;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
+<span class="c1"># 100</span>
+
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">s1</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+<span class="c1"># &lt;type &#39;float&#39;&gt;, -0.0230088801573</span>
+<span class="c1"># &lt;type &#39;float&#39;&gt;, -0.327376261257</span>
+<span class="c1"># &lt;type &#39;float&#39;&gt;, -0.483676644025</span>
+<span class="c1"># ...</span>
+<span class="c1"># ...</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="c1"># [-0.0230088801573, -0.327376261257, -0.483676644025, ...</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">symbols_as_list</span><span class="p">())</span>
+<span class="c1"># [&#39;-0.0230088801573&#39;, &#39;-0.327376261257&#39;, &#39;-0.483676644025&#39;, ...</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">symbols_as_string</span><span class="p">())</span>
+<span class="c1"># -0.0230088801573 -0.327376261257 -0.483676644025 0.0868649474847 ...</span>
+
+
+</pre></div>
+</div>
+<p>or <a class="reference internal" href="../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> instances for all other types of matrices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">dna</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.chars.nexus&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+
+<span class="n">s1</span> <span class="o">=</span> <span class="n">dna</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
+<span class="c1"># &lt;class &#39;dendropy.datamodel.charmatrixmodel.DnaCharacterDataSequence&#39;&gt;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
+<span class="c1"># 898</span>
+
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">s1</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+<span class="c1"># &lt;&lt;StateIdentity at 0x10134a290: &#39;A&#39;&gt;, A</span>
+<span class="c1"># &lt;&lt;StateIdentity at 0x10134a290: &#39;A&#39;&gt;, A</span>
+<span class="c1"># &lt;&lt;StateIdentity at 0x10134a350: &#39;G&#39;&gt;, G</span>
+<span class="c1"># ...</span>
+<span class="c1"># ...</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="c1"># [&lt;StateIdentity at 0x101b4a290: &#39;A&#39;&gt;, &lt;StateIdentity at 0x101b4a290: &#39;A&#39;&gt;, &lt;StateIdentity at 0x101b4a350: &#39;G&#39;&gt;, ...</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">symbols_as_list</span><span class="p">())</span>
+<span class="c1"># [&#39;A&#39;, &#39;A&#39;, &#39;G&#39;, &#39;C&#39;, &#39;T&#39;, &#39;T&#39;, &#39;C&#39;, &#39;A&#39;, &#39;T&#39;, ...</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">symbols_as_string</span><span class="p">())</span>
+<span class="c1"># AAGCTTCATAGGAGCAACCATTCT ...</span>
+
+
+</pre></div>
+</div>
+<p>As can be seen, you can use <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterDataSequence.values" title="dendropy.datamodel.charmatrixmodel.CharacterDataSequence.values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">values</span></code></a> to get a list of the values of the sequence directly, <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterDataSequence.symbols_as_list" title="dendropy.datamodel.charmatrixmodel.CharacterDataSequence.symbols_as_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">symbols_as_list</span></code></a> to get a list of the values represented as strings, and <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterDataSequence.symbols_as_string" title="dendropy.datamodel.charmatrixmodel.CharacterDataSequence.symbols_as_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">symbols_as_string</span></code></a> to get the string representation of the whole sequence.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Character Matrices</a><ul>
+<li><a class="reference internal" href="#types-of-character-matrices">Types of Character Matrices</a></li>
+<li><a class="reference internal" href="#reading-and-writing-character-data">Reading and Writing Character Data</a></li>
+<li><a class="reference internal" href="#creating-a-character-data-matrix-from-a-dictionary-of-strings">Creating a Character Data Matrix from a Dictionary of Strings</a></li>
+<li><a class="reference internal" href="#taxon-management-with-character-matrices">Taxon Management with Character Matrices</a></li>
+<li><a class="reference internal" href="#concatenating-multiple-data-matrices">Concatenating Multiple Data Matrices</a></li>
+<li><a class="reference internal" href="#sequence-management">Sequence Management</a></li>
+<li><a class="reference internal" href="#accessing-data">Accessing Data</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="treesims.html"
+                          title="previous chapter">Tree Simulation and Generation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="phylogenetic_character_analyses.html"
+                          title="next chapter">Phylogenetic Character Analyses</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="phylogenetic_character_analyses.html" title="Phylogenetic Character Analyses"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="treesims.html" title="Tree Simulation and Generation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Character Matrices</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

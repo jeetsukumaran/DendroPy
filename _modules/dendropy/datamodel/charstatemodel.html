@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.datamodel.charstatemodel &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.charstatemodel</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.datamodel.charstatemodel</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Character state definitions and alphabets. Certain state alphabets, such as</span>
+<span class="sd">DNA, RNA, protein, etc.  are defined here. These are termed &quot;fixed&quot; state</span>
+<span class="sd">alphabets, and for each distinct state alphabet concept (e.g., DNA), there is</span>
+<span class="sd">one and only one instance of a representation of that concept (i.e., all</span>
+<span class="sd">DNA-type data in DendroPy, regardless of the source, refer to the same instance</span>
+<span class="sd">of the state alphabet and state alphabet elements).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">dendropy.datamodel</span> <span class="kn">import</span> <span class="n">basemodel</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">textprocessing</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">container</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## StateAlphabet</span>
+
+<div class="viewcode-block" id="StateAlphabet">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet">[docs]</a>
+<span class="k">class</span> <span class="nc">StateAlphabet</span><span class="p">(</span>
+        <span class="n">basemodel</span><span class="o">.</span><span class="n">DataObject</span><span class="p">,</span>
+        <span class="n">basemodel</span><span class="o">.</span><span class="n">Annotable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A master registry mapping state symbols to their definitions.</span>
+
+<span class="sd">    There are two classes or &quot;denominations&quot; of states:</span>
+
+<span class="sd">        - fundamental states</span>
+<span class="sd">            These are the basic, atomic, self-contained states of the alphabet,</span>
+<span class="sd">            distinct and mutually-exclusive from every other fundamental state.</span>
+<span class="sd">            E.g., for DNA: adenine, guanine, cytosine, and thymine.</span>
+
+<span class="sd">        - multi-state states</span>
+<span class="sd">            The states are second-level or &quot;pseudo-states&quot;, in that they are</span>
+<span class="sd">            not properly states in and of themselves, but rather each consist</span>
+<span class="sd">            of a set of other states. That is, a multi-state state is a set of</span>
+<span class="sd">            two or more fundamental states.  Multi-state states are of one of</span>
+<span class="sd">            two types: &quot;ambiguous&quot; and &quot;polymorphic&quot; states. &quot;Ambiguous&quot; states</span>
+<span class="sd">            represent states in which the true fundamental state is unknown,</span>
+<span class="sd">            but consists of one of the fundamental states to which the</span>
+<span class="sd">            ambiguous states map. &quot;Polymorphic&quot; states represent states in</span>
+<span class="sd">            which the entity actually has multiple fundamental states</span>
+<span class="sd">            simultaneously. &quot;Ambiguous&quot; states are an expression of uncertainty</span>
+<span class="sd">            or lack of knowledge about the identity of state. With</span>
+<span class="sd">            &quot;polymorphic&quot; states, on the other hand, there is no uncertaintly</span>
+<span class="sd">            or lack of knowledge about the state: the state is known</span>
+<span class="sd">            definitively, and it consists of multiple fundamental states.  An</span>
+<span class="sd">            example of an ambiguous state would be &#39;N&#39;, representing any base</span>
+<span class="sd">            in molecular sequence data. An example of a polymorphic state would</span>
+<span class="sd">            be the range of a widespread species found in multiple geographic</span>
+<span class="sd">            units.  Note that multi-state states can be specified in terms of</span>
+<span class="sd">            other multi-state states, but that upon instantiation, these member</span>
+<span class="sd">            multi-states will be expanded to their fundamental states.</span>
+
+<span class="sd">    State definitions or identities are immutable: their symbology and mappings</span>
+<span class="sd">    cannot be changed after creation/initialization. State definitions and</span>
+<span class="sd">    identities, however, can be added/removed from a state alphabet.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    label : string, optional</span>
+<span class="sd">        The name for this state alphabet.</span>
+
+<span class="sd">    fundamental_states : iterable of strings</span>
+<span class="sd">        An iterable of symbols defining the fundamental (i.e., non-ambiguous</span>
+<span class="sd">        and non-polymorphic states of this alphabet), with a 1-to-1</span>
+<span class="sd">        correspodence between symbols and states. Each state will also be</span>
+<span class="sd">        automatically indexed base on its position in this list. For DNA, this</span>
+<span class="sd">        would be something like: ``&#39;ACGT&#39;`` or ``(&#39;A&#39;, &#39;C&#39;, &#39;G&#39;, T&#39;)``. For</span>
+<span class="sd">        &quot;standard&quot; characters, this would be something like ``&#39;01&#39;`` or ``(&#39;0&#39;,</span>
+<span class="sd">        &#39;1&#39;)``.</span>
+
+<span class="sd">    no_data_symbol : string</span>
+<span class="sd">        If specified, automatically creates a &quot;no data&quot; ambiguous state,</span>
+<span class="sd">        represented by the (canonical, or primary) symbol</span>
+<span class="sd">        &quot;no_data_symbol&quot;, which maps to all fundamental states.</span>
+<span class="sd">        This will also insert |None| into all symbol look-up maps, which, when</span>
+<span class="sd">        dereferenced will return this state. Furthermore, the attribute</span>
+<span class="sd">        ``self.no_data_symbol`` will return this symbol and ``self.no_data_state``</span>
+<span class="sd">        will return this state. The &#39;no data&#39; state will be an ambiguous</span>
+<span class="sd">        multistate type.</span>
+
+<span class="sd">    ambiguous_states : iterable of tuples</span>
+<span class="sd">        An iterable consisting of tuples expressing ambiguous state symbols and</span>
+<span class="sd">        the set of symbols representing the fundamental states to which they</span>
+<span class="sd">        map. The first element in the tuple is the symbol used to represent the</span>
+<span class="sd">        ambiguous state; this can be blank (&quot;&quot;), but if not blank it needs to</span>
+<span class="sd">        be unique across all symbols (including case-variants if the state</span>
+<span class="sd">        alphabet is case-insensitive).  The second element is an</span>
+<span class="sd">        iterable of fundamental state symbols to which this ambiguous state</span>
+<span class="sd">        maps. The fundamental state symbols *must* have already been defined,</span>
+<span class="sd">        i.e. given in the value passed to ``fundamental_states``. Note: a</span>
+<span class="sd">        dictionary may seem like a more tractable structure than iterable of</span>
+<span class="sd">        tuples, but we may need to specify multiple anonymous or blank</span>
+<span class="sd">        ambiguous states.</span>
+
+<span class="sd">    polymorphic_states : iterable of tuples</span>
+<span class="sd">        An iterable consisting of tuples expressing polymorphic state symbols and</span>
+<span class="sd">        the set of symbols representing the fundamental states to which they</span>
+<span class="sd">        map. The first element in the tuple is the symbol used to represent the</span>
+<span class="sd">        polymorphic state; this can be blank (&quot;&quot;), but if not blank it needs to</span>
+<span class="sd">        be unique across all symbols (including case-variants if the state</span>
+<span class="sd">        alphabet is case-insensitive).  The second element is an</span>
+<span class="sd">        iterable of fundamental state symbols to which this polymorphic state</span>
+<span class="sd">        maps. The fundamental state symbols *must* have already been defined,</span>
+<span class="sd">        i.e. given in the value passed to ``fundamental_states``. Note: a</span>
+<span class="sd">        dictionary may seem like a more tractable structure than iterable of</span>
+<span class="sd">        tuples, but we may need to specify multiple anonymous or blank</span>
+<span class="sd">        polymorphic states.</span>
+
+<span class="sd">    symbol_synonyms : dictionary</span>
+<span class="sd">        A mapping of symbols, with keys being the new symbols and values being</span>
+<span class="sd">        (already-defined) symbols of states to which they map. This provides a</span>
+<span class="sd">        mechanism by which states with multiple symbols can be managed. For</span>
+<span class="sd">        example, an ambiguous state, &quot;unknown&quot;, representing all fundamental</span>
+<span class="sd">        states might be defined with &#39;?&#39; as its primary symbol, and a synonym</span>
+<span class="sd">        symbol for this state might be &#39;X&#39;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1">### CLass-level Constants</span>
+
+    <span class="n">FUNDAMENTAL_STATE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">AMBIGUOUS_STATE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">POLYMORPHIC_STATE</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1">### Life-Cycle and Identity</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">fundamental_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">ambiguous_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">polymorphic_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">symbol_synonyms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">no_data_symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">gap_symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="n">basemodel</span><span class="o">.</span><span class="n">DataObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_case_sensitive</span> <span class="o">=</span> <span class="n">case_sensitive</span>
+
+        <span class="c1"># Core collection underlying alphabet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ambiguous_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_polymorphic_states</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Look-up mappings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_identities</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canonical_state_symbols</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canonical_symbol_state_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_full_symbol_state_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_state_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states_to_ambiguous_state_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states_to_polymorphic_state_map</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Suppress for initialization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autocompile_lookup_tables</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># This identifies the gap state when compiling the state alphabet. The</span>
+        <span class="c1"># principle purpose behind this is to be able to tell the gap state</span>
+        <span class="c1"># that it is, indeed, a gap state. And the purpose of this, in turn,</span>
+        <span class="c1"># is so that the when the gap state is asked for its fundamental</span>
+        <span class="c1"># indexes, it will return the fundamental indexes of the missing data</span>
+        <span class="c1"># state in its place if it is *NOT* to be treated as a fifth</span>
+        <span class="c1"># fundamental state.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gap_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gap_symbol</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_no_data_symbol</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Populate core collection</span>
+        <span class="k">if</span> <span class="n">fundamental_states</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">fundamental_states</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">new_fundamental_state</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gap_symbol</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gap_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_fundamental_state</span><span class="p">(</span><span class="n">gap_symbol</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gap_symbol</span> <span class="o">=</span> <span class="n">gap_symbol</span>
+            <span class="k">if</span> <span class="n">no_data_symbol</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_ambiguous_state</span><span class="p">(</span>
+                        <span class="n">symbol</span><span class="o">=</span><span class="n">no_data_symbol</span><span class="p">,</span>
+                        <span class="n">member_states</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_no_data_symbol</span> <span class="o">=</span> <span class="n">no_data_symbol</span>
+            <span class="k">if</span> <span class="n">ambiguous_states</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="n">ambiguous_states</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">new_ambiguous_state</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="n">ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">member_state_symbols</span><span class="o">=</span><span class="n">ss</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">polymorphic_states</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="n">polymorphic_states</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">new_polymorphic_state</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="n">ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">member_state_symbols</span><span class="o">=</span><span class="n">ss</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">symbol_synonyms</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">symbol_synonyms</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">new_symbol_synonym</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">symbol_synonyms</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="c1"># Build mappings</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_lookup_mappings</span><span class="p">()</span>
+
+        <span class="c1"># Post-initialization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autocompile_lookup_tables</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="StateAlphabet.taxon_namespace_scoped_copy">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.taxon_namespace_scoped_copy">[docs]</a>
+    <span class="k">def</span> <span class="nf">taxon_namespace_scoped_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1">### Symbol Management</span>
+
+    <span class="k">def</span> <span class="nf">_direct_get_state_for_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the |StateIdentity| instance corresponding to ``symbol``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">state_symbol</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol_state_pair_iter</span><span class="p">(</span><span class="n">include_synonyms</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">state_symbol</span> <span class="o">==</span> <span class="n">symbol</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">state</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_direct_get_fundamental_states_for_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the list of |StateIdentity| instances corresponding to</span>
+<span class="sd">        the iterable of symbols given by ``symbols``, with each element in</span>
+<span class="sd">        ``symbols`` corresponding to a single symbol.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">symbols</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direct_get_state_for_symbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+            <span class="n">ss</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">fundamental_states</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_new_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot validate empty symbol&quot;</span><span class="p">)</span>
+        <span class="n">symbol</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">state_symbol</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol_state_pair_iter</span><span class="p">(</span><span class="n">include_synonyms</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">state_symbol</span> <span class="o">==</span> <span class="n">symbol</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;State with symbol or symbol synonym of &#39;</span><span class="si">{}</span><span class="s2">&#39; already defined is this alphabet&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">symbol</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">symbol</span>
+
+<div class="viewcode-block" id="StateAlphabet.new_fundamental_state">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.new_fundamental_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_fundamental_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new fundamental state to the collection</span>
+<span class="sd">        of states in this alphabet.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol : string</span>
+<span class="sd">            The symbol used to represent this state. Cannot have previously</span>
+<span class="sd">            been used to refer to any other state, fundamental or otherwise, as</span>
+<span class="sd">            a primary or synonymous symbol (including implicit synonyms given</span>
+<span class="sd">            by case-variants if the state alphabet is not case-sensitive).</span>
+<span class="sd">            Cannot be blank (&quot;&quot;) or |None|.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity|</span>
+<span class="sd">            The new state created and added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Fundamental states cannot be defined without a valid symbol&quot;</span><span class="p">)</span>
+        <span class="n">symbol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_new_symbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span><span class="p">)</span>
+        <span class="n">new_state</span> <span class="o">=</span> <span class="n">StateIdentity</span><span class="p">(</span>
+                <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">state_denomination</span><span class="o">=</span><span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span><span class="p">,</span>
+                <span class="n">member_states</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_case_sensitive</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="n">symbol</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">symbol</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">symbol</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">new_symbol_synonym</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">symbol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocompile_lookup_tables</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_symbol_lookup_mappings</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new_state</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.new_ambiguous_state">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.new_ambiguous_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_ambiguous_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new ambiguous state to the collection</span>
+<span class="sd">        of states in this alphabet.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol : string or None</span>
+<span class="sd">            The symbol used to represent this state. Cannot have previously</span>
+<span class="sd">            been used to refer to any other state, fundamental or otherwise, as</span>
+<span class="sd">            a primary or synonymous symbol (including implicit synonyms given</span>
+<span class="sd">            by case-variants if the state alphabet is not case-sensitive). Can</span>
+<span class="sd">            be blank (&quot;&quot;) or |None| if there.</span>
+
+<span class="sd">        \*\*kwargs : keyword arguments, mandatory</span>
+<span class="sd">            Exactly one of the following must be specified:</span>
+
+<span class="sd">                member_state_symbols : iterable of strings</span>
+<span class="sd">                    List of symbols representing states to which this state maps. Symbols</span>
+<span class="sd">                    representing multistates will taken to refer to the set of</span>
+<span class="sd">                    fundamental states to which they, in turn, map.</span>
+
+<span class="sd">                member_states : iterable of |StateIdentity| objects</span>
+<span class="sd">                    List of |StateIdentity| representing states to which this state maps.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity|</span>
+<span class="sd">            The new state created and added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_multistate</span><span class="p">(</span>
+                <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span>
+                <span class="n">state_denomination</span><span class="o">=</span><span class="n">StateAlphabet</span><span class="o">.</span><span class="n">AMBIGUOUS_STATE</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.new_polymorphic_state">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.new_polymorphic_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_polymorphic_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">symbol</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new polymorphic state to the collection</span>
+<span class="sd">        of states in this alphabet.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol : string or None</span>
+<span class="sd">            The symbol used to represent this state. Cannot have previously</span>
+<span class="sd">            been used to refer to any other state, fundamental or otherwise, as</span>
+<span class="sd">            a primary or synonymous symbol (including implicit synonyms given</span>
+<span class="sd">            by case-variants if the state alphabet is not case-sensitive). Can</span>
+<span class="sd">            be blank (&quot;&quot;) or |None| if there.</span>
+
+<span class="sd">        \*\*kwargs : keyword arguments, mandatory</span>
+<span class="sd">            Exactly one of the following must be specified:</span>
+
+<span class="sd">                member_state_symbols : iterable of strings</span>
+<span class="sd">                    List of symbols representing states to which this state maps. Symbols</span>
+<span class="sd">                    representing multistates will taken to refer to the set of</span>
+<span class="sd">                    fundamental states to which they, in turn, map.</span>
+
+<span class="sd">                member_states : iterable of |StateIdentity| objects</span>
+<span class="sd">                    List of |StateIdentity| representing states to which this state maps.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity|</span>
+<span class="sd">            The new state created and added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_multistate</span><span class="p">(</span>
+                <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span>
+                <span class="n">state_denomination</span><span class="o">=</span><span class="n">StateAlphabet</span><span class="o">.</span><span class="n">POLYMORPHIC_STATE</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.new_multistate">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.new_multistate">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_multistate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">symbol</span><span class="p">,</span>
+            <span class="n">state_denomination</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new polymorphic or ambiguous state to the collection</span>
+<span class="sd">        of states in this alphabet.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol : string or None</span>
+<span class="sd">            The symbol used to represent this state. Cannot have previously</span>
+<span class="sd">            been used to refer to any other state, fundamental or otherwise, as</span>
+<span class="sd">            a primary or synonymous symbol (including implicit synonyms given</span>
+<span class="sd">            by case-variants if the state alphabet is not case-sensitive). Can</span>
+<span class="sd">            be blank (&quot;&quot;) or |None| if there.</span>
+
+<span class="sd">        state_denomination : enum</span>
+<span class="sd">            StateAlphabet.POLYMORPHIC_STATE or StateAlphabet.AMBIGUOUS_STATE</span>
+
+<span class="sd">        \*\*kwargs : keyword arguments, mandatory</span>
+<span class="sd">            Exactly one of the following must be specified:</span>
+
+<span class="sd">                member_state_symbols : iterable of strings</span>
+<span class="sd">                    List of symbols representing states to which this state maps. Symbols</span>
+<span class="sd">                    representing multistates will taken to refer to the set of</span>
+<span class="sd">                    fundamental states to which they, in turn, map.</span>
+
+<span class="sd">                member_states : iterable of |StateIdentity| objects</span>
+<span class="sd">                    List of |StateIdentity| representing states to which this state maps.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity|</span>
+<span class="sd">            The new state created and added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">symbol</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">symbol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_new_symbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Exactly one of &#39;member_state_symbols&#39; or &#39;member_states&#39; is required&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;member_state_symbols&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">member_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direct_get_fundamental_states_for_symbols</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;member_state_symbols&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;member_states&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">member_states</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;member_states&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Exactly one of &#39;member_state_symbols&#39; or &#39;member_states&#39; is required&quot;</span><span class="p">)</span>
+        <span class="n">new_state</span> <span class="o">=</span> <span class="n">StateIdentity</span><span class="p">(</span>
+                <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span>
+                <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">state_denomination</span><span class="o">=</span><span class="n">state_denomination</span><span class="p">,</span>
+                <span class="n">member_states</span><span class="o">=</span><span class="n">member_states</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">POLYMORPHIC_STATE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_polymorphic_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">AMBIGUOUS_STATE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ambiguous_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">state_denomination</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">symbol</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_case_sensitive</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="n">symbol</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">symbol</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">symbol</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">new_symbol_synonym</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">symbol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocompile_lookup_tables</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">symbol</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">compile_symbol_lookup_mappings</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_member_states_lookup_mappings</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new_state</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.new_symbol_synonym">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.new_symbol_synonym">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_symbol_synonym</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">symbol_synonym</span><span class="p">,</span> <span class="n">referenced_symbol</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Defines an alternative symbol mapping for an existing state.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol_synonym : string</span>
+<span class="sd">            The (new) alternative symbol.</span>
+
+<span class="sd">        referenced_symbol : string</span>
+<span class="sd">            The symbol for the state to which the alternative symbol will also</span>
+<span class="sd">            map.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity|</span>
+<span class="sd">            The state to which this synonym maps.</span>
+<span class="sd">        ------</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">symbol_synonym</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">symbol_synonym</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Symbol synonym cannot be empty&quot;</span><span class="p">)</span>
+        <span class="n">symbol_synonym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_new_symbol</span><span class="p">(</span><span class="n">symbol_synonym</span><span class="p">)</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direct_get_state_for_symbol</span><span class="p">(</span><span class="n">referenced_symbol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">symbol_synonym</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Symbol synonym &#39;</span><span class="si">{}</span><span class="s2">&#39; already defined for state &#39;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">symbol_synonym</span><span class="p">,</span> <span class="n">state</span><span class="p">))</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">symbol_synonym</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocompile_lookup_tables</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_symbol_lookup_mappings</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">state</span></div>
+
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1">### Optimization/Sugar: Lookup Mappings and Attribute Settings</span>
+
+<div class="viewcode-block" id="StateAlphabet.compile_lookup_mappings">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.compile_lookup_mappings">[docs]</a>
+    <span class="k">def</span> <span class="nf">compile_lookup_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds lookup tables/mappings for quick referencing and dereferencing</span>
+<span class="sd">        of symbols/states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compile_symbol_lookup_mappings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compile_member_states_lookup_mappings</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.compile_member_states_lookup_mappings">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.compile_member_states_lookup_mappings">[docs]</a>
+    <span class="k">def</span> <span class="nf">compile_member_states_lookup_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds lookup tables/mappings for quick referencing and dereferencing</span>
+<span class="sd">        of ambiguous/polymorphic states based on the fundamental states to</span>
+<span class="sd">        which they map.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">temp_fundamental_states_to_ambiguous_state_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">temp_fundamental_states_to_polymorphic_state_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ambiguous_states</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span><span class="o">.</span><span class="n">member_states</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fundamental_state_iter</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">AMBIGUOUS_STATE</span><span class="p">:</span>
+                <span class="n">member_states</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">member_states</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">member_states</span> <span class="ow">in</span> <span class="n">temp_fundamental_states_to_ambiguous_state_map</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                    <span class="c1"># raise ValueError(&quot;Multiple definitions of ambiguous state with member states of &#39;{}&#39;: {}, {}. Define a symbol synonym instead.&quot;.format(</span>
+                    <span class="c1">#     state.member_states_str, temp_fundamental_states_to_ambiguous_state_map[member_states], state))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">temp_fundamental_states_to_ambiguous_state_map</span><span class="p">[</span><span class="n">member_states</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+            <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">POLYMORPHIC_STATE</span><span class="p">:</span>
+                <span class="n">member_states</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">member_states</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">member_states</span> <span class="ow">in</span> <span class="n">temp_fundamental_states_to_polymorphic_state_map</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                    <span class="c1"># raise ValueError(&quot;Multiple definitions of polymorphic state with member states of &#39;{}&#39;: {}, {}. Define a symbol synonym instead.&quot;.format(</span>
+                    <span class="c1">#     state.member_states_str, temp_fundamental_states_to_polymorphic_state_map[member_states], state))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">temp_fundamental_states_to_polymorphic_state_map</span><span class="p">[</span><span class="n">member_states</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states_to_ambiguous_state_map</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">FrozenOrderedDict</span><span class="p">(</span><span class="n">temp_fundamental_states_to_ambiguous_state_map</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states_to_polymorphic_state_map</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">FrozenOrderedDict</span><span class="p">(</span><span class="n">temp_fundamental_states_to_polymorphic_state_map</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_set_symbol_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Symbol synonym cannot be empty&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">symbol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+
+<div class="viewcode-block" id="StateAlphabet.compile_symbol_lookup_mappings">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.compile_symbol_lookup_mappings">[docs]</a>
+    <span class="k">def</span> <span class="nf">compile_symbol_lookup_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds lookup tables/mappings for quick referencing and dereferencing</span>
+<span class="sd">        of state symbology.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">temp_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">temp_symbols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">temp_canonical_symbol_state_map</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">temp_full_symbol_state_map</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">temp_index_state_map</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="c1"># if self._gap_symbol is not None and self.no_data_state is None:</span>
+        <span class="c1">#     self.no_data_state = self.new_ambiguous_state(symbol=None,</span>
+        <span class="c1">#                 member_states=self._fundamental_states)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_symbol</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">no_data_symbol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span><span class="o">.</span><span class="n">symbol</span><span class="p">)</span>
+            <span class="n">temp_full_symbol_state_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">()):</span>
+            <span class="n">temp_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span><span class="p">:</span>
+                <span class="n">temp_symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">symbol</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">temp_canonical_symbol_state_map</span>
+                <span class="n">temp_canonical_symbol_state_map</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">symbol</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_symbol_mapping</span><span class="p">(</span>
+                        <span class="n">temp_full_symbol_state_map</span><span class="p">,</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+                        <span class="n">state</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_set_symbol_mapping</span><span class="p">(</span>
+                                <span class="n">temp_full_symbol_state_map</span><span class="p">,</span>
+                                <span class="n">ss</span><span class="p">,</span>
+                                <span class="n">state</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">state_denomination</span> <span class="o">!=</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">state</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_state</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">is_gap_state</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">gap_state_as_no_data_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">is_gap_state</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">state</span><span class="o">.</span><span class="n">gap_state_as_no_data_state</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">temp_index_state_map</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_identities</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">temp_states</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canonical_state_symbols</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">temp_symbols</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canonical_symbol_state_map</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">FrozenOrderedDict</span><span class="p">(</span><span class="n">temp_canonical_symbol_state_map</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_full_symbol_state_map</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">FrozenOrderedDict</span><span class="p">(</span><span class="n">temp_full_symbol_state_map</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_state_map</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">FrozenOrderedDict</span><span class="p">(</span><span class="n">temp_index_state_map</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.set_state_as_attribute">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.set_state_as_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_state_as_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">attr_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the given state as an attribute of this alphabet.</span>
+<span class="sd">        The name of the attribute will be ``attr_name`` if specified,</span>
+<span class="sd">        or the state symbol otherwise.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        state : |StateIdentity|</span>
+<span class="sd">            The state to be made an attribute of this alphabet.</span>
+<span class="sd">        attr_name : string</span>
+<span class="sd">            The name of the attribute. If not specified, the state</span>
+<span class="sd">            symbol will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span>
+                <span class="ow">and</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ambiguous_states</span>
+                <span class="ow">and</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polymorphic_states</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;State </span><span class="si">{}</span><span class="s2"> not defined in current alphabet&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">attr_name</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+        <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot set attribute: non-None symbol needed for state or non-None attribute name needs to be provided&quot;</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span></div>
+
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1">### Special handling to designate gap</span>
+
+    <span class="k">def</span> <span class="nf">_get_gap_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gap_symbol</span>
+
+    <span class="k">def</span> <span class="nf">_set_gap_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gap_symbol</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For state alphabets with no explicitly-defined gap and no data (missing) symbols,</span>
+<span class="sd">        this method will allow creation of mapping of gaps to no data states,</span>
+<span class="sd">        so that tree/data scoring methods that require gaps to be treated as</span>
+<span class="sd">        missing data can be used. Note that the gap state needs to be already</span>
+<span class="sd">        defined in the state alphabet and already associated with the</span>
+<span class="sd">        designated symbol.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">gap_symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gap_state</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">gap_symbol</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gap_symbol</span> <span class="o">=</span> <span class="n">gap_symbol</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gap_state</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gap_symbol</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">gap_symbol</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_gap_symbol</span><span class="p">,</span> <span class="n">_set_gap_symbol</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_no_data_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_data_symbol</span>
+
+    <span class="k">def</span> <span class="nf">_set_no_data_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_data_symbol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">no_data_symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">no_data_symbol</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_no_data_symbol</span> <span class="o">=</span> <span class="n">no_data_symbol</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_data_state</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_no_data_symbol</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">no_data_symbol</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_no_data_symbol</span><span class="p">,</span> <span class="n">_set_no_data_symbol</span><span class="p">)</span>
+
+
+    <span class="c1">###########################################################################</span>
+    <span class="c1">### Symbol Access</span>
+
+<div class="viewcode-block" id="StateAlphabet.__len__">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.__len__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span><span class="p">)</span>
+                <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ambiguous_states</span><span class="p">)</span>
+                <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polymorphic_states</span><span class="p">)</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.__iter__">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.__iter__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns :meth:`StateAlphabet.state_iter()`: iterator over all state</span>
+<span class="sd">        identities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.state_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.state_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">state_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all state identities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ambiguous_states</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_polymorphic_states</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.fundamental_state_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.fundamental_state_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">fundamental_state_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all fundamental state identities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.ambiguous_state_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.ambiguous_state_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">ambiguous_state_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all ambiguous state identities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ambiguous_states</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.polymorphic_state_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.polymorphic_state_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">polymorphic_state_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all polymorphic state identities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polymorphic_states</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.multistate_state_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.multistate_state_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">multistate_state_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all ambiguous and polymorphic state</span>
+<span class="sd">        identities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ambiguous_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polymorphic_states</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.fundamental_symbol_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.fundamental_symbol_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">fundamental_symbol_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_synonyms</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all symbols (including synonyms, unless</span>
+<span class="sd">        ``include_synonyms`` is |False|) that map to fundamental states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fundamental_state_iter</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span> <span class="ow">and</span> <span class="n">include_synonyms</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">symbol</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.ambiguous_symbol_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.ambiguous_symbol_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">ambiguous_symbol_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_synonyms</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all symbols (including synonyms, unless</span>
+<span class="sd">        ``include_synonyms`` is |False|) that map to ambiguous states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ambiguous_state_iter</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span> <span class="ow">and</span> <span class="n">include_synonyms</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">symbol</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.polymorphic_symbol_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.polymorphic_symbol_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">polymorphic_symbol_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_synonyms</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all symbols (including synonyms, unless</span>
+<span class="sd">        ``include_synonyms`` is |False|) that map to polymorphic states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polymorphic_state_iter</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span> <span class="ow">and</span> <span class="n">include_synonyms</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">symbol</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.multistate_symbol_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.multistate_symbol_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">multistate_symbol_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_synonyms</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all symbols (including synonyms, unless</span>
+<span class="sd">        ``include_synonyms`` is |False|) that map to multistate states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">multistate_state_iter</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span> <span class="ow">and</span> <span class="n">include_synonyms</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">symbol</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.symbol_state_pair_iter">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.symbol_state_pair_iter">[docs]</a>
+    <span class="k">def</span> <span class="nf">symbol_state_pair_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_synonyms</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all symbols paired with the state to which the</span>
+<span class="sd">        they symbols map.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">include_synonyms</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">synonym</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol_synonyms</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">(</span><span class="n">synonym</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_state_identities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tuple of all state identities in this alphabet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_identities</span>
+    <span class="n">states</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_state_identities</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_canonical_state_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tuple of all state symbols in this alphabet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canonical_state_symbols</span>
+    <span class="n">symbols</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_canonical_state_symbols</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_canonical_symbol_state_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary with state symbols as keys and states as values. Does not</span>
+<span class="sd">        include symbol synonyms or case variations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canonical_symbol_state_map</span>
+    <span class="n">canonical_symbol_state_map</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_canonical_symbol_state_map</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_full_symbol_state_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dictionary with state symbols as keys and states as values.</span>
+<span class="sd">        Includes symbol synonyms or case variations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_symbol_state_map</span>
+    <span class="n">full_symbol_state_map</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_full_symbol_state_map</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StateAlphabet.__getitem__">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.__getitem__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns state identity corresponding to ``key``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : integer or string</span>
+<span class="sd">            If and integer value, looks up and returns state identity by index.</span>
+<span class="sd">            If a string value, looks up and returns state identity by symbol.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity| instance</span>
+<span class="sd">            Returns a |StateIdentity| corresponding to ``key``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        KeyError if ``key`` is not valid.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_state_map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_symbol_state_map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.get_states_for_symbols">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.get_states_for_symbols">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_states_for_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns list of states corresponding to symbols.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbols : iterable of symbols</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : list of |StateIdentity|</span>
+<span class="sd">            A list of |StateIdentity| instances corresponding to symbols</span>
+<span class="sd">            given in ``symbols``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">full_symbol_state_map</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">symbols</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">states</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.get_fundamental_states_for_symbols">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.get_fundamental_states_for_symbols">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_fundamental_states_for_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns list of *fundamental* states corresponding to symbols.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbols : iterable of symbols</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : list of |StateIdentity|</span>
+<span class="sd">            A list of fundamental |StateIdentity| instances corresponding</span>
+<span class="sd">            to symbols given in ``symbols``, with multi-state states expanded</span>
+<span class="sd">            into their fundamental symbols.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">symbols</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_full_symbol_state_map</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span>
+            <span class="n">states</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">fundamental_states</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">states</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.get_canonical_symbol_for_symbol">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.get_canonical_symbol_for_symbol">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_canonical_symbol_for_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the canonical state symbol for the state to which ``symbol``</span>
+<span class="sd">        maps. E.g., in a DNA alphabet, return &#39;A&#39; for &#39;a&#39;.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol : string</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : string</span>
+<span class="sd">            Canonical symbol for state with symbol or synonym symbol of</span>
+<span class="sd">            ``symbol``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">symbol</span><span class="p">]</span><span class="o">.</span><span class="n">symbol</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.match_ambiguous_state">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.match_ambiguous_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">match_ambiguous_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ambiguous state with fundamental member states</span>
+<span class="sd">        represented by symbols given in ``symbols``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbols : iterable of symbols</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity| instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_fundamental_states_for_symbols</span><span class="p">(</span><span class="n">symbols</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states_to_ambiguous_state_map</span><span class="p">[</span><span class="n">states</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.match_polymorphic_state">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.match_polymorphic_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">match_polymorphic_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns polymorphic state with fundamental member states</span>
+<span class="sd">        represented by symbols given in ``symbols``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbols : iterable of symbols</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity| instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_fundamental_states_for_symbols</span><span class="p">(</span><span class="n">symbols</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states_to_polymorphic_state_map</span><span class="p">[</span><span class="n">states</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="StateAlphabet.match_state">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet.match_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">match_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">state_denomination</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ambiguous or polymorphic state with fundamental member states</span>
+<span class="sd">        represented by symbols given in ``symbols``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbols : iterable of string symbols</span>
+<span class="sd">            Symbols representing states to be dereferenced.</span>
+<span class="sd">        state_denomination : {StateAlphabet.AMBIGUOUS or StateAlphabet.POLYPMORPHIC_STATE}</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : |StateIdentity| instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">AMBIGUOUS_STATE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">match_ambiguous_state</span><span class="p">(</span><span class="n">symbols</span><span class="o">=</span><span class="n">symbols</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">match_polymorphic_state</span><span class="p">(</span><span class="n">symbols</span><span class="o">=</span><span class="n">symbols</span><span class="p">)</span></div>
+</div>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## StateIdentity</span>
+
+<div class="viewcode-block" id="StateIdentity">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateIdentity">[docs]</a>
+<span class="k">class</span> <span class="nc">StateIdentity</span><span class="p">(</span>
+        <span class="n">basemodel</span><span class="o">.</span><span class="n">DataObject</span><span class="p">,</span>
+        <span class="n">basemodel</span><span class="o">.</span><span class="n">Annotable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A character state definition, which can either be a fundamental state or</span>
+<span class="sd">    a mapping to a set of other character states (for polymorphic or ambiguous</span>
+<span class="sd">    characters).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">state_denomination</span><span class="o">=</span><span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span><span class="p">,</span>
+            <span class="n">member_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A state is immutable with respect to its definition and identity.</span>
+<span class="sd">        Specifically, it &#39;symbol&#39;, &#39;index&#39;, &#39;multistate&#39;, and &#39;member_states&#39;</span>
+<span class="sd">        properties are set upon definition/creation, and after that are</span>
+<span class="sd">        read-only.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol : string</span>
+<span class="sd">            A text symbol or token representation of this character state.</span>
+<span class="sd">            E.g., &#39;G&#39; for the base guanine in a DNA state alphabet, or &#39;1&#39; for</span>
+<span class="sd">            presence of a wing in a morphological data set.</span>
+<span class="sd">        index : integer</span>
+<span class="sd">            The (0-based) numeric index for this state in the state alphabet.</span>
+<span class="sd">            E.g., for a DNA alphabet: 0 = &#39;A&#39;/adenine, 1 = &#39;C&#39;/cytosine, 2 =</span>
+<span class="sd">            &#39;G&#39;/guanine, 3 = &#39;T&#39;/thymine. Or for a &quot;standard&quot; alphabet: 0 =</span>
+<span class="sd">            &#39;0&#39;, 1 = &#39;1&#39;. Note that ambiguous and polymorphic state definitions</span>
+<span class="sd">            typically are not indexed.</span>
+<span class="sd">        state_denomination : &#39;enum&#39;</span>
+<span class="sd">            One of: ``StateAlphabet.FUNDAMENTAL_STATE``,</span>
+<span class="sd">            ``StateAlphabet.AMBIGUOUS_STATE``, or</span>
+<span class="sd">            ``StateAlphabet.POLYMORPHIC_STATE``.</span>
+<span class="sd">        member_states : iterable of |StateIdentity| instances.</span>
+<span class="sd">            If a multi-state, then a collection of |StateIdentity|</span>
+<span class="sd">            instances to which this state maps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">basemodel</span><span class="o">.</span><span class="n">DataObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">symbol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_symbol</span> <span class="o">=</span> <span class="n">symbol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">=</span> <span class="n">state_denomination</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_symbols</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes_with_gaps_as_missing</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_partials_vector</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">member_states</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">member_states</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_member_states_str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_symbol_synonyms</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># special handling for treating gap states as missing/no-data states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_gap_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gap_state_as_no_data_state</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="StateIdentity.taxon_namespace_scoped_copy">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateIdentity.taxon_namespace_scoped_copy">[docs]</a>
+    <span class="k">def</span> <span class="nf">taxon_namespace_scoped_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">_get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_index</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symbol</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_symbol</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_states_str</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="o">=</span> <span class="s2">&quot;&lt;</span><span class="si">{}</span><span class="s2"> at </span><span class="si">{}</span><span class="s2">: &#39;</span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)),</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span>
+
+    <span class="k">def</span> <span class="nf">_get_member_states_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Representation of member states of self.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_member_states_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_member_states_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">m</span><span class="o">.</span><span class="n">_symbol</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span><span class="p">])</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">AMBIGUOUS_STATE</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_member_states_str</span> <span class="o">=</span> <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">POLYMORPHIC_STATE</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_member_states_str</span> <span class="o">=</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unrecognized state denomination: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_member_states_str</span>
+    <span class="n">member_states_str</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_member_states_str</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Canonical (primary) symbol of this state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symbol</span>
+    <span class="n">symbol</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_symbol</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_state_denomination</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Type of multi-statedness: FUNDAMENTAL (not a multistate), AMBIGUOUS, or</span>
+<span class="sd">        POLYMORPHIC.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span>
+    <span class="n">state_denomination</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_state_denomination</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_is_single_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        |True| if a FUNDAMENTAL state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span>
+    <span class="n">is_single_state</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_is_single_state</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_is_fundamental_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        |True| if a FUNDAMENTAL state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">==</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span>
+    <span class="n">is_fundamental_state</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_is_fundamental_state</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_member_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the (fundamental) member states that this state maps to if not</span>
+<span class="sd">        itself a fundamental state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span>
+
+    <span class="k">def</span> <span class="nf">_set_member_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">member_states</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rebuilds member state set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">member_states</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">member_states</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_symbols</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes_with_gaps_as_missing</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_partials_vector</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_member_states_str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">member_states</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_member_states</span><span class="p">,</span> <span class="n">_set_member_states</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_fundamental_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a tuple of fundamental states (i.e., tupe of single states)</span>
+<span class="sd">        to which this state maps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">states</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="p">:</span><span class="kc">True</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">states</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_member_states</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span>
+                    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">fundamental_states</span><span class="p">:</span>
+                        <span class="n">states</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_states</span>
+    <span class="n">fundamental_states</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_fundamental_states</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_fundamental_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a tuple of fundamental state symbols (i.e., tuple of symbols</span>
+<span class="sd">        representing single states) to which this state maps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_symbols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_symbols</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fundamental_states</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_symbols</span>
+    <span class="n">fundamental_symbols</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_fundamental_symbols</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_fundamental_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a tuple of fundamental state indexes (i.e., tuple of index</span>
+<span class="sd">        values of single states) to which this state maps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">state</span><span class="o">.</span><span class="n">_index</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fundamental_states</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes</span>
+    <span class="n">fundamental_indexes</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_fundamental_indexes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_fundamental_indexes_with_gaps_as_missing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a tuple of fundamental state indexes (i.e., tuple of index</span>
+<span class="sd">        values of single states) to which this state maps, with gaps being</span>
+<span class="sd">        substituted with missing (no-data) states.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes_with_gaps_as_missing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gap_state</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_state_as_no_data_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes_with_gaps_as_missing</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gap_state_as_no_data_state</span><span class="o">.</span><span class="n">fundamental_indexes_with_gaps_as_missing</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No data state not specified&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fstates</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fundamental_states</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">is_gap_state</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes_with_gaps_as_missing</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">_index</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">fstates</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_indexes_with_gaps_as_missing</span>
+    <span class="n">fundamental_indexes_with_gaps_as_missing</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_fundamental_indexes_with_gaps_as_missing</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_symbol_synonyms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The collection of symbol synonyms (alternatives/equivalents to the</span>
+<span class="sd">        canonical symbol) which also map to this state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symbol_synonyms</span>
+    <span class="c1"># def _set_symbol_synonyms(self, value):</span>
+    <span class="c1">#     self._symbol_synonyms = value</span>
+    <span class="c1"># symbol_synonyms = property(_get_symbol_synonyms, _set_symbol_synonyms)</span>
+    <span class="n">symbol_synonyms</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_symbol_synonyms</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StateIdentity.is_exact_correspondence">
+<a class="viewcode-back" href="../../../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateIdentity.is_exact_correspondence">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_exact_correspondence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tries to determine if two StateIdentity definitions</span>
+<span class="sd">        are equivalent by matching symbols.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_state_denomination</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">!=</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">_state_denomination</span> <span class="o">!=</span> <span class="n">StateAlphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span><span class="p">:</span>
+            <span class="n">xf1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fundamental_states</span>
+            <span class="n">xf2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">fundamental_states</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xf1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xf2</span><span class="p">):</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">f1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">xf1</span><span class="p">)</span>
+                <span class="n">f2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">xf2</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">m1</span> <span class="ow">in</span> <span class="n">f1</span><span class="p">:</span>
+                    <span class="n">member_match</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">for</span> <span class="n">m2</span> <span class="ow">in</span> <span class="n">f2</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">m1</span><span class="o">.</span><span class="n">is_exact_correspondence</span><span class="p">(</span><span class="n">m2</span><span class="p">):</span>
+                            <span class="n">member_match</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">f2</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+                            <span class="k">break</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">member_match</span><span class="p">:</span>
+                        <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">f1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">xf1</span><span class="p">)</span>
+                    <span class="n">f2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">xf2</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">m2</span> <span class="ow">in</span> <span class="n">f2</span><span class="p">:</span>
+                        <span class="n">member_match</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">for</span> <span class="n">m1</span> <span class="ow">in</span> <span class="n">f1</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">m1</span><span class="o">.</span><span class="n">is_exact_correspondence</span><span class="p">(</span><span class="n">m2</span><span class="p">):</span>
+                                <span class="n">f1</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+                                <span class="n">member_match</span> <span class="o">=</span> <span class="kc">True</span>
+                                <span class="k">break</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">member_match</span><span class="p">:</span>
+                            <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="k">break</span>
+            <span class="k">return</span> <span class="n">match</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symbol</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_symbol</span></div>
+</div>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## DnaStateAlphabet</span>
+
+<span class="k">class</span> <span class="nc">DnaStateAlphabet</span><span class="p">(</span><span class="n">StateAlphabet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fundamental_states</span> <span class="o">=</span> <span class="s2">&quot;ACGT&quot;</span>
+        <span class="n">polymorphic_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ambiguous_states</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;ACGT&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;AG&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;CT&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;AC&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;AT&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;GT&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;ACG&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;ACT&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;AGT&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;CGT&quot;</span> <span class="p">),</span>
+                <span class="p">)</span>
+        <span class="n">symbol_synonyms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">}</span>
+        <span class="n">StateAlphabet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">fundamental_states</span><span class="o">=</span><span class="n">fundamental_states</span><span class="p">,</span>
+                <span class="n">no_data_symbol</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+                <span class="n">gap_symbol</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">polymorphic_states</span><span class="o">=</span><span class="n">polymorphic_states</span><span class="p">,</span>
+                <span class="n">ambiguous_states</span><span class="o">=</span><span class="n">ambiguous_states</span><span class="p">,</span>
+                <span class="n">symbol_synonyms</span><span class="o">=</span><span class="n">symbol_synonyms</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;DNA&quot;</span><span class="p">,</span>
+                <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;gap&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_state_as_attribute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">any_residue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unknown_state_symbol</span> <span class="o">=</span> <span class="s1">&#39;N&#39;</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## RnaStateAlphabet</span>
+
+<span class="k">class</span> <span class="nc">RnaStateAlphabet</span><span class="p">(</span><span class="n">StateAlphabet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fundamental_states</span> <span class="o">=</span> <span class="s2">&quot;ACGU&quot;</span>
+        <span class="n">polymorphic_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ambiguous_states</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;ACGU&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;AG&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;CU&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;AC&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;AU&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;GU&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;ACG&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;ACU&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;AGU&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;CGU&quot;</span> <span class="p">),</span>
+                <span class="p">)</span>
+        <span class="n">symbol_synonyms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">}</span>
+        <span class="n">StateAlphabet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">fundamental_states</span><span class="o">=</span><span class="n">fundamental_states</span><span class="p">,</span>
+                <span class="n">no_data_symbol</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+                <span class="n">gap_symbol</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">polymorphic_states</span><span class="o">=</span><span class="n">polymorphic_states</span><span class="p">,</span>
+                <span class="n">ambiguous_states</span><span class="o">=</span><span class="n">ambiguous_states</span><span class="p">,</span>
+                <span class="n">symbol_synonyms</span><span class="o">=</span><span class="n">symbol_synonyms</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;RNA&quot;</span><span class="p">,</span>
+                <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;gap&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_state_as_attribute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">any_residue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unknown_state_symbol</span> <span class="o">=</span> <span class="s1">&#39;N&#39;</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## NucleotideStateAlphabet</span>
+
+<span class="k">class</span> <span class="nc">NucleotideStateAlphabet</span><span class="p">(</span><span class="n">StateAlphabet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fundamental_states</span> <span class="o">=</span> <span class="s2">&quot;ACGTU&quot;</span>
+        <span class="n">polymorphic_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ambiguous_states</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;ACGTU&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;AG&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;CTU&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;AC&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;ATU&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;CG&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;GTU&quot;</span>  <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;ACG&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;ACTU&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;AGTU&quot;</span> <span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;CGTU&quot;</span> <span class="p">),</span>
+                <span class="p">)</span>
+        <span class="n">symbol_synonyms</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">}</span>
+        <span class="n">StateAlphabet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">fundamental_states</span><span class="o">=</span><span class="n">fundamental_states</span><span class="p">,</span>
+                <span class="n">no_data_symbol</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+                <span class="n">gap_symbol</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">polymorphic_states</span><span class="o">=</span><span class="n">polymorphic_states</span><span class="p">,</span>
+                <span class="n">ambiguous_states</span><span class="o">=</span><span class="n">ambiguous_states</span><span class="p">,</span>
+                <span class="n">symbol_synonyms</span><span class="o">=</span><span class="n">symbol_synonyms</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Nucleotide&quot;</span><span class="p">,</span>
+                <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;gap&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_state_as_attribute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">any_residue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unknown_state_symbol</span> <span class="o">=</span> <span class="s1">&#39;N&#39;</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## ProteinStateAlphabet</span>
+
+<span class="k">class</span> <span class="nc">ProteinStateAlphabet</span><span class="p">(</span><span class="n">StateAlphabet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fundamental_states</span> <span class="o">=</span> <span class="s2">&quot;ACDEFGHIKLMNPQRSTVWY*&quot;</span>
+        <span class="n">polymorphic_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ambiguous_states</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;EQ&quot;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;ACDEFGHIKLMNPQRSTVWY*&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+        <span class="n">symbol_synonyms</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">StateAlphabet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">fundamental_states</span><span class="o">=</span><span class="n">fundamental_states</span><span class="p">,</span>
+                <span class="n">no_data_symbol</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+                <span class="n">gap_symbol</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">polymorphic_states</span><span class="o">=</span><span class="n">polymorphic_states</span><span class="p">,</span>
+                <span class="n">ambiguous_states</span><span class="o">=</span><span class="n">ambiguous_states</span><span class="p">,</span>
+                <span class="n">symbol_synonyms</span><span class="o">=</span><span class="n">symbol_synonyms</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+                <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;gap&quot;</span>
+            <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;stop&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_state_as_attribute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">any_residue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unknown_state_symbol</span> <span class="o">=</span> <span class="s1">&#39;X&#39;</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## BinaryStateAlphabet</span>
+
+<span class="k">class</span> <span class="nc">BinaryStateAlphabet</span><span class="p">(</span><span class="n">StateAlphabet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">fundamental_states</span> <span class="o">=</span> <span class="s2">&quot;10&quot;</span>
+        <span class="k">if</span> <span class="n">allow_gaps</span><span class="p">:</span>
+            <span class="n">gap_symbol</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gap_symbol</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">polymorphic_states</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ambiguous_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">allow_missing</span><span class="p">:</span>
+            <span class="n">no_data_symbol</span> <span class="o">=</span> <span class="s2">&quot;?&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">no_data_symbol</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">symbol_synonyms</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">StateAlphabet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">fundamental_states</span><span class="o">=</span><span class="n">fundamental_states</span><span class="p">,</span>
+                <span class="n">no_data_symbol</span><span class="o">=</span><span class="n">no_data_symbol</span><span class="p">,</span>
+                <span class="n">gap_symbol</span><span class="o">=</span><span class="n">gap_symbol</span><span class="p">,</span>
+                <span class="n">polymorphic_states</span><span class="o">=</span><span class="n">polymorphic_states</span><span class="p">,</span>
+                <span class="n">ambiguous_states</span><span class="o">=</span><span class="n">ambiguous_states</span><span class="p">,</span>
+                <span class="n">symbol_synonyms</span><span class="o">=</span><span class="n">symbol_synonyms</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Binary&quot;</span><span class="p">,</span>
+                <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;gap&quot;</span>
+            <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;missing&quot;</span>
+            <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;stop&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attr_name</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_state_as_attribute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## RestrictionSitesStateAlphabet</span>
+
+<span class="k">class</span> <span class="nc">RestrictionSitesStateAlphabet</span><span class="p">(</span><span class="n">BinaryStateAlphabet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">BinaryStateAlphabet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="n">allow_gaps</span><span class="p">,</span> <span class="n">allow_missing</span><span class="o">=</span><span class="n">allow_missing</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## InfiniteSitesStateAlphabet</span>
+
+<span class="k">class</span> <span class="nc">InfiniteSitesStateAlphabet</span><span class="p">(</span><span class="n">BinaryStateAlphabet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">BinaryStateAlphabet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_gaps</span><span class="o">=</span><span class="n">allow_gaps</span><span class="p">,</span> <span class="n">allow_missing</span><span class="o">=</span><span class="n">allow_missing</span><span class="p">)</span>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## GLOBAL STATE ALPHABETS</span>
+
+<span class="n">DNA_STATE_ALPHABET</span>                <span class="o">=</span>  <span class="n">DnaStateAlphabet</span><span class="p">()</span>
+<span class="n">RNA_STATE_ALPHABET</span>                <span class="o">=</span>  <span class="n">RnaStateAlphabet</span><span class="p">()</span>
+<span class="n">NUCLEOTIDE_STATE_ALPHABET</span>         <span class="o">=</span>  <span class="n">NucleotideStateAlphabet</span><span class="p">()</span>
+<span class="n">BINARY_STATE_ALPHABET</span>             <span class="o">=</span>  <span class="n">BinaryStateAlphabet</span><span class="p">()</span>
+<span class="n">PROTEIN_STATE_ALPHABET</span>            <span class="o">=</span>  <span class="n">ProteinStateAlphabet</span><span class="p">()</span>
+<span class="n">RESTRICTION_SITES_STATE_ALPHABET</span>  <span class="o">=</span>  <span class="n">RestrictionSitesStateAlphabet</span><span class="p">()</span>
+<span class="n">INFINITE_SITES_STATE_ALPHABET</span>     <span class="o">=</span>  <span class="n">InfiniteSitesStateAlphabet</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">new_standard_state_alphabet</span><span class="p">(</span>
+        <span class="n">fundamental_state_symbols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">fundamental_state_symbols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fundamental_state_symbols</span> <span class="o">=</span> <span class="s2">&quot;0123456789&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">StateAlphabet</span><span class="p">(</span>
+            <span class="n">fundamental_states</span><span class="o">=</span><span class="n">fundamental_state_symbols</span><span class="p">,</span>
+            <span class="n">no_data_symbol</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+            <span class="n">gap_symbol</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+            <span class="c1"># polymorphic_states=polymorphic_states,</span>
+            <span class="c1"># ambiguous_states=ambiguous_states,</span>
+            <span class="c1"># symbol_synonyms=symbol_synonyms,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
+            <span class="n">case_sensitive</span><span class="o">=</span><span class="n">case_sensitive</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">state_iter</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+            <span class="n">attr_name</span> <span class="o">=</span> <span class="s2">&quot;gap&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">attr_name</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_state_as_attribute</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## Convenience Functions</span>
+
+<span class="k">def</span> <span class="nf">coerce_to_state_identities</span><span class="p">(</span><span class="n">state_alphabet</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="n">coerced_values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">StateIdentity</span><span class="p">):</span>
+            <span class="n">coerced_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">textprocessing</span><span class="o">.</span><span class="n">is_str_type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">state_alphabet</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">coerced_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coerced_values</span>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.charstatemodel</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

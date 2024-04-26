@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.calculate.treemeasure &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.calculate.treemeasure</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.calculate.treemeasure</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Statistics, metrics, measurements, and values calculated on (single) trees.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">phylogeneticdistance</span>
+
+<span class="n">EULERS_CONSTANT</span> <span class="o">=</span> <span class="mf">0.5772156649015328606065120900824024310421</span>
+
+<span class="c1">## legacy: will soon be deprecated</span>
+<div class="viewcode-block" id="PatristicDistanceMatrix">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.PatristicDistanceMatrix">[docs]</a>
+<span class="k">class</span> <span class="nc">PatristicDistanceMatrix</span><span class="p">(</span><span class="n">phylogeneticdistance</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+        <span class="n">phylogeneticdistance</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compile_from_tree</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="patristic_distance">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.patristic_distance">[docs]</a>
+<span class="k">def</span> <span class="nf">patristic_distance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">taxon1</span><span class="p">,</span> <span class="n">taxon2</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a tree with bipartitions encoded, and two taxa on that tree, returns the</span>
+<span class="sd">    patristic distance between the two. Much more inefficient than constructing</span>
+<span class="sd">    a PhylogeneticDistanceMatrix object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mrca</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">mrca</span><span class="p">(</span><span class="n">taxa</span><span class="o">=</span><span class="p">[</span><span class="n">taxon1</span><span class="p">,</span> <span class="n">taxon2</span><span class="p">],</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="n">is_bipartitions_updated</span><span class="p">)</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find_node</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">taxon</span> <span class="o">==</span> <span class="n">taxon1</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">mrca</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">+=</span> <span class="n">n</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parent_node</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find_node</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">taxon</span> <span class="o">==</span> <span class="n">taxon2</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">mrca</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">+=</span> <span class="n">n</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parent_node</span>
+    <span class="k">return</span> <span class="n">dist</span></div>
+
+
+<span class="c1">###########################################################################</span>
+<span class="c1">### Metrics -- Unary</span>
+
+<div class="viewcode-block" id="B1">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.B1">[docs]</a>
+<span class="k">def</span> <span class="nf">B1</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the B1 statistic: the reciprocal of the sum of the maximum</span>
+<span class="sd">    number of nodes between each interior node and tip over all internal</span>
+<span class="sd">    nodes excluding root.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">b1</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">nd_mi</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">_parent_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">child_nodes</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">_child_nodes</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">child_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nd_mi</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">continue</span>
+        <span class="n">mi</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nd_mi</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">child_nodes</span><span class="p">)</span>
+        <span class="n">mi</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">nd_mi</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="n">mi</span>
+        <span class="n">b1</span> <span class="o">+=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">mi</span>
+    <span class="k">return</span> <span class="n">b1</span></div>
+
+
+<div class="viewcode-block" id="colless_tree_imbalance">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.colless_tree_imbalance">[docs]</a>
+<span class="k">def</span> <span class="nf">colless_tree_imbalance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns Colless&#39; tree imbalance or I statistic: the sum of differences</span>
+<span class="sd">    of numbers of children in left and right subtrees over all internal</span>
+<span class="sd">    nodes. ``normalize`` specifies the normalization:</span>
+
+<span class="sd">        * &quot;max&quot; or True [DEFAULT]</span>
+<span class="sd">            normalized to maximum value for tree of</span>
+<span class="sd">            this size</span>
+<span class="sd">        * &quot;yule&quot;</span>
+<span class="sd">            normalized to the Yule model</span>
+<span class="sd">        * &quot;pda&quot;</span>
+<span class="sd">            normalized to the PDA (Proportional to Distinguishable</span>
+<span class="sd">            Arrangements) model</span>
+<span class="sd">        * None or False</span>
+<span class="sd">            no normalization</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">colless</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">num_leaves</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">subtree_leaves</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
+            <span class="n">subtree_leaves</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">num_leaves</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">total_leaves</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Colless&#39; tree imbalance statistic requires strictly bifurcating trees&quot;</span><span class="p">)</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="n">subtree_leaves</span><span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">subtree_leaves</span><span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">colless</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">right</span><span class="o">-</span><span class="n">left</span><span class="p">)</span>
+            <span class="n">subtree_leaves</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="n">right</span> <span class="o">+</span> <span class="n">left</span>
+    <span class="k">if</span> <span class="n">normalize</span> <span class="o">==</span> <span class="s2">&quot;yule&quot;</span><span class="p">:</span>
+        <span class="n">colless</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">colless</span> <span class="o">-</span> <span class="p">(</span><span class="n">num_leaves</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">num_leaves</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">num_leaves</span> <span class="o">*</span> <span class="p">(</span><span class="n">EULERS_CONSTANT</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">))))</span><span class="o">/</span><span class="n">num_leaves</span>
+    <span class="k">elif</span> <span class="n">normalize</span> <span class="o">==</span> <span class="s2">&quot;pda&quot;</span><span class="p">:</span>
+        <span class="n">colless</span> <span class="o">=</span> <span class="n">colless</span> <span class="o">/</span> <span class="nb">pow</span><span class="p">(</span><span class="n">num_leaves</span><span class="p">,</span> <span class="mf">3.0</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">normalize</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+        <span class="c1">## note that Mooers 1995 (Evolution 49(2):379-384)</span>
+        <span class="c1">## remarks that the correct normalization factor is</span>
+        <span class="c1">## 2/((num_leaves - 1) * (num_leaves -2))</span>
+        <span class="n">colless</span> <span class="o">=</span> <span class="n">colless</span> <span class="o">*</span> <span class="p">(</span><span class="mf">2.0</span><span class="o">/</span><span class="p">(</span><span class="n">num_leaves</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_leaves</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;``normalization`` accepts only None, True, False, &#39;yule&#39; or &#39;pda&#39; as argument values&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">colless</span></div>
+
+
+<div class="viewcode-block" id="pybus_harvey_gamma">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.pybus_harvey_gamma">[docs]</a>
+<span class="k">def</span> <span class="nf">pybus_harvey_gamma</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the gamma statistic of Pybus and Harvey (2000). This statistic</span>
+<span class="sd">    is used to test for constancy of birth and death rates over the course of</span>
+<span class="sd">    a phylogeny.  Under the pure-birth process, the statistic should follow</span>
+<span class="sd">    a standard Normal distibution: a Normal(mean=0, variance=1).</span>
+
+<span class="sd">    If the lengths of different paths to the node differ by more than ``prec``,</span>
+<span class="sd">        then a ValueError exception will be raised indicating deviation from</span>
+<span class="sd">        ultrametricty.</span>
+<span class="sd">    Raises a Value Error if the tree is not ultrametric, is non-binary, or has</span>
+<span class="sd">        only 2 leaves.</span>
+
+<span class="sd">    As a side effect a ``age`` attribute is added to the nodes of the tree.</span>
+
+<span class="sd">    Pybus and Harvey. 2000. &quot;Testing macro-evolutionary models using incomplete</span>
+<span class="sd">    molecular phylogenies.&quot; Proc. Royal Society Series B: Biological Sciences.</span>
+<span class="sd">    (267). 2267-2272</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># the equation is given by:</span>
+    <span class="c1">#   T = \sum_{j=2}^n (jg_j)</span>
+    <span class="c1">#   C = T \sqrt{\frac{1}{12(n-2)}}</span>
+    <span class="c1">#   C gamma = \frac{1}{n-2}\sum_{i=2}^{n-1} (\sum_{k=2}^i kg_k) - \frac{T}{2}</span>
+    <span class="c1"># where n is the number of taxa, and g_2 ... g_n is the vector of waiting</span>
+    <span class="c1">#   times between consecutive (in time, not along a branch) speciation times.</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">speciation_ages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">seed_node</span><span class="o">.</span><span class="n">age</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">calc_node_ages</span><span class="p">(</span><span class="n">ultrametricity_precision</span><span class="o">=</span><span class="n">prec</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">())</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">speciation_ages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Empty tree encountered&quot;</span><span class="p">)</span>
+    <span class="n">speciation_ages</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">older</span> <span class="o">=</span> <span class="n">speciation_ages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">age</span> <span class="ow">in</span> <span class="n">speciation_ages</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">older</span> <span class="o">-</span> <span class="n">age</span><span class="p">)</span>
+        <span class="n">older</span> <span class="o">=</span> <span class="n">age</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">older</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No internal nodes found (other than the root)&quot;</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">accum</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">list_index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">2</span>
+        <span class="n">T</span> <span class="o">+=</span> <span class="n">i</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="n">list_index</span><span class="p">])</span>
+        <span class="n">accum</span> <span class="o">+=</span> <span class="n">T</span>
+    <span class="n">list_index</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="n">T</span> <span class="o">+=</span> <span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">g</span><span class="p">[</span><span class="n">list_index</span><span class="p">]</span>
+    <span class="n">nmt</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mf">2.0</span>
+    <span class="n">numerator</span> <span class="o">=</span> <span class="n">accum</span><span class="o">/</span><span class="n">nmt</span> <span class="o">-</span> <span class="n">T</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">T</span><span class="o">*</span><span class="nb">pow</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">12</span><span class="o">*</span><span class="n">nmt</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">numerator</span><span class="o">/</span><span class="n">C</span></div>
+
+
+<div class="viewcode-block" id="N_bar">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.N_bar">[docs]</a>
+<span class="k">def</span> <span class="nf">N_bar</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the $\bar{N}$ statistic: the average number of nodes above a</span>
+<span class="sd">    terminal node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">leaf_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nbar</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">leaf_node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">leaf_node_iter</span><span class="p">():</span>
+        <span class="n">leaf_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">leaf_node</span><span class="o">.</span><span class="n">ancestor_iter</span><span class="p">(</span><span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">nbar</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">nbar</span><span class="p">)</span> <span class="o">/</span> <span class="n">leaf_count</span></div>
+
+
+<div class="viewcode-block" id="sackin_index">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.sackin_index">[docs]</a>
+<span class="k">def</span> <span class="nf">sackin_index</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the Sackin&#39;s index: the sum of the number of ancestors for each</span>
+<span class="sd">    tip of the tree. The larger the Sackin&#39;s index, the less balanced the</span>
+<span class="sd">    tree. ``normalize`` specifies the normalization:</span>
+
+<span class="sd">        * True [DEFAULT]</span>
+<span class="sd">            normalized to number of leaves; this results in a value</span>
+<span class="sd">            equivalent to that given by Tree.N_bar()</span>
+<span class="sd">        * &quot;yule&quot;</span>
+<span class="sd">            normalized to the Yule model</span>
+<span class="sd">        * &quot;pda&quot;</span>
+<span class="sd">            normalized to the PDA (Proportional to Distinguishable</span>
+<span class="sd">            Arrangements) model</span>
+<span class="sd">        * None or False</span>
+<span class="sd">            no normalization</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">leaf_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">num_anc</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">leaf_node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">leaf_node_iter</span><span class="p">():</span>
+        <span class="n">leaf_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">leaf_node</span><span class="o">.</span><span class="n">ancestor_iter</span><span class="p">(</span><span class="n">inclusive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">num_anc</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">normalize</span> <span class="o">==</span> <span class="s2">&quot;yule&quot;</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">leaf_count</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_anc</span> <span class="o">-</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">leaf_count</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span><span class="o">/</span><span class="n">leaf_count</span>
+    <span class="k">elif</span> <span class="n">normalize</span> <span class="o">==</span> <span class="s2">&quot;pda&quot;</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_anc</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="n">leaf_count</span><span class="p">,</span> <span class="mf">3.0</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_anc</span><span class="p">)</span><span class="o">/</span><span class="n">leaf_count</span>
+    <span class="k">elif</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_anc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;``normalization`` accepts only None, True, False, &#39;yule&#39; or &#39;pda&#39; as argument values&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="treeness">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.treeness">[docs]</a>
+<span class="k">def</span> <span class="nf">treeness</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the proportion of total tree length that is taken up by</span>
+<span class="sd">    internal branches.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">internal</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">external</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nd</span><span class="o">.</span><span class="n">_parent_node</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
+            <span class="n">external</span> <span class="o">+=</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">internal</span> <span class="o">+=</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span>
+    <span class="k">return</span> <span class="n">internal</span><span class="o">/</span><span class="p">(</span><span class="n">external</span> <span class="o">+</span> <span class="n">internal</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.calculate.treemeasure</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.datamodel.taxonmodel: Taxonomic Namespace Reference and Management &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.datamodel.treemodel: Trees" href="treemodel.html" />
+    <link rel="prev" title="dendropy.datamodel.basemodel: Core Infrastructure for Phylogenetic Data Objects" href="basemodel.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treemodel.html" title="dendropy.datamodel.treemodel: Trees"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="basemodel.html" title="dendropy.datamodel.basemodel: Core Infrastructure for Phylogenetic Data Objects"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.taxonmodel</span></code>: Taxonomic Namespace Reference and Management</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.datamodel.taxonmodel">
+<span id="dendropy-datamodel-taxonmodel-taxonomic-namespace-reference-and-management"></span><h1><a class="reference internal" href="#module-dendropy.datamodel.taxonmodel" title="dendropy.datamodel.taxonmodel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.taxonmodel</span></code></a>: Taxonomic Namespace Reference and Management<a class="headerlink" href="#module-dendropy.datamodel.taxonmodel" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="the-taxonnamespace-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> Class<a class="headerlink" href="#the-taxonnamespace-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.taxonmodel.</span></span><span class="sig-name descname"><span class="pre">TaxonNamespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="Link to this definition">¶</a></dt>
+<dd><p>A collection of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects representing a self-contained and complete
+domain of distinct operational taxonomic unit definitions.
+Provides the common semantic context in which operational taxonomic units
+referenced by various phylogenetic data objects (e.g., trees or alignments)
+can be related.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<em>positional arguments</em><em>, </em><em>optional</em>) – Accepts a single iterable as an optional positional argument.  If a
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object is passed as the positional argument, then
+clones or deep-copies of its member <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects will be added
+to this one.  If any other iterable is passed as the positional
+argument, then each string in the iterable will result in a new
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object being constructed and added to the namespace with
+the string as its label (name), while each Taxon object in the
+iterable will be added to the namespace directly.</p></li>
+<li><p><strong>**kwargs</strong> (<em>keyword arguments</em>) – <dl>
+<dt>label<span class="classifier">string</span></dt><dd><p>The label or name for this namespace.</p>
+</dd>
+<dt>is_mutable<span class="classifier">boolean, optional (default = <code class="docutils literal notranslate"><span class="pre">True</span></code>)</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), then <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects can be added to this
+namespace. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then adding <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects will result
+in an error.</p>
+</dd>
+<dt>is_case_sensitive<span class="classifier">boolean, optional (default = <code class="docutils literal notranslate"><span class="pre">False</span></code>)</span></dt><dd><p>Whether or not taxon names are considered case sensitive or
+insensitive.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>An empty <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> can be created (with optional) label and <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects added later:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;taxa&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t1</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span><span class="o">.</span><span class="n">add_taxon</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t2</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span><span class="o">.</span><span class="n">add_taxon</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span><span class="o">.</span><span class="n">add_taxon</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span>
+<span class="go">&lt;TaxonNamespace 0x106509090 &#39;taxa&#39;: [&lt;Taxon 0x10661f050 &#39;a&#39;&gt;, &lt;Taxon 0x10651c590 &#39;b&#39;&gt;, &lt;Taxon 0x106642a90 &#39;c&#39;&gt;]&gt;</span>
+</pre></div>
+</div>
+<p>Alternatively, an iterable can be passed in as an initializer, and all
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects will be added directly while, for each string, a new
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object will be created and added. So, the below are all equivalent
+to the above:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;taxa&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">taxa</span> <span class="o">=</span> <span class="p">[</span><span class="n">Taxon</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">taxonnamespace</span><span class="p">(</span><span class="n">taxa</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;taxa&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t1</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t2</span> <span class="o">=</span> <span class="n">Taxon</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxa</span> <span class="o">=</span> <span class="p">[</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">(</span><span class="n">taxa</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;taxa&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object is passed as the
+initializer argument, a <em>shallow</em> copy of the object is constructed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tns1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;taxa1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns1</span>
+<span class="go">&lt;TaxonNamespace 0x1097275d0 &#39;taxa1&#39;: [&lt;Taxon 0x109727610 &#39;a&#39;&gt;, &lt;Taxon 0x109727e10 &#39;b&#39;&gt;, &lt;Taxon 0x109727e90 &#39;c&#39;&gt;]&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">(</span><span class="n">tns1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns2</span>
+<span class="go">&lt;TaxonNamespace 0x109727d50 &#39;taxa1&#39;: [&lt;Taxon 0x109727610 &#39;a&#39;&gt;, &lt;Taxon 0x109727e10 &#39;b&#39;&gt;, &lt;Taxon 0x109727e90 &#39;c&#39;&gt;]&gt;</span>
+</pre></div>
+</div>
+<p>Thus, while “<code class="docutils literal notranslate"><span class="pre">tns1</span></code>” and “<code class="docutils literal notranslate"><span class="pre">tns2</span></code>” are independent collections, and
+addition/deletion of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances to one will not effect
+the other, the label of a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instance that is an element in
+one will of course effect the same instance if it is in the other:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tns1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tns2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Z&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tns1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Z</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tns2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Z</span>
+</pre></div>
+</div>
+<p>In contrast to actual data (i.e., the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects), alll
+metadata associated with “<code class="docutils literal notranslate"><span class="pre">tns2</span></code>” (i.e., the <a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.AnnotationSet" title="dendropy.datamodel.basemodel.AnnotationSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a> object,
+in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">TaxonNamespace.annotations</span></code> attribute), will be a full,
+independent deep-copy.</p>
+<p>If what is needed is a true deep-copy of the data of a particular
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object, including copies of the member
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances, then this can be achieved using
+<a class="reference external" href="https://docs.python.org/3/library/copy.html#copy.deepcopy" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">copy.deepcopy</span></code></a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;taxa1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns2</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tns1</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.__contains__">
+<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.__contains__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if Taxon object <code class="docutils literal notranslate"><span class="pre">taxon</span></code> is in self.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with index or slice given by <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.__len__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns number of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in this <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.accession_index">
+<span class="sig-name descname"><span class="pre">accession_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.accession_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.accession_index" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the accession index of <code class="docutils literal notranslate"><span class="pre">taxon</span></code>. Note that this may not be the
+same as the list index of the taxon if taxa have been deleted from the
+namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>taxon</strong> (<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>) – <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object for which to return the accession index.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>h</strong> (<em>integer</em>) – The accession index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.add_taxa">
+<span class="sig-name descname"><span class="pre">add_taxa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.add_taxa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.add_taxa" title="Link to this definition">¶</a></dt>
+<dd><p>Adds multiple <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects to self.</p>
+<p>Each <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in <code class="docutils literal notranslate"><span class="pre">taxa</span></code> that is not already in the collection of
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in this namespace is added to it. If any of the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects are already in the collection, then nothing happens. If the
+namespace is immutable, then TypeError is raised when trying
+to add <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>taxa</strong> (collections.Iterable [<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>]) – A list of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects to be accessioned or registered in this
+collection.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e. <code class="xref py py-attr docutils literal notranslate"><span class="pre">TaxonNamespace.is_mutable</span></code> is
+    <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.add_taxon">
+<span class="sig-name descname"><span class="pre">add_taxon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.add_taxon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.add_taxon" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object to <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">taxon</span></code> is not already in the collection of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in this
+namespace, and this namespace is mutable, it is added to the
+collection. If it is already in the collection, then nothing happens.
+If it is not already in the collection, but the namespace is not
+mutable, then TypeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>taxon</strong> (<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>) – The <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object to be accessioned or registered in this
+collection.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e.
+    <code class="xref py py-attr docutils literal notranslate"><span class="pre">TaxonNamespace.is_mutable</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.all_taxa_bitmask">
+<span class="sig-name descname"><span class="pre">all_taxa_bitmask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.all_taxa_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.all_taxa_bitmask" title="Link to this definition">¶</a></dt>
+<dd><p>Returns mask of all taxa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>h</strong> (<em>integer</em>) – Bitmask spanning all <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in self.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.append" title="Link to this definition">¶</a></dt>
+<dd><p>LEGACY. Use ‘add_taxon()’ instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.bitmask_as_newick_string">
+<span class="sig-name descname"><span class="pre">bitmask_as_newick_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitmask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_spaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quote_underscores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.bitmask_as_newick_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.bitmask_as_newick_string" title="Link to this definition">¶</a></dt>
+<dd><p>Represents a split as a newick string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bitmask</strong> (<em>integer</em>) – Split hash bitmask value.</p></li>
+<li><p><strong>preserve_spaces</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), then spaces in taxon labels will be replaced
+by underscores. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then taxon labels with spaces will be
+wrapped in quotes.</p></li>
+<li><p><strong>quote_underscores</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), then taxon labels with underscores will be
+wrapped in quotes. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the labels will not be wrapped
+in quotes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>string</em>) – NEWICK representation of split specified by <code class="docutils literal notranslate"><span class="pre">bitmask</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.bitmask_taxa_list">
+<span class="sig-name descname"><span class="pre">bitmask_taxa_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bitmask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.bitmask_taxa_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.bitmask_taxa_list" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects represented by split
+<code class="docutils literal notranslate"><span class="pre">bitmask</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bitmask</strong> (<em>integer</em>) – Split hash bitmask value.</p></li>
+<li><p><strong>index</strong> (<em>integer</em><em>, </em><em>optional</em>) – Start from this <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object instead of the first
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in the collection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>taxa</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> [<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>]) – List of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects specified or spanned by
+<code class="docutils literal notranslate"><span class="pre">bitmask</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Removes all <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects from this namespace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.description">
+<span class="sig-name descname"><span class="pre">description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.description" title="Link to this definition">¶</a></dt>
+<dd><p>Returns description of object, up to level <code class="docutils literal notranslate"><span class="pre">depth</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.discard_taxon_label">
+<span class="sig-name descname"><span class="pre">discard_taxon_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_match_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.discard_taxon_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.discard_taxon_label" title="Link to this definition">¶</a></dt>
+<dd><p>Removes <em>all</em> <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with label matching <code class="docutils literal notranslate"><span class="pre">label</span></code> from the
+collection in this namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>string-like</em>) – The value of the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object label to remove.</p></li>
+<li><p><strong>is_case_sensitive</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or bool) – By default, label lookup will use the
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> to decide
+whether or not to respect case when trying to match labels to
+operational taxonomic unit names represented by <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+instances. This can be over-ridden by specifying
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(forcing case-insensitivity).</p></li>
+<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the entire namespace will be searched and <em>all</em>
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with the matching labels will be remove. If
+<code class="docutils literal notranslate"><span class="pre">True</span></code> then only the first <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with a matching
+label will be removed (i.e., the entire namespace is not searched).
+Setting this argument to <code class="docutils literal notranslate"><span class="pre">True</span></code> will be more efficient and should
+be preferred if there are no redundant or duplicate labels.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon_label" title="dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TaxonNamespace.remove_taxon_label</span></code></a></dt><dd><p>Similar, but raises an error if no matching <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects are found.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.findall">
+<span class="sig-name descname"><span class="pre">findall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.findall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.findall" title="Link to this definition">¶</a></dt>
+<dd><p>Return list of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object(s) with label matching <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>string-like</em>) – The value which the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute of the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object(s)
+to be returned must match.</p></li>
+<li><p><strong>is_case_sensitive</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or bool) – By default, label lookup will use the
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> to decide
+whether or not to respect case when trying to match labels to
+operational taxonomic unit names represented by <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+instances. This can be over-ridden by specifying
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(forcing case-insensitivity).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>taxa</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> [<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>]) – A list containing zero or more <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with labels
+matching <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxa">
+<span class="sig-name descname"><span class="pre">get_taxa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_match_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.get_taxa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxa" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves list of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with given labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [string]) – Any <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in this namespace collection that has a label
+attribute that matches any value in <code class="docutils literal notranslate"><span class="pre">labels</span></code> will be included in
+the list returned.</p></li>
+<li><p><strong>is_case_sensitive</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or bool) – By default, label lookup will use the
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> to decide
+whether or not to respect case when trying to match labels to
+operational taxonomic unit names represented by <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+instances. This can be over-ridden by specifying
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(forcing case-insensitivity).</p></li>
+<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then for <em>each</em> label in <code class="docutils literal notranslate"><span class="pre">labels</span></code>, the entire namespace
+will be searched and <em>all</em> <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with the matches
+will be added to the lest. If <code class="docutils literal notranslate"><span class="pre">True</span></code> then, for each label in
+<code class="docutils literal notranslate"><span class="pre">labels</span></code>, only the first <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with a matching
+label will be added to the list (i.e., the entire namespace is not
+searched). Setting this argument to <code class="docutils literal notranslate"><span class="pre">True</span></code> will be more
+efficient and should be preferred if there are no redundant or
+duplicate labels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>taxa</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> [<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>]) – A list containing zero or more <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with labels
+matching <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxa_bitmask">
+<span class="sig-name descname"><span class="pre">get_taxa_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.get_taxa_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxa_bitmask" title="Link to this definition">¶</a></dt>
+<dd><p>LEGACY. Use ‘taxa_bitmask’ instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxon">
+<span class="sig-name descname"><span class="pre">get_taxon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.get_taxon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxon" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with the given label.</p>
+<p>If multiple <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects exist with labels that match
+<code class="docutils literal notranslate"><span class="pre">label</span></code>, then only the first one is returned.  If no <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+object is found in this namespace with the specified critieria,
+<code class="docutils literal notranslate"><span class="pre">None</span></code> is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>string-like</em>) – The value which the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute of the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object
+to be returned must match.</p></li>
+<li><p><strong>is_case_sensitive</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or bool) – By default, label lookup will use the
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> to decide
+whether or not to respect case when trying to match labels to
+operational taxonomic unit names represented by <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+instances. This can be over-ridden by specifying
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(forcing case-insensitivity).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>taxon</strong> (<em>|Taxon| object or |None|</em>) – The first <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in this namespace collection with a label
+matching <code class="docutils literal notranslate"><span class="pre">label</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no such <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object exists.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.has_taxa_labels">
+<span class="sig-name descname"><span class="pre">has_taxa_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.has_taxa_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.has_taxa_labels" title="Link to this definition">¶</a></dt>
+<dd><p>Checks for presence of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with the given labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [string]) – The values of the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object labels to match.</p></li>
+<li><p><strong>is_case_sensitive</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or bool) – By default, label lookup will use the
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> to decide
+whether or not to respect case when trying to match labels to
+operational taxonomic unit names represented by <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+instances. This can be over-ridden by specifying
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(forcing case-insensitivity).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>b</strong> (<em>boolean</em>) – Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if, for every element in the iterable <code class="docutils literal notranslate"><span class="pre">labels</span></code>,
+there is at least one <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object that has a label attribute
+that matches this. <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.has_taxon_label">
+<span class="sig-name descname"><span class="pre">has_taxon_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.has_taxon_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.has_taxon_label" title="Link to this definition">¶</a></dt>
+<dd><p>Checks for presence of a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with the given label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>string-like</em>) – The value of the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object label to match.</p></li>
+<li><p><strong>is_case_sensitive</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or bool) – By default, label lookup will use the
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> to decide
+whether or not to respect case when trying to match labels to
+operational taxonomic unit names represented by <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+instances. This can be over-ridden by specifying
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(forcing case-insensitivity).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>b</strong> (<em>boolean</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is at least one <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in this namespace
+with a label matching the value of <code class="docutils literal notranslate"><span class="pre">label</span></code>. Otherwise, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.label_taxon_map">
+<span class="sig-name descname"><span class="pre">label_taxon_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.label_taxon_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.label_taxon_map" title="Link to this definition">¶</a></dt>
+<dd><p>Returns dictionary with taxon labels as keys and corresponding <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects as values.</p>
+<p>If the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> is currently case-insensitive, then the
+dictionary returned will have case-insensitive keys, other the
+dictionary will be case-sensitive. You can override this by explicitly
+specifying <code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>No attempt is made to handle collisions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d</strong> (<em>dictonary-like</em>) – Dictionary with <code class="xref py py-attr docutils literal notranslate"><span class="pre">Taxon.label</span></code> values of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in
+<code class="docutils literal notranslate"><span class="pre">self</span></code> as keys and corresponding <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects as values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.labels" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of labels of all <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>labels</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> [string]) – List of <code class="xref py py-attr docutils literal notranslate"><span class="pre">Taxon.label</span></code> values of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in
+<code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.new_taxa">
+<span class="sig-name descname"><span class="pre">new_taxa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.new_taxa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.new_taxa" title="Link to this definition">¶</a></dt>
+<dd><p>Creates and add a new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> with corresponding label for each label
+in <code class="docutils literal notranslate"><span class="pre">labels</span></code>. Returns list of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>labels</strong> (<code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [string]) – The values of the <code class="docutils literal notranslate"><span class="pre">label</span></code> attributes of the new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects to
+be created, added to this namespace collection, and returned.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>taxa</strong> (<code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>]) – A list of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects created and added.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e.
+    <code class="xref py py-attr docutils literal notranslate"><span class="pre">TaxonNamespace.is_mutable</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.new_taxon">
+<span class="sig-name descname"><span class="pre">new_taxon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.new_taxon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.new_taxon" title="Link to this definition">¶</a></dt>
+<dd><p>Creates, adds, and returns a new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with corresponding
+label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>string</em><em> or </em><em>string-like</em>) – The name or label of the new operational taxonomic unit concept.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>taxon</strong> (<em>|Taxon|</em>) – The new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object,</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon">
+<span class="sig-name descname"><span class="pre">remove_taxon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.remove_taxon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon" title="Link to this definition">¶</a></dt>
+<dd><p>Removes specified <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object from the collection in this namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>taxon</strong> (a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object) – The <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object to be removed.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">taxon</span></code> is not in the collection of this namespace.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon_label">
+<span class="sig-name descname"><span class="pre">remove_taxon_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_match_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.remove_taxon_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon_label" title="Link to this definition">¶</a></dt>
+<dd><p>Removes <em>all</em> <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with label matching <code class="docutils literal notranslate"><span class="pre">label</span></code> from the
+collection in this namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>string-like</em>) – The value of the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object label to remove.</p></li>
+<li><p><strong>is_case_sensitive</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or bool) – By default, label lookup will use the
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> to decide
+whether or not to respect case when trying to match labels to
+operational taxonomic unit names represented by <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+instances. This can be over-ridden by specifying
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(forcing case-insensitivity).</p></li>
+<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the entire namespace will be searched and <em>all</em>
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with the matching labels will be remove. If
+<code class="docutils literal notranslate"><span class="pre">True</span></code> then only the first <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with a matching
+label will be removed (i.e., the entire namespace is not searched).
+Setting this argument to <code class="docutils literal notranslate"><span class="pre">True</span></code> will be more efficient and should
+be preferred if there are no redundant or duplicate labels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#LookupError" title="(in Python v3.12)"><strong>LookupError</strong></a> – If no <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects are found with matching label(s).</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">TaxonNamespace.discard_taxon_labels</span></code></dt><dd><p>Similar, but does not raise an error if no matching <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects are found.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.require_taxon">
+<span class="sig-name descname"><span class="pre">require_taxon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.require_taxon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.require_taxon" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with the given label, creating it if
+necessary.</p>
+<p>Retrieves a Taxon object with the label, <code class="docutils literal notranslate"><span class="pre">label</span></code>.
+If multiple <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects exist with labels that match
+<code class="docutils literal notranslate"><span class="pre">label</span></code>, then only the first one is returned.  If no such
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object exists in the current namespace and the
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> is NOT mutable, an exception is raised.  If no
+such <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object exists in the current namespace and
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> is mutable, then a new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> is
+created, added, and returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>string-like</em>) – The value which the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute of the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object
+to be returned must match.</p></li>
+<li><p><strong>is_case_sensitive</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or bool) – By default, label lookup will use the
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> to decide
+whether or not to respect case when trying to match labels to
+operational taxonomic unit names represented by <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+instances. This can be over-ridden by specifying
+<code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(forcing case-insensitivity).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>taxon</strong> (<em>|Taxon| object or |None|</em>) – A <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in this namespace collection with a label
+matching <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If no <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object is currently in the collection with a label
+    matching the input <code class="docutils literal notranslate"><span class="pre">label</span></code> and the <code class="docutils literal notranslate"><span class="pre">is_mutable</span></code> attribute of self
+    is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.reverse">
+<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.reverse" title="Link to this definition">¶</a></dt>
+<dd><p>Reverses order of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.sort" title="Link to this definition">¶</a></dt>
+<dd><p>Sorts <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in collection. If <code class="docutils literal notranslate"><span class="pre">key</span></code> is not given, defaults
+to sorting by label (i.e., <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">lambda</span> <span class="pre">x:</span> <span class="pre">x.label</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>key function object</em><em>, </em><em>optional</em>) – Function that takes a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object as an argument and
+returns the value that determines its sort order. Defaults to
+sorting by label.</p></li>
+<li><p><strong>reverse</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, sort will be in reverse order.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.split_as_newick_string">
+<span class="sig-name descname"><span class="pre">split_as_newick_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_spaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quote_underscores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.split_as_newick_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.split_as_newick_string" title="Link to this definition">¶</a></dt>
+<dd><p>Represents a split as a newick string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bitmask</strong> (<em>integer</em>) – Split hash bitmask value.</p></li>
+<li><p><strong>preserve_spaces</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), then spaces in taxon labels will be replaced
+by underscores. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then taxon labels with spaces will be
+wrapped in quotes.</p></li>
+<li><p><strong>quote_underscores</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), then taxon labels with underscores will be
+wrapped in quotes. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the labels will not be wrapped
+in quotes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>string</em>) – NEWICK representation of split specified by <code class="docutils literal notranslate"><span class="pre">bitmask</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.taxa_bipartition">
+<span class="sig-name descname"><span class="pre">taxa_bipartition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.taxa_bipartition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.taxa_bipartition" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a bipartition that represents all taxa specified by
+keyword-specified list of taxon objects (<code class="docutils literal notranslate"><span class="pre">taxa=</span></code>) or labels
+(<code class="docutils literal notranslate"><span class="pre">labels=</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>keyword arguments</em>) – <p>Requires one of:</p>
+<blockquote>
+<div><dl>
+<dt>taxa<span class="classifier"><code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>]</span></dt><dd><p>Iterable of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects.</p>
+</dd>
+<dt>labels<span class="classifier"><code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [string]</span></dt><dd><p>Iterable of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> label values.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>b</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> [integer]) – List of split hash bitmask values for specified <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.taxa_bitmask">
+<span class="sig-name descname"><span class="pre">taxa_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.taxa_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.taxa_bitmask" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the list of split hash bitmask values representing all taxa
+specified by keyword-specified list of taxon objects (<code class="docutils literal notranslate"><span class="pre">taxa=</span></code>) or
+labels (<code class="docutils literal notranslate"><span class="pre">labels=</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>keyword arguments</em>) – <p>Requires one of:</p>
+<blockquote>
+<div><dl>
+<dt>taxa<span class="classifier"><code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>]</span></dt><dd><p>Iterable of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects.</p>
+</dd>
+<dt>labels<span class="classifier"><code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [string]</span></dt><dd><p>Iterable of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> label values.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>b</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> [integer]) – List of split hash bitmask values for specified <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.taxon_bitmask">
+<span class="sig-name descname"><span class="pre">taxon_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.taxon_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.taxon_bitmask" title="Link to this definition">¶</a></dt>
+<dd><p>Returns bitmask value of split hash for split subtending node with
+<code class="docutils literal notranslate"><span class="pre">taxon</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>taxon</strong> (<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>) – <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object for which to calculate split hash bitmask.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>h</strong> (<em>integer</em>) – Split hash bitmask value for node associated with <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object <code class="docutils literal notranslate"><span class="pre">taxon</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespace.taxon_namespace_scoped_copy">
+<span class="sig-name descname"><span class="pre">taxon_namespace_scoped_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespace.taxon_namespace_scoped_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.taxon_namespace_scoped_copy" title="Link to this definition">¶</a></dt>
+<dd><p>Cloning level: 1.
+Taxon-namespace-scoped copy: All member objects are full independent
+instances, <em>except</em> for <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> and <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects: these are preserved as references.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-taxon-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> Class<a class="headerlink" href="#the-taxon-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.Taxon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.taxonmodel.</span></span><span class="sig-name descname"><span class="pre">Taxon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#Taxon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.Taxon" title="Link to this definition">¶</a></dt>
+<dd><p>A taxon associated with a sequence or a node on a tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (string or <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object) – Label or name of this operational taxonomic unit concept. If a
+string, then the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> is set to this value.
+If a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object, then the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">self</span></code> is
+set to the same value as the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute the other
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object and all annotations/metadata are copied.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.Taxon.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#Taxon.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.Taxon.__str__" title="Link to this definition">¶</a></dt>
+<dd><p>String representation of self = taxon name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.Taxon.description">
+<span class="sig-name descname"><span class="pre">description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#Taxon.description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.Taxon.description" title="Link to this definition">¶</a></dt>
+<dd><p>Returns description of object, up to level <code class="docutils literal notranslate"><span class="pre">depth</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.Taxon.taxon_namespace_scoped_copy">
+<span class="sig-name descname"><span class="pre">taxon_namespace_scoped_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#Taxon.taxon_namespace_scoped_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.Taxon.taxon_namespace_scoped_copy" title="Link to this definition">¶</a></dt>
+<dd><p>Cloning level: 1.
+Taxon-namespace-scoped copy: All member objects are full independent
+instances, <em>except</em> for <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> and <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects: these are preserved as references.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-taxonnamespaceassociated-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated" title="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated</span></code></a> Class<a class="headerlink" href="#the-taxonnamespaceassociated-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.taxonmodel.</span></span><span class="sig-name descname"><span class="pre">TaxonNamespaceAssociated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespaceAssociated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated" title="Link to this definition">¶</a></dt>
+<dd><p>Provides infrastructure for the maintenance of references to taxa.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.migrate_taxon_namespace">
+<span class="sig-name descname"><span class="pre">migrate_taxon_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon_namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unify_taxa_by_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_mapping_memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespaceAssociated.migrate_taxon_namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.migrate_taxon_namespace" title="Link to this definition">¶</a></dt>
+<dd><p>Move this object and all members to a new operational taxonomic unit
+concept namespace scope.</p>
+<p>Current <code class="xref py py-attr docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code> value will be replaced with value
+given in <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> if this is not <code class="docutils literal notranslate"><span class="pre">None</span></code>, or a new
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object. Following this,
+<code class="docutils literal notranslate"><span class="pre">reconstruct_taxon_namespace()</span></code> will be called: each distinct
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object associated with <code class="docutils literal notranslate"><span class="pre">self</span></code> or members of <code class="docutils literal notranslate"><span class="pre">self</span></code> that
+is not alread in <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> will be replaced with a new
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object that will be created with the same label and
+added to <code class="xref py py-attr docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code>.  Calling this method results in
+the object (and all its member objects) being associated with a new,
+independent taxon namespace.</p>
+<p>Label mapping case sensitivity follows the
+<code class="docutils literal notranslate"><span class="pre">self.taxon_namespace.is_case_sensitive</span></code> setting. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code> and <code class="docutils literal notranslate"><span class="pre">unify_taxa_by_label</span></code> is also <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the
+establishment of correspondence between <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the
+old and new namespaces with be based on case-insensitive matching of
+labels. E.g., if there are four <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with labels
+‘Foo’, ‘Foo’, ‘FOO’, and ‘FoO’ in the old namespace, then all objects
+that reference these will reference a single new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object
+in the new namespace (with a label some existing casing variant of
+‘foo’). If <code class="docutils literal notranslate"><span class="pre">True</span></code>: if <code class="docutils literal notranslate"><span class="pre">unify_taxa_by_label</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with labels identical except in case will be
+considered distinct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>taxon_namespace</strong> (<a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>) – The <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> into the scope of which this object
+will be moved.</p></li>
+<li><p><strong>unify_taxa_by_label</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then references to distinct <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with
+identical labels in the current namespace will be replaced with a
+reference to a single <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in the new namespace.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>: references to distinct <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects will
+remain distinct, even if the labels are the same.</p></li>
+<li><p><strong>taxon_mapping_memo</strong> (<em>dictionary</em>) – Similar to <code class="docutils literal notranslate"><span class="pre">memo</span></code> of deepcopy, this is a dictionary that maps
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the old namespace to corresponding
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the new namespace. Mostly for interal
+use when migrating complex data to a new namespace. Note that
+any mappings here take precedence over all other options: if a
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in the old namespace is found in this
+dictionary, the counterpart in the new namespace will be whatever
+value is mapped, regardless of, e.g. label values.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Use this method to move an object from one taxon namespace to
+another.</p>
+<p>For example, to get a copy of an object associated with another taxon
+namespace and associate it with a different namespace:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get handle to the new TaxonNamespace</span>
+<span class="n">other_taxon_namespace</span> <span class="o">=</span> <span class="n">some_other_data</span><span class="o">.</span><span class="n">taxon_namespace</span>
+
+<span class="c1"># Get a taxon-namespace scoped copy of a tree</span>
+<span class="c1"># in another namespace</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span>
+
+<span class="c1"># Replace taxon namespace of copy</span>
+<span class="n">t2</span><span class="o">.</span><span class="n">migrate_taxon_namespace</span><span class="p">(</span><span class="n">other_taxon_namespace</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also use this method to get a copy of a structure and then
+move it to a new namespace:</p>
+<blockquote>
+<div><p>t2 = Tree(t1)
+t2.migrate_taxon_namespace(TaxonNamespace())</p>
+<p># Note: the same effect can be achived by:
+t3 = copy.deepcopy(t1)</p>
+</div></blockquote>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reconstruct_taxon_namespace" title="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reconstruct_taxon_namespace"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reconstruct_taxon_namespace</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.poll_taxa">
+<span class="sig-name descname"><span class="pre">poll_taxa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespaceAssociated.poll_taxa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.poll_taxa" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a set populated with all of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances associated
+with <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.12)"><em>set</em></a><em>(</em><em>)</em>) – Set to populate. If not specified, a new one will be created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>taxa</strong> (<em>set[|Taxon|]</em>) – Set of taxa associated with <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.purge_taxon_namespace">
+<span class="sig-name descname"><span class="pre">purge_taxon_namespace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespaceAssociated.purge_taxon_namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.purge_taxon_namespace" title="Link to this definition">¶</a></dt>
+<dd><p>Remove all <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances in <code class="docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code> that are
+not associated with <code class="docutils literal notranslate"><span class="pre">self</span></code> or any item in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reconstruct_taxon_namespace">
+<span class="sig-name descname"><span class="pre">reconstruct_taxon_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unify_taxa_by_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_mapping_memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespaceAssociated.reconstruct_taxon_namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reconstruct_taxon_namespace" title="Link to this definition">¶</a></dt>
+<dd><p>Repopulates the current taxon namespace with new taxon objects,
+preserving labels. Each distinct <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object associated with
+<code class="docutils literal notranslate"><span class="pre">self</span></code> or members of <code class="docutils literal notranslate"><span class="pre">self</span></code> that is not already in
+<code class="docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code> will be replaced with a new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+object that will be created with the same label and added to
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code>.</p>
+<p>Label mapping case sensitivity follows the
+<code class="docutils literal notranslate"><span class="pre">self.taxon_namespace.is_case_sensitive</span></code> setting. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code> and <code class="docutils literal notranslate"><span class="pre">unify_taxa_by_label</span></code> is also <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the
+establishment of correspondence between <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the
+old and new namespaces with be based on case-insensitive matching of
+labels. E.g., if there are four <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with labels
+‘Foo’, ‘Foo’, ‘FOO’, and ‘FoO’ in the old namespace, then all objects
+that reference these will reference a single new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object
+in the new namespace (with a label some existing casing variant of
+‘foo’). If <code class="docutils literal notranslate"><span class="pre">True</span></code>: if <code class="docutils literal notranslate"><span class="pre">unify_taxa_by_label</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with labels identical except in case will be
+considered distinct.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Existing <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code> are <em>not</em>
+removed. This method should thus only be called <em>only</em> when
+<code class="docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code> has been changed. In fact, typical usage would
+not involve calling this method directly, but rather through</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unify_taxa_by_label</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then references to distinct <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with
+identical labels in the current namespace will be replaced with a
+reference to a single <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in the new namespace.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>: references to distinct <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects will
+remain distinct, even if the labels are the same.</p></li>
+<li><p><strong>taxon_mapping_memo</strong> (<em>dictionary</em>) – Similar to <code class="docutils literal notranslate"><span class="pre">memo</span></code> of deepcopy, this is a dictionary that maps
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the old namespace to corresponding
+<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the new namespace. Mostly for interal
+use when migrating complex data to a new namespace.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reindex_subcomponent_taxa">
+<span class="sig-name descname"><span class="pre">reindex_subcomponent_taxa</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespaceAssociated.reindex_subcomponent_taxa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reindex_subcomponent_taxa" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Use <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reconstruct_taxon_namespace" title="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reconstruct_taxon_namespace"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reconstruct_taxon_namespace</span></code></a> instead.
+Derived classes should override this to ensure that their various
+components, attributes and members all refer to the same <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>
+object as <code class="docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code>, and that <code class="docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code> has all
+the <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the various members.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reindex_taxa">
+<span class="sig-name descname"><span class="pre">reindex_taxa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespaceAssociated.reindex_taxa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reindex_taxa" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Use <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.migrate_taxon_namespace" title="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.migrate_taxon_namespace"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">migrate_taxon_namespace()</span></code></a> instead.
+Rebuilds <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> from scratch, or assigns <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects from
+given <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> based on label values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.update_taxon_namespace">
+<span class="sig-name descname"><span class="pre">update_taxon_namespace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/taxonmodel.html#TaxonNamespaceAssociated.update_taxon_namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.update_taxon_namespace" title="Link to this definition">¶</a></dt>
+<dd><p>All <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects associated with <code class="docutils literal notranslate"><span class="pre">self</span></code> or members of <code class="docutils literal notranslate"><span class="pre">self</span></code>
+that are not in <code class="docutils literal notranslate"><span class="pre">self.taxon_namespace</span></code> will be added. Note that, unlike
+<code class="docutils literal notranslate"><span class="pre">reconstruct_taxon_namespace</span></code>, no new <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects
+will be created.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.taxonmodel</span></code>: Taxonomic Namespace Reference and Management</a><ul>
+<li><a class="reference internal" href="#the-taxonnamespace-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.__contains__"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.__contains__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.__getitem__"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.__getitem__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.__len__"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.__len__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.accession_index"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.accession_index</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.add_taxa"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.add_taxa</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.add_taxon"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.add_taxon</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.all_taxa_bitmask"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.all_taxa_bitmask</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.append"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.append</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.bitmask_as_newick_string"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.bitmask_as_newick_string</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.bitmask_taxa_list"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.bitmask_taxa_list</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.clear"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.clear</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.description"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.description</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.discard_taxon_label"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.discard_taxon_label</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.findall"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.findall</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxa"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.get_taxa</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxa_bitmask"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.get_taxa_bitmask</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.get_taxon"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.get_taxon</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.has_taxa_labels"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.has_taxa_labels</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.has_taxon_label"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.has_taxon_label</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.label_taxon_map"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.label_taxon_map</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.labels"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.labels</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.new_taxa"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.new_taxa</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.new_taxon"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.new_taxon</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.remove_taxon</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.remove_taxon_label"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.remove_taxon_label</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.require_taxon"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.require_taxon</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.reverse"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.reverse</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.sort"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.sort</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.split_as_newick_string"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.split_as_newick_string</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.taxa_bipartition"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.taxa_bipartition</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.taxa_bitmask"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.taxa_bitmask</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.taxon_bitmask"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.taxon_bitmask</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace.taxon_namespace_scoped_copy"><code class="docutils literal notranslate"><span class="pre">TaxonNamespace.taxon_namespace_scoped_copy</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-taxon-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon"><code class="docutils literal notranslate"><span class="pre">Taxon</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon.__str__"><code class="docutils literal notranslate"><span class="pre">Taxon.__str__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon.description"><code class="docutils literal notranslate"><span class="pre">Taxon.description</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon.taxon_namespace_scoped_copy"><code class="docutils literal notranslate"><span class="pre">Taxon.taxon_namespace_scoped_copy</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-taxonnamespaceassociated-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated"><code class="docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.migrate_taxon_namespace"><code class="docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated.migrate_taxon_namespace</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.poll_taxa"><code class="docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated.poll_taxa</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.purge_taxon_namespace"><code class="docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated.purge_taxon_namespace</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reconstruct_taxon_namespace"><code class="docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated.reconstruct_taxon_namespace</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reindex_subcomponent_taxa"><code class="docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated.reindex_subcomponent_taxa</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.reindex_taxa"><code class="docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated.reindex_taxa</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated.update_taxon_namespace"><code class="docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated.update_taxon_namespace</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="basemodel.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.basemodel</span></code>: Core Infrastructure for Phylogenetic Data Objects</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="treemodel.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.treemodel</span></code>: Trees</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treemodel.html" title="dendropy.datamodel.treemodel: Trees"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="basemodel.html" title="dendropy.datamodel.basemodel: Core Infrastructure for Phylogenetic Data Objects"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.taxonmodel</span></code>: Taxonomic Namespace Reference and Management</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

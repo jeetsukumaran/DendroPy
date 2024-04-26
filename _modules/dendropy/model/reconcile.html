@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.model.reconcile &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.model.reconcile</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.model.reconcile</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes and Methods for working with tree reconciliation, fitting, embedding,</span>
+<span class="sd">contained/containing etc.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">coalescent</span>
+
+<div class="viewcode-block" id="ContainingTree">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree">[docs]</a>
+<span class="k">class</span> <span class="nc">ContainingTree</span><span class="p">(</span><span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A &quot;containing tree&quot; is a (usually rooted) tree data structure within which</span>
+<span class="sd">    other trees are &quot;contained&quot;. For example, species trees and their contained</span>
+<span class="sd">    gene trees; host trees and their contained parasite trees; biogeographical</span>
+<span class="sd">    &quot;area&quot; trees and their contained species or taxon trees.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">containing_tree</span><span class="p">,</span>
+            <span class="n">contained_taxon_namespace</span><span class="p">,</span>
+            <span class="n">contained_to_containing_taxon_map</span><span class="p">,</span>
+            <span class="n">contained_trees</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">fit_containing_edge_lengths</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">collapse_empty_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">ultrametricity_precision</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">ignore_root_deep_coalescences</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        __init__ converts ``self`` to ContainingTree class, embedding the trees</span>
+<span class="sd">        given in the list, ``contained_trees.``</span>
+
+
+<span class="sd">        Mandatory Arguments:</span>
+
+<span class="sd">            ``containing_tree``</span>
+<span class="sd">                A |Tree| or |Tree|-like object that describes the topological</span>
+<span class="sd">                constraints or conditions of the containing tree (e.g., species,</span>
+<span class="sd">                host, or biogeographical area trees).</span>
+
+<span class="sd">            ``contained_taxon_namespace``</span>
+<span class="sd">                A |TaxonNamespace| object that will be used to manage the taxa of</span>
+<span class="sd">                the contained trees.</span>
+
+<span class="sd">            ``contained_to_containing_taxon_map``</span>
+<span class="sd">                A |TaxonNamespaceMapping| object mapping |Taxon| objects in the</span>
+<span class="sd">                contained |TaxonNamespace| to corresponding |Taxon| objects in the</span>
+<span class="sd">                containing tree.</span>
+
+<span class="sd">        Optional Arguments:</span>
+
+<span class="sd">            ``contained_trees``</span>
+<span class="sd">                An iterable container of |Tree| or |Tree|-like objects that</span>
+<span class="sd">                will be contained into ``containing_tree``; e.g. gene or</span>
+<span class="sd">                parasite trees.</span>
+
+<span class="sd">            ``fit_containing_edge_lengths``</span>
+<span class="sd">                If |True| [default], then the branch lengths of</span>
+<span class="sd">                ``containing_tree`` will be adjusted to fit the contained tree</span>
+<span class="sd">                as they are added. Otherwise, the containing tree edge lengths</span>
+<span class="sd">                will not be changed.</span>
+
+<span class="sd">            ``collapse_empty_edges``</span>
+<span class="sd">                If |True| [default], after edge lengths are adjusted,</span>
+<span class="sd">                zero-length branches will be collapsed.</span>
+
+<span class="sd">            ``ultrametricity_precision``</span>
+<span class="sd">                If |False| [default], then trees will not be checked for</span>
+<span class="sd">                ultrametricity. Otherwise this is the threshold within which</span>
+<span class="sd">                all node to tip distances for sister nodes must be equal.</span>
+
+<span class="sd">            ``ignore_root_deep_coalescences``</span>
+<span class="sd">                If |True| [default], then deep coalescences in the root will</span>
+<span class="sd">                not be counted.</span>
+
+<span class="sd">        Other Keyword Arguments: Will be passed to Tree().</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;taxon_namespace&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;taxon_namespace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">containing_tree</span><span class="o">.</span><span class="n">taxon_namespace</span>
+        <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">containing_tree</span><span class="p">,</span>
+                <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">containing_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_tree</span> <span class="o">=</span> <span class="n">containing_tree</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">():</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">head_contained_edges</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">tail_contained_edges</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">containing_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">contained_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">contained_taxon_namespace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_contained_to_containing_taxon_map</span><span class="p">(</span><span class="n">contained_to_containing_taxon_map</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_containing_edge_lengths</span> <span class="o">=</span> <span class="n">fit_containing_edge_lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collapse_empty_edges</span> <span class="o">=</span> <span class="n">collapse_empty_edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ultrametricity_precision</span> <span class="o">=</span> <span class="n">ultrametricity_precision</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignore_root_deep_coalescences</span> <span class="o">=</span> <span class="n">ignore_root_deep_coalescences</span>
+        <span class="k">if</span> <span class="n">contained_trees</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_contained_trees</span><span class="p">(</span><span class="n">contained_trees</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rebuild</span><span class="p">(</span><span class="n">rebuild_taxa</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_contained_taxon_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">taxon_namespace</span>
+
+    <span class="k">def</span> <span class="nf">_get_contained_taxon_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span>
+
+    <span class="n">contained_taxon_namespace</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_contained_taxon_namespace</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_contained_to_containing_taxon_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contained_to_containing_taxon_map</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets mapping of |Taxon| objects of the genes/parasite/etc. to that of</span>
+<span class="sd">        the population/species/host/etc.</span>
+<span class="sd">        Creates mapping (e.g., species to genes) and decorates edges of self</span>
+<span class="sd">        with sets of both containing |Taxon| objects and the contained</span>
+<span class="sd">        |Taxon| objects that map to them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contained_to_containing_taxon_map</span><span class="p">,</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespaceMapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">contained_to_containing_taxon_map</span><span class="o">.</span><span class="n">domain_taxon_namespace</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Domain TaxonNamespace of TaxonNamespaceMapping (&#39;domain_taxon_namespace&#39;) not the same as &#39;contained_taxon_namespace&#39; TaxonNamespace&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span> <span class="o">=</span> <span class="n">contained_to_containing_taxon_map</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespaceMapping</span><span class="p">(</span>
+                    <span class="n">mapping_dict</span><span class="o">=</span><span class="n">contained_to_containing_taxon_map</span><span class="p">,</span>
+                    <span class="n">domain_taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contained_taxon_namespace</span><span class="p">,</span>
+                    <span class="n">range_taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_edge_taxa_sets</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_contained_to_containing_taxon_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span>
+
+    <span class="n">contained_to_containing_taxon_map</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_contained_to_containing_taxon_map</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_contained_trees</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trees</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">trees</span><span class="p">,</span> <span class="s1">&#39;taxon_namespace&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">trees</span><span class="o">.</span><span class="n">taxon_namespace</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">trees</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;contained_taxon_namespace&#39; of ContainingTree is not the same TaxonNamespace object of &#39;contained_trees&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">trees</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span><span class="o">.</span><span class="n">taxon_namespace</span>
+
+    <span class="k">def</span> <span class="nf">_get_contained_trees</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span>
+
+    <span class="n">contained_trees</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_contained_trees</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_containing_to_contained_taxa_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span><span class="o">.</span><span class="n">reverse</span>
+
+    <span class="n">containing_to_contained_taxa_map</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_containing_to_contained_taxa_map</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ContainingTree.clear">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.clear">[docs]</a>
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears all contained trees and mapped edges.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span><span class="o">.</span><span class="n">domain_taxa</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_contained_edges</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.clear_contained_edges">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.clear_contained_edges">[docs]</a>
+    <span class="k">def</span> <span class="nf">clear_contained_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears all contained mapped edges.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">():</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">head_contained_edges</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">tail_contained_edges</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.fit_edge_lengths">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.fit_edge_lengths">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit_edge_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contained_trees</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recalculate node ages / edge lengths of containing tree to accomodate</span>
+<span class="sd">        contained trees.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set the ages</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_internal</span><span class="p">():</span>
+                <span class="n">disjunct_leaf_set_list_split_bitmasks</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">():</span>
+                    <span class="n">disjunct_leaf_set_list_split_bitmasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">taxa_bitmask</span><span class="p">(</span><span class="n">taxa</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">containing_taxa</span><span class="p">))</span>
+                <span class="n">min_age</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">contained_trees</span><span class="p">:</span>
+                    <span class="n">min_age</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_youngest_intergroup_age</span><span class="p">(</span><span class="n">et</span><span class="p">,</span> <span class="n">disjunct_leaf_set_list_split_bitmasks</span><span class="p">,</span> <span class="n">min_age</span><span class="p">)</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span> <span class="p">[</span><span class="n">min_age</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">cn</span><span class="o">.</span><span class="n">age</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()]</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># set the corresponding edge lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_edge_lengths_from_node_ages</span><span class="p">()</span>
+
+        <span class="c1"># collapse 0-length branches</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collapse_empty_edges</span><span class="p">:</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">collapse_unweighted_edges</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.rebuild">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.rebuild">[docs]</a>
+    <span class="k">def</span> <span class="nf">rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rebuild_taxa</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recalculate edge taxa sets, node ages / edge lengths of containing</span>
+<span class="sd">        tree, and embed edges of contained trees.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">rebuild_taxa</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">build_edge_taxa_sets</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_containing_edge_lengths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_edge_lengths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_contained_edges</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embed_tree</span><span class="p">(</span><span class="n">et</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.embed_tree">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.embed_tree">[docs]</a>
+    <span class="k">def</span> <span class="nf">embed_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contained_tree</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Map edges of contained tree into containing tree (i.e., self).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span><span class="o">.</span><span class="n">age</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calc_node_ages</span><span class="p">(</span><span class="n">ultrametricity_precision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ultrametricity_precision</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">contained_tree</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">contained_tree</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_containing_edge_lengths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_edge_lengths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">contained_tree</span><span class="o">.</span><span class="n">seed_node</span><span class="o">.</span><span class="n">age</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">contained_tree</span><span class="o">.</span><span class="n">calc_node_ages</span><span class="p">(</span><span class="n">ultrametricity_precision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ultrametricity_precision</span><span class="p">)</span>
+        <span class="n">contained_leaves</span> <span class="o">=</span> <span class="n">contained_tree</span><span class="o">.</span><span class="n">leaf_nodes</span><span class="p">()</span>
+        <span class="n">taxon_to_contained</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">contained_leaves</span><span class="p">:</span>
+            <span class="n">containing_taxon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_to_containing_taxon_map</span><span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">taxon</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">taxon_to_contained</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">containing_taxon</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">containing_edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">containing_edge</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">():</span>
+                <span class="n">containing_edge</span><span class="o">.</span><span class="n">head_contained_edges</span><span class="p">[</span><span class="n">contained_tree</span><span class="p">]</span> <span class="o">=</span> <span class="n">taxon_to_contained</span><span class="p">[</span><span class="n">containing_edge</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">taxon</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">containing_edge</span><span class="o">.</span><span class="n">head_contained_edges</span><span class="p">[</span><span class="n">contained_tree</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">containing_edge</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">():</span>
+                    <span class="n">containing_edge</span><span class="o">.</span><span class="n">head_contained_edges</span><span class="p">[</span><span class="n">contained_tree</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">tail_contained_edges</span><span class="p">[</span><span class="n">contained_tree</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">containing_edge</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">containing_edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">target_age</span> <span class="o">=</span>  <span class="n">containing_edge</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">age</span> <span class="o">+</span> <span class="n">containing_edge</span><span class="o">.</span><span class="n">length</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># assume all coalesce?</span>
+                    <span class="n">containing_edge</span><span class="o">.</span><span class="n">tail_contained_edges</span><span class="p">[</span><span class="n">contained_tree</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">contained_tree</span><span class="o">.</span><span class="n">seed_node</span><span class="o">.</span><span class="n">edge</span><span class="p">])</span>
+                    <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">target_age</span> <span class="o">=</span> <span class="n">containing_edge</span><span class="o">.</span><span class="n">tail_node</span><span class="o">.</span><span class="n">age</span>
+
+            <span class="n">containing_edge</span><span class="o">.</span><span class="n">tail_contained_edges</span><span class="p">[</span><span class="n">contained_tree</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">contained_edge</span> <span class="ow">in</span> <span class="n">containing_edge</span><span class="o">.</span><span class="n">head_contained_edges</span><span class="p">[</span><span class="n">contained_tree</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">remaining</span> <span class="o">=</span> <span class="n">target_age</span> <span class="o">-</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">tail_node</span><span class="o">.</span><span class="n">age</span>
+                <span class="k">elif</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">remaining</span> <span class="o">=</span> <span class="n">target_age</span> <span class="o">-</span> <span class="p">(</span><span class="n">contained_edge</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">age</span> <span class="o">+</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">while</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">contained_edge</span> <span class="o">=</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">tail_node</span><span class="o">.</span><span class="n">edge</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">-</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">length</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">contained_edge</span> <span class="o">=</span> <span class="kc">None</span>
+                            <span class="n">remaining</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="k">break</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">remaining</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">contained_edge</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">remaining</span> <span class="o">-=</span> <span class="n">contained_edge</span><span class="o">.</span><span class="n">length</span>
+                <span class="k">if</span> <span class="n">contained_edge</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">containing_edge</span><span class="o">.</span><span class="n">tail_contained_edges</span><span class="p">[</span><span class="n">contained_tree</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">contained_edge</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.build_edge_taxa_sets">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.build_edge_taxa_sets">[docs]</a>
+    <span class="k">def</span> <span class="nf">build_edge_taxa_sets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rebuilds sets of containing and corresponding contained taxa at each</span>
+<span class="sd">        edge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">is_terminal</span><span class="p">():</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">containing_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">taxon</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">containing_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">():</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">containing_taxa</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">containing_taxa</span><span class="p">)</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">contained_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">edge</span><span class="o">.</span><span class="n">containing_taxa</span><span class="p">:</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">contained_taxa</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">containing_to_contained_taxa_map</span><span class="p">[</span><span class="n">t</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.num_deep_coalescences">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.num_deep_coalescences">[docs]</a>
+    <span class="k">def</span> <span class="nf">num_deep_coalescences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns total number of deep coalescences of the contained trees.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deep_coalescences</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.deep_coalescences">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.deep_coalescences">[docs]</a>
+    <span class="k">def</span> <span class="nf">deep_coalescences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns dictionary where the contained trees are keys, and the number of</span>
+<span class="sd">        deep coalescences corresponding to the tree are values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dc</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_root_deep_coalescences</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dc</span><span class="p">[</span><span class="n">tree</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">tail_contained_edges</span><span class="p">[</span><span class="n">tree</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">dc</span><span class="p">[</span><span class="n">tree</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">tail_contained_edges</span><span class="p">[</span><span class="n">tree</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">dc</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.embed_contained_kingman">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.embed_contained_kingman">[docs]</a>
+    <span class="k">def</span> <span class="nf">embed_contained_kingman</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">edge_pop_size_attr</span><span class="o">=</span><span class="s1">&#39;pop_size&#39;</span><span class="p">,</span>
+            <span class="n">default_pop_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">use_expected_tmrca</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulates, *embeds*, and returns a &quot;censored&quot; (Kingman) neutral coalescence tree</span>
+<span class="sd">        conditional on self.</span>
+
+<span class="sd">            ``rng``</span>
+<span class="sd">                Random number generator to use. If |None|, the default will</span>
+<span class="sd">                be used.</span>
+
+<span class="sd">            ``edge_pop_size_attr``</span>
+<span class="sd">                Name of attribute of self&#39;s edges that specify the population</span>
+<span class="sd">                size. If this attribute does not exist, then the population</span>
+<span class="sd">                size is taken to be 1.</span>
+
+<span class="sd">        Note that all edge-associated taxon sets must be up-to-date (otherwise,</span>
+<span class="sd">        ``build_edge_taxa_sets()`` should be called).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">et</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulate_contained_kingman</span><span class="p">(</span>
+                <span class="n">edge_pop_size_attr</span><span class="o">=</span><span class="n">edge_pop_size_attr</span><span class="p">,</span>
+                <span class="n">default_pop_size</span><span class="o">=</span><span class="n">default_pop_size</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
+                <span class="n">use_expected_tmrca</span><span class="o">=</span><span class="n">use_expected_tmrca</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed_tree</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">et</span></div>
+
+
+<div class="viewcode-block" id="ContainingTree.simulate_contained_kingman">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.simulate_contained_kingman">[docs]</a>
+    <span class="k">def</span> <span class="nf">simulate_contained_kingman</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">edge_pop_size_attr</span><span class="o">=</span><span class="s1">&#39;pop_size&#39;</span><span class="p">,</span>
+            <span class="n">default_pop_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">use_expected_tmrca</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulates and returns a &quot;censored&quot; (Kingman) neutral coalescence tree</span>
+<span class="sd">        conditional on self.</span>
+
+<span class="sd">            ``rng``</span>
+<span class="sd">                Random number generator to use. If |None|, the default will</span>
+<span class="sd">                be used.</span>
+
+<span class="sd">            ``edge_pop_size_attr``</span>
+<span class="sd">                Name of attribute of self&#39;s edges that specify the population</span>
+<span class="sd">                size. If this attribute does not exist, then the population</span>
+<span class="sd">                size is taken to be 1.</span>
+
+<span class="sd">        Each coalescent tree terminal node will have a ``container_tree_node``</span>
+<span class="sd">        attribute added that references the node on the container tree from</span>
+<span class="sd">        which it was sampled.</span>
+
+<span class="sd">        Note that all edge-associated taxon sets must be up-to-date (otherwise,</span>
+<span class="sd">        ``build_edge_taxa_sets()`` should be called), and that the tree</span>
+<span class="sd">        is *not* added to the set of contained trees. For the latter, call</span>
+<span class="sd">        ``embed_contained_kingman``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Dictionary that maps nodes of containing tree to list of</span>
+        <span class="c1"># corresponding nodes on gene tree, initially populated with leaf</span>
+        <span class="c1"># nodes.</span>
+        <span class="n">contained_nodes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf_node_iter</span><span class="p">():</span>
+            <span class="n">contained_nodes</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">contained_taxa</span><span class="p">:</span>
+                <span class="n">gn</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">taxon</span><span class="o">=</span><span class="n">gt</span><span class="p">)</span>
+                <span class="n">contained_nodes</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gn</span><span class="p">)</span>
+                <span class="n">gn</span><span class="o">.</span><span class="n">container_tree_node</span> <span class="o">=</span> <span class="n">nd</span>
+
+        <span class="c1"># Generate the tree structure</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">parent_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># root: run unconstrained coalescence until just one gene node</span>
+                <span class="c1"># remaining</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">edge_pop_size_attr</span><span class="p">):</span>
+                    <span class="n">pop_size</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">edge_pop_size_attr</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pop_size</span> <span class="o">=</span> <span class="n">default_pop_size</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">contained_nodes</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">final</span> <span class="o">=</span> <span class="n">coalescent</span><span class="o">.</span><span class="n">coalesce_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">contained_nodes</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="p">],</span>
+                            <span class="n">pop_size</span><span class="o">=</span><span class="n">pop_size</span><span class="p">,</span>
+                            <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
+                            <span class="n">use_expected_tmrca</span><span class="o">=</span><span class="n">use_expected_tmrca</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">final</span> <span class="o">=</span> <span class="n">contained_nodes</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># run until next coalescence event, as determined by this edge</span>
+                <span class="c1"># size.</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">edge_pop_size_attr</span><span class="p">):</span>
+                    <span class="n">pop_size</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">edge_pop_size_attr</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pop_size</span> <span class="o">=</span> <span class="n">default_pop_size</span>
+                <span class="n">remaining</span> <span class="o">=</span> <span class="n">coalescent</span><span class="o">.</span><span class="n">coalesce_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="o">=</span><span class="n">contained_nodes</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="p">],</span>
+                        <span class="n">pop_size</span><span class="o">=</span><span class="n">pop_size</span><span class="p">,</span>
+                        <span class="n">period</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">,</span>
+                        <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">,</span>
+                        <span class="n">use_expected_tmrca</span><span class="o">=</span><span class="n">use_expected_tmrca</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">contained_nodes</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">tail_node</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">contained_nodes</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">tail_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">remaining</span>
+
+        <span class="c1"># Create and return the full tree</span>
+        <span class="n">contained_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contained_taxon_namespace</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">contained_tree</span><span class="o">.</span><span class="n">seed_node</span> <span class="o">=</span> <span class="n">final</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">contained_tree</span><span class="o">.</span><span class="n">is_rooted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">contained_tree</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_find_youngest_intergroup_age</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contained_tree</span><span class="p">,</span> <span class="n">disjunct_leaf_set_list_split_bitmasks</span><span class="p">,</span> <span class="n">starting_min_age</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the age of the youngest MRCA of disjunct leaf sets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">starting_min_age</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">starting_min_age</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">contained_tree</span><span class="o">.</span><span class="n">seed_node</span><span class="o">.</span><span class="n">age</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">contained_tree</span><span class="o">.</span><span class="n">calc_node_ages</span><span class="p">(</span><span class="n">ultrametricity_precision</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ultrametricity_precision</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">contained_tree</span><span class="o">.</span><span class="n">ageorder_node_iter</span><span class="p">(</span><span class="n">include_leaves</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">age</span> <span class="o">&gt;</span> <span class="n">starting_min_age</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">prev_intersections</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">disjunct_leaf_set_list_split_bitmasks</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">bm</span> <span class="o">&amp;</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">split_bitmask</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">prev_intersections</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">nd</span><span class="o">.</span><span class="n">age</span>
+                    <span class="n">prev_intersections</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">starting_min_age</span>
+
+<div class="viewcode-block" id="ContainingTree.write_as_mesquite">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.write_as_mesquite">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_as_mesquite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For debugging purposes, write out a Mesquite-format file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">nexuswriter</span>
+        <span class="n">nw</span> <span class="o">=</span> <span class="n">nexuswriter</span><span class="o">.</span><span class="n">NexusWriter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">nw</span><span class="o">.</span><span class="n">is_write_block_titles</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#NEXUS</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">nw</span><span class="o">.</span><span class="n">_write_taxa_block</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">nw</span><span class="o">.</span><span class="n">_write_taxa_block</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+            <span class="n">domain_title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">label</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">domain_title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">oid</span>
+        <span class="n">contained_taxon_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="o">.</span><span class="n">taxon_namespace</span>
+        <span class="n">contained_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="o">.</span><span class="n">label</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span><span class="o">.</span><span class="n">write_mesquite_association_block</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">nw</span><span class="o">.</span><span class="n">_write_trees_block</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">([</span><span class="bp">self</span><span class="p">],</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">))</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">nw</span><span class="o">.</span><span class="n">_write_trees_block</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">contained_taxon_namespace</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">contained_label</span><span class="p">))</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="reconciliation_discordance">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.reconciliation_discordance">[docs]</a>
+<span class="k">def</span> <span class="nf">reconciliation_discordance</span><span class="p">(</span><span class="n">gene_tree</span><span class="p">,</span> <span class="n">species_tree</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given two trees (with splits encoded), this returns the number of gene</span>
+<span class="sd">    duplications implied by the gene tree reconciled on the species tree, based</span>
+<span class="sd">    on the algorithm described here:</span>
+
+<span class="sd">        Goodman, M. J. Czelnusiniak, G. W. Moore, A. E. Romero-Herrera, and</span>
+<span class="sd">        G. Matsuda. 1979. Fitting the gene lineage into its species lineage,</span>
+<span class="sd">        a parsimony strategy illustrated by cladograms constructed from globin</span>
+<span class="sd">        sequences. Syst. Zool. 19: 99-113.</span>
+
+<span class="sd">        Maddison, W. P. 1997. Gene trees in species trees. Syst. Biol. 46:</span>
+<span class="sd">        523-536.</span>
+
+<span class="sd">    This function requires that the gene tree and species tree *have the same</span>
+<span class="sd">    leaf set*. Note that for correct results,</span>
+
+<span class="sd">        (a) trees must be rooted (i.e., is_rooted = True)</span>
+<span class="sd">        (b) split masks must have been added as rooted (i.e., when</span>
+<span class="sd">            encode_splits was called, is_rooted must have been set to True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">taxa_mask</span> <span class="o">=</span> <span class="n">species_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">all_taxa_bitmask</span><span class="p">()</span>
+    <span class="n">species_node_gene_nodes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">gene_node_species_nodes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">gnd</span> <span class="ow">in</span> <span class="n">gene_tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+        <span class="n">gn_children</span> <span class="o">=</span> <span class="n">gnd</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gn_children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ssplit</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">gn_child</span> <span class="ow">in</span> <span class="n">gn_children</span><span class="p">:</span>
+                <span class="n">ssplit</span> <span class="o">=</span> <span class="n">ssplit</span> <span class="o">|</span> <span class="n">gene_node_species_nodes</span><span class="p">[</span><span class="n">gn_child</span><span class="p">]</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">leafset_bitmask</span>
+            <span class="n">sanc</span> <span class="o">=</span> <span class="n">species_tree</span><span class="o">.</span><span class="n">mrca</span><span class="p">(</span><span class="n">start_node</span><span class="o">=</span><span class="n">species_tree</span><span class="o">.</span><span class="n">seed_node</span><span class="p">,</span> <span class="n">leafset_bitmask</span><span class="o">=</span><span class="n">ssplit</span><span class="p">)</span>
+            <span class="n">gene_node_species_nodes</span><span class="p">[</span><span class="n">gnd</span><span class="p">]</span> <span class="o">=</span> <span class="n">sanc</span>
+            <span class="k">if</span> <span class="n">sanc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">species_node_gene_nodes</span><span class="p">:</span>
+                <span class="n">species_node_gene_nodes</span><span class="p">[</span><span class="n">sanc</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">species_node_gene_nodes</span><span class="p">[</span><span class="n">sanc</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gnd</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gene_node_species_nodes</span><span class="p">[</span><span class="n">gnd</span><span class="p">]</span> <span class="o">=</span> <span class="n">species_tree</span><span class="o">.</span><span class="n">find_node</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">taxon</span> <span class="o">==</span> <span class="n">gnd</span><span class="o">.</span><span class="n">taxon</span><span class="p">)</span>
+    <span class="n">contained_gene_lineages</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">snd</span> <span class="ow">in</span> <span class="n">species_tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">snd</span> <span class="ow">in</span> <span class="n">species_node_gene_nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">gnd</span> <span class="ow">in</span> <span class="n">species_node_gene_nodes</span><span class="p">[</span><span class="n">snd</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">gnd_child</span> <span class="ow">in</span> <span class="n">gnd</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">():</span>
+                    <span class="n">sanc</span> <span class="o">=</span> <span class="n">gene_node_species_nodes</span><span class="p">[</span><span class="n">gnd_child</span><span class="p">]</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">sanc</span>
+                    <span class="k">while</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">snd</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">contained_gene_lineages</span><span class="p">:</span>
+                            <span class="n">contained_gene_lineages</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">contained_gene_lineages</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">parent_node</span>
+
+    <span class="n">dc</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">contained_gene_lineages</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">dc</span> <span class="o">+=</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">dc</span></div>
+
+
+<div class="viewcode-block" id="monophyletic_partition_discordance">
+<a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.monophyletic_partition_discordance">[docs]</a>
+<span class="k">def</span> <span class="nf">monophyletic_partition_discordance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">taxon_namespace_partition</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the number of deep coalescences on tree ``tree`` that would result</span>
+<span class="sd">    if the taxa in ``tax_sets`` formed K mutually-exclusive monophyletic groups,</span>
+<span class="sd">    where K = len(tax_sets)</span>
+<span class="sd">    ``taxon_namespace_partition`` == TaxonNamespacePartition</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tax_sets</span> <span class="o">=</span> <span class="n">taxon_namespace_partition</span><span class="o">.</span><span class="n">subsets</span><span class="p">()</span>
+
+    <span class="c1"># from dendropy.model import parsimony</span>
+    <span class="c1"># taxon_state_sets_map = {}</span>
+    <span class="c1"># assert tree.taxon_namespace is taxon_namespace_partition.taxon_namespace</span>
+    <span class="c1"># for taxon in tree.taxon_namespace:</span>
+    <span class="c1">#     taxon_state_sets_map[taxon] = [0 for i in range(len(tax_sets))]</span>
+    <span class="c1"># for idx, ts in enumerate(tax_sets):</span>
+    <span class="c1">#     for taxon in ts:</span>
+    <span class="c1">#         taxon_state_sets_map[taxon][idx] = 1</span>
+    <span class="c1"># for taxon in tree.taxon_namespace:</span>
+    <span class="c1">#     taxon_state_sets_map[taxon] = [set([i]) for i in taxon_state_sets_map[taxon]]</span>
+    <span class="c1"># return parsimony.fitch_down_pass(</span>
+    <span class="c1">#         postorder_nodes=tree.postorder_node_iter(),</span>
+    <span class="c1">#         taxon_state_sets_map=taxon_state_sets_map</span>
+    <span class="c1">#         )</span>
+
+    <span class="n">dc_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">()</span>
+    <span class="n">dc_tree</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tax_sets</span><span class="p">)):</span>
+        <span class="n">dc_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">add_taxon</span><span class="p">(</span><span class="n">dendropy</span><span class="o">.</span><span class="n">Taxon</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)))</span>
+    <span class="k">def</span> <span class="nf">_get_dc_taxon</span><span class="p">(</span><span class="n">nd</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">tax_set</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tax_sets</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">taxon</span> <span class="ow">in</span> <span class="n">tax_set</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dc_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="s2">&quot;taxon not found in partition: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">nd</span><span class="o">.</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span>
+    <span class="n">src_dc_map</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">snd</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+        <span class="n">nnd</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Node</span><span class="p">()</span>
+        <span class="n">src_dc_map</span><span class="p">[</span><span class="n">snd</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnd</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="n">snd</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nnd</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">_get_dc_taxon</span><span class="p">(</span><span class="n">snd</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">taxa_set</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">cnd</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
+                <span class="n">dc_node</span> <span class="o">=</span> <span class="n">src_dc_map</span><span class="p">[</span><span class="n">cnd</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dc_node</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">nnd</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">dc_node</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ctax</span> <span class="o">=</span> <span class="n">dc_node</span><span class="o">.</span><span class="n">taxon</span>
+                    <span class="k">if</span> <span class="n">ctax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ctax</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">taxa_set</span><span class="p">:</span>
+                        <span class="n">taxa_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctax</span><span class="p">)</span>
+                    <span class="k">del</span> <span class="n">src_dc_map</span><span class="p">[</span><span class="n">cnd</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">taxa_set</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">taxa_set</span><span class="p">:</span>
+                    <span class="n">cnd</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Node</span><span class="p">()</span>
+                    <span class="n">cnd</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">t</span>
+                    <span class="n">nnd</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">cnd</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nnd</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">nnd</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">taxa_set</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">taxa_set</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">cnd</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Node</span><span class="p">()</span>
+                    <span class="n">cnd</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">taxa_set</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">nnd</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">cnd</span><span class="p">)</span>
+    <span class="n">dc_tree</span><span class="o">.</span><span class="n">seed_node</span> <span class="o">=</span> <span class="n">nnd</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">dc_tree</span><span class="o">.</span><span class="n">leaf_nodes</span><span class="p">())</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">tax_sets</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.model.reconcile</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

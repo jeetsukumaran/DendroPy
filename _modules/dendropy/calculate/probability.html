@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.calculate.probability &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.calculate.probability</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.calculate.probability</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions to calculate or draw values from various probability distributions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">combinatorics</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">GLOBAL_RNG</span>
+
+<div class="viewcode-block" id="binomial_rv">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.binomial_rv">[docs]</a>
+<span class="k">def</span> <span class="nf">binomial_rv</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the number of successes in a sample of ``n`` trials, with the</span>
+<span class="sd">    probability of success given by ``p``.  Using the BINV algorithm, as given</span>
+<span class="sd">    by Kachitvicyanukul, V. and B. Schmeiser. 1988. Binomial random variate</span>
+<span class="sd">    generation. Communications of the ACM 31: 216-222.</span>
+<span class="sd">    Note: *NOT* the best algorithm according to the authors of the paper (who</span>
+<span class="sd">    present their own as an alternative). Apart from rounding errors</span>
+<span class="sd">    accumulating in the loop, it may also take a long time to return a value as</span>
+<span class="sd">    ``n`` * ``p`` become large or even moderate (e.g., n=380 and p=0.8 still).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="n">q</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">s</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">q</span> <span class="o">**</span> <span class="n">n</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="o">-</span> <span class="n">r</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">x</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="exp_pdf">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.exp_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">exp_pdf</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the probability density for an exponential distribution</span>
+<span class="sd">    with an intensity of rate, evaluated at value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="poisson_rv">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.poisson_rv">[docs]</a>
+<span class="k">def</span> <span class="nf">poisson_rv</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a random number from a Poisson distribution with rate of</span>
+<span class="sd">    ``rate`` (mean of 1/rate).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span>
+    <span class="n">MAX_EXPECTATION</span> <span class="o">=</span> <span class="mf">64.0</span> <span class="c1"># larger than this and we have underflow issues</span>
+    <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="n">MAX_EXPECTATION</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">rate</span><span class="o">/</span><span class="mf">2.0</span>
+        <span class="k">return</span> <span class="n">poisson_rv</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="n">poisson_rv</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">rate</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">while</span> <span class="n">p</span> <span class="o">&gt;=</span> <span class="n">L</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mf">1.0</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="n">u</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="num_poisson_events">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.num_poisson_events">[docs]</a>
+<span class="k">def</span> <span class="nf">num_poisson_events</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the number of events that have occurred in a Poisson</span>
+<span class="sd">    process of ``rate`` over ``period``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">period</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">time_to_next</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">rate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">time_to_next</span> <span class="o">&lt;=</span> <span class="n">period</span><span class="p">:</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="n">events</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">period</span> <span class="o">=</span> <span class="n">period</span> <span class="o">-</span> <span class="n">time_to_next</span>
+    <span class="k">return</span> <span class="n">events</span></div>
+
+
+<div class="viewcode-block" id="poisson_pmf">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.poisson_pmf">[docs]</a>
+<span class="k">def</span> <span class="nf">poisson_pmf</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the probability of a number, ``k``, drawn from a Poisson distribution</span>
+<span class="sd">    with rate parameter, ``rate`` (= 1/mean).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">rate</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">((</span><span class="n">mean</span> <span class="o">**</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">mean</span><span class="p">))</span><span class="o">/</span><span class="n">combinatorics</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sample_multinomial">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.sample_multinomial">[docs]</a>
+<span class="k">def</span> <span class="nf">sample_multinomial</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the index of the probability bin in ``probs``.</span>
+<span class="sd">    ``probs`` is assumed to sum to 1.0 (all rounding error contributes to the</span>
+<span class="sd">    last bin).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">probs</span><span class="p">):</span>
+        <span class="n">u</span> <span class="o">-=</span> <span class="n">i</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">n</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="weighted_choice">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.weighted_choice">[docs]</a>
+<span class="k">def</span> <span class="nf">weighted_choice</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Selects an element out of seq, with probabilities of each element</span>
+<span class="sd">    given by the list ``weights`` (which must be at least as long as the</span>
+<span class="sd">    length of ``seq`` - 1).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">))]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Insufficient number of weights specified&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">seq</span><span class="p">[</span><span class="n">weighted_index_choice</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">rng</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="weighted_index_choice">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.weighted_index_choice">[docs]</a>
+<span class="k">def</span> <span class="nf">weighted_index_choice</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (From: http://eli.thegreenplace.net/2010/01/22/weighted-random-generation-in-python/)</span>
+<span class="sd">    The following is a simple function to implement weighted random choice in</span>
+<span class="sd">    Python. Given a list of weights, it returns an index randomly, according</span>
+<span class="sd">    to these weights [1].</span>
+<span class="sd">    For example, given [2, 3, 5] it returns 0 (the index of the first element)</span>
+<span class="sd">    with probability 0.2, 1 with probability 0.3 and 2 with probability 0.5.</span>
+<span class="sd">    The weights need not sum up to anything in particular, and can actually be</span>
+<span class="sd">    arbitrary Python floating point numbers.</span>
+<span class="sd">    If we manage to sort the weights in descending order before passing them</span>
+<span class="sd">    to weighted_choice_sub, it will run even faster, since the random call</span>
+<span class="sd">    returns a uniformly distributed value and larger chunks of the total</span>
+<span class="sd">    weight will be skipped in the beginning.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span>
+    <span class="n">rnd</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
+        <span class="n">rnd</span> <span class="o">-=</span> <span class="n">w</span>
+        <span class="k">if</span> <span class="n">rnd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">i</span></div>
+
+
+<div class="viewcode-block" id="chisq_pdf">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.chisq_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">chisq_pdf</span><span class="p">(</span><span class="n">chisq</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the probability value associated with the provided chi-square</span>
+<span class="sd">    value and df.  Adapted from chisq.c in Gary Perlman&#39;s Stat.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">BIG</span> <span class="o">=</span> <span class="mf">20.0</span>
+    <span class="k">def</span> <span class="nf">ex</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="n">BIG</span> <span class="o">=</span> <span class="mf">20.0</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">BIG</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">chisq</span> <span class="o">&lt;=</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">df</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">chisq</span>
+    <span class="k">if</span> <span class="n">df</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">even</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">even</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">df</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">ex</span><span class="p">(</span><span class="o">-</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">z_pmf</span><span class="p">(</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">chisq</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">df</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">chisq</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">BIG</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">z</span> <span class="o">&lt;=</span> <span class="n">chisq</span><span class="p">):</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">e</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">ex</span><span class="p">(</span><span class="n">c</span><span class="o">*</span><span class="n">z</span><span class="o">-</span><span class="n">a</span><span class="o">-</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="mf">1.0</span>
+            <span class="k">return</span> <span class="n">s</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">even</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">z</span> <span class="o">&lt;=</span> <span class="n">chisq</span><span class="p">):</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">e</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">e</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="mf">1.0</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">c</span><span class="o">*</span><span class="n">y</span><span class="o">+</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="z_pmf">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.z_pmf">[docs]</a>
+<span class="k">def</span> <span class="nf">z_pmf</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the probability value associated with the provided z-score.</span>
+<span class="sd">    Adapted from z.c in Gary Perlman&#39;s Stat.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Z_MAX</span> <span class="o">=</span> <span class="mf">6.0</span>    <span class="c1"># maximum meaningful z-value</span>
+    <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">Z_MAX</span><span class="o">*</span><span class="mf">0.5</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">((((((((</span><span class="mf">0.000124818987</span> <span class="o">*</span> <span class="n">w</span>
+                        <span class="o">-</span><span class="mf">0.001075204047</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span><span class="mf">0.005198775019</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span>
+                      <span class="o">-</span><span class="mf">0.019198292004</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span><span class="mf">0.059054035642</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span>
+                    <span class="o">-</span><span class="mf">0.151968751364</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span><span class="mf">0.319152932694</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span>
+                  <span class="o">-</span><span class="mf">0.531923007300</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">+</span><span class="mf">0.797884560593</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="mf">2.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="mf">2.0</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(((((((((((((</span><span class="o">-</span><span class="mf">0.000045255659</span> <span class="o">*</span> <span class="n">y</span>
+                             <span class="o">+</span><span class="mf">0.000152529290</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span><span class="mf">0.000019538132</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+                           <span class="o">-</span><span class="mf">0.000676904986</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span><span class="mf">0.001390604284</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+                         <span class="o">-</span><span class="mf">0.000794620820</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span><span class="mf">0.002034254874</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+                       <span class="o">+</span><span class="mf">0.006549791214</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span><span class="mf">0.010557625006</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+                     <span class="o">+</span><span class="mf">0.011630447319</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span><span class="mf">0.009279453341</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+                   <span class="o">+</span><span class="mf">0.005353579108</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span><span class="mf">0.002141268741</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span>
+                 <span class="o">+</span><span class="mf">0.000535310849</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span><span class="mf">0.999936657524</span>
+    <span class="k">if</span> <span class="n">z</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">prob</span> <span class="o">=</span> <span class="p">((</span><span class="n">x</span><span class="o">+</span><span class="mf">1.0</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+                <span class="n">prob</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.0</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prob</span></div>
+
+
+
+<div class="viewcode-block" id="geometric_rv">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.geometric_rv">[docs]</a>
+<span class="k">def</span> <span class="nf">geometric_rv</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Geometric distribution per Devroye, Luc. Non-Uniform Random Variate</span>
+<span class="sd">    Generation, 1986, p 500. http://cg.scs.carleton.ca/~luc/rnbookindex.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span>
+    <span class="c1"># p should be in (0.0, 1.0].</span>
+    <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;p = </span><span class="si">%s</span><span class="s2">: p must be in the interval (0.0, 1.0]&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">p</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="c1"># If p is exactly 1.0, then the only possible generated value is 1.</span>
+        <span class="c1"># Recognizing this case early means that we can avoid a log(0.0) later.</span>
+        <span class="c1"># The exact floating point comparison should be fine. log(eps) works just</span>
+        <span class="c1"># dandy.</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="c1"># random() returns a number in [0, 1). The log() function does not</span>
+    <span class="c1"># like 0.</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+
+    <span class="c1"># Find the corresponding geometric variate by inverting the uniform variate.</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">U</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">p</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<span class="k">def</span> <span class="nf">hypergeometric_pmf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a population consisting of ``m`` items of class M and ``n`` items of class N,</span>
+<span class="sd">    this returns the probability of observing ``x`` items of class M when sampling</span>
+<span class="sd">    ``k`` times without replacement from the entire population (i.e., {M,N})</span>
+
+<span class="sd">            p(x) = (choose(m, x) * choose(n, k-x)) / choose(m+n, k)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">combinatorics</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">combinatorics</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="o">-</span><span class="n">x</span><span class="p">))</span><span class="o">/</span><span class="n">combinatorics</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+
+<div class="viewcode-block" id="hypergeometric_pmf">
+<a class="viewcode-back" href="../../../library/probability.html#dendropy.calculate.probability.hypergeometric_pmf">[docs]</a>
+<span class="k">def</span> <span class="nf">hypergeometric_pmf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a population consisting of ``m`` items of class M and ``n`` items of class N,</span>
+<span class="sd">    this returns the probability of observing ``x`` items of class M when sampling</span>
+<span class="sd">    ``k`` times without replacement from the entire population (i.e., {M,N})</span>
+
+<span class="sd">            p(x) = (choose(m, x) * choose(n, k-x)) / choose(m+n, k)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># following fails with &#39;OverflowError: long int too large to convert to</span>
+    <span class="c1"># float&#39; with large numbers</span>
+    <span class="c1"># return float(combinatorics.choose(m, x) * combinatorics.choose(n, k-x))/combinatorics.choose(m+n, k)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">combinatorics</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">combinatorics</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">combinatorics</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">-</span><span class="n">c</span><span class="p">)</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.calculate.probability</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

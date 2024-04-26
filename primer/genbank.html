@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Working with GenBank Molecular Sequence Databases &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Seq-Gen" href="seqgen.html" />
+    <link rel="prev" title="Working with Metadata Annotations" href="working_with_metadata_annotations.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="seqgen.html" title="Seq-Gen"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="working_with_metadata_annotations.html" title="Working with Metadata Annotations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Working with GenBank Molecular Sequence Databases</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="working-with-genbank-molecular-sequence-databases">
+<h1>Working with GenBank Molecular Sequence Databases<a class="headerlink" href="#working-with-genbank-molecular-sequence-databases" title="Link to this heading">¶</a></h1>
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">genbank</span></code> module provides the classes and methods to download sequences from GenBank and instantiate them into DendroPy phylogenetic data objects.
+Three classes are provided, all of which have an identical interface, varying only in the type of data retrieved:</p>
+<blockquote>
+<div><p><code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankDna</span></code></p>
+<blockquote>
+<div><p>Acquire and manage DNA sequence data from the GenBank Nucleotide database.</p>
+</div></blockquote>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankRna</span></code></p>
+<blockquote>
+<div><p>Acquire and manage RNA sequence data from the GenBank Nucleotide database.</p>
+</div></blockquote>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankProtein</span></code></p>
+<blockquote>
+<div><p>Acquire and manage AA sequence data from the GenBank Protein database.</p>
+</div></blockquote>
+</div></blockquote>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
+<p>The basic way to retrieve sequence data is create a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankDna</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankRna</span></code>, or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankProtein</span></code> object, and pass in a list of
+identifiers to be retrieved using the “<code class="docutils literal notranslate"><span class="pre">ids</span></code>”  argument.
+The value of this argument should be a container with either GenBank accession identifiers or GI numbers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;EU105474&#39;</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">gb</span> <span class="ow">in</span> <span class="n">gb_dna</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">gb</span><span class="p">)</span>
+<span class="go">gi|158930545|gb|EU105474.1| Homo sapiens Ache non-coding region T864 genomic sequence</span>
+<span class="go">gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence</span>
+</pre></div>
+</div>
+<p>The records are stored as <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> objects.
+These records store the <em>full</em> information available in a GenBank record, including the references, feature table, qualifiers, and other details, and these are available as attributes of the <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> objects (e.g., “<code class="docutils literal notranslate"><span class="pre">primary_accession</span></code>”, “<code class="docutils literal notranslate"><span class="pre">taxonomy</span></code>”, “<code class="docutils literal notranslate"><span class="pre">feature_table</span></code>” and so on).</p>
+<p>To generate a <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> object from the collection of sequences, call the <code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_char_matrix</span></code>  method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;EU105474&#39;</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;nexus&quot;</span><span class="p">))</span>
+<span class="go">#NEXUS</span>
+<span class="go">BEGIN TAXA;</span>
+
+<span class="go">    DIMENSIONS NTAX=2;</span>
+<span class="go">    TAXLABELS</span>
+<span class="go">        EU105474</span>
+<span class="go">        EU105475</span>
+<span class="go">;</span>
+<span class="go">END;</span>
+<span class="go">BEGIN CHARACTERS;</span>
+<span class="go">    DIMENSIONS  NCHAR=494;</span>
+<span class="go">    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;</span>
+<span class="go">    MATRIX</span>
+<span class="go">EU105474    TCTCTTATCA...</span>
+<span class="go">EU105475    TCTCTTATCA...</span>
+<span class="go">;</span>
+<span class="go">END;</span>
+</pre></div>
+</div>
+<p>As can be seen, by default the taxon labels assigned to the sequences are set to the identifier used to request the sequences. This, and many other aspects of the character matrix generation, including annotation of taxa and sequences, can be customized, as discussed in detail below.</p>
+</section>
+<section id="acquiring-data-from-genebank">
+<h2>Acquiring Data from GeneBank<a class="headerlink" href="#acquiring-data-from-genebank" title="Link to this heading">¶</a></h2>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankDna</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankRna</span></code>, and <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankProtein</span></code> classes provide for the downloading and management of DNA, RNA, and protein (AA) sequences from GenBank.
+The first two of these query the “nucleotide” or “nuccore” database, while the last queries the “protein” database.
+The constructors of these classes accept the following arguments:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">ids</span></code></p>
+<blockquote>
+<div><p>A list of accession identifiers of GI numbers of the records to be downloaded. E.g. “<code class="docutils literal notranslate"><span class="pre">ids=['EU105474',</span> <span class="pre">'EU105475']</span></code>”,  “<code class="docutils literal notranslate"><span class="pre">ids=['158930545',</span> <span class="pre">'EU105475']</span></code>”, or  “<code class="docutils literal notranslate"><span class="pre">ids=['158930545',</span> <span class="pre">'158930546']</span></code>”.
+If “<code class="docutils literal notranslate"><span class="pre">prefix</span></code>” is specified, this string will be pre-pended to all values in the list.</p>
+</div></blockquote>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">id_range</span></code></dt><dd><p>A tuple of <em>integers</em> that specify the first and last values (inclusive) of accession or GI numbers of the records to be downloaded. If “<code class="docutils literal notranslate"><span class="pre">prefix</span></code>” is specified, this string will be prepended to all numbers in this range.
+Thus specifying “<code class="docutils literal notranslate"><span class="pre">id_range=(158930545,</span> <span class="pre">158930550)</span></code>” is exactly equivalent to specifying “<code class="docutils literal notranslate"><span class="pre">ids=[158930545,</span> <span class="pre">158930546,</span> <span class="pre">158930547,</span> <span class="pre">158930548,</span> <span class="pre">158930549,</span> <span class="pre">158930550]</span></code>”, while specifying “<code class="docutils literal notranslate"><span class="pre">id_range=(105474,</span> <span class="pre">105479),</span> <span class="pre">prefix=&quot;EU&quot;</span></code>” is exactly equivalent tp specifying “<code class="docutils literal notranslate"><span class="pre">ids=[&quot;EU105474&quot;,</span> <span class="pre">&quot;EU105475&quot;,</span> <span class="pre">&quot;EU105476&quot;,</span> <span class="pre">&quot;EU105477&quot;,</span> <span class="pre">&quot;EU105478&quot;,</span> <span class="pre">&quot;EU105479&quot;]</span></code>”.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">prefix</span></code></dt><dd><p>This string will be prepended to all values resulting from the “<code class="docutils literal notranslate"><span class="pre">ids</span></code>” and “<code class="docutils literal notranslate"><span class="pre">id_range</span></code>”.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">verify</span></code></dt><dd><p>By default, the results of the download are checked to make sure there is a one-to-one correspondence between requested id’s and retrieved records. Setting “<code class="docutils literal notranslate"><span class="pre">verify=False</span></code>” skips this checking.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>So, for example, the following are all different ways of instantiating GenBank resource data store:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;EU105474&#39;</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;158930545&#39;</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;158930545&#39;</span><span class="p">,</span> <span class="s1">&#39;158930546&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;105474&#39;</span><span class="p">,</span> <span class="s1">&#39;105475&#39;</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;EU&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">id_range</span><span class="o">=</span><span class="p">(</span><span class="mi">105474</span><span class="p">,</span> <span class="mi">105478</span><span class="p">),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;EU&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">id_range</span><span class="o">=</span><span class="p">(</span><span class="mi">158930545</span><span class="p">,</span> <span class="mi">158930546</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can add more records to an existing instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankDna</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankRna</span></code>, or <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankProtein</span></code> objects by using the “<code class="docutils literal notranslate"><span class="pre">acquire</span></code>” or “<code class="docutils literal notranslate"><span class="pre">acquire_range</span></code>” methods.
+The “<code class="docutils literal notranslate"><span class="pre">acquire</span></code>” method takes a sequence of accession identifiers or GI numbers for the first argument (”<code class="docutils literal notranslate"><span class="pre">ids</span></code>”), and, in addition an optional string prefix to be prepended can be supplied using the second argument, “<code class="docutils literal notranslate"><span class="pre">prefix</span></code>”, while verification can be disabled by specifying <code class="docutils literal notranslate"><span class="pre">False</span></code> for the third argument, “<code class="docutils literal notranslate"><span class="pre">verify</span></code>”.
+The “<code class="docutils literal notranslate"><span class="pre">acquire_range</span></code>” method takes two mandatory <em>integer</em> arguments: the first and last value of the range of accession or GI numbers of the records to be downloaded.
+As with the other method, a string prefix to be prepended can be optionally supplied using the argument “<code class="docutils literal notranslate"><span class="pre">prefix</span></code>”, while verification can be disabled by specifying “<code class="docutils literal notranslate"><span class="pre">verify=|False|</span></code>”.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">([</span><span class="s1">&#39;EU105474&#39;</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gb_dna</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span><span class="o">.</span><span class="n">acquire</span><span class="p">([</span><span class="mi">158930547</span><span class="p">,</span> <span class="mi">158930548</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gb_dna</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span><span class="o">.</span><span class="n">acquire_range</span><span class="p">(</span><span class="mi">105479</span><span class="p">,</span> <span class="mi">105480</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;EU&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gb_dna</span><span class="p">))</span>
+<span class="go">2</span>
+<span class="go">4</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-genbank-records">
+<h2>Accessing GenBank Records<a class="headerlink" href="#accessing-genbank-records" title="Link to this heading">¶</a></h2>
+<p>The GenBank records accumulated in <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankDna</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankRna</span></code>, and <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankProtein</span></code> objects are represented by collections of <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> objects.
+Each of these <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> objects represent the full information from the GenBank source as a rich Python object.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">([</span><span class="s1">&#39;EU105474&#39;</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">gb_rec</span> <span class="ow">in</span> <span class="n">gb_dna</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">gi</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">locus</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">moltype</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">topology</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">strandedness</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">division</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">update_date</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">create_date</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">definition</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">primary_accession</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">accession_version</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;(other seq ids)&quot;</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="k">for</span> <span class="n">osi_key</span><span class="p">,</span> <span class="n">osi_value</span> <span class="ow">in</span> <span class="n">gb_rec</span><span class="o">.</span><span class="n">other_seq_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="gp">... </span>       <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    &quot;</span><span class="p">,</span> <span class="n">osi_key</span><span class="p">,</span> <span class="n">osi_value</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">organism</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">taxonomy</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;(references)&quot;</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">gb_rec</span><span class="o">.</span><span class="n">references</span><span class="p">:</span>
+<span class="gp">... </span>       <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    &quot;</span><span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">number</span> <span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">position</span> <span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">authors</span> <span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">consrtm</span> <span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">title</span> <span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">journal</span> <span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">medline_id</span> <span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">pubmed_id</span> <span class="p">,</span> <span class="n">ref</span><span class="o">.</span><span class="n">remark</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;(feature_table)&quot;</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">gb_rec</span><span class="o">.</span><span class="n">feature_table</span><span class="p">:</span>
+<span class="gp">... </span>       <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    &quot;</span><span class="p">,</span> <span class="n">feature</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">feature</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+<span class="gp">... </span>       <span class="k">for</span> <span class="n">qualifier</span> <span class="ow">in</span> <span class="n">feature</span><span class="o">.</span><span class="n">qualifiers</span><span class="p">:</span>
+<span class="gp">... </span>           <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;        &quot;</span><span class="p">,</span> <span class="n">qualifier</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">qualifier</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">158930545</span>
+<span class="go">EU105474</span>
+<span class="go">494</span>
+<span class="go">DNA</span>
+<span class="go">linear</span>
+<span class="go">double</span>
+<span class="go">PRI</span>
+<span class="go">27-NOV-2007</span>
+<span class="go">27-NOV-2007</span>
+<span class="go">Homo sapiens Ache non-coding region T864 genomic sequence</span>
+<span class="go">EU105474</span>
+<span class="go">EU105474.1</span>
+<span class="go">(other seq ids)</span>
+<span class="go">    gb EU105474.1</span>
+<span class="go">    gi 158930545</span>
+<span class="go">Homo sapiens (human)</span>
+<span class="go">Homo sapiens</span>
+<span class="go">Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Eutel...</span>
+<span class="go">(references)</span>
+<span class="go">    1 1..494 [] None Statistical evaluation of alternativ...</span>
+<span class="go">    2 1..494 [] None Direct Submission Submitted (17-AUG-...</span>
+<span class="go">(feature_table)</span>
+<span class="go">    source 1..494</span>
+<span class="go">        organism Homo sapiens</span>
+<span class="go">        mol_type genomic DNA</span>
+<span class="go">        db_xref taxon:9606</span>
+<span class="go">        chromosome 18</span>
+<span class="go">        note Ache</span>
+<span class="go">    misc_feature 1..494</span>
+<span class="go">        note non-coding region T864</span>
+<span class="go">.</span>
+<span class="go">.</span>
+<span class="go">.</span>
+<span class="go">(etc.)</span>
+</pre></div>
+</div>
+</section>
+<section id="generating-character-matrix-objects-from-genbank-data">
+<h2>Generating Character Matrix Objects from GenBank Data<a class="headerlink" href="#generating-character-matrix-objects-from-genbank-data" title="Link to this heading">¶</a></h2>
+<p>The “<code class="docutils literal notranslate"><span class="pre">generate_char_matrix()</span></code>” method of <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankDna</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankRna</span></code>, and <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankProtein</span></code> objects creates and returns a <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> object of the appropriate type out of the data collected in them.
+When called without any arguments, it generates a new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> block, creating one new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object for every sequence in the collection with a label corresponding to the identifier used to request the sequence:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;nexus&quot;</span><span class="p">))</span>
+<span class="go">#NEXUS</span>
+
+<span class="go">BEGIN TAXA;</span>
+
+<span class="go">    DIMENSIONS NTAX=2;</span>
+<span class="go">    TAXLABELS</span>
+<span class="go">        158930545</span>
+<span class="go">        EU105475</span>
+<span class="go">;</span>
+<span class="go">END;</span>
+
+<span class="go">BEGIN CHARACTERS;</span>
+<span class="go">    DIMENSIONS  NCHAR=494;</span>
+<span class="go">    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;</span>
+<span class="go">    MATRIX</span>
+<span class="go">158930545    TCTCTTATCAAACTA...</span>
+<span class="go">EU105475     TCTCTTATCAAACTA...</span>
+<span class="go">    ;</span>
+<span class="go">END;</span>
+
+
+<span class="go">BEGIN SETS;</span>
+<span class="go">END;</span>
+</pre></div>
+</div>
+<section id="customizing-controlling-sequence-taxa">
+<h3>Customizing/Controlling Sequence Taxa<a class="headerlink" href="#customizing-controlling-sequence-taxa" title="Link to this heading">¶</a></h3>
+<p>The taxon assignment can be controlled in one of two ways:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Using the “<code class="docutils literal notranslate"><span class="pre">label_components</span></code>” and optionally the “<code class="docutils literal notranslate"><span class="pre">label_component_separator</span></code>” arguments.</p></li>
+<li><p>Specifying a custom function using the “<code class="docutils literal notranslate"><span class="pre">gb_to_taxon_fn</span></code>” argument that takes <em>two</em> arguments, a <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> object and a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> argument, and returns the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object to be assigned to the sequence; this approach requires specification of a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object passed using the “<code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>” argument.</p></li>
+</ol>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 4.4.0: </span>(previous versions took just the first argument, the GenBankAccessionRecord object; this meant client code had to independently keep track and use the correct <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object to create <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects. Now, the function has direct access to it).</p>
+</div>
+</div></blockquote>
+<section id="specifying-a-custom-label-for-sequence-taxa">
+<h4>Specifying a Custom Label for Sequence Taxa<a class="headerlink" href="#specifying-a-custom-label-for-sequence-taxa" title="Link to this heading">¶</a></h4>
+<p>The “<code class="docutils literal notranslate"><span class="pre">label_components</span></code>” and the “<code class="docutils literal notranslate"><span class="pre">label_component_separator</span></code>” arguments allow for customization of the taxon labels of the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects created for each sequence.
+The “<code class="docutils literal notranslate"><span class="pre">label_components</span></code>” argument should be assigned an ordered container (e.g., a list) of strings that correspond to attributes of objects of the <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> class.
+The values of these attributes will be concatenated to compose the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object label.
+By default, the components will be separated by spaces, but you can override this by passing the string to be used by the “<code class="docutils literal notranslate"><span class="pre">label_component_separator</span></code>” argument.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span>
+<span class="gp">... </span><span class="n">label_components</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accession&quot;</span><span class="p">,</span> <span class="s2">&quot;organism&quot;</span><span class="p">,</span> <span class="p">],</span>
+<span class="gp">... </span><span class="n">label_component_separator</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">])</span>
+<span class="go">[&#39;EU105474_Homo_sapiens&#39;, &#39;EU105475_Homo_sapiens&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span>
+<span class="gp">... </span><span class="n">label_components</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;organism&quot;</span><span class="p">,</span> <span class="s2">&quot;moltype&quot;</span><span class="p">,</span> <span class="s2">&quot;gi&quot;</span><span class="p">],</span>
+<span class="gp">... </span><span class="n">label_component_separator</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">])</span>
+<span class="go">[&#39;Homo.sapiens.DNA.158930545&#39;, &#39;Homo.sapiens.DNA.158930546&#39;]</span>
+</pre></div>
+</div>
+</section>
+<section id="specifying-a-custom-taxon-discovery-function">
+<h4>Specifying a Custom Taxon-Discovery Function<a class="headerlink" href="#specifying-a-custom-taxon-discovery-function" title="Link to this heading">¶</a></h4>
+<p>Full control over the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object assignment process is given by using the “<code class="docutils literal notranslate"><span class="pre">gb_to_taxon_fn</span></code>” argument.
+This should be used to specify a function that takes a <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> object and returns the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object to be assigned to the sequence.
+The specification of a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object passed using the “<code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>” argument is also required, so that this can be assigned to the <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> object.</p>
+<p>A simple example that illustrates the usage of the “<code class="docutils literal notranslate"><span class="pre">gb_to_taxon_fn</span></code>” argument by creating a custom label:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+
+<span class="k">def</span> <span class="nf">gb_to_taxon</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+    <span class="n">locality</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">feature_table</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">qualifiers</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;note&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;GI&quot;</span> <span class="o">+</span> <span class="n">gb</span><span class="o">.</span><span class="n">gi</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">locality</span>
+    <span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">require_taxon</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">taxon</span>
+
+<span class="n">taxon_namespace</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+
+<span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxon_namespace</span><span class="p">,</span>
+    <span class="n">gb_to_taxon_fn</span><span class="o">=</span><span class="n">gb_to_taxon</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>which results in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;GI158930545.Ache&#39;</span><span class="p">,</span> <span class="s1">&#39;GI158930546.Arara&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>A more complex case might be where you may already have a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> with existing <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects that you may want to associate with the sequences.
+The following illustrates how to do this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_string</span><span class="p">(</span>
+    <span class="s2">&quot;(Ache, (Arara, (Bribri, (Guatuso, Guaymi))))&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">gb_to_taxon</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+    <span class="n">locality</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">feature_table</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">qualifiers</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;note&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">taxon</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">locality</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">taxon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">taxon</span>
+
+<span class="n">gb_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="mi">158930546</span><span class="p">,</span> <span class="mi">158930547</span><span class="p">,</span> <span class="mi">158930548</span><span class="p">,</span> <span class="mi">158930549</span><span class="p">]</span>
+
+<span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="n">gb_ids</span><span class="p">)</span>
+<span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">,</span>
+    <span class="n">gb_to_taxon_fn</span><span class="o">=</span><span class="n">gb_to_taxon</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">char_matrix</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span><span class="o">.</span><span class="n">symbols_as_string</span><span class="p">()[:</span><span class="mi">10</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>which results in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">True</span>
+<span class="n">Ache</span><span class="p">:</span> <span class="n">TCTCTTATCA</span>
+<span class="n">Arara</span><span class="p">:</span> <span class="n">TCTCTTATCA</span>
+<span class="n">Bribri</span><span class="p">:</span> <span class="n">TCTCTTATCA</span>
+<span class="n">Guatuso</span><span class="p">:</span> <span class="n">TCTCTTATCA</span>
+<span class="n">Guaymi</span><span class="p">:</span> <span class="n">TCTCTTATCA</span>
+<span class="p">[</span><span class="s1">&#39;Ache&#39;</span><span class="p">,</span> <span class="s1">&#39;Arara&#39;</span><span class="p">,</span> <span class="s1">&#39;Bribri&#39;</span><span class="p">,</span> <span class="s1">&#39;Guatuso&#39;</span><span class="p">,</span> <span class="s1">&#39;Guaymi&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The important thing to note here is the the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a> do not just have the same labels as the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in the <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>, “<code class="docutils literal notranslate"><span class="pre">tree</span></code>”, but actually <em>are</em> the same objects (i.e., reference the same operational taxonomic units within DendroPy).</p>
+</section>
+</section>
+<section id="adding-the-genbank-record-as-an-attribute">
+<h3>Adding the GenBank Record as an Attribute<a class="headerlink" href="#adding-the-genbank-record-as-an-attribute" title="Link to this heading">¶</a></h3>
+<p>It is sometimes useful to maintain a handle on the original GenBank record in the <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> resulting from “<code class="docutils literal notranslate"><span class="pre">generate_char_matrix()</span></code>”.
+The “<code class="docutils literal notranslate"><span class="pre">set_taxon_attr</span></code>”  and “<code class="docutils literal notranslate"><span class="pre">set_seq_attr</span></code>” arguments of the “<code class="docutils literal notranslate"><span class="pre">generate_char_matrix()</span></code>” method allow you to this.
+The values supplied to these arguments should be strings that specify the name of the attribute that will be created on the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> or <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterDataSequence" title="dendropy.datamodel.charmatrixmodel.CharacterDataSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterDataSequence</span></code></a> objects, respectively.
+The value of this attribute will be the <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> that underlies the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> or <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterDataSequence" title="dendropy.datamodel.charmatrixmodel.CharacterDataSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterDataSequence</span></code></a> sequence.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span><span class="n">set_taxon_attr</span><span class="o">=</span><span class="s2">&quot;gb_rec&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data for taxon &#39;</span><span class="si">{}</span><span class="s2">&#39; is based on GenBank record: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">taxon</span><span class="o">.</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">definition</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Data</span> <span class="k">for</span> <span class="n">taxon</span> <span class="s1">&#39;158930545&#39;</span> <span class="ow">is</span> <span class="n">based</span> <span class="n">on</span> <span class="n">GenBank</span> <span class="n">record</span><span class="p">:</span> <span class="n">Homo</span> <span class="n">sapiens</span> <span class="n">Ache</span> <span class="n">non</span><span class="o">-</span><span class="n">coding</span> <span class="n">region</span> <span class="n">T864</span> <span class="n">genomic</span> <span class="n">sequence</span>
+<span class="n">Data</span> <span class="k">for</span> <span class="n">taxon</span> <span class="s1">&#39;EU105475&#39;</span> <span class="ow">is</span> <span class="n">based</span> <span class="n">on</span> <span class="n">GenBank</span> <span class="n">record</span><span class="p">:</span> <span class="n">Homo</span> <span class="n">sapiens</span> <span class="n">Arara</span> <span class="n">non</span><span class="o">-</span><span class="n">coding</span> <span class="n">region</span> <span class="n">T864</span> <span class="n">genomic</span> <span class="n">sequence</span>
+</pre></div>
+</div>
+<p>Alternatively, the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span><span class="n">set_seq_attr</span><span class="o">=</span><span class="s2">&quot;gb_rec&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sidx</span><span class="p">,</span> <span class="n">sequence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">vectors</span><span class="p">()):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sequence </span><span class="si">{}</span><span class="s2"> (&#39;</span><span class="si">{}</span><span class="s2">&#39;) is based on GenBank record: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">sidx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="n">sidx</span><span class="p">]</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">sequence</span><span class="o">.</span><span class="n">gb_rec</span><span class="o">.</span><span class="n">defline</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Sequence</span> <span class="mi">1</span> <span class="p">(</span><span class="s1">&#39;158930545&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">based</span> <span class="n">on</span> <span class="n">GenBank</span> <span class="n">record</span><span class="p">:</span> <span class="n">gi</span><span class="o">|</span><span class="mi">158930545</span><span class="o">|</span><span class="n">gb</span><span class="o">|</span><span class="n">EU105474</span><span class="mf">.1</span><span class="o">|</span> <span class="n">Homo</span> <span class="n">sapiens</span> <span class="n">Ache</span> <span class="n">non</span><span class="o">-</span><span class="n">coding</span> <span class="n">region</span> <span class="n">T864</span> <span class="n">genomic</span> <span class="n">sequence</span>
+<span class="n">Sequence</span> <span class="mi">2</span> <span class="p">(</span><span class="s1">&#39;EU105475&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">based</span> <span class="n">on</span> <span class="n">GenBank</span> <span class="n">record</span><span class="p">:</span> <span class="n">gi</span><span class="o">|</span><span class="mi">158930546</span><span class="o">|</span><span class="n">gb</span><span class="o">|</span><span class="n">EU105475</span><span class="mf">.1</span><span class="o">|</span> <span class="n">Homo</span> <span class="n">sapiens</span> <span class="n">Arara</span> <span class="n">non</span><span class="o">-</span><span class="n">coding</span> <span class="n">region</span> <span class="n">T864</span> <span class="n">genomic</span> <span class="n">sequence</span>
+</pre></div>
+</div>
+</section>
+<section id="annotating-with-genbank-data-and-metadata">
+<h3>Annotating with GenBank Data and Metadata<a class="headerlink" href="#annotating-with-genbank-data-and-metadata" title="Link to this heading">¶</a></h3>
+<p>To persist the information in a the <code class="xref py py-class docutils literal notranslate"><span class="pre">GenBankAccessionRecord</span></code> object through serialization and deserialization, you can request that this information gets added as an  <a class="reference internal" href="../library/basemodel.html#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> (see “<a class="reference internal" href="working_with_metadata_annotations.html"><span class="doc">Working with Metadata Annotations</span></a>”) to the corresponding <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> or <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterDataSequence" title="dendropy.datamodel.charmatrixmodel.CharacterDataSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterDataSequence</span></code></a> object.</p>
+<section id="reference-annotation">
+<h4>Reference Annotation<a class="headerlink" href="#reference-annotation" title="Link to this heading">¶</a></h4>
+<p>Specifying “<code class="docutils literal notranslate"><span class="pre">add_ref_annotation_to_taxa=True</span></code>” will result in a reference-style metadata annotation added to the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object, while specifying “<code class="docutils literal notranslate"><span class="pre">add_ref_annotation_to_seqs=True</span></code>” will result in a reference-style metadata annotation added to the sequence.
+The reference-style annotation is brief, single annotation that points to the URL of the original record.
+As with metadata annotations in general, you really need to be using the NeXML format for full functionality.</p>
+<p>So, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span><span class="n">add_ref_annotation_to_taxa</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;nexml&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+&lt;nex:nexml
+    version=&quot;0.9&quot;
+    xsi:schemaLocation=&quot;http://www.nexml.org/2009 ../xsd/nexml.xsd&quot;
+    xmlns:dcterms=&quot;http://purl.org/dc/terms/&quot;
+    xmlns=&quot;http://www.nexml.org/2009&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xmlns:xml=&quot;http://www.w3.org/XML/1998/namespace&quot;
+    xmlns:nex=&quot;http://www.nexml.org/2009&quot;
+    xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema#&quot;
+&gt;
+    &lt;otus id=&quot;d4320533416&quot;&gt;
+        &lt;otu id=&quot;d4323884688&quot; label=&quot;158930545&quot;&gt;
+            &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;dcterms:source&quot; href=&quot;http://www.ncbi.nlm.nih.gov/nucleotide/158930545&quot; id=&quot;d4323884752&quot; /&gt;
+        &lt;/otu&gt;
+        &lt;otu id=&quot;d4323884816&quot; label=&quot;EU105475&quot;&gt;
+            &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;dcterms:source&quot; href=&quot;http://www.ncbi.nlm.nih.gov/nucleotide/EU105475&quot; id=&quot;d4323990736&quot; /&gt;
+        &lt;/otu&gt;
+    &lt;/otus&gt;
+    .
+    .
+    .
+&lt;/nex:nexml&gt;
+</pre></div>
+</div>
+<p>Alternatively:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span><span class="n">add_ref_annotation_to_seqs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;nexml&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+&lt;nex:nexml
+    version=&quot;0.9&quot;
+    xsi:schemaLocation=&quot;http://www.nexml.org/2009 ../xsd/nexml.xsd&quot;
+    xmlns:dcterms=&quot;http://purl.org/dc/terms/&quot;
+    xmlns=&quot;http://www.nexml.org/2009&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xmlns:xml=&quot;http://www.w3.org/XML/1998/namespace&quot;
+    xmlns:nex=&quot;http://www.nexml.org/2009&quot;
+    xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema#&quot;
+&gt;
+        &lt;matrix&gt;
+            &lt;row id=&quot;d4320533856&quot; otu=&quot;d4322811536&quot;&gt;
+                &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;dcterms:source&quot; href=&quot;http://www.ncbi.nlm.nih.gov/nucleotide/158930545&quot; id=&quot;d4322811600&quot; /&gt;
+                &lt;seq&gt;TCTCTTATCAAAC.../seq&gt;
+            &lt;/row&gt;
+            &lt;row id=&quot;d4320534384&quot; otu=&quot;d4322811664&quot;&gt;
+                &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;dcterms:source&quot; href=&quot;http://www.ncbi.nlm.nih.gov/nucleotide/EU105475&quot; id=&quot;d4322917584&quot; /&gt;
+                &lt;seq&gt;TCTCTTATCAAAC...&lt;/seq&gt;
+            &lt;/row&gt;
+        &lt;/matrix&gt;
+    &lt;/characters&gt;
+&lt;/nex:nexml&gt;
+</pre></div>
+</div>
+</section>
+<section id="full-annotation">
+<h4>Full Annotation<a class="headerlink" href="#full-annotation" title="Link to this heading">¶</a></h4>
+<p>Specifying “<code class="docutils literal notranslate"><span class="pre">add_full_annotation_to_taxa=True</span></code>” or “<code class="docutils literal notranslate"><span class="pre">add_full_annotation_to_seqs=True</span></code>” will result in the entire GenBank record being added as a set of annotations to the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> or <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterDataSequence" title="dendropy.datamodel.charmatrixmodel.CharacterDataSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterDataSequence</span></code></a> object, respectively.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">genbank</span>
+<span class="n">gb_dna</span> <span class="o">=</span> <span class="n">genbank</span><span class="o">.</span><span class="n">GenBankDna</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="mi">158930545</span><span class="p">,</span> <span class="s1">&#39;EU105475&#39;</span><span class="p">])</span>
+<span class="n">char_matrix</span> <span class="o">=</span> <span class="n">gb_dna</span><span class="o">.</span><span class="n">generate_char_matrix</span><span class="p">(</span><span class="n">add_full_annotation_to_taxa</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;nexml&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>will result in the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+&lt;nex:nexml
+    version=&quot;0.9&quot;
+    xsi:schemaLocation=&quot;http://www.nexml.org/2009 ../xsd/nexml.xsd&quot;
+    xmlns:genbank=&quot;http://www.ncbi.nlm.nih.gov/dtd/INSD_INSDSeq.mod.dtd&quot;
+    xmlns:dcterms=&quot;http://purl.org/dc/terms/&quot;
+    xmlns=&quot;http://www.nexml.org/2009&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xmlns:xml=&quot;http://www.w3.org/XML/1998/namespace&quot;
+    xmlns:nex=&quot;http://www.nexml.org/2009&quot;
+    xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema#&quot;
+&gt;
+    &lt;otus id=&quot;d4320533416&quot;&gt;
+        &lt;otu id=&quot;d4323884688&quot; label=&quot;158930545&quot;&gt;
+            &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;dcterms:source&quot; href=&quot;http://www.ncbi.nlm.nih.gov/nucleotide/158930545&quot; id=&quot;d4323884752&quot; &gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_locus&quot; content=&quot;EU105474&quot; id=&quot;d4323884880&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_length&quot; content=&quot;494&quot; id=&quot;d4323884944&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_moltype&quot; content=&quot;DNA&quot; id=&quot;d4323885008&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_topology&quot; content=&quot;linear&quot; id=&quot;d4323901520&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_strandedness&quot; content=&quot;double&quot; id=&quot;d4323901584&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_division&quot; content=&quot;PRI&quot; id=&quot;d4323901648&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_update-date&quot; content=&quot;27-NOV-2007&quot; id=&quot;d4323901712&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_create-date&quot; content=&quot;27-NOV-2007&quot; id=&quot;d4323901776&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_definition&quot; content=&quot;Homo sapiens Ache non-coding region T864 genomic sequence&quot; id=&quot;d4323901840&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_primary-accesison&quot; content=&quot;EU105474&quot; id=&quot;d4323901904&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_accession-version&quot; content=&quot;EU105474.1&quot; id=&quot;d4323901968&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:otherSeqIds&quot; id=&quot;d4323902032&quot; &gt;
+                    &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:gb&quot; content=&quot;EU105474.1&quot; id=&quot;d4323902160&quot; /&gt;
+                    &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:gi&quot; content=&quot;158930545&quot; id=&quot;d4323902224&quot; /&gt;
+                &lt;/meta&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_source&quot; content=&quot;Homo sapiens (human)&quot; id=&quot;d4323902096&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_organism&quot; content=&quot;Homo sapiens&quot; id=&quot;d4323902288&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_taxonomy&quot; content=&quot;Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia; Eutheria; Euarchontoglires; Primates; Haplorrhini; Catarrhini; Hominidae; Homo&quot; id=&quot;d4323902352&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:INSDSeq_references&quot; id=&quot;d4323902416&quot; &gt;
+                    &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:INSDReference_reference&quot; id=&quot;d4323902544&quot; &gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_reference&quot; content=&quot;1&quot; id=&quot;d4323902672&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_position&quot; content=&quot;1..494&quot; id=&quot;d4323902736&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_title&quot; content=&quot;Statistical evaluation of alternative models of human evolution&quot; id=&quot;d4323902800&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_journal&quot; content=&quot;Proc. Natl. Acad. Sci. U.S.A. 104 (45), 17614-17619 (2007)&quot; id=&quot;d4323902864&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_pubmed&quot; content=&quot;17978179&quot; id=&quot;d4323902928&quot; /&gt;
+                    &lt;/meta&gt;
+                    &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:INSDReference_reference&quot; id=&quot;d4323902608&quot; &gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_reference&quot; content=&quot;2&quot; id=&quot;d4323903056&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_position&quot; content=&quot;1..494&quot; id=&quot;d4323903120&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_title&quot; content=&quot;Direct Submission&quot; id=&quot;d4323903184&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDReference_journal&quot; content=&quot;Submitted (17-AUG-2007) Laboratorio de Biologia Genomica e Molecular, Pontificia Universidade Catolica do Rio Grande do Sul, Av Ipiranga 6681, Predio 12C, Sala 172, Porto Alegre, RS 90619-900, Brazil&quot; id=&quot;d4323903248&quot; /&gt;
+                    &lt;/meta&gt;
+                &lt;/meta&gt;
+                &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:INSDSeq_feature-table&quot; id=&quot;d4323902480&quot; &gt;
+                    &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:INSDSeq_feature&quot; id=&quot;d4323903312&quot; &gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDFeature_key&quot; content=&quot;source&quot; id=&quot;d4323903440&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDFeature_location&quot; content=&quot;1..494&quot; id=&quot;d4323903504&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:INSDFeature_quals&quot; id=&quot;d4323903376&quot; &gt;
+                            &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:organism&quot; content=&quot;Homo sapiens&quot; id=&quot;d4323903632&quot; /&gt;
+                            &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:mol_type&quot; content=&quot;genomic DNA&quot; id=&quot;d4323903696&quot; /&gt;
+                            &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:db_xref&quot; content=&quot;taxon:9606&quot; id=&quot;d4323903760&quot; /&gt;
+                            &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:chromosome&quot; content=&quot;18&quot; id=&quot;d4323903824&quot; /&gt;
+                            &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:note&quot; content=&quot;Ache&quot; id=&quot;d4323903888&quot; /&gt;
+                        &lt;/meta&gt;
+                    &lt;/meta&gt;
+                    &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:INSDSeq_feature&quot; id=&quot;d4323903568&quot; &gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDFeature_key&quot; content=&quot;misc_feature&quot; id=&quot;d4323904016&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDFeature_location&quot; content=&quot;1..494&quot; id=&quot;d4323904080&quot; /&gt;
+                        &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;genbank:INSDFeature_quals&quot; id=&quot;d4323903952&quot; &gt;
+                            &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:note&quot; content=&quot;non-coding region T864&quot; id=&quot;d4323904208&quot; /&gt;
+                        &lt;/meta&gt;
+                    &lt;/meta&gt;
+                &lt;/meta&gt;
+            &lt;/meta&gt;
+        &lt;/otu&gt;
+        &lt;otu id=&quot;d4323884816&quot; label=&quot;EU105475&quot;&gt;
+            &lt;meta xsi:type=&quot;nex:ResourceMeta&quot; rel=&quot;dcterms:source&quot; href=&quot;http://www.ncbi.nlm.nih.gov/nucleotide/EU105475&quot; id=&quot;d4324005904&quot; &gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_locus&quot; content=&quot;EU105475&quot; id=&quot;d4324006032&quot; /&gt;
+                &lt;meta xsi:type=&quot;nex:LiteralMeta&quot; property=&quot;genbank:INSDSeq_length&quot; content=&quot;494&quot; id=&quot;d4324006096&quot; /&gt;
+                .
+                .
+                .
+                (etc.)
+            &lt;/meta&gt;
+        &lt;/otu&gt;
+    &lt;/otus&gt;
+    .
+    .
+    .
+    (etc.)
+&lt;/nex:nexml&gt;
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Working with GenBank Molecular Sequence Databases</a><ul>
+<li><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li><a class="reference internal" href="#acquiring-data-from-genebank">Acquiring Data from GeneBank</a></li>
+<li><a class="reference internal" href="#accessing-genbank-records">Accessing GenBank Records</a></li>
+<li><a class="reference internal" href="#generating-character-matrix-objects-from-genbank-data">Generating Character Matrix Objects from GenBank Data</a><ul>
+<li><a class="reference internal" href="#customizing-controlling-sequence-taxa">Customizing/Controlling Sequence Taxa</a><ul>
+<li><a class="reference internal" href="#specifying-a-custom-label-for-sequence-taxa">Specifying a Custom Label for Sequence Taxa</a></li>
+<li><a class="reference internal" href="#specifying-a-custom-taxon-discovery-function">Specifying a Custom Taxon-Discovery Function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#adding-the-genbank-record-as-an-attribute">Adding the GenBank Record as an Attribute</a></li>
+<li><a class="reference internal" href="#annotating-with-genbank-data-and-metadata">Annotating with GenBank Data and Metadata</a><ul>
+<li><a class="reference internal" href="#reference-annotation">Reference Annotation</a></li>
+<li><a class="reference internal" href="#full-annotation">Full Annotation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="working_with_metadata_annotations.html"
+                          title="previous chapter">Working with Metadata Annotations</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="seqgen.html"
+                          title="next chapter">Seq-Gen</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="seqgen.html" title="Seq-Gen"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="working_with_metadata_annotations.html" title="Working with Metadata Annotations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Working with GenBank Molecular Sequence Databases</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

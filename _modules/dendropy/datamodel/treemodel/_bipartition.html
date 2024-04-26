@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.datamodel.treemodel._bipartition &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.treemodel._bipartition</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.datamodel.treemodel._bipartition</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">bitprocessing</span>
+
+<div class="viewcode-block" id="Bipartition">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition">[docs]</a>
+<span class="k">class</span> <span class="nc">Bipartition</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A bipartition on a tree.</span>
+
+<span class="sd">    A bipartition of a tree is a division or sorting of the leaves/tips of a</span>
+<span class="sd">    tree into two mutually-exclusive and collectively-comprehensive subsets,</span>
+<span class="sd">    obtained by bisecting the tree at a particular edge. There is thus a</span>
+<span class="sd">    one-to-one correspondence with an edge of a tree and a bipartition. The</span>
+<span class="sd">    term &quot;split&quot; is often also used to refer to the same concept, though this</span>
+<span class="sd">    is typically applied to unrooted trees.</span>
+
+<span class="sd">    A bipartition is modeled using a bitmask. This is a a bit array</span>
+<span class="sd">    representing the membership of taxa, with the least-significant bit</span>
+<span class="sd">    corresponding to the first taxon, the next least-signficant bit</span>
+<span class="sd">    corresponding to the second taxon, and so on, till the last taxon</span>
+<span class="sd">    corresponding to the most-significant bit. Taxon membership in one of two</span>
+<span class="sd">    arbitrary groups, &#39;0&#39; or &#39;1&#39;, is indicated by its corresponding bit being</span>
+<span class="sd">    unset or set, respectively.</span>
+
+<span class="sd">    To allow comparisons and correct identification of the same bipartition</span>
+<span class="sd">    across different rotational and orientiational representations of unrooted</span>
+<span class="sd">    trees, we *normalize* the bipartition such that the first taxon is always</span>
+<span class="sd">    assigned to group &#39;0&#39; for bipartition representations of unrooted trees.</span>
+
+<span class="sd">    The normalization of the bitmask loses information about the actual</span>
+<span class="sd">    descendents of a particular edge. Thus in addition to the</span>
+<span class="sd">    :attr:`Bipartition.bitmask` attribute, each |Bipartition| object</span>
+<span class="sd">    also maintains a :attr:`Bipartition.leafset_bitmask` attribute which is</span>
+<span class="sd">    *unnormalized*. This is a bit array representing the presence or absence of</span>
+<span class="sd">    taxa in the subtree descending from the child node of the edge of which</span>
+<span class="sd">    this bipartition is associated. The least-significant bit corresponds to</span>
+<span class="sd">    the first taxon, the next least-signficant bit corresponds to the second</span>
+<span class="sd">    taxon, and so on, with the last taxon corresponding to the most-significant</span>
+<span class="sd">    bit. For rooted trees, the value of :attr:`Bipartition.bitmask` and</span>
+<span class="sd">    :attr:`Bipartition.leafset_bitmask` are identical. For unrooted trees, they</span>
+<span class="sd">    may or may not be equal.</span>
+
+<span class="sd">    In general, we use :attr:`Bipartition.bitmask` data to establish the *identity*</span>
+<span class="sd">    of a split or bipartition across *different* trees: for example, when</span>
+<span class="sd">    computing the Robinson-Foulds distances between trees, or in assessing the</span>
+<span class="sd">    support for different bipartitions given an MCMC or bootstrap sample of trees.</span>
+<span class="sd">    Here the normalization of the bitmask in unrooted trees allows for the</span>
+<span class="sd">    (arbitrarily-labeled) group &#39;0&#39; to be consistent across different</span>
+<span class="sd">    representations, rotations, and orientations of trees.</span>
+
+<span class="sd">    On the other hand, we use :attr:`Bipartition.leafset_bitmask` data to work</span>
+<span class="sd">    with various ancestor-descendent relationships *within* the *same* tree:</span>
+<span class="sd">    for example, to quickly assess if a taxon descends from a particular</span>
+<span class="sd">    node in a given tree, or if a particular node is a common ancestor of</span>
+<span class="sd">    two taxa in a given tree.</span>
+
+<span class="sd">    The |Bipartition| object might be used in keys in dictionaries and</span>
+<span class="sd">    look-up tables implemented as sets to allow for, e.g., calculation of</span>
+<span class="sd">    support in terms of the number times a particular bipartition is observed.</span>
+<span class="sd">    The :attr:`Bipartition.bitmask` is used as hash value for this purpose. As</span>
+<span class="sd">    such, it is crucial that this value does not change once a particular</span>
+<span class="sd">    |Bipartition| object is stored in a dictionary or set. To this end,</span>
+<span class="sd">    we impose the constraint that |Bipartition| objects are immutable</span>
+<span class="sd">    unless the ``is_mutable`` attribute is explicitly set to |True| as a sort</span>
+<span class="sd">    of waiver signed by the client code. Client code does this at its risk,</span>
+<span class="sd">    with the warning that anything up to and including the implosion of the</span>
+<span class="sd">    universe may occur if the |Bipartition| object is a member of an set</span>
+<span class="sd">    of dictionary at the time (or, at the very least, the modified</span>
+<span class="sd">    |Bipartition| object may not be accessible from dictionaries</span>
+<span class="sd">    and sets in which it is stored, or may occlude other</span>
+<span class="sd">    |Bipartition| objects in the container).</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+
+<span class="sd">    There are two possible ways of mapping taxa to bits in a bitarray or bitstring.</span>
+
+<span class="sd">    In the &quot;Least-Signficiant-Bit&quot; (LSB) scheme, the first taxon corresponds to the</span>
+<span class="sd">    least-significant, or left-most bit. So, given four taxa, indexed from 1 to 4,</span>
+<span class="sd">    taxon 1 would map to 0b0001, taxon 2 would map to 0b0010, taxon 3 would map</span>
+<span class="sd">    to 0b0100, and taxon 4 would map to 0b1000.</span>
+
+<span class="sd">    In the &quot;Most-Significant-Bit&quot; (MSB) scheme, on the other hand, the first taxon</span>
+<span class="sd">    corresponds to the most-significant, or right-most bit. So, given four</span>
+<span class="sd">    taxa, indexed from 1 to 4, taxon 1 would map to 0b1000, taxon 2 would map</span>
+<span class="sd">    to 0b0100, taxon 3 would map to 0b0010, and taxon 4 would map to 0b0001.</span>
+
+<span class="sd">    We selected the Least Significant Bit (LSB) approach because the MSB scheme</span>
+<span class="sd">    requires the size of the taxon namespace to fixed before the index can be</span>
+<span class="sd">    assigned to any taxa. For example, under the MSB scheme, if there are 4</span>
+<span class="sd">    taxa, the bitmask for taxon 1 is 0b1000 == 8, but if another taxon is</span>
+<span class="sd">    added, then the bitmask for taxon 1 will become 0b10000 == 16. On the other</span>
+<span class="sd">    hand, under the LSB scheme, the bitmask for taxon 1 will be 0b0001 == 1 if</span>
+<span class="sd">    there are 4 taxa, and 0b00001 == 1 if there 5 taxa, and so on. This</span>
+<span class="sd">    stability of taxon indexes even as the taxon namespace grows is a strongly</span>
+<span class="sd">    desirable property, and thus the adoption of the LSB scheme.</span>
+
+<span class="sd">    Constraining the first taxon to be in group 0 (LSB-0) rather than group 1</span>
+<span class="sd">    (LSB-1) is motivated by the fact that, in the former, we would combine</span>
+<span class="sd">    the bitmasks of child nodes using OR (logical addition) operations when</span>
+<span class="sd">    calculating the bitmask for a parent node, whereas, with the latter, we</span>
+<span class="sd">    would need to use AND operations. The former strikes us as more intuitive.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">normalize_bitmask</span><span class="p">(</span><span class="n">bitmask</span><span class="p">,</span> <span class="n">fill_bitmask</span><span class="p">,</span> <span class="n">lowest_relevant_bit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">bitmask</span> <span class="o">&amp;</span> <span class="n">lowest_relevant_bit</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="o">~</span><span class="n">bitmask</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">fill_bitmask</span>  <span class="c1"># force least-significant bit to 0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">bitmask</span> <span class="o">&amp;</span> <span class="n">fill_bitmask</span>  <span class="c1"># keep least-significant bit as 0</span>
+
+<div class="viewcode-block" id="Bipartition.is_trivial_bitmask">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.is_trivial_bitmask">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_trivial_bitmask</span><span class="p">(</span><span class="n">bitmask</span><span class="p">,</span> <span class="n">fill_bitmask</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the bitmask occurs in any tree of the taxa ``mask`` -- if</span>
+<span class="sd">        there is only fewer than two 1&#39;s or fewer than two 0&#39;s in ``bitmask`` (among</span>
+<span class="sd">        all of the that are 1 in mask).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">masked_split</span> <span class="o">=</span> <span class="n">bitmask</span> <span class="o">&amp;</span> <span class="n">fill_bitmask</span>
+        <span class="k">if</span> <span class="n">bitmask</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">bitmask</span> <span class="o">==</span> <span class="n">fill_bitmask</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">masked_split</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">masked_split</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">bitmask</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">fill_bitmask</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">cm</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">cm</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_trivial_leafset</span><span class="p">(</span><span class="n">leafset_bitmask</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">bitprocessing</span><span class="o">.</span><span class="n">num_set_bits</span><span class="p">(</span><span class="n">leafset_bitmask</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="Bipartition.is_compatible_bitmasks">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.is_compatible_bitmasks">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_compatible_bitmasks</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">fill_bitmask</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns |True| if ``m1`` is compatible with ``m2``</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        m1 : int</span>
+<span class="sd">            A bitmask representing a split.</span>
+<span class="sd">        m2 : int</span>
+<span class="sd">            A bitmask representing a split.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            |True| if ``m1`` is compatible with ``m2``. |False| otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">fill_bitmask</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">m1</span> <span class="o">=</span> <span class="n">fill_bitmask</span> <span class="o">&amp;</span> <span class="n">m1</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="n">fill_bitmask</span> <span class="o">&amp;</span> <span class="n">m2</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="p">(</span><span class="n">m1</span> <span class="o">&amp;</span> <span class="n">m2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">^</span> <span class="n">m2</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="p">(</span><span class="n">m1</span> <span class="o">&amp;</span> <span class="n">c2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">fill_bitmask</span> <span class="o">^</span> <span class="n">m1</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="p">(</span><span class="n">c1</span> <span class="o">&amp;</span> <span class="n">m2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="p">(</span><span class="n">c1</span> <span class="o">&amp;</span> <span class="n">c2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="c1">## Life-cycle</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        bitmask : integer</span>
+<span class="sd">            A bit array representing the membership of taxa, with the</span>
+<span class="sd">            least-significant bit corresponding to the first taxon, the next</span>
+<span class="sd">            least-signficant bit correspodning to the second taxon, and so on,</span>
+<span class="sd">            till the last taxon corresponding to the most-significant bit.</span>
+<span class="sd">            Taxon membership in one of two arbitrary groups, &#39;0&#39; or &#39;1&#39;, is</span>
+<span class="sd">            indicated by its corresponding bit being unset or set,</span>
+<span class="sd">            respectively.</span>
+<span class="sd">        leafset_bitmask : integer</span>
+<span class="sd">            A bit array representing the presence or absence of taxa in the</span>
+<span class="sd">            subtree descending from the child node of the edge of which this</span>
+<span class="sd">            bipartition is associated. The least-significant bit corresponds to</span>
+<span class="sd">            the first taxon, the next least-signficant bit corresponds to the</span>
+<span class="sd">            second taxon, and so on, with the last taxon corresponding to the</span>
+<span class="sd">            most-significant bit.</span>
+<span class="sd">        tree_leafset_bitmask : integer</span>
+<span class="sd">            The ``leafset_bitmask`` of the root edge of the tree with which this</span>
+<span class="sd">            bipartition is associated. In, general, this will be $0b1111...n$,</span>
+<span class="sd">            where $n$ is the number of taxa, *except* in cases of trees with</span>
+<span class="sd">            incomplete leaf-sets, where the positions corresponding to the</span>
+<span class="sd">            missing taxa will have the bits unset.</span>
+<span class="sd">        is_rooted : bool</span>
+<span class="sd">            Specifies whether or not the tree with which this bipartition is</span>
+<span class="sd">            associated is rooted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bitmask&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;leafset_bitmask&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tree_leafset_bitmask&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lowest_relevant_bit</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_rooted</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_rooted&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># self.edge = kwargs.get(&quot;edge&quot;, None)</span>
+        <span class="n">is_mutable</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_mutable&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;compile_bipartition&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_split_bitmask</span><span class="p">(</span>
+                <span class="n">leafset_bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span><span class="p">,</span>
+                <span class="n">tree_leafset_bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_mutable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span> <span class="o">=</span> <span class="n">is_mutable</span>
+        <span class="k">elif</span> <span class="n">is_mutable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span> <span class="o">=</span> <span class="n">is_mutable</span>
+
+    <span class="c1">## Identity</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">,</span> <span class="s2">&quot;Bipartition is mutable: hash is unstable&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="ow">or</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="c1"># return self._split_bitmask == other._split_bitmask</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_split_bitmask</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="ow">is</span> <span class="n">other</span><span class="o">.</span><span class="n">_split_bitmask</span><span class="p">)</span>
+
+    <span class="c1">## All properties are publically read-only if not mutable</span>
+
+    <span class="k">def</span> <span class="nf">_get_split_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span>
+
+    <span class="k">def</span> <span class="nf">_set_split_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">,</span> <span class="s2">&quot;Bipartition instance is not mutable&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="n">split_bitmask</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_split_bitmask</span><span class="p">,</span> <span class="n">_set_split_bitmask</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+
+    <span class="k">def</span> <span class="nf">_set_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">,</span> <span class="s2">&quot;Bipartition instance is not mutable&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="n">leafset_bitmask</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_leafset_bitmask</span><span class="p">,</span> <span class="n">_set_leafset_bitmask</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_tree_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+
+    <span class="k">def</span> <span class="nf">_set_tree_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">,</span> <span class="s2">&quot;Bipartition instance is not mutable&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compile_tree_leafset_bitmask</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="n">tree_leafset_bitmask</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span>
+        <span class="n">_get_tree_leafset_bitmask</span><span class="p">,</span> <span class="n">_set_tree_leafset_bitmask</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_is_rooted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_rooted</span>
+
+    <span class="k">def</span> <span class="nf">_set_is_rooted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">,</span> <span class="s2">&quot;Bipartition instance is not mutable&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_rooted</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="n">is_rooted</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_is_rooted</span><span class="p">,</span> <span class="n">_set_is_rooted</span><span class="p">)</span>
+
+    <span class="c1">## Representation</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span>
+            <span class="n">bitprocessing</span><span class="o">.</span><span class="n">bit_length</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span><span class="p">),</span> <span class="s2">&quot;0&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__int__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span>
+
+    <span class="k">def</span> <span class="nf">split_as_int</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span>
+
+    <span class="k">def</span> <span class="nf">leafset_as_int</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+
+<div class="viewcode-block" id="Bipartition.split_as_bitstring">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.split_as_bitstring">[docs]</a>
+    <span class="k">def</span> <span class="nf">split_as_bitstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol0</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">symbol1</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Composes and returns and representation of the bipartition as a</span>
+<span class="sd">        bitstring.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol1 : str</span>
+<span class="sd">            The symbol to represent group &#39;0&#39; in the bitmask.</span>
+<span class="sd">        symbol1 : str</span>
+<span class="sd">            The symbol to represent group &#39;1&#39; in the bitmask.</span>
+<span class="sd">        reverse : bool</span>
+<span class="sd">            If |True|, then the first taxon will correspond to the</span>
+<span class="sd">            most-significant bit, instead of the least-significant bit, as is</span>
+<span class="sd">            the default.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The bitstring representing the bipartition.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        To represent a bipartition in the same scheme used by, e.g. PAUP* or</span>
+<span class="sd">        Mr. Bayes::</span>
+
+<span class="sd">            print(bipartition.split_as_bitstring(&#39;.&#39;, &#39;*&#39;, reverse=True))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bitmask_as_bitstring</span><span class="p">(</span>
+            <span class="n">mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span><span class="p">,</span> <span class="n">symbol0</span><span class="o">=</span><span class="n">symbol0</span><span class="p">,</span> <span class="n">symbol1</span><span class="o">=</span><span class="n">symbol1</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.leafset_as_bitstring">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.leafset_as_bitstring">[docs]</a>
+    <span class="k">def</span> <span class="nf">leafset_as_bitstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol0</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">symbol1</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Composes and returns and representation of the bipartition leafset as a</span>
+<span class="sd">        bitstring.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        symbol1 : str</span>
+<span class="sd">            The symbol to represent group &#39;0&#39; in the bitmask.</span>
+<span class="sd">        symbol1 : str</span>
+<span class="sd">            The symbol to represent group &#39;1&#39; in the bitmask.</span>
+<span class="sd">        reverse : bool</span>
+<span class="sd">            If |True|, then the first taxon will correspond to the</span>
+<span class="sd">            most-significant bit, instead of the least-significant bit, as is</span>
+<span class="sd">            the default.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The bitstring representing the bipartition.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        To represent a bipartition in the same scheme used by, e.g. PAUP* or</span>
+<span class="sd">        Mr. Bayes::</span>
+
+<span class="sd">            print(bipartition.leafset_as_bitstring(&#39;.&#39;, &#39;*&#39;, reverse=True))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bitmask_as_bitstring</span><span class="p">(</span>
+            <span class="n">mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span><span class="p">,</span>
+            <span class="n">symbol0</span><span class="o">=</span><span class="n">symbol0</span><span class="p">,</span>
+            <span class="n">symbol1</span><span class="o">=</span><span class="n">symbol1</span><span class="p">,</span>
+            <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">bitmask_as_bitstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">symbol0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symbol1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">bitprocessing</span><span class="o">.</span><span class="n">int_as_bitstring</span><span class="p">(</span>
+            <span class="n">mask</span><span class="p">,</span>
+            <span class="n">length</span><span class="o">=</span><span class="n">bitprocessing</span><span class="o">.</span><span class="n">bit_length</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span><span class="p">),</span>
+            <span class="n">symbol0</span><span class="o">=</span><span class="n">symbol0</span><span class="p">,</span>
+            <span class="n">symbol1</span><span class="o">=</span><span class="n">symbol1</span><span class="p">,</span>
+            <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1">## Calculation</span>
+
+<div class="viewcode-block" id="Bipartition.compile_tree_leafset_bitmask">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.compile_tree_leafset_bitmask">[docs]</a>
+    <span class="k">def</span> <span class="nf">compile_tree_leafset_bitmask</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">tree_leafset_bitmask</span><span class="p">,</span> <span class="n">lowest_relevant_bit</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Avoids recalculation of ``lowest_relevant_bit`` if specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">,</span> <span class="s2">&quot;Bipartition instance is not mutable&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span> <span class="o">=</span> <span class="n">tree_leafset_bitmask</span>
+        <span class="k">if</span> <span class="n">lowest_relevant_bit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lowest_relevant_bit</span> <span class="o">=</span> <span class="n">lowest_relevant_bit</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lowest_relevant_bit</span> <span class="o">=</span> <span class="n">bitprocessing</span><span class="o">.</span><span class="n">least_significant_set_bit</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lowest_relevant_bit</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span></div>
+
+
+    <span class="k">def</span> <span class="nf">compile_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leafset_bitmask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tree_leafset_bitmask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">,</span> <span class="s2">&quot;Bipartition instance is not mutable&quot;</span>
+        <span class="k">if</span> <span class="n">tree_leafset_bitmask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_tree_leafset_bitmask</span><span class="p">(</span><span class="n">tree_leafset_bitmask</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">leafset_bitmask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">leafset_bitmask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span> <span class="o">=</span> <span class="n">leafset_bitmask</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span> <span class="o">=</span> <span class="n">leafset_bitmask</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+
+<div class="viewcode-block" id="Bipartition.compile_split_bitmask">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.compile_split_bitmask">[docs]</a>
+    <span class="k">def</span> <span class="nf">compile_split_bitmask</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">leafset_bitmask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tree_leafset_bitmask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_rooted</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the values of the various masks specified and calculates the</span>
+<span class="sd">        normalized bipartition bitmask.</span>
+
+<span class="sd">        If a rooted bipartition, then this is set to the value of the leafset</span>
+<span class="sd">        bitmask.</span>
+<span class="sd">        If an unrooted bipartition, then the leafset bitmask is normalized such that</span>
+<span class="sd">        the lowest-significant bit (i.e., the group to which the first taxon</span>
+<span class="sd">        belongs) is set to &#39;0&#39;.</span>
+
+<span class="sd">        Also makes this bipartition immutable (unless ``is_mutable`` is |False|),</span>
+<span class="sd">        which facilitates it being used in dictionaries and sets.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        leafset_bitmask : integer</span>
+<span class="sd">            A bit array representing the presence or absence of taxa in the</span>
+<span class="sd">            subtree descending from the child node of the edge of which this</span>
+<span class="sd">            bipartition is associated. The least-significant bit corresponds to</span>
+<span class="sd">            the first taxon, the next least-signficant bit corresponds to the</span>
+<span class="sd">            second taxon, and so on, with the last taxon corresponding to the</span>
+<span class="sd">            most-significant bit. If not specified or |None|, the current value</span>
+<span class="sd">            of ``self.leafset_bitmask`` is used.</span>
+<span class="sd">        tree_leafset_bitmask : integer</span>
+<span class="sd">            The ``leafset_bitmask`` of the root edge of the tree with which this</span>
+<span class="sd">            bipartition is associated. In, general, this will be $0b1111...n$,</span>
+<span class="sd">            where $n$ is the number of taxa, *except* in cases of trees with</span>
+<span class="sd">            incomplete leaf-sets, where the positions corresponding to the</span>
+<span class="sd">            missing taxa will have the bits unset. If not specified or |None|,</span>
+<span class="sd">            the current value of ``self.tree_leafset_bitmask`` is used.</span>
+<span class="sd">        is_rooted : bool</span>
+<span class="sd">            Specifies whether or not the tree with which this bipartition is</span>
+<span class="sd">            associated is rooted. If not specified or |None|, the current value</span>
+<span class="sd">            of ``self.is_rooted`` is used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        integer</span>
+<span class="sd">            The bipartition bitmask.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">,</span> <span class="s2">&quot;Bipartition instance is not mutable&quot;</span>
+        <span class="k">if</span> <span class="n">is_rooted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_rooted</span> <span class="o">=</span> <span class="n">is_rooted</span>
+        <span class="k">if</span> <span class="n">tree_leafset_bitmask</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_tree_leafset_bitmask</span><span class="p">(</span><span class="n">tree_leafset_bitmask</span><span class="o">=</span><span class="n">tree_leafset_bitmask</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">leafset_bitmask</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_leafset_bitmask</span><span class="p">(</span><span class="n">leafset_bitmask</span><span class="o">=</span><span class="n">leafset_bitmask</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_rooted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="o">=</span> <span class="n">Bipartition</span><span class="o">.</span><span class="n">normalize_bitmask</span><span class="p">(</span>
+                <span class="n">bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span><span class="p">,</span>
+                <span class="n">fill_bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span><span class="p">,</span>
+                <span class="n">lowest_relevant_bit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lowest_relevant_bit</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_mutable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span> <span class="o">=</span> <span class="n">is_mutable</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.compile_bipartition">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.compile_bipartition">[docs]</a>
+    <span class="k">def</span> <span class="nf">compile_bipartition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_mutable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the values of the various masks specified and calculates the</span>
+<span class="sd">        normalized bipartition bitmask.</span>
+
+<span class="sd">        If a rooted bipartition, then this is set to the value of the leafset</span>
+<span class="sd">        bitmask.</span>
+<span class="sd">        If an unrooted bipartition, then the leafset bitmask is normalized such that</span>
+<span class="sd">        the lowest-significant bit (i.e., the group to which the first taxon</span>
+<span class="sd">        belongs) is set to &#39;0&#39;.</span>
+
+<span class="sd">        Also makes this bipartition immutable (unless ``is_mutable`` is |False|),</span>
+<span class="sd">        which facilitates it being used in dictionaries and sets.</span>
+
+<span class="sd">        Note that this requires full population of the following fields:</span>
+<span class="sd">            - self._leafset_bitmask</span>
+<span class="sd">            - self._tree_leafset_bitmask</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compile_split_bitmask</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">leafset_bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span><span class="p">,</span>
+            <span class="n">tree_leafset_bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span><span class="p">,</span>
+            <span class="n">is_rooted</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_rooted</span><span class="p">,</span>
+            <span class="n">is_mutable</span><span class="o">=</span><span class="n">is_mutable</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1">## Operations</span>
+
+<div class="viewcode-block" id="Bipartition.normalize">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.normalize">[docs]</a>
+    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bitmask</span><span class="p">,</span> <span class="n">convention</span><span class="o">=</span><span class="s2">&quot;lsb0&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return ``bitmask`` ensuring that the bit corresponding to the first</span>
+<span class="sd">        taxon is 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">convention</span> <span class="o">==</span> <span class="s2">&quot;lsb0&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lowest_relevant_bit</span> <span class="o">&amp;</span> <span class="n">bitmask</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="o">~</span><span class="n">bitmask</span><span class="p">)</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">bitmask</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+        <span class="k">elif</span> <span class="n">convention</span> <span class="o">==</span> <span class="s2">&quot;lsb1&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lowest_relevant_bit</span> <span class="o">&amp;</span> <span class="n">bitmask</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">bitmask</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="o">~</span><span class="n">bitmask</span><span class="p">)</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unrecognized convention: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">convention</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.is_compatible_with">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.is_compatible_with">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_compatible_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns |True| if ``other`` is compatible with self.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : |Bipartition|</span>
+<span class="sd">            The bipartition to check for compatibility.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            |True| if ``other`` is compatible with ``self``; |False| otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_split_bitmask</span>
+        <span class="k">return</span> <span class="n">Bipartition</span><span class="o">.</span><span class="n">is_compatible_bitmasks</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.is_incompatible_with">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.is_incompatible_with">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_incompatible_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns |True| if ``other`` conflicts with self.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : |Bipartition|</span>
+<span class="sd">            The bipartition to check for conflicts.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            |True| if ``other`` conflicts with ``self``; |False| otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compatible_with</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.is_nested_within">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.is_nested_within">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_nested_within</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">is_other_masked_for_tree_leafset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns |True| if the current bipartition is contained</span>
+<span class="sd">        within other.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : |Bipartition|</span>
+<span class="sd">            The bipartition to check.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            |True| if the the bipartition is &quot;contained&quot; within ``other``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_rooted</span><span class="p">:</span>
+            <span class="n">m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_split_bitmask</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_other_masked_for_tree_leafset</span><span class="p">:</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span> <span class="o">&amp;</span> <span class="n">m2</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">m1</span> <span class="o">&amp;</span> <span class="n">m2</span><span class="p">)</span> <span class="o">==</span> <span class="n">m1</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.is_leafset_nested_within">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.is_leafset_nested_within">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_leafset_nested_within</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns |True| if the leafset of ``self`` is a subset of the leafset of</span>
+<span class="sd">        ``other``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : |Bipartition|</span>
+<span class="sd">            The bipartition to check for compatibility.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            |True| if the leafset of ``self`` is contained in ``other``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span> <span class="o">&amp;</span> <span class="n">m2</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">m2</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.is_trivial">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.is_trivial">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_trivial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            |True| if this bipartition divides a leaf and the rest of the</span>
+<span class="sd">            tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Bipartition</span><span class="o">.</span><span class="n">is_trivial_bitmask</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.split_as_newick_string">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.split_as_newick_string">[docs]</a>
+    <span class="k">def</span> <span class="nf">split_as_newick_string</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">,</span> <span class="n">preserve_spaces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quote_underscores</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represents this bipartition split as a newick string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        taxon_namespace : |TaxonNamespace| instance</span>
+<span class="sd">            The operational taxonomic unit concept namespace to reference.</span>
+<span class="sd">        preserve_spaces : boolean, optional</span>
+<span class="sd">            If |False| (default), then spaces in taxon labels will be replaced</span>
+<span class="sd">            by underscores. If |True|, then taxon labels with spaces will be</span>
+<span class="sd">            wrapped in quotes.</span>
+<span class="sd">        quote_underscores : boolean, optional</span>
+<span class="sd">            If |True| (default), then taxon labels with underscores will be</span>
+<span class="sd">            wrapped in quotes. If |False|, then the labels will not be wrapped</span>
+<span class="sd">            in quotes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        string</span>
+<span class="sd">            NEWICK representation of split specified by ``bitmask``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">bitmask_as_newick_string</span><span class="p">(</span>
+            <span class="n">bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span><span class="p">,</span>
+            <span class="n">preserve_spaces</span><span class="o">=</span><span class="n">preserve_spaces</span><span class="p">,</span>
+            <span class="n">quote_underscores</span><span class="o">=</span><span class="n">quote_underscores</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.leafset_as_newick_string">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.leafset_as_newick_string">[docs]</a>
+    <span class="k">def</span> <span class="nf">leafset_as_newick_string</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">,</span> <span class="n">preserve_spaces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quote_underscores</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represents this bipartition leafset as a newick string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        taxon_namespace : |TaxonNamespace| instance</span>
+<span class="sd">            The operational taxonomic unit concept namespace to reference.</span>
+<span class="sd">        preserve_spaces : boolean, optional</span>
+<span class="sd">            If |False| (default), then spaces in taxon labels will be replaced</span>
+<span class="sd">            by underscores. If |True|, then taxon labels with spaces will be</span>
+<span class="sd">            wrapped in quotes.</span>
+<span class="sd">        quote_underscores : boolean, optional</span>
+<span class="sd">            If |True| (default), then taxon labels with underscores will be</span>
+<span class="sd">            wrapped in quotes. If |False|, then the labels will not be wrapped</span>
+<span class="sd">            in quotes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        string</span>
+<span class="sd">            NEWICK representation of split specified by ``bitmask``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">bitmask_as_newick_string</span><span class="p">(</span>
+            <span class="n">bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span><span class="p">,</span>
+            <span class="n">preserve_spaces</span><span class="o">=</span><span class="n">preserve_spaces</span><span class="p">,</span>
+            <span class="n">quote_underscores</span><span class="o">=</span><span class="n">quote_underscores</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bipartition.leafset_taxa">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Bipartition.leafset_taxa">[docs]</a>
+    <span class="k">def</span> <span class="nf">leafset_taxa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns list of |Taxon| objects in the leafset of this</span>
+<span class="sd">        bipartition.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        taxon_namespace : |TaxonNamespace| instance</span>
+<span class="sd">            The operational taxonomic unit concept namespace to reference.</span>
+<span class="sd">        index : integer, optional</span>
+<span class="sd">            Start from this |Taxon| object instead of the first</span>
+<span class="sd">            |Taxon| object in the collection.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :py:class:`list` [|Taxon|]</span>
+<span class="sd">            List of |Taxon| objects specified or spanned by</span>
+<span class="sd">            ``bitmask``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">bitmask_taxa_list</span><span class="p">(</span>
+            <span class="n">bitmask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_format_bipartition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;taxon_namespace&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">bitprocessing</span><span class="o">.</span><span class="n">int_as_bitstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">)</span></div>
+
+
+    <span class="c1"># def as_newick_string</span>
+    <span class="c1"># def is_trivial</span>
+    <span class="c1"># def is_non_singleton</span>
+    <span class="c1"># def leafset_hash</span>
+    <span class="c1"># def leafset_as_bitstring</span>
+    <span class="c1"># def is_compatible</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../../index.html"><img src="../../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.treemodel._bipartition</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

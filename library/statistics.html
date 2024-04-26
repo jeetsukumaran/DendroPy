@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.calculate.statistics: General Statistics &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.simulate.treesim: Unified Namespace Aggregating Functions and Classes for Tree Simulations" href="treesim.html" />
+    <link rel="prev" title="dendropy.calculate.probability: General Probability" href="probability.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treesim.html" title="dendropy.simulate.treesim: Unified Namespace Aggregating Functions and Classes for Tree Simulations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="probability.html" title="dendropy.calculate.probability: General Probability"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.statistics</span></code>: General Statistics</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.calculate.statistics">
+<span id="dendropy-calculate-statistics-general-statistics"></span><h1><a class="reference internal" href="#module-dendropy.calculate.statistics" title="dendropy.calculate.statistics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.statistics</span></code></a>: General Statistics<a class="headerlink" href="#module-dendropy.calculate.statistics" title="Link to this heading">¶</a></h1>
+<p>Functions to calculate some general statistics.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.FishersExactTest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">FishersExactTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#FishersExactTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.FishersExactTest" title="Link to this definition">¶</a></dt>
+<dd><p>Given a 2x2 table:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>a</p></td>
+<td><p>b</p></td>
+</tr>
+<tr class="row-even"><td><p>c</p></td>
+<td><p>d</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>represented by a list of lists:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">],[</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>this calculates the sum of the probability of this table and all others
+more extreme under the null hypothesis that there is no association between
+the categories represented by the vertical and horizontal axes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.FishersExactTest.left_tail_p">
+<span class="sig-name descname"><span class="pre">left_tail_p</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#FishersExactTest.left_tail_p"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.FishersExactTest.left_tail_p" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the sum of probabilities of this table and all others more
+extreme.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.FishersExactTest.probability_of_table">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">probability_of_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#FishersExactTest.probability_of_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.FishersExactTest.probability_of_table" title="Link to this definition">¶</a></dt>
+<dd><p>Given a 2x2 table:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>a</p></td>
+<td><p>b</p></td>
+</tr>
+<tr class="row-even"><td><p>c</p></td>
+<td><p>d</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>represented by a list of lists:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">],[</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>this returns the probability of this table under the null hypothesis of
+no association between rows and columns, which was shown by Fisher to be
+a hypergeometric distribution:</p>
+<blockquote>
+<div><p>p = ( choose(a+b, a) * choose(c+d, c) ) / choose(a+b+c+d, a+c)</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.FishersExactTest.right_tail_p">
+<span class="sig-name descname"><span class="pre">right_tail_p</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#FishersExactTest.right_tail_p"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.FishersExactTest.right_tail_p" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the sum of probabilities of this table and all others more
+extreme.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.FishersExactTest.two_tail_p">
+<span class="sig-name descname"><span class="pre">two_tail_p</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#FishersExactTest.two_tail_p"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.FishersExactTest.two_tail_p" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the sum of probabilities of this table and all others more
+extreme.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.empirical_cdf">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">empirical_cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#empirical_cdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.empirical_cdf" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the proportion of values in <code class="docutils literal notranslate"><span class="pre">values</span></code> &lt;= <code class="docutils literal notranslate"><span class="pre">v</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.empirical_hpd">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">empirical_hpd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#empirical_hpd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.empirical_hpd" title="Link to this definition">¶</a></dt>
+<dd><p>Assuming a <strong>unimodal</strong> distribution, returns the 0.95 highest posterior
+density (HPD) interval for a set of samples from a posterior distribution.
+Adapted from <code class="docutils literal notranslate"><span class="pre">emp.hpd</span></code> in the “TeachingDemos” R package (Copyright Greg
+Snow; licensed under the Artistic License).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.mean_and_population_variance">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">mean_and_population_variance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#mean_and_population_variance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.mean_and_population_variance" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the mean and population variance while only passing over the
+elements in values once.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.mean_and_sample_variance">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">mean_and_sample_variance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#mean_and_sample_variance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.mean_and_sample_variance" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the mean and sample variance while only passing over the
+elements in values once.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.median">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#median"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.median" title="Link to this definition">¶</a></dt>
+<dd><p>Returns median of sample. From: <a class="reference external" href="http://wiki.python.org/moin/SimplePrograms">http://wiki.python.org/moin/SimplePrograms</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.mode">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.mode" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the mode of a set of values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.quantile_5_95">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">quantile_5_95</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#quantile_5_95"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.quantile_5_95" title="Link to this definition">¶</a></dt>
+<dd><p>Returns 5% and 95% quantiles.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.rank">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">rank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value_to_be_ranked</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_providing_rank</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#rank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.rank" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the rank of <code class="docutils literal notranslate"><span class="pre">value_to_be_ranked</span></code> in set of values, <code class="docutils literal notranslate"><span class="pre">values</span></code>.
+Works even if <code class="docutils literal notranslate"><span class="pre">values</span></code> is a non-orderable collection (e.g., a set).
+A binary search would be an optimized way of doing this if we can constrain
+<code class="docutils literal notranslate"><span class="pre">values</span></code> to be an ordered collection.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.summarize">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#summarize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.summarize" title="Link to this definition">¶</a></dt>
+<dd><p>Summarizes a sample of values:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">range</span></code>       : tuple pair representing minimum and maximum values</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mean</span></code>        : mean of sample</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">median</span></code>      : median of sample</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">var</span></code>         : (sample) variance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sd</span></code>          : (sample) standard deviation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hpd95</span></code>       : tuple pair representing 5% and 95% HPD</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quant_5_95</span></code>  : tuple pair representing 5% and 95% quantile</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.statistics.variance_covariance">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.statistics.</span></span><span class="sig-name descname"><span class="pre">variance_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_variance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/statistics.html#variance_covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.statistics.variance_covariance" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the Variance-Covariance matrix for <code class="docutils literal notranslate"><span class="pre">data</span></code>.
+From: <a class="reference external" href="http://www.python-forum.org/pythonforum/viewtopic.php?f=3&amp;t=17441">http://www.python-forum.org/pythonforum/viewtopic.php?f=3&amp;t=17441</a></p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.statistics</span></code>: General Statistics</a><ul>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.FishersExactTest"><code class="docutils literal notranslate"><span class="pre">FishersExactTest</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.FishersExactTest.left_tail_p"><code class="docutils literal notranslate"><span class="pre">FishersExactTest.left_tail_p</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.FishersExactTest.probability_of_table"><code class="docutils literal notranslate"><span class="pre">FishersExactTest.probability_of_table</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.FishersExactTest.right_tail_p"><code class="docutils literal notranslate"><span class="pre">FishersExactTest.right_tail_p</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.FishersExactTest.two_tail_p"><code class="docutils literal notranslate"><span class="pre">FishersExactTest.two_tail_p</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.empirical_cdf"><code class="docutils literal notranslate"><span class="pre">empirical_cdf</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.empirical_hpd"><code class="docutils literal notranslate"><span class="pre">empirical_hpd</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.mean_and_population_variance"><code class="docutils literal notranslate"><span class="pre">mean_and_population_variance</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.mean_and_sample_variance"><code class="docutils literal notranslate"><span class="pre">mean_and_sample_variance</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.median"><code class="docutils literal notranslate"><span class="pre">median</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.mode"><code class="docutils literal notranslate"><span class="pre">mode</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.quantile_5_95"><code class="docutils literal notranslate"><span class="pre">quantile_5_95</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.rank"><code class="docutils literal notranslate"><span class="pre">rank</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.summarize"><code class="docutils literal notranslate"><span class="pre">summarize</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.statistics.variance_covariance"><code class="docutils literal notranslate"><span class="pre">variance_covariance</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="probability.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.probability</span></code>: General Probability</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="treesim.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.simulate.treesim</span></code>: Unified Namespace Aggregating Functions and Classes for Tree Simulations</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treesim.html" title="dendropy.simulate.treesim: Unified Namespace Aggregating Functions and Classes for Tree Simulations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="probability.html" title="dendropy.calculate.probability: General Probability"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.statistics</span></code>: General Statistics</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

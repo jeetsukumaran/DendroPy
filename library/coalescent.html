@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.model.coalescent: The Coalescent &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.model.continuous: Continuous Character Evolution" href="continuous.html" />
+    <link rel="prev" title="dendropy.model.birthdeath: The Birth-Death and Related Processes" href="birthdeath.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="continuous.html" title="dendropy.model.continuous: Continuous Character Evolution"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="birthdeath.html" title="dendropy.model.birthdeath: The Birth-Death and Related Processes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.coalescent</span></code>: The Coalescent</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.model.coalescent">
+<span id="dendropy-model-coalescent-the-coalescent"></span><h1><a class="reference internal" href="#module-dendropy.model.coalescent" title="dendropy.model.coalescent"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.coalescent</span></code></a>: The Coalescent<a class="headerlink" href="#module-dendropy.model.coalescent" title="Link to this heading">¶</a></h1>
+<p>Functions, classes, and methods for working with Kingman’s n-coalescent
+framework.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.coalesce_nodes">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">coalesce_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_expected_tmrca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#coalesce_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.coalesce_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a list of nodes that have not yet coalesced once <code class="docutils literal notranslate"><span class="pre">period</span></code> is
+exhausted.</p>
+<p>This function will a draw a coalescence time, <code class="docutils literal notranslate"><span class="pre">t</span></code>, from an exponential
+distribution with a rate of <code class="docutils literal notranslate"><span class="pre">choose(k,</span> <span class="pre">2)</span></code>, where <code class="docutils literal notranslate"><span class="pre">k</span></code> is the number of
+nodes. If <code class="docutils literal notranslate"><span class="pre">period</span></code> is given and if this time is less than <code class="docutils literal notranslate"><span class="pre">period</span></code>, or if
+<code class="docutils literal notranslate"><span class="pre">period</span></code> is not given, then two nodes are selected at random from <code class="docutils literal notranslate"><span class="pre">nodes</span></code>,
+and coalesced: a new node is created, and the two nodes are added as
+child_nodes to this node with an edge length such the the total length from
+tip to the ancestral node is equal to the depth of the deepest child + <code class="docutils literal notranslate"><span class="pre">t</span></code>.
+The two nodes are removed from the list of nodes, and the new node is added
+to it. <code class="docutils literal notranslate"><span class="pre">t</span></code> is then deducted from <code class="docutils literal notranslate"><span class="pre">period</span></code>, and the process repeats.</p>
+<p>The function ends and returns the list of nodes once <code class="docutils literal notranslate"><span class="pre">period</span></code> is
+exhausted or if any draw of <code class="docutils literal notranslate"><span class="pre">t</span></code> exceeds <code class="docutils literal notranslate"><span class="pre">period</span></code>, if <code class="docutils literal notranslate"><span class="pre">period</span></code> is
+given or when there is only one node left.</p>
+<p>As each coalescent event occurs, <em>all</em> nodes have their edges
+extended to the point of the coalescent event. In the case of
+constrained coalescence, all uncoalesced nodes have their edges
+extended to the end of the period (coalesced nodes have the edges
+fixed by the coalescent event in their ancestor).  Thus multiple
+calls to this method with the same set of nodes will gradually
+‘grow’ the edges, until all the the nodes coalesce. The edge
+lengths of the nodes passed to this method thus should not be
+modified or reset until the process is complete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (iterable[<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>]) – An interable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects representing a sample of neutral
+genes (some, all, or none of these nodes may have descendent nodes).</p></li>
+<li><p><strong>pop_size</strong> (<em>integer</em>) – The effective <em>haploid</em> population size; i.e., number of genes in the
+population: 2 * N in a diploid population of N individuals, or N in a
+haploid population of N individuals.</p></li>
+<li><p><strong>period</strong> (<em>numeric</em>) – The time that the genes have to coalesce. If <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> is 1 or 0 or
+None, then time is in haploid population units; i.e. where 1 unit of
+time equals 2N generations for a diploid population of size N, or N
+generations for a haploid population of size N. Otherwise time is in
+generations.</p></li>
+<li><p><strong>rng</strong> (<code class="docutils literal notranslate"><span class="pre">Random</span></code> object) – The random number generator instance to use. If not specified, the
+default RNG will be used.</p></li>
+<li><p><strong>use_expected_tmrca</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then instead of random times, the <em>expected</em> times will be
+used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>nodes</strong> (<em>iterable[|Node|]</em>) – A list of nodes once <code class="docutils literal notranslate"><span class="pre">period</span></code> is exhausted or if any draw of <code class="docutils literal notranslate"><span class="pre">t</span></code>
+exceeds <code class="docutils literal notranslate"><span class="pre">period</span></code>, if <code class="docutils literal notranslate"><span class="pre">period</span></code> is given or when there is only one node
+left.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.constrained_kingman_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">constrained_kingman_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pop_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_tree_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_node_label_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_sampling_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random_uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_genes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_genes_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'num_genes'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pop_size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decorate_original_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#constrained_kingman_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.constrained_kingman_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Given a population tree, <code class="docutils literal notranslate"><span class="pre">pop_tree</span></code> this will return a <em>pair of
+trees</em>: a gene tree simulated on this population tree based on
+Kingman’s n-coalescent, and population tree with the additional
+attribute ‘gene_nodes’ on each node, which is a list of
+uncoalesced nodes from the gene tree associated with the given
+node from the population tree.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pop_tree</span></code>: a Tree object.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">gene_sampling_strategy</span></code>: string</dt><dd><ul class="simple">
+<li><p>“node_attribute”: Will expect each leaf of <code class="docutils literal notranslate"><span class="pre">pop_tree</span></code> to
+have an attribute, <code class="docutils literal notranslate"><span class="pre">num_genes</span></code>, that specifies the number
+of genes to be sampled from that population.</p></li>
+<li><p>“fixed_per_population”: Will assign <code class="docutils literal notranslate"><span class="pre">num_genes</span></code> to each population.</p></li>
+<li><p>“random_uniform”: Will assign genes to leaves with
+uniform probability until <code class="docutils literal notranslate"><span class="pre">num_genes</span></code> genes have been
+assigned.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">pop_size_attr</span></code>: string</dt><dd><p>The attribute name of the edges of <code class="docutils literal notranslate"><span class="pre">pop_tree</span></code> that
+specify the population size. By default it is <code class="docutils literal notranslate"><span class="pre">pop_size</span></code>. The should
+specify the effective <em>haploid</em> population size; i.e., number of gene
+in the population: 2 * N in a diploid population of N individuals,
+or N in a haploid population of N individuals.</p>
+</dd>
+</dl>
+<p>If <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> is 1 or 0 or None, then the edge lengths of <code class="docutils literal notranslate"><span class="pre">pop_tree</span></code> is
+taken to be in haploid population units; i.e. where 1 unit equals 2N
+generations for a diploid population of size N, or N generations for a
+haploid population of size N. Otherwise the edge lengths of <code class="docutils literal notranslate"><span class="pre">pop_tree</span></code> is
+taken to be in generations.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">gene_tree_list</span></code> is given, then the gene tree is added to the
+tree block, and the tree block’s taxa block will be used to manage
+the gene tree’s <code class="docutils literal notranslate"><span class="pre">taxa</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gene_node_label_fn</span></code> is a function that takes two arguments (a string
+and an integer, respectively, where the string is the containing species
+taxon label and the integer is the gene index) and returns a label for
+the corresponding the gene node.</p>
+<p>if <code class="docutils literal notranslate"><span class="pre">decorate_original_tree</span></code> is True, then the list of uncoalesced nodes at
+each node of the population tree is added to the original (input) population
+tree instead of a copy.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">num_genes</span></code> is None, then it will be set to 1 under the
+“node_attribute” strategy (serving as a fallback default for nodes that do
+not spcify <code class="docutils literal notranslate"><span class="pre">num_genes_attr</span></code>) or the leaf count of <code class="docutils literal notranslate"><span class="pre">pop_tree</span></code> under the
+<code class="docutils literal notranslate"><span class="pre">random_uniform</span></code> strategy.</p>
+<p>Note that this function does very much the same thing as
+<code class="docutils literal notranslate"><span class="pre">contained_coalescent_tree()</span></code>,
+but provides a very different API.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.contained_coalescent_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">contained_coalescent_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">containing_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_to_containing_taxon_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_pop_size_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pop_size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#contained_coalescent_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.contained_coalescent_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a gene tree simulated under the coalescent contained within a
+population or species tree.</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">containing_tree</span></code></dt><dd><p>The population or species tree. If <code class="docutils literal notranslate"><span class="pre">edge_pop_size_map</span></code> is not None,
+and population sizes given are non-trivial (i.e., &gt;1), then edge
+lengths on this tree are in units of generations. Otherwise edge
+lengths are in population units; i.e. 2N generations for diploid
+populations of size N, or N generations for diploid populations of
+size N.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">gene_to_containing_taxon_map</span></code></dt><dd><p>A TaxonNamespaceMapping object mapping Taxon objects in the
+<code class="docutils literal notranslate"><span class="pre">containing_tree</span></code> TaxonNamespace to corresponding Taxon objects in the
+resulting gene tree.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">edge_pop_size_attr</span></code></dt><dd><p>Name of attribute of edges that specify population size. By default
+this is “pop_size”. If this attribute does not exist,
+<code class="docutils literal notranslate"><span class="pre">default_pop_size</span></code> will be used.  The value for this attribute
+should be the haploid population size or the number of genes;
+i.e.  2N for a diploid population of N individuals, or N for a
+haploid population of N individuals. This value determines how
+branch length units are interpreted in the input tree,
+<code class="docutils literal notranslate"><span class="pre">containing_tree</span></code>.  If a biologically-meaningful value, then branch
+lengths on the <code class="docutils literal notranslate"><span class="pre">containing_tree</span></code> are properly read as generations.
+If not (e.g. 1 or 0), then they are in population units, i.e. where
+1 unit of time equals 2N generations for a diploid population of
+size N, or N generations for a haploid population of size N.
+Otherwise time is in generations. If this argument is None, then
+population sizes default to <code class="docutils literal notranslate"><span class="pre">default_pop_size</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">default_pop_size</span></code></dt><dd><p>Population size to use if <code class="docutils literal notranslate"><span class="pre">edge_pop_size_attr</span></code> is None or
+if an edge does not have the attribute. Defaults to 1.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The returned gene tree will have the following extra attributes:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">pop_node_genes</span></code></dt><dd><p>A dictionary with nodes of <code class="docutils literal notranslate"><span class="pre">containing_tree</span></code> as keys and a list of gene
+tree nodes that are uncoalesced as values.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Note that this function does very much the same thing as
+<code class="docutils literal notranslate"><span class="pre">constrained_kingman_tree()</span></code>, but provides a very different API.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.discrete_time_to_coalescence">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">discrete_time_to_coalescence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_genes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_to_coalesce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#discrete_time_to_coalescence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.discrete_time_to_coalescence" title="Link to this definition">¶</a></dt>
+<dd><p>A random draw from the “Kingman distribution” (discrete time version): Time
+to go from <code class="docutils literal notranslate"><span class="pre">n_genes</span></code> genes to <code class="docutils literal notranslate"><span class="pre">n_genes</span></code>-1 genes in a discrete-time
+Wright-Fisher population of <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes; i.e. waiting time until
+<code class="docutils literal notranslate"><span class="pre">n-genes</span></code> lineages coalesce in a population of <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_genes</strong> (<em>integer</em>) – The number of genes in the sample.</p></li>
+<li><p><strong>pop_size</strong> (<em>integer</em>) – The effective <em>haploid</em> population size; i.e., number of genes in the
+population: 2 * N in a diploid population of N individuals, or N in a
+haploid population of N individuals.</p></li>
+<li><p><strong>n_to_coalesce</strong> (<em>integer</em>) – The waiting time that will be returned will be the waiting time for
+this number of genes in the sample to coalesce.</p></li>
+<li><p><strong>rng</strong> (<code class="docutils literal notranslate"><span class="pre">Random</span></code> object) – The random number generator instance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>k</strong> (<em>integer</em>) – A randomly-generated waiting time (in discrete generations) for
+<code class="docutils literal notranslate"><span class="pre">n_to_coalesce</span></code> genes to coalesce out of a sample of <code class="docutils literal notranslate"><span class="pre">n_genes</span></code> in a
+population of <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.expected_tmrca">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">expected_tmrca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_genes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_to_coalesce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#expected_tmrca"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.expected_tmrca" title="Link to this definition">¶</a></dt>
+<dd><p>Expected (mean) value for the Time to the Most Recent Common Ancestor of
+<code class="docutils literal notranslate"><span class="pre">n_to_coalesce</span></code> genes in a sample of <code class="docutils literal notranslate"><span class="pre">n_genes</span></code> drawn from a population of
+<code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_genes</strong> (<em>integer</em>) – The number of genes in the sample.</p></li>
+<li><p><strong>pop_size</strong> (<em>integer</em>) – The effective <em>haploid</em> population size; i.e., number of genes in the
+population: 2 * N in a diploid population of N individuals, or N in a
+haploid population of N individuals.</p></li>
+<li><p><strong>n_to_coalesce</strong> (<em>integer</em>) – The waiting time that will be returned will be the waiting time for
+this number of genes in the sample to coalesce.</p></li>
+<li><p><strong>rng</strong> (<code class="docutils literal notranslate"><span class="pre">Random</span></code> object) – The random number generator instance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>k</strong> (<em>float</em>) – The expected waiting time (in continuous time) for <code class="docutils literal notranslate"><span class="pre">n_to_coalesce</span></code>
+genes to coalesce out of a sample of <code class="docutils literal notranslate"><span class="pre">n_genes</span></code> in a population of
+<code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.extract_coalescent_frames">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">extract_coalescent_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ultrametricity_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#extract_coalescent_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.extract_coalescent_frames" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples describing the coalescent frames on the tree. That
+is, each element in the list is tuple pair consisting of where: the first
+element of the pair is the number of separate lineages remaining on the
+tree at coalescence event, and the second element of the pair is the time
+between this coalescence event and the earlier (more recent) one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – A tree instance.</p></li>
+<li><p><strong>ultrametricity_precision</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – When calculating the node ages, an error will be raised if the tree is
+not ultrametric. This error may be due to floating-point or numerical
+imprecision. You can set the precision of the ultrametricity validation
+by setting the <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision</span></code> parameter. E.g., use
+<code class="docutils literal notranslate"><span class="pre">ultrametricity_precision=0.01</span></code> for a more relaxed precision, down to
+2 decimal places. Use <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision=False</span></code> to disable
+checking of ultrametricity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>x</strong> (<em>dict</em>) – Returns dictionary, with key = number of alleles, and values = waiting
+time for coalescent for the given tree</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.log_probability_of_coalescent_frames">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">log_probability_of_coalescent_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coalescent_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">haploid_pop_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#log_probability_of_coalescent_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.log_probability_of_coalescent_frames" title="Link to this definition">¶</a></dt>
+<dd><p>Under the classical neutral coalescent citep{Kingman1982,
+Kingman1982b}, the waiting times between coalescent events in a
+sample of $k$ alleles segregating in a  population of (haploid) size
+$N_e$ is distributed exponentially with a rate parameter of
+:math`frac{{k choose 2}}{N_e}`:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">math</span><span class="p">::</span>
+
+    \<span class="n">Pr</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">=</span>  \<span class="n">frac</span><span class="p">{{</span><span class="n">k</span> \<span class="n">choose</span> <span class="mi">2</span><span class="p">}}{</span><span class="n">N_e</span><span class="p">}</span> \<span class="n">e</span><span class="p">{</span><span class="o">-</span>  \<span class="n">frac</span><span class="p">{{</span><span class="n">k</span> \<span class="n">choose</span> <span class="mi">2</span><span class="p">}}{</span><span class="n">N_e</span><span class="p">}</span> <span class="n">T</span><span class="p">},</span>
+</pre></div>
+</div>
+<p>where $T$ is the length of  (chronological) time in which there are
+$k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
+$k-1$ alleles).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.log_probability_of_coalescent_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">log_probability_of_coalescent_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">haploid_pop_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ultrametricity_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#log_probability_of_coalescent_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.log_probability_of_coalescent_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Wraps up extraction of coalescent frames and reporting of probability.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.mean_kingman_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">mean_kingman_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon_namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#mean_kingman_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.mean_kingman_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a tree with coalescent intervals given by the expected times under
+Kingman’s neutral coalescent.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.node_waiting_time_pairs">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">node_waiting_time_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ultrametricity_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#node_waiting_time_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.node_waiting_time_pairs" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a list of tuples of (nodes, coalescent interval time) on the tree.
+That is, each element in the list is tuple pair consisting of where: the
+first element of the pair is an internal node representing a coalescent
+event on the tree, and the second element of the pair is the time between
+this coalescence event and the earlier (more recent) one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – A tree instance.</p></li>
+<li><p><strong>ultrametricity_precision</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – When calculating the node ages, an error will be raised if the tree is
+not ultrametric. This error may be due to floating-point or numerical
+imprecision. You can set the precision of the ultrametricity validation
+by setting the <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision</span></code> parameter. E.g., use
+<code class="docutils literal notranslate"><span class="pre">ultrametricity_precision=0.01</span></code> for a more relaxed precision, down to
+2 decimal places. Use <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision=False</span></code> to disable
+checking of ultrametricity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>x</strong> (<em>list of tuples (node, coalescent interval)</em>) – Returns list of tuples of (node, coalescent interval [= time between
+last coalescent event and current node age])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.pure_kingman_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">pure_kingman_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon_namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#pure_kingman_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.pure_kingman_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a tree under the unconstrained Kingman’s coalescent process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>taxon_namespace</strong> (<a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> instance) – A pre-populated <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> where the contained <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances
+represent the genes or individuals sampled from the population.</p></li>
+<li><p><strong>pop_size</strong> (<em>numeric</em>) – The size of the population from the which the coalescent process is
+sampled.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>t</strong> (<em>|Tree|</em>) – A tree sampled from the Kingman’s neutral coalescent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.pure_kingman_tree_shape">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">pure_kingman_tree_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_leaves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#pure_kingman_tree_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.pure_kingman_tree_shape" title="Link to this definition">¶</a></dt>
+<dd><p>Like <code class="xref py py-func docutils literal notranslate"><span class="pre">dendropy.model.pure_kingman_tree</span></code>, but does not assign taxa to tips.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_leaves</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of individuals/genes sampled.</p></li>
+<li><p><strong>pop_size</strong> (<em>numeric</em>) – The size of the population from the which the coalescent process is
+sampled.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>t</strong> (<em>|Tree|</em>) – A tree sampled from the Kingman’s neutral coalescent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.coalescent.time_to_coalescence">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">time_to_coalescence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_genes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_to_coalesce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#time_to_coalescence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.time_to_coalescence" title="Link to this definition">¶</a></dt>
+<dd><p>A random draw from the “Kingman distribution” (discrete time version): Time
+to go from <code class="docutils literal notranslate"><span class="pre">n_genes</span></code> genes to <code class="docutils literal notranslate"><span class="pre">n_genes</span></code>-1 genes in a continuous-time
+Wright-Fisher population of <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes; i.e. waiting time until
+<code class="docutils literal notranslate"><span class="pre">n-genes</span></code> lineages coalesce in a population of <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes.</p>
+<p>Given the number of gene lineages in a sample, <code class="docutils literal notranslate"><span class="pre">n_genes</span></code>, and a
+population size, <code class="docutils literal notranslate"><span class="pre">pop_size</span></code>, this function returns a random number from
+an exponential distribution with rate $choose(<code class="docutils literal notranslate"><span class="pre">pop_size</span></code>, 2)$.
+<code class="docutils literal notranslate"><span class="pre">pop_size</span></code> is the effective <em>haploid</em> population size; i.e., number of gene
+in the population: 2 * N in a diploid population of N individuals,
+or N in a haploid population of N individuals. If <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> is 1 or 0 or
+None, then time is in haploid population units; i.e. where 1 unit of time
+equals 2N generations for a diploid population of size N, or N generations
+for a haploid population of size N. Otherwise time is in generations.</p>
+<p>The coalescence time, or the waiting time for the coalescence, of two
+gene lineages evolving in a population with haploid size $N$ is an
+exponentially-distributed random variable with rate of $N$ an
+expectation of $frac{1}{N}$).
+The waiting time for coalescence of <em>any</em> two gene lineages in a sample of
+$n$ gene lineages evolving in a population with haploid size $N$ is an
+exponentially-distributed random variable with rate of $choose{N, 2}$ and
+an expectation of $frac{1}{choose{N, 2}}$.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_genes</strong> (<em>integer</em>) – The number of genes in the sample.</p></li>
+<li><p><strong>pop_size</strong> (<em>integer</em>) – The effective <em>haploid</em> population size; i.e., number of genes in the
+population: 2 * N in a diploid population of N individuals, or N in a
+haploid population of N individuals.</p></li>
+<li><p><strong>n_to_coalesce</strong> (<em>integer</em>) – The waiting time that will be returned will be the waiting time for
+this number of genes in the sample to coalesce.</p></li>
+<li><p><strong>rng</strong> (<code class="docutils literal notranslate"><span class="pre">Random</span></code> object) – The random number generator instance to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>k</strong> (<em>float</em>) – A randomly-generated waiting time (in continuous time) for
+<code class="docutils literal notranslate"><span class="pre">n_to_coalesce</span></code> genes to coalesce out of a sample of <code class="docutils literal notranslate"><span class="pre">n_genes</span></code> in a
+population of <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.coalescent</span></code>: The Coalescent</a><ul>
+<li><a class="reference internal" href="#dendropy.model.coalescent.coalesce_nodes"><code class="docutils literal notranslate"><span class="pre">coalesce_nodes</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.constrained_kingman_tree"><code class="docutils literal notranslate"><span class="pre">constrained_kingman_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.contained_coalescent_tree"><code class="docutils literal notranslate"><span class="pre">contained_coalescent_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.discrete_time_to_coalescence"><code class="docutils literal notranslate"><span class="pre">discrete_time_to_coalescence</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.expected_tmrca"><code class="docutils literal notranslate"><span class="pre">expected_tmrca</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.extract_coalescent_frames"><code class="docutils literal notranslate"><span class="pre">extract_coalescent_frames</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.log_probability_of_coalescent_frames"><code class="docutils literal notranslate"><span class="pre">log_probability_of_coalescent_frames</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.log_probability_of_coalescent_tree"><code class="docutils literal notranslate"><span class="pre">log_probability_of_coalescent_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.mean_kingman_tree"><code class="docutils literal notranslate"><span class="pre">mean_kingman_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.node_waiting_time_pairs"><code class="docutils literal notranslate"><span class="pre">node_waiting_time_pairs</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.pure_kingman_tree"><code class="docutils literal notranslate"><span class="pre">pure_kingman_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.pure_kingman_tree_shape"><code class="docutils literal notranslate"><span class="pre">pure_kingman_tree_shape</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.coalescent.time_to_coalescence"><code class="docutils literal notranslate"><span class="pre">time_to_coalescence</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="birthdeath.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.birthdeath</span></code>: The Birth-Death and Related Processes</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="continuous.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.continuous</span></code>: Continuous Character Evolution</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="continuous.html" title="dendropy.model.continuous: Continuous Character Evolution"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="birthdeath.html" title="dendropy.model.birthdeath: The Birth-Death and Related Processes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.coalescent</span></code>: The Coalescent</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

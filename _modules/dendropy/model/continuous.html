@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.model.continuous &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.model.continuous</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.model.continuous</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Models and modeling of continuous character evolution.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">GLOBAL_RNG</span>
+
+<div class="viewcode-block" id="PhylogeneticIndependentContrasts">
+<a class="viewcode-back" href="../../../library/continuous.html#dendropy.model.continuous.PhylogeneticIndependentContrasts">[docs]</a>
+<span class="k">class</span> <span class="nc">PhylogeneticIndependentContrasts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Phylogenetic Independent Contrasts.</span>
+
+<span class="sd">    References:</span>
+
+<span class="sd">        -   Felsenstein, J. 1985. Phylogenies and the comparative method. American</span>
+<span class="sd">            Naturalist 125:1-15.</span>
+<span class="sd">        -   Garland, T., Jr., Jr., A. F. Bennett, and E. L. Rezende. 2005.</span>
+<span class="sd">            Phylogenetic approaches in comparative physiology. Journal of</span>
+<span class="sd">            Experimental Biology 208:3015-3035.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">tree</span><span class="p">,</span>
+            <span class="n">char_matrix</span><span class="p">,</span>
+            <span class="n">polytomy_strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tree : |Tree| object</span>
+<span class="sd">            Tree to use.</span>
+<span class="sd">        char_matrix : |ContinuousCharacterMatrix|</span>
+<span class="sd">            ContinuousCharacterMatrix that is the source of the data</span>
+<span class="sd">        polytomy_strategy</span>
+<span class="sd">            One of: &#39;error&#39;, &#39;ignore&#39;, &#39;resolve&#39;.</span>
+
+<span class="sd">                &#39;error&#39;</span>
+<span class="sd">                    Throws an error if tree has polytomies.</span>
+<span class="sd">                &#39;ignore&#39;</span>
+<span class="sd">                    No error, but raw contrasts will not be calculated for</span>
+<span class="sd">                    polytomies.</span>
+<span class="sd">                &#39;resolve&#39;</span>
+<span class="sd">                    Randomly resolve polytomies.</span>
+
+<span class="sd">            Defaults to &#39;error&#39; if not specified or set to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_char_matrix</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_fully_analyzed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_polytomy_strategy</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_character_contrasts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_polytomy_strategy</span><span class="p">(</span><span class="n">polytomy_strategy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char_matrix</span> <span class="o">=</span> <span class="n">char_matrix</span>
+
+    <span class="k">def</span> <span class="nf">_get_polytomy_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polytomy_strategy</span>
+    <span class="k">def</span> <span class="nf">_set_polytomy_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polytomy_strategy</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">polytomy_strategy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_polytomy_strategy</span> <span class="o">=</span> <span class="s1">&#39;error&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">polytomy_strategy</span> <span class="o">=</span> <span class="n">polytomy_strategy</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">polytomy_strategy</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="s1">&#39;resolve&#39;</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid polytomy strategy: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">polytomy_strategy</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_polytomy_strategy</span> <span class="o">=</span> <span class="n">polytomy_strategy</span>
+    <span class="n">polytomy_strategy</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_polytomy_strategy</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_fully_analyzed</span><span class="p">:</span>
+            <span class="n">analyzed_chars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_character_contrasts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">analyzed_chars</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_contrasts</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_fully_analyzed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span>
+    <span class="k">def</span> <span class="nf">_set_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polytomy_strategy</span> <span class="o">==</span> <span class="s1">&#39;resolve&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">resolve_polytomies</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_dirty</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_tree</span><span class="p">,</span> <span class="n">_set_tree</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">            This tree will have an attribute added to each node, ``pic``. This</span>
+<span class="s2">            attribute will be a dictionary with character (column) index as</span>
+<span class="s2">            keys. Each column index will map to another dictionary that has the</span>
+<span class="s2">            following keys (and values):</span>
+
+<span class="s2">                - ``pic_state_value``</span>
+<span class="s2">                - ``pic_state_variance``</span>
+<span class="s2">                - ``pic_contrast_raw``</span>
+<span class="s2">                - ``pic_contrast_variance``</span>
+<span class="s2">                - ``pic_contrast_standardized``</span>
+<span class="s2">                - ``pic_edge_length_error``</span>
+<span class="s2">                - ``pic_corrected_edge_length``</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_char_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_matrix</span>
+    <span class="k">def</span> <span class="nf">_set_char_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_char_matrix</span> <span class="o">=</span> <span class="n">char_matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_dirty</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">char_matrix</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_char_matrix</span><span class="p">,</span> <span class="n">_set_char_matrix</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_is_dirty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span>
+    <span class="k">def</span> <span class="nf">_set_is_dirty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_dirty</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span> <span class="o">=</span> <span class="n">is_dirty</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_character_contrasts</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_fully_analyzed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">is_dirty</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_is_dirty</span><span class="p">,</span> <span class="n">_set_is_dirty</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_contrasts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main work-horse method. If needed, adds an entry to</span>
+<span class="sd">        self._character_constrants, with key being the character index, and a</span>
+<span class="sd">        value being another dictionary that contains the constrast information.</span>
+<span class="sd">        This second dictionary has the node&#39;s id as a key and as a value the a</span>
+<span class="sd">        dictionary with the following:</span>
+
+<span class="sd">                - ``pic_state_value``</span>
+<span class="sd">                - ``pic_state_variance``</span>
+<span class="sd">                - ``pic_contrast_raw``</span>
+<span class="sd">                - ``pic_contrast_variance``</span>
+<span class="sd">                - ``pic_contrast_standardized``</span>
+<span class="sd">                - ``pic_edge_length_error``</span>
+<span class="sd">                - ``pic_corrected_edge_length``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">character_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_character_contrasts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_character_contrasts</span><span class="p">[</span><span class="n">character_index</span><span class="p">]</span>
+        <span class="n">all_results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+            <span class="n">nd_results</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">child_nodes</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">child_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_state_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_matrix</span><span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">taxon</span><span class="p">][</span><span class="n">character_index</span><span class="p">]</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_state_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_raw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_standardized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_edge_length_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">child_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># root node?</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_state_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_state_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_raw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_standardized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_edge_length_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">state_vals</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">corrected_edge_lens</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">actual_edge_lens</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">cnd</span> <span class="ow">in</span> <span class="n">child_nodes</span><span class="p">:</span>
+                    <span class="n">state_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">all_results</span><span class="p">[</span><span class="n">cnd</span><span class="o">.</span><span class="n">_track_id</span><span class="p">][</span><span class="s1">&#39;pic_state_value&#39;</span><span class="p">])</span>
+                    <span class="n">actual_edge_lens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cnd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">all_results</span><span class="p">[</span><span class="n">cnd</span><span class="o">.</span><span class="n">_track_id</span><span class="p">][</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">corrected_edge_lens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">all_results</span><span class="p">[</span><span class="n">cnd</span><span class="o">.</span><span class="n">_track_id</span><span class="p">][</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">corrected_edge_lens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cnd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">state_vals</span><span class="p">)</span>
+                <span class="n">numerator_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">i</span> <span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">corrected_edge_lens</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">state_vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">denominator_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">i</span>  <span class="p">:</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">corrected_edge_lens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_state_value&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                        <span class="nb">sum</span><span class="p">(</span><span class="n">numerator_fn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> \
+                        <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">denominator_fn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+                <span class="n">sum_of_child_edges</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">corrected_edge_lens</span><span class="p">)</span>
+                <span class="n">prod_of_child_edges</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="n">corrected_edge_lens</span><span class="p">)</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_edge_length_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>  <span class="n">prod_of_child_edges</span> <span class="o">/</span> <span class="p">(</span><span class="n">sum_of_child_edges</span><span class="p">)</span> <span class="p">)</span>
+                <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">+</span> <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_edge_length_error&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_state_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">child_nodes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polytomy_strategy</span> <span class="o">==</span> <span class="s2">&quot;ignore&quot;</span><span class="p">:</span>
+                        <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_raw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_standardized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum_of_child_edges</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Tree is not fully-bifurcating&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_raw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state_vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">state_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_standardized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_raw&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">sum_of_child_edges</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span>
+                    <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_contrast_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum_of_child_edges</span>
+
+            <span class="n">nd</span><span class="o">.</span><span class="n">_track_id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span> <span class="c1"># will get cloned</span>
+            <span class="n">all_results</span><span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">_track_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nd_results</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">nd</span><span class="o">.</span><span class="n">pic</span><span class="p">[</span><span class="n">character_index</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nd_results</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">nd</span><span class="o">.</span><span class="n">pic</span> <span class="o">=</span> <span class="p">{</span><span class="n">character_index</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nd_results</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_character_contrasts</span><span class="p">[</span><span class="n">character_index</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">all_results</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_character_contrasts</span><span class="p">[</span><span class="n">character_index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PhylogeneticIndependentContrasts.contrasts_tree">
+<a class="viewcode-back" href="../../../library/continuous.html#dendropy.model.continuous.PhylogeneticIndependentContrasts.contrasts_tree">[docs]</a>
+    <span class="k">def</span> <span class="nf">contrasts_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">character_index</span><span class="p">,</span>
+            <span class="n">annotate_pic_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">state_values_as_node_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">corrected_edge_lengths</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a Tree object annotated with the following attributes added</span>
+<span class="sd">        to each node (as annotations to be serialized if</span>
+<span class="sd">        ``annotate_pic_statistics`` is True):</span>
+
+<span class="sd">            - ``pic_state_value``</span>
+<span class="sd">            - ``pic_state_variance``</span>
+<span class="sd">            - ``pic_contrast_raw``</span>
+<span class="sd">            - ``pic_contrast_variance``</span>
+<span class="sd">            - ``pic_contrast_standardized``</span>
+<span class="sd">            - ``pic_edge_length_error``</span>
+<span class="sd">            - ``pic_corrected_edge_length``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">contrasts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_contrasts</span><span class="p">(</span><span class="n">character_index</span><span class="p">)</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+            <span class="n">nd_results</span> <span class="o">=</span> <span class="n">contrasts</span><span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">_track_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nd_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">annotate_pic_statistics</span><span class="p">:</span>
+                    <span class="n">nd</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">add_bound_attribute</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">corrected_edge_lengths</span> <span class="ow">and</span> <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_corrected_edge_length&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">state_values_as_node_labels</span><span class="p">:</span>
+                <span class="n">nd</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">nd_results</span><span class="p">[</span><span class="s1">&#39;pic_state_value&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">tree</span></div>
+</div>
+
+
+<div class="viewcode-block" id="evolve_continuous_char">
+<a class="viewcode-back" href="../../../library/continuous.html#dendropy.model.continuous.evolve_continuous_char">[docs]</a>
+<span class="k">def</span> <span class="nf">evolve_continuous_char</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes a node and a random number generator object, ``rng`` This function</span>
+<span class="sd">    &quot;evolves&quot; a set of rates on the subtree descending from the  ``node``.</span>
+
+<span class="sd">    kwargs keys that are used are:</span>
+
+<span class="sd">    ``roeotroe``</span>
+<span class="sd">        the rate of evolution of the rate of evolution. This</span>
+<span class="sd">        parameter that controls the degree of deviations away from the</span>
+<span class="sd">        molecular clock.</span>
+<span class="sd">    ``min_rate``</span>
+<span class="sd">        is the minimum rate (default None)</span>
+<span class="sd">    ``max_rate``</span>
+<span class="sd">        is the maximum rate (default None),</span>
+<span class="sd">    ``model``</span>
+<span class="sd">        is a string specifying the name of the model. Currently only the</span>
+<span class="sd">        KTB (Kishino, Thorne, Bruno) is supported</span>
+<span class="sd">    ``time_attr``</span>
+<span class="sd">        is a string that specifies the name of the attribute</span>
+<span class="sd">        that returns the branch length in terms of time for a node. The</span>
+<span class="sd">        default is &quot;edge_length&quot;</span>
+<span class="sd">    ``val_attr``</span>
+<span class="sd">        is the string that specifies the name of the attribute</span>
+<span class="sd">        used to hold the value that is evolving along the nodes.  The root</span>
+<span class="sd">        of the subtree is assumed to have this field on calling of the</span>
+<span class="sd">        function.  On success all nodes in the subtree will have the</span>
+<span class="sd">        attribute.  The default is &quot;mutation_rate&quot;</span>
+<span class="sd">    ``mean_val_attr``</span>
+<span class="sd">        if specified this is string that gives the name of</span>
+<span class="sd">        attribute in each node that is mean value for the branch (default is</span>
+<span class="sd">        None). This is filled in after time_attr and val_attr are read,</span>
+<span class="sd">        so it is permissible to have this attribute match one of thos</span>
+<span class="sd">        strings (although it will make the model odd if the mean_val_attr</span>
+<span class="sd">        is the same as the val_attr)</span>
+<span class="sd">        ``constrain_rate_mode``</span>
+<span class="sd">        controls the behavior when the minimum or maximum rate is</span>
+<span class="sd">        simulated. The choices are &quot;crop&quot;, and &quot;linear_bounce&quot; &quot;crop&quot; means</span>
+<span class="sd">        that the rate is set to the most extreme value allowed.</span>
+<span class="sd">        &quot;linear_bounce&quot; considers the path of evolution of rate to be a</span>
+<span class="sd">        simple line from the ancestor&#39;s rate to the proposed rate. The</span>
+<span class="sd">        point at which the path crosses the extreme value is determined and</span>
+<span class="sd">        the rate is &quot;reflected off&quot; the limiting rate at that point.  This</span>
+<span class="sd">        causes the rate to avoid the extreme values more than a simulation</span>
+<span class="sd">        of small time slices that simply rejects illegal rates.</span>
+
+<span class="sd">    Currently the only model supported is the one of Kishino, Thorne, and Bruno.</span>
+<span class="sd">    &quot;Performance of a Divergence Time Estimation Method under a Probabilistic</span>
+<span class="sd">    Model of Rate Evolution.&quot; Molecular Biology and Evolution (2001) vol. 18</span>
+<span class="sd">    (3) pp. 352-361. This model is specified by the code &quot;KTB&quot;. A node&#39;s rate</span>
+<span class="sd">    is a log-normal variate with variance determined by the product of the</span>
+<span class="sd">    duration of the branch and the roeotroe parameter.  The mean of the</span>
+<span class="sd">    distribution is chosen such that mean of the log-normal is identical to the</span>
+<span class="sd">    rate at the parent. The mean_rate for the branch is the average of the rates</span>
+<span class="sd">    at the endpoints.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span>
+    <span class="n">nd_iter</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">preorder_iter</span><span class="p">()</span>
+    <span class="c1"># skip the first node -- it should already have a rate</span>
+    <span class="nb">next</span><span class="p">(</span><span class="n">nd_iter</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;KTB&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;KTB&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only the Kishino-Thorne-Bruno model is supported at this time&quot;</span><span class="p">)</span>
+    <span class="n">val_attr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;val_attr&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation_rate&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">val_attr</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;val_attr cannot be an empty string&quot;</span><span class="p">)</span>
+    <span class="n">time_attr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time_attr&quot;</span><span class="p">,</span> <span class="s2">&quot;edge_length&quot;</span><span class="p">)</span>
+    <span class="n">mean_val_attr</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mean_val_attr&quot;</span><span class="p">)</span>
+    <span class="n">constrain_rate_mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;constrain_rate_mode&quot;</span><span class="p">,</span> <span class="s2">&quot;crop&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">constrain_rate_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;crop&quot;</span><span class="p">,</span> <span class="s2">&quot;linear_bounce&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only &quot;crop&quot; and &quot;linear_bounce&quot; are supported at this time&#39;</span><span class="p">)</span>
+    <span class="n">roeotroe</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;roeotroe&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">min_rate</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;min_rate&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">min_rate</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;min_rate cannot be less than 0&quot;</span><span class="p">)</span>
+    <span class="n">max_rate</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_rate&quot;</span><span class="p">)</span>
+    <span class="n">anc_rate</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">val_attr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">min_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">min_rate</span> <span class="o">&gt;</span> <span class="n">max_rate</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;max_rate must be greater than the min_rate&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">min_rate</span> <span class="o">==</span> <span class="n">max_rate</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">nd_iter</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">val_attr</span><span class="p">,</span> <span class="n">min_rate</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">mean_val_attr</span><span class="p">:</span>
+                        <span class="c1"># here we assume that the rate changed from the</span>
+                        <span class="c1">#   ancestral rate to the only allowed rate</span>
+                        <span class="c1">#   instantaneously, so the mean rat is min_rate</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">mean_val_attr</span><span class="p">,</span> <span class="n">min_rate</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="k">if</span> <span class="n">max_rate</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;max_rate must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">anc_rate</span> <span class="o">&gt;</span> <span class="n">max_rate</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rate for the incoming node is &gt; max_rate&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">min_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">anc_rate</span> <span class="o">&lt;</span> <span class="n">min_rate</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;rate for the incoming node is &gt; max_rate&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">constrain_rate_mode</span> <span class="o">==</span> <span class="s2">&quot;crop&quot;</span><span class="p">:</span>
+        <span class="n">rate_fn</span> <span class="o">=</span> <span class="n">_calc_KTB_rates_crop</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rate_fn</span> <span class="o">=</span> <span class="n">_calc_KTB_rates_linear_bounce</span>
+    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">nd_iter</span><span class="p">:</span>
+        <span class="n">starting_rate</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">parent_node</span><span class="p">,</span> <span class="n">val_attr</span><span class="p">)</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">time_attr</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">mr</span>  <span class="o">=</span> <span class="n">rate_fn</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">roeotroe</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">min_rate</span><span class="p">,</span> <span class="n">max_rate</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">val_attr</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mean_val_attr</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">mean_val_attr</span><span class="p">,</span> <span class="n">mr</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_bounce_constrain</span><span class="p">(</span><span class="n">start_x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value of variable and its mean value over a path.</span>
+<span class="sd">    We assume that some variable started at ``start_x`` and moved toward ``x``, but</span>
+<span class="sd">    has to bounce of barriers specified by ``min_x`` and ``max_x``.</span>
+
+<span class="sd">    ``x`` determines the direction and magnitude of the change.</span>
+
+<span class="sd">    ``start_x`` must fall in the legal range (between the min and max). If</span>
+<span class="sd">    ``x`` is also legal, then (x, (x + start_x)/2.0) will be returned reflecting</span>
+<span class="sd">    the fact that the arithmetic mean of the endpoints represents the mean value</span>
+<span class="sd">    of the variable if it took a direct path (at constant rate).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">max_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">min_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">max_x</span> <span class="o">&gt;</span> <span class="n">min_x</span><span class="p">)</span>
+    <span class="n">gt_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>  <span class="ow">and</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">max_x</span><span class="p">)</span>
+    <span class="n">lt_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">min_x</span><span class="p">)</span>
+    <span class="n">prev_x</span> <span class="o">=</span> <span class="n">start_x</span>
+    <span class="n">prop_dur_remaining</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">mx</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">while</span> <span class="n">gt_max</span> <span class="ow">or</span> <span class="n">lt_min</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gt_max</span><span class="p">:</span>
+            <span class="n">p_changing</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_x</span> <span class="o">-</span> <span class="n">prev_x</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">prev_x</span><span class="p">)</span>
+            <span class="n">mean_changing</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev_x</span> <span class="o">+</span> <span class="n">max_x</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
+            <span class="n">mx</span> <span class="o">+=</span> <span class="n">p_changing</span><span class="o">*</span><span class="n">prop_dur_remaining</span><span class="o">*</span><span class="n">mean_changing</span>
+            <span class="n">prop_dur_remaining</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">p_changing</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">max_x</span> <span class="o">-</span> <span class="n">x</span>
+            <span class="n">lt_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">min_x</span><span class="p">)</span>
+            <span class="n">prev_x</span> <span class="o">=</span>  <span class="n">max_x</span>
+            <span class="n">gt_max</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">lt_min</span><span class="p">:</span>
+            <span class="n">p_changing</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev_x</span> <span class="o">-</span> <span class="n">min_x</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">prev_x</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">mean_changing</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev_x</span> <span class="o">+</span> <span class="n">min_x</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
+            <span class="n">mx</span> <span class="o">+=</span> <span class="n">prop_dur_remaining</span><span class="o">*</span><span class="n">p_changing</span><span class="o">*</span><span class="n">mean_changing</span>
+            <span class="n">prop_dur_remaining</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">p_changing</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">min_x</span> <span class="o">-</span> <span class="n">x</span>
+            <span class="n">lt_min</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">gt_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>  <span class="ow">and</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">max_x</span><span class="p">)</span>
+            <span class="n">prev_x</span> <span class="o">=</span>  <span class="n">min_x</span>
+    <span class="n">mean_changing</span> <span class="o">=</span> <span class="p">(</span><span class="n">prev_x</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
+    <span class="n">mx</span> <span class="o">+=</span> <span class="n">mean_changing</span><span class="o">*</span><span class="n">prop_dur_remaining</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">mx</span>
+
+<span class="k">def</span> <span class="nf">_calc_TKP_rate</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">roeotroe</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a simulated rate for the head node of a tree when:</span>
+
+<span class="sd">        * the tail node has rate ``starting_rate``</span>
+<span class="sd">        * the time duration of the edge is ``duration``</span>
+<span class="sd">        * the rate of evolution of the rate of evolution is ``roeotroe`` (this is</span>
+<span class="sd">            the parameter nu in Kishino, Thorne, and Bruno 2001)</span>
+<span class="sd">    ``rng`` is a random number generator.</span>
+
+<span class="sd">    The model used to generate the rate is the one described by Thorne, Kishino,</span>
+<span class="sd">    and Painter 1998.  The descendant rates or lognormally distributed.</span>
+<span class="sd">    The mean rate returned will have an expectation of ``starting_rate``</span>
+<span class="sd">    The variance of the normal distribution for the logarithm of the ending rate</span>
+<span class="sd">        is the product of ``duration`` and ``roeotroe``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rate_var</span> <span class="o">=</span> <span class="n">duration</span><span class="o">*</span><span class="n">roeotroe</span>
+    <span class="k">if</span> <span class="n">rate_var</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rng</span><span class="o">.</span><span class="n">lognormvariate</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rate_var</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">starting_rate</span>
+
+<span class="k">def</span> <span class="nf">_calc_KTB_rate</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">roeotroe</span><span class="p">,</span> <span class="n">rng</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a simulated rate for the head node of a tree when:</span>
+<span class="sd">        * the tail node has rate ``starting_rate``</span>
+<span class="sd">        * the time duration of the edge is ``duration``</span>
+<span class="sd">        * the rate of evolution of the rate of evolution is ``roeotroe`` (this is</span>
+<span class="sd">            the parameter nu in Kishino, Thorne, and Bruno 2001)</span>
+<span class="sd">    ``rng`` is a random number generator.</span>
+
+<span class="sd">    The model used to generate the rate is the one described by Kishino, Thorne,</span>
+<span class="sd">    and Bruno 2001.  The descendant rates or lognormally distributed.</span>
+<span class="sd">    The mean rate returned will have an expectation of ``starting_rate``</span>
+<span class="sd">    The variance of the normal distribution for the logarithm of the ending rate</span>
+<span class="sd">        is the product of ``duration`` and ``roeotroe``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">starting_rate</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;starting_rate must be positive in the KTB model&quot;</span><span class="p">)</span>
+    <span class="n">rate_var</span> <span class="o">=</span> <span class="n">duration</span><span class="o">*</span><span class="n">roeotroe</span>
+    <span class="k">if</span> <span class="n">rate_var</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="c1"># Kishino, Thorne and Bruno corrected the tendency for the rate to</span>
+        <span class="c1">#   increase seen in teh TKP, 1998 model</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">rate_var</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rng</span><span class="o">.</span><span class="n">lognormvariate</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rate_var</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">starting_rate</span>
+
+<span class="k">def</span> <span class="nf">_calc_KTB_rates_crop</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">roeotroe</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span>  <span class="n">min_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a descendant rate and mean rate according to the Kishino, Thorne,</span>
+<span class="sd">    Bruno model.  Assumes that the min_rate &lt;= starting_rate &lt;= max_rate if a max</span>
+<span class="sd">    and min are provided.</span>
+<span class="sd">    rate is kept within in the [min_rate, max_rate] range by cropping at these</span>
+<span class="sd">    values and acting is if the cropping occurred at an appropriate point</span>
+<span class="sd">    in the duration of the branch (based on a linear change in rate from the</span>
+<span class="sd">    beginning of the random_variate drawn for the end of the branch).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">roeotroe</span><span class="o">*</span><span class="n">duration</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">min_rate</span> <span class="ow">and</span> <span class="n">starting_rate</span> <span class="o">&lt;</span> <span class="n">min_rate</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">max_rate</span> <span class="ow">and</span> <span class="n">starting_rate</span> <span class="o">&gt;</span> <span class="n">max_rate</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Parent rate is out of bounds, but no rate change is possible&quot;</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_calc_KTB_rate</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">roeotroe</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_rate</span> <span class="ow">and</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="n">max_rate</span><span class="p">:</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">starting_rate</span> <span class="o">&lt;=</span> <span class="n">max_rate</span><span class="p">)</span>
+        <span class="n">p_changing</span> <span class="o">=</span>  <span class="p">(</span><span class="n">max_rate</span> <span class="o">-</span> <span class="n">starting_rate</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">starting_rate</span><span class="p">)</span>
+        <span class="n">mean_changing</span> <span class="o">=</span> <span class="p">(</span><span class="n">starting_rate</span> <span class="o">+</span> <span class="n">max_rate</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
+        <span class="n">mr</span> <span class="o">=</span> <span class="n">p_changing</span><span class="o">*</span><span class="n">mean_changing</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">p_changing</span><span class="p">)</span><span class="o">*</span><span class="n">max_rate</span>
+        <span class="k">return</span> <span class="n">max_rate</span><span class="p">,</span> <span class="n">mr</span>
+    <span class="k">elif</span> <span class="n">min_rate</span> <span class="ow">and</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">min_rate</span><span class="p">:</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">starting_rate</span> <span class="o">&gt;=</span> <span class="n">min_rate</span><span class="p">)</span>
+        <span class="n">p_changing</span> <span class="o">=</span> <span class="p">(</span><span class="n">starting_rate</span> <span class="o">-</span> <span class="n">min_rate</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">starting_rate</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span>
+        <span class="n">mean_changing</span> <span class="o">=</span> <span class="p">(</span><span class="n">starting_rate</span> <span class="o">+</span> <span class="n">min_rate</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
+        <span class="n">mr</span> <span class="o">=</span> <span class="n">p_changing</span><span class="o">*</span><span class="n">mean_changing</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">p_changing</span><span class="p">)</span><span class="o">*</span><span class="n">min_rate</span>
+        <span class="k">return</span> <span class="n">min_rate</span><span class="p">,</span> <span class="n">mr</span>
+    <span class="k">return</span> <span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="n">starting_rate</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
+
+<span class="k">def</span> <span class="nf">_calc_KTB_rates_linear_bounce</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">roeotroe</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span>  <span class="n">min_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a descendant rate and mean rate according to the Kishino, Thorne,</span>
+<span class="sd">    Bruno model.  Assumes that the min_rate &lt;= starting_rate &lt;= max_rate if a max</span>
+<span class="sd">    and min are provided.</span>
+<span class="sd">    The rate is kept within in the [min_rate, max_rate] range by &quot;bouncing&quot; off</span>
+<span class="sd">    of the barriers, where the &quot;collision&quot; is estimated by assuming a linear</span>
+<span class="sd">    change in rate from the beginning of the random_variate drawn for the end</span>
+<span class="sd">    of the branch).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">roeotroe</span><span class="o">*</span><span class="n">duration</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">min_rate</span> <span class="ow">and</span> <span class="n">starting_rate</span> <span class="o">&lt;</span> <span class="n">min_rate</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">max_rate</span> <span class="ow">and</span> <span class="n">starting_rate</span> <span class="o">&gt;</span> <span class="n">max_rate</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Parent rate is out of bounds, but no rate change is possible&quot;</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_calc_KTB_rate</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">roeotroe</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">min_rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">min_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">_bounce_constrain</span><span class="p">(</span><span class="n">starting_rate</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">min_rate</span><span class="p">,</span> <span class="n">max_rate</span><span class="p">)</span>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.model.continuous</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

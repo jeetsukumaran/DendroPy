@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.calculate.treemeasure: Unary Tree Statistics and Metrics &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.calculate.treecompare: Distances and Comparison Between Trees" href="treecompare.html" />
+    <link rel="prev" title="dendropy.model.treeshape: Models of Tree Shape" href="treeshape.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treecompare.html" title="dendropy.calculate.treecompare: Distances and Comparison Between Trees"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="treeshape.html" title="dendropy.model.treeshape: Models of Tree Shape"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.treemeasure</span></code>: Unary Tree Statistics and Metrics</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.calculate.treemeasure">
+<span id="dendropy-calculate-treemeasure-unary-tree-statistics-and-metrics"></span><h1><a class="reference internal" href="#module-dendropy.calculate.treemeasure" title="dendropy.calculate.treemeasure"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.treemeasure</span></code></a>: Unary Tree Statistics and Metrics<a class="headerlink" href="#module-dendropy.calculate.treemeasure" title="Link to this heading">¶</a></h1>
+<p>Statistics, metrics, measurements, and values calculated on (single) trees.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.B1">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">B1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#B1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.B1" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the B1 statistic: the reciprocal of the sum of the maximum
+number of nodes between each interior node and tip over all internal
+nodes excluding root.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.N_bar">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">N_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#N_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.N_bar" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the $ar{N}$ statistic: the average number of nodes above a
+terminal node.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.PatristicDistanceMatrix">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">PatristicDistanceMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#PatristicDistanceMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.PatristicDistanceMatrix" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.colless_tree_imbalance">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">colless_tree_imbalance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#colless_tree_imbalance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.colless_tree_imbalance" title="Link to this definition">¶</a></dt>
+<dd><p>Returns Colless’ tree imbalance or I statistic: the sum of differences
+of numbers of children in left and right subtrees over all internal
+nodes. <code class="docutils literal notranslate"><span class="pre">normalize</span></code> specifies the normalization:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>“max” or True [DEFAULT]</dt><dd><p>normalized to maximum value for tree of
+this size</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“yule”</dt><dd><p>normalized to the Yule model</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“pda”</dt><dd><p>normalized to the PDA (Proportional to Distinguishable
+Arrangements) model</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>None or False</dt><dd><p>no normalization</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.patristic_distance">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">patristic_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_bipartitions_updated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#patristic_distance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.patristic_distance" title="Link to this definition">¶</a></dt>
+<dd><p>Given a tree with bipartitions encoded, and two taxa on that tree, returns the
+patristic distance between the two. Much more inefficient than constructing
+a PhylogeneticDistanceMatrix object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.pybus_harvey_gamma">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">pybus_harvey_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#pybus_harvey_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.pybus_harvey_gamma" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the gamma statistic of Pybus and Harvey (2000). This statistic
+is used to test for constancy of birth and death rates over the course of
+a phylogeny.  Under the pure-birth process, the statistic should follow
+a standard Normal distibution: a Normal(mean=0, variance=1).</p>
+<dl class="simple">
+<dt>If the lengths of different paths to the node differ by more than <code class="docutils literal notranslate"><span class="pre">prec</span></code>,</dt><dd><p>then a ValueError exception will be raised indicating deviation from
+ultrametricty.</p>
+</dd>
+<dt>Raises a Value Error if the tree is not ultrametric, is non-binary, or has</dt><dd><p>only 2 leaves.</p>
+</dd>
+</dl>
+<p>As a side effect a <code class="docutils literal notranslate"><span class="pre">age</span></code> attribute is added to the nodes of the tree.</p>
+<p>Pybus and Harvey. 2000. “Testing macro-evolutionary models using incomplete
+molecular phylogenies.” Proc. Royal Society Series B: Biological Sciences.
+(267). 2267-2272</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.sackin_index">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">sackin_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#sackin_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.sackin_index" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the Sackin’s index: the sum of the number of ancestors for each
+tip of the tree. The larger the Sackin’s index, the less balanced the
+tree. <code class="docutils literal notranslate"><span class="pre">normalize</span></code> specifies the normalization:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>True [DEFAULT]</dt><dd><p>normalized to number of leaves; this results in a value
+equivalent to that given by Tree.N_bar()</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“yule”</dt><dd><p>normalized to the Yule model</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“pda”</dt><dd><p>normalized to the PDA (Proportional to Distinguishable
+Arrangements) model</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>None or False</dt><dd><p>no normalization</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.treeness">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">treeness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#treeness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.treeness" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the proportion of total tree length that is taken up by
+internal branches.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.treemeasure</span></code>: Unary Tree Statistics and Metrics</a><ul>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.B1"><code class="docutils literal notranslate"><span class="pre">B1</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.N_bar"><code class="docutils literal notranslate"><span class="pre">N_bar</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.PatristicDistanceMatrix"><code class="docutils literal notranslate"><span class="pre">PatristicDistanceMatrix</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.colless_tree_imbalance"><code class="docutils literal notranslate"><span class="pre">colless_tree_imbalance</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.patristic_distance"><code class="docutils literal notranslate"><span class="pre">patristic_distance</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.pybus_harvey_gamma"><code class="docutils literal notranslate"><span class="pre">pybus_harvey_gamma</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.sackin_index"><code class="docutils literal notranslate"><span class="pre">sackin_index</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.treeness"><code class="docutils literal notranslate"><span class="pre">treeness</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="treeshape.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.treeshape</span></code>: Models of Tree Shape</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="treecompare.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.treecompare</span></code>: Distances and Comparison Between Trees</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treecompare.html" title="dendropy.calculate.treecompare: Distances and Comparison Between Trees"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="treeshape.html" title="dendropy.model.treeshape: Models of Tree Shape"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.treemeasure</span></code>: Unary Tree Statistics and Metrics</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

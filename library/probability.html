@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.calculate.probability: General Probability &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.calculate.statistics: General Statistics" href="statistics.html" />
+    <link rel="prev" title="dendropy.calculate.popgenstat: Population Genetics Statistics" href="popgenstat.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="statistics.html" title="dendropy.calculate.statistics: General Statistics"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="popgenstat.html" title="dendropy.calculate.popgenstat: Population Genetics Statistics"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.probability</span></code>: General Probability</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.calculate.probability">
+<span id="dendropy-calculate-probability-general-probability"></span><h1><a class="reference internal" href="#module-dendropy.calculate.probability" title="dendropy.calculate.probability"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.probability</span></code></a>: General Probability<a class="headerlink" href="#module-dendropy.calculate.probability" title="Link to this heading">¶</a></h1>
+<p>Functions to calculate or draw values from various probability distributions.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.binomial_rv">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">binomial_rv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#binomial_rv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.binomial_rv" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the number of successes in a sample of <code class="docutils literal notranslate"><span class="pre">n</span></code> trials, with the
+probability of success given by <code class="docutils literal notranslate"><span class="pre">p</span></code>.  Using the BINV algorithm, as given
+by Kachitvicyanukul, V. and B. Schmeiser. 1988. Binomial random variate
+generation. Communications of the ACM 31: 216-222.
+Note: <em>NOT</em> the best algorithm according to the authors of the paper (who
+present their own as an alternative). Apart from rounding errors
+accumulating in the loop, it may also take a long time to return a value as
+<code class="docutils literal notranslate"><span class="pre">n</span></code> * <code class="docutils literal notranslate"><span class="pre">p</span></code> become large or even moderate (e.g., n=380 and p=0.8 still).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.chisq_pdf">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">chisq_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chisq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#chisq_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.chisq_pdf" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the probability value associated with the provided chi-square
+value and df.  Adapted from chisq.c in Gary Perlman’s Stat.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.exp_pdf">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">exp_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#exp_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.exp_pdf" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the probability density for an exponential distribution
+with an intensity of rate, evaluated at value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.geometric_rv">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">geometric_rv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#geometric_rv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.geometric_rv" title="Link to this definition">¶</a></dt>
+<dd><p>Geometric distribution per Devroye, Luc. Non-Uniform Random Variate
+Generation, 1986, p 500. <a class="reference external" href="http://cg.scs.carleton.ca/~luc/rnbookindex.html">http://cg.scs.carleton.ca/~luc/rnbookindex.html</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.hypergeometric_pmf">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">hypergeometric_pmf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#hypergeometric_pmf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.hypergeometric_pmf" title="Link to this definition">¶</a></dt>
+<dd><p>Given a population consisting of <code class="docutils literal notranslate"><span class="pre">m</span></code> items of class M and <code class="docutils literal notranslate"><span class="pre">n</span></code> items of class N,
+this returns the probability of observing <code class="docutils literal notranslate"><span class="pre">x</span></code> items of class M when sampling
+<code class="docutils literal notranslate"><span class="pre">k</span></code> times without replacement from the entire population (i.e., {M,N})</p>
+<blockquote>
+<div><p>p(x) = (choose(m, x) * choose(n, k-x)) / choose(m+n, k)</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.num_poisson_events">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">num_poisson_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#num_poisson_events"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.num_poisson_events" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the number of events that have occurred in a Poisson
+process of <code class="docutils literal notranslate"><span class="pre">rate</span></code> over <code class="docutils literal notranslate"><span class="pre">period</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.poisson_pmf">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">poisson_pmf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#poisson_pmf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.poisson_pmf" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the probability of a number, <code class="docutils literal notranslate"><span class="pre">k</span></code>, drawn from a Poisson distribution
+with rate parameter, <code class="docutils literal notranslate"><span class="pre">rate</span></code> (= 1/mean).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.poisson_rv">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">poisson_rv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#poisson_rv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.poisson_rv" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a random number from a Poisson distribution with rate of
+<code class="docutils literal notranslate"><span class="pre">rate</span></code> (mean of 1/rate).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.sample_multinomial">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">sample_multinomial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#sample_multinomial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.sample_multinomial" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the index of the probability bin in <code class="docutils literal notranslate"><span class="pre">probs</span></code>.
+<code class="docutils literal notranslate"><span class="pre">probs</span></code> is assumed to sum to 1.0 (all rounding error contributes to the
+last bin).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.weighted_choice">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">weighted_choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#weighted_choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.weighted_choice" title="Link to this definition">¶</a></dt>
+<dd><p>Selects an element out of seq, with probabilities of each element
+given by the list <code class="docutils literal notranslate"><span class="pre">weights</span></code> (which must be at least as long as the
+length of <code class="docutils literal notranslate"><span class="pre">seq</span></code> - 1).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.weighted_index_choice">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">weighted_index_choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#weighted_index_choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.weighted_index_choice" title="Link to this definition">¶</a></dt>
+<dd><p>(From: <a class="reference external" href="http://eli.thegreenplace.net/2010/01/22/weighted-random-generation-in-python/">http://eli.thegreenplace.net/2010/01/22/weighted-random-generation-in-python/</a>)
+The following is a simple function to implement weighted random choice in
+Python. Given a list of weights, it returns an index randomly, according
+to these weights [1].
+For example, given [2, 3, 5] it returns 0 (the index of the first element)
+with probability 0.2, 1 with probability 0.3 and 2 with probability 0.5.
+The weights need not sum up to anything in particular, and can actually be
+arbitrary Python floating point numbers.
+If we manage to sort the weights in descending order before passing them
+to weighted_choice_sub, it will run even faster, since the random call
+returns a uniformly distributed value and larger chunks of the total
+weight will be skipped in the beginning.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.probability.z_pmf">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.probability.</span></span><span class="sig-name descname"><span class="pre">z_pmf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/probability.html#z_pmf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.probability.z_pmf" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the probability value associated with the provided z-score.
+Adapted from z.c in Gary Perlman’s Stat.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.probability</span></code>: General Probability</a><ul>
+<li><a class="reference internal" href="#dendropy.calculate.probability.binomial_rv"><code class="docutils literal notranslate"><span class="pre">binomial_rv</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.chisq_pdf"><code class="docutils literal notranslate"><span class="pre">chisq_pdf</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.exp_pdf"><code class="docutils literal notranslate"><span class="pre">exp_pdf</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.geometric_rv"><code class="docutils literal notranslate"><span class="pre">geometric_rv</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.hypergeometric_pmf"><code class="docutils literal notranslate"><span class="pre">hypergeometric_pmf</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.num_poisson_events"><code class="docutils literal notranslate"><span class="pre">num_poisson_events</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.poisson_pmf"><code class="docutils literal notranslate"><span class="pre">poisson_pmf</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.poisson_rv"><code class="docutils literal notranslate"><span class="pre">poisson_rv</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.sample_multinomial"><code class="docutils literal notranslate"><span class="pre">sample_multinomial</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.weighted_choice"><code class="docutils literal notranslate"><span class="pre">weighted_choice</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.weighted_index_choice"><code class="docutils literal notranslate"><span class="pre">weighted_index_choice</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.probability.z_pmf"><code class="docutils literal notranslate"><span class="pre">z_pmf</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="popgenstat.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.popgenstat</span></code>: Population Genetics Statistics</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="statistics.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.statistics</span></code>: General Statistics</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="statistics.html" title="dendropy.calculate.statistics: General Statistics"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="popgenstat.html" title="dendropy.calculate.popgenstat: Population Genetics Statistics"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.probability</span></code>: General Probability</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

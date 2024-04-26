@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Partitions of Taxon Sets &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Trees" href="trees.html" />
+    <link rel="prev" title="Taxon Namespaces and Taxon Management" href="taxa.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="trees.html" title="Trees"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="taxa.html" title="Taxon Namespaces and Taxon Management"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Partitions of Taxon Sets</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="partitions-of-taxon-sets">
+<h1>Partitions of Taxon Sets<a class="headerlink" href="#partitions-of-taxon-sets" title="Link to this heading">¶</a></h1>
+<p>A number of different applications require a specification of a partition of a set of taxa.
+For example, when calculating population genetic summary statistics for a multi-population sample or numbers of deep coalescences given a particular monophyletic groupings of taxa.
+The <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespacePartition</span></code> object describes a partitioning of a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> into an exhaustive set of mutually-exclusive <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> subsets.</p>
+<p>There are four different ways to specify a partitioning scheme: by using a function, attribute, dictionary or list.
+The first three of these rely on providing a mapping of a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object to a subset membership identifier, i.e., a string, integer or some other type of value that identifies the grouping. The last explicitly describes the grouping as a list of lists.</p>
+<p>For example, consider the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">seqstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="gp">... </span><span class="s2">#NEXUS</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="s2">BEGIN TAXA;</span>
+<span class="gp">... </span><span class="s2">    DIMENSIONS NTAX=13;</span>
+<span class="gp">... </span><span class="s2">    TAXLABELS a1 a2 a3 b1 b2 b3 c1 c2 c3 c4 c5 d1 d2;</span>
+<span class="gp">... </span><span class="s2">END;</span>
+<span class="gp">... </span><span class="s2">BEGIN CHARACTERS;</span>
+<span class="gp">... </span><span class="s2">    DIMENSIONS NCHAR=7;</span>
+<span class="gp">... </span><span class="s2">    FORMAT DATATYPE=DNA MISSING=? GAP=- MATCHCHAR=.;</span>
+<span class="gp">... </span><span class="s2">    MATRIX</span>
+<span class="gp">... </span><span class="s2">        a1 ACCTTTG</span>
+<span class="gp">... </span><span class="s2">        a2 ACCTTTG</span>
+<span class="gp">... </span><span class="s2">        a3 ACCTTTG</span>
+<span class="gp">... </span><span class="s2">        b1 ATCTTTG</span>
+<span class="gp">... </span><span class="s2">        b2 ATCTTTG</span>
+<span class="gp">... </span><span class="s2">        b3 ACCTTTG</span>
+<span class="gp">... </span><span class="s2">        c1 ACCCTTG</span>
+<span class="gp">... </span><span class="s2">        c2 ACCCTTG</span>
+<span class="gp">... </span><span class="s2">        c3 ACCCTTG</span>
+<span class="gp">... </span><span class="s2">        c4 ACCCTTG</span>
+<span class="gp">... </span><span class="s2">        c5 ACCCTTG</span>
+<span class="gp">... </span><span class="s2">        d1 ACAAAAG</span>
+<span class="gp">... </span><span class="s2">        d2 ACCAAAG</span>
+<span class="gp">... </span><span class="s2">    ;</span>
+<span class="gp">... </span><span class="s2">END</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">seqs</span> <span class="o">=</span> <span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get_from_string</span><span class="p">(</span><span class="n">seqstr</span><span class="p">,</span> <span class="s1">&#39;nexus&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxon_namespace</span> <span class="o">=</span> <span class="n">seqs</span><span class="o">.</span><span class="n">taxon_namespace</span>
+</pre></div>
+</div>
+<p>Here we have sequences sampled from four populations, with the population identified by the first character of the taxon label. To create a parition of the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> resulting from parsing the file, we call the <code class="xref py py-meth docutils literal notranslate"><span class="pre">partition</span></code> method. This method takes one of the following four keyword arguments:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">membership_func</span></code></dt><dd><p>A function that takes a <code class="docutils literal notranslate"><span class="pre">Taxon</span></code> object as an argument and
+returns a a population membership identifier or flag
+(e.g., a string, an integer) .</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">membership_attr_name</span></code></dt><dd><p>Name of an attribute of <code class="docutils literal notranslate"><span class="pre">Taxon</span></code> objects that serves as an
+identifier for subset membership.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">membership_dict</span></code></dt><dd><p>A dictionary with <code class="docutils literal notranslate"><span class="pre">Taxon</span></code> objects as keys and population
+membership identifier or flag as values (e.g., a string,
+an integer).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">membership_lists</span></code></dt><dd><p>A container of containers of <code class="docutils literal notranslate"><span class="pre">Taxon</span></code> objects, with every
+<code class="docutils literal notranslate"><span class="pre">Taxon</span></code> object in <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> represented once and only
+once in the sub-containers.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>For example, using the membership function approach, we define a function that returns the first character of the taxon label, and pass it to the <code class="xref py py-meth docutils literal notranslate"><span class="pre">partition</span></code> using the <code class="docutils literal notranslate"><span class="pre">membership_func</span></code> keyword argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">mf</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tax_parts</span> <span class="o">=</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">membership_func</span><span class="o">=</span><span class="n">mf</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as would probably be done with such a simple membership function in practice:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_parts</span> <span class="o">=</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">membership_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Either way, we would get the following results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">tax_parts</span><span class="o">.</span><span class="n">subsets</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">())</span>
+<span class="gp">...</span>
+<span class="go">TaxonNamespace object at 0x101116838 (TaxonNamespace4312885304: &#39;a&#39;): 3 Taxa</span>
+<span class="go">TaxonNamespace object at 0x101116788 (TaxonNamespace4312885128: &#39;c&#39;): 5 Taxa</span>
+<span class="go">TaxonNamespace object at 0x101116730 (TaxonNamespace4312885040: &#39;d&#39;): 2 Taxa</span>
+<span class="go">TaxonNamespace object at 0x1011167e0 (TaxonNamespace4312885216: &#39;b&#39;): 3 Taxa</span>
+</pre></div>
+</div>
+<p>We could also add a population identification attribute to each <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object, and use the <code class="docutils literal notranslate"><span class="pre">membership_attr_name</span></code> keyword to specify that subsets should be created based on the value of this attribute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">taxon_namespace</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">t</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tax_parts</span> <span class="o">=</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">membership_attr_name</span><span class="o">=</span><span class="s1">&#39;population&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The results are identical to that above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">tax_parts</span><span class="o">.</span><span class="n">subsets</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">())</span>
+<span class="gp">...</span>
+<span class="go">TaxonNamespace object at 0x1011166d8 (TaxonNamespace4312884952: &#39;a&#39;): 3 Taxa</span>
+<span class="go">TaxonNamespace object at 0x1011165d0 (TaxonNamespace4312884688: &#39;c&#39;): 5 Taxa</span>
+<span class="go">TaxonNamespace object at 0x1011169f0 (TaxonNamespace4312885744: &#39;d&#39;): 2 Taxa</span>
+<span class="go">TaxonNamespace object at 0x101116680 (TaxonNamespace4312884864: &#39;b&#39;): 3 Taxa</span>
+</pre></div>
+</div>
+<p>The third approach involves constructing a dictionary that maps <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects to their identification label and passing this using the <code class="docutils literal notranslate"><span class="pre">membership_dict</span></code> keyword argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tax_pop_label_map</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">taxon_namespace</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">tax_pop_label_map</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tax_parts</span> <span class="o">=</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">membership_dict</span><span class="o">=</span><span class="n">tax_pop_label_map</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, the results are the same:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">tax_parts</span><span class="o">.</span><span class="n">subsets</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">())</span>
+<span class="gp">...</span>
+<span class="go">TaxonNamespace object at 0x1011166e8 (TaxonNamespace4312884952: &#39;a&#39;): 3 Taxa</span>
+<span class="go">TaxonNamespace object at 0x1011165f0 (TaxonNamespace4312884688: &#39;c&#39;): 5 Taxa</span>
+<span class="go">TaxonNamespace object at 0x1011169f1 (TaxonNamespace4312885744: &#39;d&#39;): 2 Taxa</span>
+<span class="go">TaxonNamespace object at 0x101116620 (TaxonNamespace4312884864: &#39;b&#39;): 3 Taxa</span>
+</pre></div>
+</div>
+<p>Finally, a list of lists can be constructed and passed using the <code class="docutils literal notranslate"><span class="pre">membership_lists</span></code> argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pops</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">11</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">11</span><span class="p">:</span><span class="mi">13</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tax_parts</span> <span class="o">=</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">membership_lists</span><span class="o">=</span><span class="n">pops</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, a <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespacePartition</span></code> object with four <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> subsets is the result, only this time the subset labels are based on the list indices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subsets</span> <span class="o">=</span> <span class="n">tax_parts</span><span class="o">.</span><span class="n">subsets</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">subsets</span><span class="p">)</span>
+<span class="go">set([&lt;TaxonNamespace object at 0x10069f838&gt;, &lt;TaxonNamespace object at 0x10069fba8&gt;, &lt;TaxonNamespace object at 0x101116520&gt;, &lt;TaxonNamespace object at 0x1011164c8&gt;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subsets</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">())</span>
+<span class="gp">...</span>
+<span class="go">TaxonNamespace object at 0x10069f838 (TaxonNamespace4301912120: &#39;0&#39;): 3 Taxa</span>
+<span class="go">TaxonNamespace object at 0x10069fba8 (TaxonNamespace4301913000: &#39;1&#39;): 3 Taxa</span>
+<span class="go">TaxonNamespace object at 0x101116520 (TaxonNamespace4312884512: &#39;3&#39;): 2 Taxa</span>
+<span class="go">TaxonNamespace object at 0x1011164c8 (TaxonNamespace4312884424: &#39;2&#39;): 5 Taxa</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="taxa.html"
+                          title="previous chapter">Taxon Namespaces and Taxon Management</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="trees.html"
+                          title="next chapter">Trees</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="trees.html" title="Trees"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="taxa.html" title="Taxon Namespaces and Taxon Management"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Partitions of Taxon Sets</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The DendroPy Primer &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction to Phylogenetic Data Objects" href="dataobjects.html" />
+    <link rel="prev" title="Downloading and Installing DendroPy" href="../downloading.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dataobjects.html" title="Introduction to Phylogenetic Data Objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../downloading.html" title="Downloading and Installing DendroPy"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The DendroPy Primer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-dendropy-primer">
+<h1>The DendroPy Primer<a class="headerlink" href="#the-dendropy-primer" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-dendropy-data-model-phylogenetic-data-objects" id="id1">The DendroPy Data Model: Phylogenetic Data Objects</a></p></li>
+<li><p><a class="reference internal" href="#working-with-taxa-operational-taxonomic-units-and-taxon-namespaces" id="id2">Working with Taxa: Operational Taxonomic Units and Taxon Namespaces</a></p></li>
+<li><p><a class="reference internal" href="#working-with-trees-and-tree-lists" id="id3">Working with Trees and Tree Lists</a></p></li>
+<li><p><a class="reference internal" href="#working-with-character-data-sequences-and-matrices" id="id4">Working with Character Data: Sequences and Matrices</a></p></li>
+<li><p><a class="reference internal" href="#working-with-phylogenetic-distances" id="id5">Working with Phylogenetic Distances</a></p></li>
+<li><p><a class="reference internal" href="#working-with-data-sets" id="id6">Working with Data Sets</a></p></li>
+<li><p><a class="reference internal" href="#working-with-metadata-annotations" id="id7">Working with Metadata Annotations</a></p></li>
+<li><p><a class="reference internal" href="#interoperability-with-other-programs-libraries-and-applications" id="id8">Interoperability with Other Programs, Libraries and Applications</a></p></li>
+</ul>
+</nav>
+<section id="the-dendropy-data-model-phylogenetic-data-objects">
+<h2>The DendroPy Data Model: Phylogenetic Data Objects<a class="headerlink" href="#the-dendropy-data-model-phylogenetic-data-objects" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataobjects.html">Introduction to Phylogenetic Data Objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dataobjects.html#primary-phylogenetic-data-objects">Primary Phylogenetic Data Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataobjects.html#creating-new-empty-objects">Creating New (Empty) Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataobjects.html#reading-writing-and-annotating-phylogenetic-data">Reading, Writing, and Annotating Phylogenetic Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reading_and_writing.html">Reading and Writing Phylogenetic Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reading_and_writing.html#creating-new-objects-from-an-external-data-source">Creating New Objects From an External Data Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reading_and_writing.html#adding-data-to-existing-objects-from-an-external-data-source">Adding Data to Existing Objects from an External Data Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reading_and_writing.html#writing-out-phylogenetic-data">Writing Out Phylogenetic Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="converting.html">Converting Between Data Formats</a></li>
+</ul>
+</div>
+</section>
+<section id="working-with-taxa-operational-taxonomic-units-and-taxon-namespaces">
+<h2>Working with Taxa: Operational Taxonomic Units and Taxon Namespaces<a class="headerlink" href="#working-with-taxa-operational-taxonomic-units-and-taxon-namespaces" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="taxa.html">Taxon Namespaces and Taxon Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="taxa.html#conceptual-background">Conceptual Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taxa.html#management-of-shared-taxon-namespaces">Management of Shared Taxon Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taxa.html#managing-taxon-name-mapping-within-a-taxon-namespace">Managing Taxon Name Mapping Within a Taxon Namespace</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="taxa_partitions.html">Partitions of Taxon Sets</a></li>
+</ul>
+</div>
+</section>
+<section id="working-with-trees-and-tree-lists">
+<h2>Working with Trees and Tree Lists<a class="headerlink" href="#working-with-trees-and-tree-lists" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="trees.html">Trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="trees.html#the-tree-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trees.html#reading-and-writing-tree-instances">Reading and Writing <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code> Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trees.html#cloning-copying-a-tree">Cloning/Copying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trees.html#tree-traversal">Tree Traversal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trees.html#finding-nodes-on-trees">Finding Nodes on Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trees.html#viewing-and-displaying-trees">Viewing and Displaying Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trees.html#building-a-tree-programmatically">Building a Tree Programmatically</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treecollections.html">Collections of Trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treecollections.html#collections-of-trees-the-treelist-class">Collections of Trees: The <code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecollections.html#efficiently-iterating-over-trees-in-a-file">Efficiently Iterating Over Trees in a File</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treestats.html">Tree Statistics, Metrics, Summarizations, and Other Calculations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treestats.html#native-tree-statistic-and-metric-methods">Native Tree Statistic and Metric Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treestats.html#unary-tree-statistics-and-metrics">Unary Tree Statistics and Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treestats.html#comparing-and-summarizing-trees">Comparing and Summarizing Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treestats.html#scoring-trees-under-the-coalescent">Scoring Trees Under the Coalescent</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treemanips.html">Tree Manipulation and Restructuring</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treemanips.html#rooting-derooting-and-rerooting">Rooting, Derooting and Rerooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemanips.html#pruning-subtrees-and-tips">Pruning Subtrees and Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemanips.html#extracting-trees-and-subtrees-from-an-existing-tree">Extracting Trees and Subtrees from an Existing Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemanips.html#rotating">Rotating</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bipartitions.html">Bipartitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bipartitions.html#modeling-bipartitions">Modeling Bipartitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bipartitions.html#using-bipartitions">Using Bipartitions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treesims.html">Tree Simulation and Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treesims.html#birth-death-process-trees">Birth-Death Process Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesims.html#star-trees">Star Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesims.html#pure-neutral-coalescent-trees">(Pure Neutral) Coalescent Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesims.html#multispecies-coalescent-contained-coalescent-or-censored-coalescent-trees">Multispecies Coalescent (“Contained Coalescent” or “Censored Coalescent”) Trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesims.html#simulating-the-distribution-of-number-deep-coalescences-under-different-phylogeographic-history-scenarios">Simulating the Distribution of Number Deep Coalescences Under Different Phylogeographic History Scenarios</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="working-with-character-data-sequences-and-matrices">
+<h2>Working with Character Data: Sequences and Matrices<a class="headerlink" href="#working-with-character-data-sequences-and-matrices" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="chars.html">Character Matrices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="chars.html#types-of-character-matrices">Types of Character Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chars.html#reading-and-writing-character-data">Reading and Writing Character Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chars.html#creating-a-character-data-matrix-from-a-dictionary-of-strings">Creating a Character Data Matrix from a Dictionary of Strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chars.html#taxon-management-with-character-matrices">Taxon Management with Character Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chars.html#concatenating-multiple-data-matrices">Concatenating Multiple Data Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chars.html#sequence-management">Sequence Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chars.html#accessing-data">Accessing Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="phylogenetic_character_analyses.html">Phylogenetic Character Analyses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phylogenetic_character_analyses.html#phylogenetic-independent-contrasts-pic">Phylogenetic Independent Contrasts (PIC)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="popgenstats.html">Population Genetic Summary Statistics</a></li>
+</ul>
+</div>
+</section>
+<section id="working-with-phylogenetic-distances">
+<h2>Working with Phylogenetic Distances<a class="headerlink" href="#working-with-phylogenetic-distances" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="phylogenetic_distances.html">Phylogenetic Distance-Based Operations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phylogenetic_distances.html#creating-a-phylogeneticdistancematrix-object">Creating a <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code> Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phylogenetic_distances.html#calculating-patristic-distances-and-most-recent-common-ancestors-mrca">Calculating Patristic Distances and Most-Recent Common Ancestors (MRCA)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phylogenetic_distances.html#generating-distance-trees-from-a-phylogeneticdistancematrix-object">Generating Distance Trees from a <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code> Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phylogenetic_distances.html#phylogenetic-community-statistics">Phylogenetic Community Statistics</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="working-with-data-sets">
+<h2>Working with Data Sets<a class="headerlink" href="#working-with-data-sets" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Data Sets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#dataset-creation-and-reading"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code> Creation and Reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#taxon-management-with-data-sets">Taxon Management with Data Sets</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="working-with-metadata-annotations">
+<h2>Working with Metadata Annotations<a class="headerlink" href="#working-with-metadata-annotations" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="working_with_metadata_annotations.html">Working with Metadata Annotations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="working_with_metadata_annotations.html#overview-of-the-infrastructure-for-metadata-annotation-in-dendropy">Overview of the Infrastructure for Metadata Annotation in DendroPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="working_with_metadata_annotations.html#metadata-annotation-creation">Metadata Annotation Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="working_with_metadata_annotations.html#metadata-annotation-access-and-manipulation">Metadata Annotation Access and Manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="working_with_metadata_annotations.html#writing-or-saving-metadata">Writing or Saving Metadata</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="interoperability-with-other-programs-libraries-and-applications">
+<h2>Interoperability with Other Programs, Libraries and Applications<a class="headerlink" href="#interoperability-with-other-programs-libraries-and-applications" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genbank.html">Working with GenBank Molecular Sequence Databases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genbank.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genbank.html#acquiring-data-from-genebank">Acquiring Data from GeneBank</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genbank.html#accessing-genbank-records">Accessing GenBank Records</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genbank.html#generating-character-matrix-objects-from-genbank-data">Generating Character Matrix Objects from GenBank Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="seqgen.html">Seq-Gen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="paup.html">PAUP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="raxml.html">RAxML</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The DendroPy Primer</a><ul>
+<li><a class="reference internal" href="#the-dendropy-data-model-phylogenetic-data-objects">The DendroPy Data Model: Phylogenetic Data Objects</a></li>
+<li><a class="reference internal" href="#working-with-taxa-operational-taxonomic-units-and-taxon-namespaces">Working with Taxa: Operational Taxonomic Units and Taxon Namespaces</a></li>
+<li><a class="reference internal" href="#working-with-trees-and-tree-lists">Working with Trees and Tree Lists</a></li>
+<li><a class="reference internal" href="#working-with-character-data-sequences-and-matrices">Working with Character Data: Sequences and Matrices</a></li>
+<li><a class="reference internal" href="#working-with-phylogenetic-distances">Working with Phylogenetic Distances</a></li>
+<li><a class="reference internal" href="#working-with-data-sets">Working with Data Sets</a></li>
+<li><a class="reference internal" href="#working-with-metadata-annotations">Working with Metadata Annotations</a></li>
+<li><a class="reference internal" href="#interoperability-with-other-programs-libraries-and-applications">Interoperability with Other Programs, Libraries and Applications</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../downloading.html"
+                          title="previous chapter">Downloading and Installing DendroPy</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="dataobjects.html"
+                          title="next chapter">Introduction to Phylogenetic Data Objects</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="#">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dataobjects.html" title="Introduction to Phylogenetic Data Objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../downloading.html" title="Downloading and Installing DendroPy"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The DendroPy Primer</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

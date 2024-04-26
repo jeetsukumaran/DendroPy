@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tree Simulation and Generation &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Character Matrices" href="chars.html" />
+    <link rel="prev" title="Bipartitions" href="bipartitions.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="chars.html" title="Character Matrices"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="bipartitions.html" title="Bipartitions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tree Simulation and Generation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="tree-simulation-and-generation">
+<h1>Tree Simulation and Generation<a class="headerlink" href="#tree-simulation-and-generation" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="../library/treesim.html#module-dendropy.simulate.treesim" title="dendropy.simulate.treesim"><code class="xref py py-mod docutils literal notranslate"><span class="pre">treesim</span></code></a> module provides functions for the simulation of trees under a variety of theoretical models.
+This module is actually just a namespace that aggregates functions and classes for tree simulation routines in one convenient place.
+For example the <a class="reference internal" href="../library/birthdeath.html#dendropy.model.birthdeath.birth_death_tree" title="dendropy.model.birthdeath.birth_death_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">birth_death_tree</span></code></a> function
+is actually defined in the <a class="reference internal" href="../library/birthdeath.html#module-dendropy.model.birthdeath" title="dendropy.model.birthdeath"><code class="xref py py-mod docutils literal notranslate"><span class="pre">birthdeath</span></code></a> module, but is
+exposed in the <a class="reference internal" href="../library/treesim.html#module-dendropy.simulate.treesim" title="dendropy.simulate.treesim"><code class="xref py py-mod docutils literal notranslate"><span class="pre">treesim</span></code></a> for ease of access.</p>
+<section id="birth-death-process-trees">
+<h2>Birth-Death Process Trees<a class="headerlink" href="#birth-death-process-trees" title="Link to this heading">¶</a></h2>
+<p>There are two different birth-death process tree simulation routines in DendroPy:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><a class="reference internal" href="../library/treesim.html#dendropy.simulate.treesim.birth_death_tree" title="dendropy.simulate.treesim.birth_death_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">birth_death_tree</span></code></a></dt><dd><p>Returns a tree generated under a continuous-time birth-death process, with branch lengths in arbitrary time units.</p>
+</dd>
+<dt><a class="reference internal" href="../library/treesim.html#dendropy.simulate.treesim.discrete_birth_death_tree" title="dendropy.simulate.treesim.discrete_birth_death_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">discrete_birth_death_tree</span></code></a></dt><dd><p>Returns a tree generated under discrete-time birth-death process, with branch length in generation units.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Both of these functions have identical interfaces, and will grow a tree under a branching process with the specified birth-date and death-rate until the termination condition (pre-specified number of leaves or maximum amount of time) is met.</p>
+<p>For example, to get a continuous-time tree with 10 leaves, generated under a birth rate of 1.0 and death rate of 0.5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">death_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">ntax</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">print_plot</span><span class="p">()</span>
+<span class="go">              /-------------------------------------------- T1</span>
+<span class="go">              |</span>
+<span class="go">/-------------+                             /-------------- T2</span>
+<span class="go">|             |              /--------------+</span>
+<span class="go">|             \--------------+              \-------------- T3</span>
+<span class="go">|                            |</span>
+<span class="go">|                            \----------------------------- T4</span>
+<span class="go">+</span>
+<span class="go">|                            /----------------------------- T5</span>
+<span class="go">|             /--------------+</span>
+<span class="go">|             |              |              /-------------- T6</span>
+<span class="go">|             |              \--------------+</span>
+<span class="go">\-------------+                             \-------------- T7</span>
+<span class="go">              |</span>
+<span class="go">              |                             /-------------- T8</span>
+<span class="go">              |              /--------------+</span>
+<span class="go">              \--------------+              \-------------- T9</span>
+<span class="go">                             |</span>
+<span class="go">                             \----------------------------- T10</span>
+</pre></div>
+</div>
+<p>While to get a continuous time tree generated under the same rates after 6 time units:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">death_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If both conditions are given simultaneously, then tree growth will terminate when
+<em>any</em> of the termination conditions (i.e., number of tips == <code class="docutils literal notranslate"><span class="pre">ntax</span></code>, or number
+of tips == len(taxon_namespace) or maximum time == <code class="docutils literal notranslate"><span class="pre">max_time</span></code>) are met.</p>
+<section id="specifying-a-taxonnamespace">
+<h3>Specifying a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a><a class="headerlink" href="#specifying-a-taxonnamespace" title="Link to this heading">¶</a></h3>
+<p>By default, a new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object will be created and associated with each leaf (labeled “T1”, “T2”, etc.),  all belonging to a new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object associated with the resulting tree.</p>
+<p>You can pass in an explicit <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object using the “<code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>” keyword:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">print_plot</span><span class="p">()</span>
+<span class="go">            /-------------------------------------- h</span>
+<span class="go">            |</span>
+<span class="go">/-----------+                         /------------ c</span>
+<span class="go">|           |            /------------+</span>
+<span class="go">|           \------------+            \------------ a</span>
+<span class="go">|                        |</span>
+<span class="go">+                        \------------------------- g</span>
+<span class="go">|</span>
+<span class="go">|                                     /------------ e</span>
+<span class="go">|                        /------------+</span>
+<span class="go">|                        |            \------------ f</span>
+<span class="go">\------------------------+</span>
+<span class="go">                         |            /------------ d</span>
+<span class="go">                         \------------+</span>
+<span class="go">                                      \------------ b</span>
+</pre></div>
+</div>
+<p>In this case, the branching process underlying the tree generation will terminate when the number of leaves in the tree equals the number of taxa in the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> “<code class="docutils literal notranslate"><span class="pre">taxa</span></code>”, and the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in “<code class="docutils literal notranslate"><span class="pre">taxa</span></code>” will be randomly assigned to the leaves.</p>
+<p>The “<code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>” keyword can be combined with the “<code class="docutils literal notranslate"><span class="pre">ntax</span></code>” keyword.
+If the size of the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object given by the <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> argument is greater than the specified target tree taxon number, then a random subset of <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> will be assigned to the leaves:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">death_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">ntax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">print_plot</span><span class="p">()</span>
+<span class="go">/-------------------------------------------------- g</span>
+<span class="go">|</span>
+<span class="go">+                        /------------------------- a</span>
+<span class="go">|           /------------+</span>
+<span class="go">|           |            |            /------------ d</span>
+<span class="go">\-----------+            \------------+</span>
+<span class="go">            |                         \------------ c</span>
+<span class="go">            |</span>
+<span class="go">            \-------------------------------------- f</span>
+</pre></div>
+</div>
+<p>If the size of the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object is less than the target taxon number, then new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects will be created as needed and added to the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object as well as associated with the leaves:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">death_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">ntax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">print_plot</span><span class="p">()</span>
+<span class="go">                                 /---------------- a</span>
+<span class="go">/--------------------------------+</span>
+<span class="go">|                                \---------------- b</span>
+<span class="go">+</span>
+<span class="go">|               /--------------------------------- T3</span>
+<span class="go">\---------------+</span>
+<span class="go">                |                /---------------- T4</span>
+<span class="go">                \----------------+</span>
+<span class="go">                                 \---------------- T5</span>
+</pre></div>
+</div>
+</section>
+<section id="repeating-failed-branching-processes">
+<h3>Repeating Failed Branching Processes<a class="headerlink" href="#repeating-failed-branching-processes" title="Link to this heading">¶</a></h3>
+<p>With a non-zero death rate, it is possible for all lineages of a tree to go extinct before the termination conditions are reached.
+In this case, by default a <code class="xref py py-class docutils literal notranslate"><span class="pre">TreeSimTotalExtinctionException</span></code> will be raised:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">death_rate</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">ntax</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>produces:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="n">File</span> <span class="s2">&quot;/Users/jeet/Projects/DendroPy/dendropy/treesim.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">188</span><span class="p">,</span> <span class="ow">in</span> <span class="n">birth_death</span>
+    <span class="k">raise</span> <span class="n">TreeSimTotalExtinctionException</span><span class="p">()</span>
+<span class="n">dendropy</span><span class="o">.</span><span class="n">simulate</span><span class="o">.</span><span class="n">treesim</span><span class="o">.</span><span class="n">TreeSimTotalExtinctionException</span>
+</pre></div>
+</div>
+<p>If the keyword argument “<code class="docutils literal notranslate"><span class="pre">repeat_until_success</span></code>” is given, then instead of raising an exception the process starts again and repeats until the termination condition is met:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="n">death_rate</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="n">ntax</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="n">repeat_until_success</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">print_plot</span><span class="p">()</span>
+<span class="go">                                       /------------------- T1</span>
+<span class="go">/--------------------------------------+</span>
+<span class="go">|                                      |         /--------- T2</span>
+<span class="go">|                                      \---------+</span>
+<span class="go">|                                                \--------- T3</span>
+<span class="go">+</span>
+<span class="go">|                                                /--------- T4</span>
+<span class="go">|        /---------------------------------------+</span>
+<span class="go">|        |                                       \--------- T5</span>
+<span class="go">|        |</span>
+<span class="go">\--------+                   /----------------------------- T6</span>
+<span class="go">         |         /---------+</span>
+<span class="go">         |         |         |         /------------------- T7</span>
+<span class="go">         |         |         \---------+</span>
+<span class="go">         \---------+                   |         /--------- T8</span>
+<span class="go">                   |                   \---------+</span>
+<span class="go">                   |                             \--------- T9</span>
+<span class="go">                   |</span>
+<span class="go">                   \--------------------------------------- T10</span>
+</pre></div>
+</div>
+</section>
+<section id="suppressing-taxon-assignment">
+<h3>Suppressing Taxon Assignment<a class="headerlink" href="#suppressing-taxon-assignment" title="Link to this heading">¶</a></h3>
+<p>You can specify “<code class="docutils literal notranslate"><span class="pre">assign_taxa</span></code>” to be <code class="docutils literal notranslate"><span class="pre">False</span></code>  to avoid taxa from being automatically assigned to a tree (for example, when you want to build a tree in stages – see below).</p>
+</section>
+<section id="extending-an-existing-tree">
+<h3>Extending an Existing Tree<a class="headerlink" href="#extending-an-existing-tree" title="Link to this heading">¶</a></h3>
+<p>Both these functions also accept a Tree object (with valid branch lengths) as an argument passed using the keyword <code class="docutils literal notranslate"><span class="pre">tree</span></code>.
+If given, then this tree will be used as the starting point; otherwise a new one will be created.</p>
+</section>
+<section id="evolving-birth-and-death-rates">
+<h3>Evolving Birth and Death Rates<a class="headerlink" href="#evolving-birth-and-death-rates" title="Link to this heading">¶</a></h3>
+<p>The same functions can also produce trees generated under variable birth and death rates.
+The “<code class="docutils literal notranslate"><span class="pre">birth_rate_sd</span></code>” keyword argument specifies the standard deviation of the normally-distributed error of birth rates as they evolve from parent to child node, while the “<code class="docutils literal notranslate"><span class="pre">death_rate_sd</span></code>” keyword argument specifies the same of the the death rates.
+For example, to get a 10-taxon tree generated under a birth- and death-rate that evolves with a standard deviation of 0.1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="go">            death_rate=0.5,</span>
+<span class="go">            birth_rate_sd=0.1,</span>
+<span class="go">            death_rate_sd=0.1,</span>
+<span class="go">            ntax=10)</span>
+</pre></div>
+</div>
+</section>
+<section id="building-a-tree-in-multiple-stages-under-different-conditions">
+<h3>Building a Tree in Multiple Stages under Different Conditions<a class="headerlink" href="#building-a-tree-in-multiple-stages-under-different-conditions" title="Link to this heading">¶</a></h3>
+<p>You might want to generate a tree under different condition in different stages.
+To do this, you would start with an empty tree and passing it to the birth-death function as an argument using the “<code class="docutils literal notranslate"><span class="pre">tree</span></code>” keyword argument, and at the same time suppress the automatic taxon assignment using the “<code class="docutils literal notranslate"><span class="pre">assign_taxa=False</span></code>” keyword argument to avoid taxa being assigned to what will eventually become internal nodes.
+When the tree is ready, you will call the <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree.randomly_assign_taxa" title="dendropy.datamodel.treemodel.Tree.randomly_assign_taxa"><code class="xref py py-meth docutils literal notranslate"><span class="pre">randomly_assign_taxa</span></code></a> function to assign taxa at random to the leaves.</p>
+<p>For example, the following generates a birth-death tree with equal birth and death rates, but both rates shifting for a short while to a temporarily higher (though equal) rates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># /usr/bin/env python</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">random</span>
+<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">birth_rates</span><span class="p">,</span> <span class="n">death_rates</span><span class="p">):</span>
+<span class="linenos"> 8</span>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">birth_rates</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">death_rates</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">()</span>
+<span class="linenos">10</span>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">br</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">birth_rates</span><span class="p">):</span>
+<span class="linenos">11</span>        <span class="n">tree</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rates</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+<span class="linenos">12</span>                                   <span class="n">death_rates</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+<span class="linenos">13</span>                                   <span class="n">max_time</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span>
+<span class="linenos">14</span>                                   <span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+<span class="linenos">15</span>                                   <span class="n">assign_taxa</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">16</span>                                   <span class="n">repeat_until_success</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">17</span>        <span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s1">&#39;newick&#39;</span><span class="p">))</span>
+<span class="linenos">18</span>    <span class="n">tree</span><span class="o">.</span><span class="n">randomly_assign_taxa</span><span class="p">(</span><span class="n">create_required_taxa</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">19</span>    <span class="k">return</span> <span class="n">tree</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="n">tree</span> <span class="o">=</span> <span class="n">generate</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
+<span class="linenos">22</span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s1">&#39;newick&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Another example draws birth and death rates from a normal distribution with the same mean and standard deviation in multiple stages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="ch">#! /usr/bin/env python</span>
+<span class="linenos"> 2</span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">random</span>
+<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">sd</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">()</span>
+<span class="linenos">10</span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_periods</span><span class="p">):</span>
+<span class="linenos">11</span>        <span class="n">tree</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">birth_death_tree</span><span class="p">(</span><span class="n">birth_rate</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">sd</span><span class="p">),</span>
+<span class="linenos">12</span>                                   <span class="n">death_rate</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">sd</span><span class="p">),</span>
+<span class="linenos">13</span>                                   <span class="n">max_time</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+<span class="linenos">14</span>                                   <span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+<span class="linenos">15</span>                                   <span class="n">assign_taxa</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="linenos">16</span>                                   <span class="n">repeat_until_success</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">17</span>    <span class="n">tree</span><span class="o">.</span><span class="n">randomly_assign_taxa</span><span class="p">(</span><span class="n">create_required_taxa</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">18</span>    <span class="k">return</span> <span class="n">tree</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="n">tree</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="linenos">21</span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s1">&#39;newick&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="star-trees">
+<h2>Star Trees<a class="headerlink" href="#star-trees" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../library/treesim.html#dendropy.simulate.treesim.star_tree" title="dendropy.simulate.treesim.star_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">star_tree</span></code></a> generates a simple polytomy tree, with a single node as the immediate ancestor to a set of leaves, with one leaf per <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> in the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object given by the <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> argument.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">star_tree</span><span class="p">(</span><span class="n">taxa</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_ascii_plot</span><span class="p">())</span>
+<span class="go">/-------------------------------------- a</span>
+<span class="go">|</span>
+<span class="go">|-------------------------------------- b</span>
+<span class="go">|</span>
+<span class="go">+-------------------------------------- c</span>
+<span class="go">|</span>
+<span class="go">|-------------------------------------- d</span>
+<span class="go">|</span>
+<span class="go">\-------------------------------------- e</span>
+</pre></div>
+</div>
+</section>
+<section id="pure-neutral-coalescent-trees">
+<h2>(Pure Neutral) Coalescent Trees<a class="headerlink" href="#pure-neutral-coalescent-trees" title="Link to this heading">¶</a></h2>
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">pure_kingman</span></code> function returns a tree generated under an unconstrained neutral coalescent model. The first argument to this function, <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>, is a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object, where each member <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object represents a gene to be coalesced. The second argument, <code class="docutils literal notranslate"><span class="pre">pop_size</span></code>, specifies the population size in terms of the number of gene copies in the population. This means that for a diploid population of size <code class="docutils literal notranslate"><span class="pre">N</span></code>, <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> should be <code class="docutils literal notranslate"><span class="pre">N*2</span></code>, while for a haploid population of size <code class="docutils literal notranslate"><span class="pre">N</span></code>, <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> should be <code class="docutils literal notranslate"><span class="pre">N</span></code>. If <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, 1, or 0, then the edge lengths of the returned gene tree will be in population units (i.e., 1 unit of edge length == to 2N generations if a diploid population or 1N generations if a haploid population). Otherwise, the edge lengths will be in generation units. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s2">&quot;z1&quot;</span><span class="p">,</span> <span class="s2">&quot;z2&quot;</span><span class="p">,</span> <span class="s2">&quot;z3&quot;</span><span class="p">,</span> <span class="s2">&quot;z4&quot;</span><span class="p">,</span> <span class="s2">&quot;z5&quot;</span><span class="p">,</span> <span class="s2">&quot;z6&quot;</span><span class="p">,</span> <span class="s2">&quot;z7&quot;</span><span class="p">,</span> <span class="s2">&quot;z8&quot;</span><span class="p">])</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">pure_kingman_tree</span><span class="p">(</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">,</span>
+        <span class="n">pop_size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">as_ascii_plot</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="multispecies-coalescent-contained-coalescent-or-censored-coalescent-trees">
+<span id="simulating-contained-coalescent-trees"></span><h2>Multispecies Coalescent (“Contained Coalescent” or “Censored Coalescent”) Trees<a class="headerlink" href="#multispecies-coalescent-contained-coalescent-or-censored-coalescent-trees" title="Link to this heading">¶</a></h2>
+<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">contained_coalescent</span></code> function returns a tree generated under a neutral coalescent model conditioned on population splitting times or events given by a containing species or population tree.
+Such a tree is often referred to as a contained, embedded, censored, truncated, or constrained genealogy/tree.
+At a minimum, this function takes two arguments: a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object representing the containing (species or population) tree, and a <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceMapping</span></code> object describing how the sampled gene taxa map or are associated with the species/population <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> taxa.</p>
+<p>The <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object representing the containing species or population tree should be rooted and ultrametric.
+If edge lengths are given in generations, then a meaningful population size needs to be communicated to the <code class="xref py py-func docutils literal notranslate"><span class="pre">contained_coalescent</span></code> function.
+In general, for coalescent operations in DendroPy, unless otherwise specified, population sizes are the <em>haploid</em> population size, i.e. the number of genes in the population.
+This is 2N for a diploid population with N individuals, or N for haploid population of N individuals.
+If edge lengths are given in population units (e.g., N), then the appropriate population size to use is 1.</p>
+<p>If the population size is fixed throughout the containing species/population tree, then simply passing in the appropriate value using the <code class="docutils literal notranslate"><span class="pre">default_pop_size</span></code> argument to the <code class="xref py py-func docutils literal notranslate"><span class="pre">contained_coalescent</span></code> function is sufficient.
+If, on the other hand, the population size varies, the a special attribute must be added to each edge, “<code class="docutils literal notranslate"><span class="pre">pop_size</span></code>”, that specifies the population size for that edge.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span><span class="s2">&quot;sp.tre&quot;</span><span class="p">,</span> <span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">():</span>
+        <span class="n">edge</span><span class="o">.</span><span class="n">pop_size</span> <span class="o">=</span> <span class="mi">100000</span>
+</pre></div>
+</div>
+<p>The easiest way to get a <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceMapping</span></code> object is to call the special factory function <code class="xref py py-meth docutils literal notranslate"><span class="pre">create_contained_taxon_mapping</span></code>.
+This will create a new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
+It takes two arguments: the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> of the containing tree, and the number of genes you want sampled from each species.</p>
+<p>The following example shows how to create a <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceMapping</span></code> using <code class="xref py py-meth docutils literal notranslate"><span class="pre">create_contained_taxon_mapping</span></code>, and then calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">contained_coalescent</span></code> to produce a contained coalescent tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+
+
+<span class="n">sp_tree_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">[&amp;R] (A:10,(B:6,(C:4,(D:2,E:2):2):2):4);</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">sp_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">sp_tree_str</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">gene_to_species_map</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespaceMapping</span><span class="o">.</span><span class="n">create_contained_taxon_mapping</span><span class="p">(</span>
+        <span class="n">containing_taxon_namespace</span><span class="o">=</span><span class="n">sp_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">,</span>
+        <span class="n">num_contained</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">gene_tree</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">contained_coalescent_tree</span><span class="p">(</span><span class="n">containing_tree</span><span class="o">=</span><span class="n">sp_tree</span><span class="p">,</span>
+    <span class="n">gene_to_containing_taxon_map</span><span class="o">=</span><span class="n">gene_to_species_map</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">gene_tree</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s1">&#39;newick&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">gene_tree</span><span class="o">.</span><span class="n">as_ascii_plot</span><span class="p">())</span>
+
+</pre></div>
+</div>
+<p>In the above example, the branch lengths were in haploid population units, so we did not specify a population size.
+If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to <code class="xref py py-meth docutils literal notranslate"><span class="pre">create_contained_taxon_mapping</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+
+
+<span class="n">sp_tree_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">[&amp;R] (A:10,(B:6,(C:4,(D:2,E:2):2):2):4);</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">sp_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">sp_tree_str</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">gene_to_species_map</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespaceMapping</span><span class="o">.</span><span class="n">create_contained_taxon_mapping</span><span class="p">(</span>
+        <span class="n">containing_taxon_namespace</span><span class="o">=</span><span class="n">sp_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">,</span>
+        <span class="n">num_contained</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,])</span>
+<span class="n">gene_tree</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">contained_coalescent_tree</span><span class="p">(</span><span class="n">containing_tree</span><span class="o">=</span><span class="n">sp_tree</span><span class="p">,</span>
+    <span class="n">gene_to_containing_taxon_map</span><span class="o">=</span><span class="n">gene_to_species_map</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">gene_tree</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s1">&#39;newick&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">gene_tree</span><span class="o">.</span><span class="n">as_ascii_plot</span><span class="p">())</span>
+
+</pre></div>
+</div>
+<p>This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceMapping</span></code> object. The API to describe the associations when constructing this object is very similar to that of the <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespacePartition</span></code> object: you can use a function, attribute or dictionary.</p>
+</section>
+<section id="simulating-the-distribution-of-number-deep-coalescences-under-different-phylogeographic-history-scenarios">
+<span id="simulating-and-counting-deep-coalescences"></span><h2>Simulating the Distribution of Number Deep Coalescences Under Different Phylogeographic History Scenarios<a class="headerlink" href="#simulating-the-distribution-of-number-deep-coalescences-under-different-phylogeographic-history-scenarios" title="Link to this heading">¶</a></h2>
+<p>A typical application for simulating censored coalescent trees is to produce a distribution of trees under different hypotheses of demographic or phylogeographic histories.</p>
+<p>For example, imagine we wanted to generate the distribution of the number of deep coalescences under two scenarios: one in which a population underwent sequential or step-wise vicariance, and another when there was simultaneous fragmentation.
+This can be achieved by generating trees under <code class="xref py py-meth docutils literal notranslate"><span class="pre">contained_coalescent</span></code>, and then using a <code class="xref py py-class docutils literal notranslate"><span class="pre">ContainingTree</span></code> object to embed the trees and count the number of deep coalescences.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">reconcile</span>
+
+<span class="c1"># simulation parameters and output</span>
+<span class="n">num_reps</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># population tree descriptions</span>
+<span class="n">stepwise_tree_str</span> <span class="o">=</span> <span class="s2">&quot;[&amp;R](A:120000,(B:80000,(C:40000,D:40000):40000):40000):100000;&quot;</span>
+<span class="n">frag_tree_str</span> <span class="o">=</span> <span class="s2">&quot;[&amp;R](A:120000,B:120000,C:120000,D:120000):100000;&quot;</span>
+
+<span class="c1"># taxa and trees</span>
+<span class="n">containing_taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">stepwise_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">stepwise_tree_str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">containing_taxa</span><span class="p">)</span>
+<span class="n">frag_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">frag_tree_str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">containing_taxa</span><span class="p">)</span>
+
+<span class="c1"># taxon set association</span>
+<span class="n">genes_to_species</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespaceMapping</span><span class="o">.</span><span class="n">create_contained_taxon_mapping</span><span class="p">(</span>
+        <span class="n">containing_taxon_namespace</span><span class="o">=</span><span class="n">containing_taxa</span><span class="p">,</span>
+        <span class="n">num_contained</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="c1"># convert to containing tree</span>
+<span class="n">stepwise_tree</span> <span class="o">=</span> <span class="n">reconcile</span><span class="o">.</span><span class="n">ContainingTree</span><span class="p">(</span><span class="n">stepwise_tree</span><span class="p">,</span>
+            <span class="n">contained_taxon_namespace</span><span class="o">=</span><span class="n">genes_to_species</span><span class="o">.</span><span class="n">domain_taxon_namespace</span><span class="p">,</span>
+            <span class="n">contained_to_containing_taxon_map</span><span class="o">=</span><span class="n">genes_to_species</span><span class="p">)</span>
+<span class="n">frag_tree</span> <span class="o">=</span> <span class="n">reconcile</span><span class="o">.</span><span class="n">ContainingTree</span><span class="p">(</span><span class="n">frag_tree</span><span class="p">,</span>
+            <span class="n">contained_taxon_namespace</span><span class="o">=</span><span class="n">genes_to_species</span><span class="o">.</span><span class="n">domain_taxon_namespace</span><span class="p">,</span>
+            <span class="n">contained_to_containing_taxon_map</span><span class="o">=</span><span class="n">genes_to_species</span><span class="p">)</span>
+
+<span class="c1"># for each rep</span>
+<span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_reps</span><span class="p">):</span>
+    <span class="n">gene_tree1</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">contained_coalescent_tree</span><span class="p">(</span><span class="n">containing_tree</span><span class="o">=</span><span class="n">stepwise_tree</span><span class="p">,</span>
+        <span class="n">gene_to_containing_taxon_map</span><span class="o">=</span><span class="n">genes_to_species</span><span class="p">,</span>
+        <span class="n">default_pop_size</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
+    <span class="n">stepwise_tree</span><span class="o">.</span><span class="n">embed_tree</span><span class="p">(</span><span class="n">gene_tree1</span><span class="p">)</span>
+    <span class="n">gene_tree2</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">contained_coalescent_tree</span><span class="p">(</span><span class="n">containing_tree</span><span class="o">=</span><span class="n">frag_tree</span><span class="p">,</span>
+        <span class="n">gene_to_containing_taxon_map</span><span class="o">=</span><span class="n">genes_to_species</span><span class="p">,</span>
+        <span class="n">default_pop_size</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
+    <span class="n">frag_tree</span><span class="o">.</span><span class="n">embed_tree</span><span class="p">(</span><span class="n">gene_tree2</span><span class="p">)</span>
+
+<span class="c1"># write results</span>
+
+<span class="c1"># returns dictionary with contained trees as keys</span>
+<span class="c1"># and number of deep coalescences as values</span>
+<span class="n">stepwise_deep_coals</span> <span class="o">=</span> <span class="n">stepwise_tree</span><span class="o">.</span><span class="n">deep_coalescences</span><span class="p">()</span>
+<span class="n">stepwise_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;stepwise.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="n">stepwise_deep_coals</span><span class="p">:</span>
+    <span class="n">stepwise_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">stepwise_deep_coals</span><span class="p">[</span><span class="n">tree</span><span class="p">])</span>
+
+<span class="c1"># returns dictionary with contained trees as keys</span>
+<span class="c1"># and number of deep coalescences as values</span>
+<span class="n">frag_deep_coals</span> <span class="o">=</span> <span class="n">frag_tree</span><span class="o">.</span><span class="n">deep_coalescences</span><span class="p">()</span>
+<span class="n">frag_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;frag.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="n">frag_deep_coals</span><span class="p">:</span>
+    <span class="n">frag_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">frag_deep_coals</span><span class="p">[</span><span class="n">tree</span><span class="p">])</span>
+
+
+
+
+
+
+
+
+</pre></div>
+</div>
+<p>Actually, the  <code class="xref py py-class docutils literal notranslate"><span class="pre">ContainingTree</span></code> class has its own native contained coalescent simulator, <code class="xref py py-meth docutils literal notranslate"><span class="pre">embed_contained_kingman</span></code>, which simulates <em>and</em> embeds a contained coalescent tree at the same time. So a more practical approach might be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+<span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">reconcile</span>
+
+<span class="c1"># simulation parameters and output</span>
+<span class="n">num_reps</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># population tree descriptions</span>
+<span class="n">stepwise_tree_str</span> <span class="o">=</span> <span class="s2">&quot;[&amp;R](A:120000,(B:80000,(C:40000,D:40000):40000):40000):100000;&quot;</span>
+<span class="n">frag_tree_str</span> <span class="o">=</span> <span class="s2">&quot;[&amp;R](A:120000,B:120000,C:120000,D:120000):100000;&quot;</span>
+
+<span class="c1"># taxa and trees</span>
+<span class="n">containing_taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">stepwise_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">stepwise_tree_str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">containing_taxa</span><span class="p">)</span>
+<span class="n">frag_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">frag_tree_str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">containing_taxa</span><span class="p">)</span>
+
+<span class="c1"># taxon set association</span>
+<span class="n">genes_to_species</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespaceMapping</span><span class="o">.</span><span class="n">create_contained_taxon_mapping</span><span class="p">(</span>
+        <span class="n">containing_taxon_namespace</span><span class="o">=</span><span class="n">containing_taxa</span><span class="p">,</span>
+        <span class="n">num_contained</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="c1"># convert to containing tree</span>
+<span class="n">stepwise_tree</span> <span class="o">=</span> <span class="n">reconcile</span><span class="o">.</span><span class="n">ContainingTree</span><span class="p">(</span><span class="n">stepwise_tree</span><span class="p">,</span>
+            <span class="n">contained_taxon_namespace</span><span class="o">=</span><span class="n">genes_to_species</span><span class="o">.</span><span class="n">domain_taxon_namespace</span><span class="p">,</span>
+            <span class="n">contained_to_containing_taxon_map</span><span class="o">=</span><span class="n">genes_to_species</span><span class="p">)</span>
+<span class="n">frag_tree</span> <span class="o">=</span> <span class="n">reconcile</span><span class="o">.</span><span class="n">ContainingTree</span><span class="p">(</span><span class="n">frag_tree</span><span class="p">,</span>
+            <span class="n">contained_taxon_namespace</span><span class="o">=</span><span class="n">genes_to_species</span><span class="o">.</span><span class="n">domain_taxon_namespace</span><span class="p">,</span>
+            <span class="n">contained_to_containing_taxon_map</span><span class="o">=</span><span class="n">genes_to_species</span><span class="p">)</span>
+
+<span class="c1"># for each rep</span>
+<span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_reps</span><span class="p">):</span>
+    <span class="n">stepwise_tree</span><span class="o">.</span><span class="n">embed_contained_kingman</span><span class="p">(</span><span class="n">default_pop_size</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
+    <span class="n">frag_tree</span><span class="o">.</span><span class="n">embed_contained_kingman</span><span class="p">(</span><span class="n">default_pop_size</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
+
+<span class="c1"># write results</span>
+
+<span class="c1"># returns dictionary with contained trees as keys</span>
+<span class="c1"># and number of deep coalescences as values</span>
+<span class="n">stepwise_deep_coals</span> <span class="o">=</span> <span class="n">stepwise_tree</span><span class="o">.</span><span class="n">deep_coalescences</span><span class="p">()</span>
+<span class="n">stepwise_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;stepwise.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="n">stepwise_deep_coals</span><span class="p">:</span>
+    <span class="n">stepwise_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">stepwise_deep_coals</span><span class="p">[</span><span class="n">tree</span><span class="p">])</span>
+
+<span class="c1"># returns dictionary with contained trees as keys</span>
+<span class="c1"># and number of deep coalescences as values</span>
+<span class="n">frag_deep_coals</span> <span class="o">=</span> <span class="n">frag_tree</span><span class="o">.</span><span class="n">deep_coalescences</span><span class="p">()</span>
+<span class="n">frag_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;frag.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="n">frag_deep_coals</span><span class="p">:</span>
+    <span class="n">frag_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">frag_deep_coals</span><span class="p">[</span><span class="n">tree</span><span class="p">])</span>
+
+
+
+
+
+
+
+
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Tree Simulation and Generation</a><ul>
+<li><a class="reference internal" href="#birth-death-process-trees">Birth-Death Process Trees</a><ul>
+<li><a class="reference internal" href="#specifying-a-taxonnamespace">Specifying a <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a></li>
+<li><a class="reference internal" href="#repeating-failed-branching-processes">Repeating Failed Branching Processes</a></li>
+<li><a class="reference internal" href="#suppressing-taxon-assignment">Suppressing Taxon Assignment</a></li>
+<li><a class="reference internal" href="#extending-an-existing-tree">Extending an Existing Tree</a></li>
+<li><a class="reference internal" href="#evolving-birth-and-death-rates">Evolving Birth and Death Rates</a></li>
+<li><a class="reference internal" href="#building-a-tree-in-multiple-stages-under-different-conditions">Building a Tree in Multiple Stages under Different Conditions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#star-trees">Star Trees</a></li>
+<li><a class="reference internal" href="#pure-neutral-coalescent-trees">(Pure Neutral) Coalescent Trees</a></li>
+<li><a class="reference internal" href="#multispecies-coalescent-contained-coalescent-or-censored-coalescent-trees">Multispecies Coalescent (“Contained Coalescent” or “Censored Coalescent”) Trees</a></li>
+<li><a class="reference internal" href="#simulating-the-distribution-of-number-deep-coalescences-under-different-phylogeographic-history-scenarios">Simulating the Distribution of Number Deep Coalescences Under Different Phylogeographic History Scenarios</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="bipartitions.html"
+                          title="previous chapter">Bipartitions</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="chars.html"
+                          title="next chapter">Character Matrices</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="chars.html" title="Character Matrices"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="bipartitions.html" title="Bipartitions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tree Simulation and Generation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

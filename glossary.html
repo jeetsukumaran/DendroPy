@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Glossary and Terminological Reference &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DendroPy 4 Changes and Migration Primer" href="migration.html" />
+    <link rel="prev" title="SumTrees: Phylogenetic Tree Summarization and Annotation" href="programs/sumtrees.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="migration.html" title="DendroPy 4 Changes and Migration Primer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="programs/sumtrees.html" title="SumTrees: Phylogenetic Tree Summarization and Annotation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Glossary and Terminological Reference</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="glossary-and-terminological-reference">
+<h1>Glossary and Terminological Reference<a class="headerlink" href="#glossary-and-terminological-reference" title="Link to this heading">¶</a></h1>
+<dl class="glossary">
+<dt id="term-ancestor-nodes">ancestor nodes<a class="headerlink" href="#term-ancestor-nodes" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, the full set of <a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a> from which a
+given <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> has descended (i.e., the given node’s parent,
+parent’s parent, parent’s parent’s parent, and so on until the
+<a class="reference internal" href="#term-seed-node"><span class="xref std std-term">root</span></a> or the <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed node</span></a> of the tree, inclusive).</p>
+</dd>
+<dt id="term-basal">basal<a class="headerlink" href="#term-basal" title="Link to this term">¶</a></dt><dt id="term-basal-node">basal node<a class="headerlink" href="#term-basal-node" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, a <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> that is ancestral with respect to
+another node. <a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">Leaf or tip nodes</span></a> can never be basal,
+except if the tree consists of only a single node (i.e., the
+<a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed node</span></a> is a <a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">leaf node</span></a>). The basal-most node of a
+tree is the <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed or root node</span></a>.</p>
+</dd>
+<dt id="term-basal-bifurcation">basal bifurcation<a class="headerlink" href="#term-basal-bifurcation" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, a <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed or root</span></a> which has exactly
+two <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child nodes</span></a>. On a <a class="reference internal" href="#term-rooted-tree"><span class="xref std std-term">rooted tree</span></a> this (can) reflect actual information, but on an <a class="reference internal" href="#term-unrooted-tree"><span class="xref std std-term">unrooted
+tree</span></a>, this is actually an artifact, as the <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed
+or root</span></a> does not actually exist as it is just an
+algorithmic contrivance. In practical terms, this means that
+<a class="reference internal" href="#term-bipartition"><span class="xref std std-term">bipartition</span></a> calculations and operations on
+<a class="reference internal" href="#term-unrooted-tree"><span class="xref std std-term">unrooted trees</span></a> with basal bifurcations may
+result in undetermined and errorenous behavior. Thus, typically, on
+unrooted trees the basal bifurcation is collapsed to yield a basal
+trifurcation.</p>
+</dd>
+<dt id="term-basal-trifurcation">basal trifurcation<a class="headerlink" href="#term-basal-trifurcation" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, a <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed or root</span></a> which has exactly
+three <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child nodes</span></a>. While this might occur in both
+<a class="reference internal" href="#term-rooted-tree"><span class="xref std std-term">rooted</span></a> and <a class="reference internal" href="#term-unrooted-tree"><span class="xref std std-term">unrooted</span></a> trees,
+this is typically the result of <a class="reference internal" href="#term-basal-bifurcation"><span class="xref std std-term">collapsing a basal bifurcation</span></a> on <a class="reference internal" href="#term-unrooted-tree"><span class="xref std std-term">unrooted trees</span></a>.</p>
+</dd>
+<dt id="term-bifurcating-tree">bifurcating tree<a class="headerlink" href="#term-bifurcating-tree" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a> in which all <a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a> are <a class="reference internal" href="#term-bifurcation"><span class="xref std std-term">bifurcating</span></a>.</p>
+</dd>
+<dt id="term-bifurcation">bifurcation<a class="headerlink" href="#term-bifurcation" title="Link to this term">¶</a></dt><dt id="term-bifurcating-node">bifurcating node<a class="headerlink" href="#term-bifurcating-node" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, a <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> with exactly two <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child nodes</span></a>. Also known as an “out-degree two” node.</p>
+</dd>
+<dt id="term-bipartition">bipartition<a class="headerlink" href="#term-bipartition" title="Link to this term">¶</a></dt><dt id="term-split">split<a class="headerlink" href="#term-split" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, a partition of the leaf set of a tree into two
+mutually-exclusive and collectively-comprehensive subsets. It
+corresponds to an edge of a tree: if we imagine “splitting” or cutting
+a tree into two trees at a given edge, the leaf sets of each of the new
+trees form the two subsets of the partitioning. A bipartition is often
+referred to as a split, especially in the context of <a class="reference internal" href="#term-unrooted-tree"><span class="xref std std-term">unrooted trees</span></a>. Bipartitions are described in detail in
+the <a class="reference internal" href="primer/bipartitions.html"><span class="doc">DendroPy Primer</span></a>.</p>
+</dd>
+<dt id="term-child-node">child node<a class="headerlink" href="#term-child-node" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, a <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> descending from another <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a>.
+A node on a tree may have zero or more child nodes. A node with zero
+child nodes is termed a <a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">leaf node</span></a>.</p>
+</dd>
+<dt id="term-descendent-nodes">descendent nodes<a class="headerlink" href="#term-descendent-nodes" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, the full set of nodes that are descended from a
+given node (i.e., the given node’s children and children’s children and
+children’s children’s children, and so on, until the <a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">leaf nodes</span></a> of the tree, inclusive).</p>
+</dd>
+<dt id="term-edge">edge<a class="headerlink" href="#term-edge" title="Link to this term">¶</a></dt><dt id="term-branch">branch<a class="headerlink" href="#term-branch" title="Link to this term">¶</a></dt><dd><p>A connection between two <a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a> on a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>,
+modeled in DendroPy by the <a class="reference internal" href="library/treemodel.html#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> class. A synonym for “branch” in the
+context of phylogenetic trees.</p>
+<p>An edge connects a “tail node” (also called an origin or source node)
+to a “head node” (also called a target or destination node). The tail
+node is called the “<a class="reference internal" href="#term-parent-node"><span class="xref std std-term">parent</span></a>” of the head node,
+while the head node is called the “<a class="reference internal" href="#term-child-node"><span class="xref std std-term">child</span></a>” of the
+tail node.</p>
+<p>An edge is said to subtend or be incident to the node <em>to</em> which an
+edge connects, i.e., the head node.
+Conversely, the edges connecting a node to its children are called
+outgoing edges with respect to the tail node.</p>
+<p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, every node has one and exactly one incident edge,
+and every edge has a <a class="reference internal" href="#term-head-node"><span class="xref std std-term">head node</span></a>. On the other hand, not every
+node may have outgoing edges (e.g, <a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">leaf nodes</span></a>),
+and not every edge has a <a class="reference internal" href="#term-tail-node"><span class="xref std std-term">tail node</span></a> (e.g., <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">root nodes</span></a>). As such, edges can be thought of “belonging” to their
+head nodes, due to this one-to-one relationship.</p>
+<p>Edges can have any number of properties or attributes associated with
+them, representing a diverse range of phenomena, but the most important
+one is the edge <a class="reference internal" href="#term-edge-length"><span class="xref std std-term">length or weight</span></a>.</p>
+</dd>
+<dt id="term-edge-length">edge length<a class="headerlink" href="#term-edge-length" title="Link to this term">¶</a></dt><dt id="term-edge-weight">edge weight<a class="headerlink" href="#term-edge-weight" title="Link to this term">¶</a></dt><dd><p>A (typically) quantitative value associated with an <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a>. This
+value may represent any number of things, but most typically is used to
+model time, evolutionary distance, or expected rates of substitution on
+a phylogenetic tree. An <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a> may have many values, quantitative
+or otherwise, associated with it, but the length or weight is special
+as it usually denotes the relationship between the <a class="reference internal" href="#term-tail-node"><span class="xref std std-term">tail node</span></a>
+and <a class="reference internal" href="#term-head-node"><span class="xref std std-term">head node</span></a> related by an <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a>.</p>
+</dd>
+<dt id="term-head-node">head node<a class="headerlink" href="#term-head-node" title="Link to this term">¶</a></dt><dt id="term-target-node">target node<a class="headerlink" href="#term-target-node" title="Link to this term">¶</a></dt><dt id="term-destination-node">destination node<a class="headerlink" href="#term-destination-node" title="Link to this term">¶</a></dt><dd><p>On an <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a> connecting two <a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a>, the node <em>to</em>
+which the edge extends to link <em>from</em> the other node, termed the
+<a class="reference internal" href="#term-tail-node"><span class="xref std std-term">tail node</span></a>. The head node is the <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child node</span></a> of the
+<a class="reference internal" href="#term-tail-node"><span class="xref std std-term">tail node</span></a>,  and the <a class="reference internal" href="#term-tail-node"><span class="xref std std-term">tail node</span></a> is the <a class="reference internal" href="#term-parent-node"><span class="xref std std-term">parent
+node</span></a> of the head node. The <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a> is said to subtend, or be
+incident, to the head node.</p>
+</dd>
+<dt id="term-incident-edge">incident edge<a class="headerlink" href="#term-incident-edge" title="Link to this term">¶</a></dt><dt id="term-subtending-edge">subtending edge<a class="headerlink" href="#term-subtending-edge" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a> that connects <em>to</em> a particular <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> is termed
+the incident or subtending edge of that node.</p>
+</dd>
+<dt id="term-internal-edge">internal edge<a class="headerlink" href="#term-internal-edge" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a> that has an <a class="reference internal" href="#term-internal-node"><span class="xref std std-term">internal node</span></a> as a <a class="reference internal" href="#term-head-node"><span class="xref std std-term">head
+node</span></a>.</p>
+</dd>
+<dt id="term-internal-node">internal node<a class="headerlink" href="#term-internal-node" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> that has <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child nodes</span></a>. Also known as
+an inner node or branch node.</p>
+</dd>
+<dt id="term-leaf-edge">leaf edge<a class="headerlink" href="#term-leaf-edge" title="Link to this term">¶</a></dt><dt id="term-terminal-edge">terminal edge<a class="headerlink" href="#term-terminal-edge" title="Link to this term">¶</a></dt><dt id="term-external-edge">external edge<a class="headerlink" href="#term-external-edge" title="Link to this term">¶</a></dt><dt id="term-outer-edge">outer edge<a class="headerlink" href="#term-outer-edge" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a> that has an <a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">leaf node</span></a> as a <a class="reference internal" href="#term-head-node"><span class="xref std std-term">head
+node</span></a>.</p>
+</dd>
+<dt id="term-leaf-node">leaf node<a class="headerlink" href="#term-leaf-node" title="Link to this term">¶</a></dt><dt id="term-tip-node">tip node<a class="headerlink" href="#term-tip-node" title="Link to this term">¶</a></dt><dt id="term-terminal-node">terminal node<a class="headerlink" href="#term-terminal-node" title="Link to this term">¶</a></dt><dt id="term-external-node">external node<a class="headerlink" href="#term-external-node" title="Link to this term">¶</a></dt><dt id="term-outer-node">outer node<a class="headerlink" href="#term-outer-node" title="Link to this term">¶</a></dt><dd><p>A <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> that does not have any <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child nodes</span></a>
+descending from it. Also known as a tip, outer node, external node, or
+terminal node.</p>
+</dd>
+<dt id="term-node">node<a class="headerlink" href="#term-node" title="Link to this term">¶</a></dt><dd><p>An fundamental element of information or data on a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>,
+connected to other such elements in a parent-child relationshop by
+<a class="reference internal" href="#term-edge"><span class="xref std std-term">edges</span></a>.
+In DendroPy, a node is modeled by the <a class="reference internal" href="library/treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> class.
+A node has at most one <a class="reference internal" href="#term-parent-node"><span class="xref std std-term">parent</span></a>, to which it is
+connected by its <a class="reference internal" href="#term-incident-edge"><span class="xref std std-term">incident or subtending</span></a> edge.
+A node may have zero or more <a class="reference internal" href="#term-child-node"><span class="xref std std-term">children</span></a>, to each of
+which it is connected by an independent <a class="reference internal" href="#term-outgoing-edge"><span class="xref std std-term">outgoing edge</span></a> edge.
+A node can be associated with zero or more informational or data
+values. In a phylogenetic <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, one of these values is often a
+<a class="reference internal" href="#term-taxon"><span class="xref std std-term">taxon</span></a>, but many other aspects of information can be modeled.</p>
+</dd>
+<dt id="term-node-depth">node depth<a class="headerlink" href="#term-node-depth" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, the depth of a node is the length of the
+<a class="reference internal" href="#term-path"><span class="xref std std-term">path</span></a> to its <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">root</span></a> (i.e., its root path). The
+root node has a depth zero.</p>
+</dd>
+<dt id="term-node-height">node height<a class="headerlink" href="#term-node-height" title="Link to this term">¶</a></dt><dd><p>The height of a node is the length of the longest downward path to a
+leaf from that node. The height of the root is the height of the tree.
+The depth of a node is the length of the path to its root (i.e., its
+root path). The root node has depth zero,
+leaf nodes have height zero, and a tree with only a single node
+(hence both a root and leaf) has depth and height zero. Conventionally,
+an empty tree (tree with no nodes, if such are allowed) has depth and
+height 1.</p>
+</dd>
+<dt id="term-outgoing-edge">outgoing edge<a class="headerlink" href="#term-outgoing-edge" title="Link to this term">¶</a></dt><dd><p>An <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a> that connects <em>from</em> a particular <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> (to,
+e.g., its <a class="reference internal" href="#term-child-node"><span class="xref std std-term">children</span></a> is said to be an outgoing edge
+for that node.</p>
+</dd>
+<dt id="term-parent-node">parent node<a class="headerlink" href="#term-parent-node" title="Link to this term">¶</a></dt><dt id="term-ancestor-node">ancestor node<a class="headerlink" href="#term-ancestor-node" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, a <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> from which a given node
+immediately descends.</p>
+</dd>
+<dt id="term-path">path<a class="headerlink" href="#term-path" title="Link to this term">¶</a></dt><dd><p>The sequence of <a class="reference internal" href="#term-edge"><span class="xref std std-term">edges</span></a> connecting two <a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a> on a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>.</p>
+</dd>
+<dt id="term-path-length">path length<a class="headerlink" href="#term-path-length" title="Link to this term">¶</a></dt><dt id="term-path-weight">path weight<a class="headerlink" href="#term-path-weight" title="Link to this term">¶</a></dt><dt id="term-unweighted-path">unweighted path<a class="headerlink" href="#term-unweighted-path" title="Link to this term">¶</a></dt><dt id="term-weighted-path">weighted path<a class="headerlink" href="#term-weighted-path" title="Link to this term">¶</a></dt><dd><p>The number or sum of lengths of the <a class="reference internal" href="#term-edge"><span class="xref std std-term">edges</span></a> connecting two
+<a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a> on a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>. An <em>unweighted</em> path length is
+just the number of <a class="reference internal" href="#term-edge-length"><span class="xref std std-term">edges:, while a *weighted* path length or
+path weight is the sum of :term:`edge lengths</span></a>.</p>
+</dd>
+<dt id="term-postorder-traversal">postorder traversal<a class="headerlink" href="#term-postorder-traversal" title="Link to this term">¶</a></dt><dd><p>A process by which all nodes of a tree are visited, with a particular
+node being visited only after its children.</p>
+</dd>
+<dt id="term-preorder-traversal">preorder traversal<a class="headerlink" href="#term-preorder-traversal" title="Link to this term">¶</a></dt><dd><p>A process by which all nodes of a tree are visited, with a particular
+node being visited before its children.</p>
+</dd>
+<dt id="term-rooted-tree">rooted tree<a class="headerlink" href="#term-rooted-tree" title="Link to this term">¶</a></dt><dd><p>A state of a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a> in which its <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed node</span></a> represents the
+most-recent common ancestor of all the <a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">leaf nodes</span></a>
+on the tree. Rooted trees have a distinct directionality, and
+ancestor-descendent relationships are not invertible.</p>
+</dd>
+<dt id="term-schema">schema<a class="headerlink" href="#term-schema" title="Link to this term">¶</a></dt><dd><p>The format or syntax of serialized phylogenetic or related data.
+Examples are NEXUS, NEWICk, Phylip, NeXML, etc. A “schema” is
+DendroPy-speak for “format” (we cannot use the argument name “format”
+because this is a Python built-in, and hence we adopted this
+terminology for consistency), and is typicallly specified using one of
+a set of predefined string values, known as “schema specification
+strings”. Supported reading (input) schemas are described <a class="reference internal" href="schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">here</span></a> while supported writing (output)
+schemas are described <a class="reference internal" href="schemas/index.html#specifying-the-data-writing-format"><span class="std std-ref">here</span></a>.</p>
+</dd>
+<dt id="term-seed-node">seed node<a class="headerlink" href="#term-seed-node" title="Link to this term">¶</a></dt><dt id="term-root-node">root node<a class="headerlink" href="#term-root-node" title="Link to this term">¶</a></dt><dd><p>The first or topmost <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> in a tree. This is also more commonly
+called the “root” or “root node” of the tree, though, in the strictest
+sense, this equivalence is only valid when the tree is explicitly
+<a class="reference internal" href="#term-rooted-tree"><span class="xref std std-term">rooted</span></a>. Both <a class="reference internal" href="#term-rooted-tree"><span class="xref std std-term">rooted trees</span></a>
+and <a class="reference internal" href="#term-unrooted-tree"><span class="xref std std-term">unrooted trees</span></a> have seed nodes. In rooted
+trees, the seed node is the root of the tree.</p>
+<p>By definition, the seed node does not have a <a class="reference internal" href="#term-parent-node"><span class="xref std std-term">parent node</span></a>.  It
+is the node at which algorithms on the tree begin, since as a data
+structure, one can only pass from <a class="reference internal" href="#term-parent-node"><span class="xref std std-term">parent node</span></a> to <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child
+nodes</span></a>.  If the tree is <a class="reference internal" href="#term-rooted-tree"><span class="xref std std-term">rooted</span></a>, then
+the seed node is equivalent to the root of the tree.</p>
+</dd>
+<dt id="term-sibling-node">sibling node<a class="headerlink" href="#term-sibling-node" title="Link to this term">¶</a></dt><dt id="term-sister-node">sister node<a class="headerlink" href="#term-sister-node" title="Link to this term">¶</a></dt><dd><p>Two or more <a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a> that share the same <a class="reference internal" href="#term-parent-node"><span class="xref std std-term">parent
+node</span></a>, i.e., are descended from the same node, are said to be siblings
+or sisters with respect to each other.</p>
+</dd>
+<dt id="term-subtree">subtree<a class="headerlink" href="#term-subtree" title="Link to this term">¶</a></dt><dd><p>A subtree of a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a> is a tree consisting of a <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> in
+the tree and all its <a class="reference internal" href="#term-descendent-nodes"><span class="xref std std-term">descendents</span></a>. Each
+<a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> on a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a> thus corresponds to the <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">root</span></a> of the subtree that it determines.</p>
+</dd>
+<dt id="term-tail-node">tail node<a class="headerlink" href="#term-tail-node" title="Link to this term">¶</a></dt><dt id="term-source-node">source node<a class="headerlink" href="#term-source-node" title="Link to this term">¶</a></dt><dt id="term-origin-node">origin node<a class="headerlink" href="#term-origin-node" title="Link to this term">¶</a></dt><dd><p>On an <a class="reference internal" href="#term-edge"><span class="xref std std-term">edge</span></a> connecting two <a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a>, the node <em>from</em>
+which the edge extends to link <em>to</em> the other node, termed the <a class="reference internal" href="#term-head-node"><span class="xref std std-term">head node</span></a>.
+The tail node is the <a class="reference internal" href="#term-parent-node"><span class="xref std std-term">parent node</span></a> of the <a class="reference internal" href="#term-head-node"><span class="xref std std-term">head node</span></a>,  and
+the <a class="reference internal" href="#term-head-node"><span class="xref std std-term">head node</span></a> is the <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child node</span></a> of the tail node.
+The edge is said to be an outgoing node with respect to the tail node.</p>
+</dd>
+<dt id="term-taxon">taxon<a class="headerlink" href="#term-taxon" title="Link to this term">¶</a></dt><dt id="term-operational-taxonomic-unit">operational taxonomic unit<a class="headerlink" href="#term-operational-taxonomic-unit" title="Link to this term">¶</a></dt><dt id="term-taxon-concept">taxon concept<a class="headerlink" href="#term-taxon-concept" title="Link to this term">¶</a></dt><dt id="term-taxon-name">taxon name<a class="headerlink" href="#term-taxon-name" title="Link to this term">¶</a></dt><dd><p>A class of organisms being modeled represented by a string label or
+namethat is guaranteed to be unique within a particular <a class="reference internal" href="#term-taxon-namespace"><span class="xref std std-term">taxon
+namespace</span></a>.</p>
+</dd>
+<dt id="term-taxon-namespace">taxon namespace<a class="headerlink" href="#term-taxon-namespace" title="Link to this term">¶</a></dt><dd><p>A set of distinct and unique labels, with each label mapping to one and
+exactly one or names that is used to relate data from across different
+data sources to each other by reference to a <a class="reference internal" href="#term-taxon-concept"><span class="xref std std-term">taxon concept</span></a>.</p>
+</dd>
+<dt id="term-tree">tree<a class="headerlink" href="#term-tree" title="Link to this term">¶</a></dt><dt id="term-arborescence">arborescence<a class="headerlink" href="#term-arborescence" title="Link to this term">¶</a></dt><dd><p>A tree is a set of <a class="reference internal" href="#term-node"><span class="xref std std-term">nodes</span></a> connected to each other in
+parent-child relationships given by a set of <a class="reference internal" href="#term-edge"><span class="xref std std-term">edges</span></a>. In
+DendroPy, a tree is modeled by the <a class="reference internal" href="library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> class. A tree is a
+specialization of a <a class="reference external" href="http://en.wikipedia.org/wiki/Graph_%28mathematics%29">graph</a>, constrained
+such that:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>All its <a class="reference internal" href="#term-edge"><span class="xref std std-term">edges</span></a> are directional.</p></li>
+<li><p>It has no <a class="reference external" href="http://en.wikipedia.org/wiki/Cycle_graph#Directed_cycle_graph">directed cycles</a> .</p></li>
+<li><p>The directionality is from the <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">root</span></a> (or
+“<a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed node</span></a>” in DendroPy’s parlance) to the
+<a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">tips</span></a>.</p></li>
+</ol>
+</div></blockquote>
+<p>The first and second constraints alone result in a <a class="reference external" href="http://en.wikipedia.org/wiki/Directed_acyclic_graph">directed acylic graph</a> .
+The addition of the third constraint results in an <a class="reference external" href="http://en.wikipedia.org/wiki/Arborescence_(graph_theory)">arborescence</a>, which is
+strictly synonymous with “tree”.</p>
+</dd>
+<dt id="term-unifurcation">unifurcation<a class="headerlink" href="#term-unifurcation" title="Link to this term">¶</a></dt><dt id="term-unifurcating-node">unifurcating node<a class="headerlink" href="#term-unifurcating-node" title="Link to this term">¶</a></dt><dd><p>On a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a>, a <a class="reference internal" href="#term-node"><span class="xref std std-term">node</span></a> with exactly one <a class="reference internal" href="#term-child-node"><span class="xref std std-term">child node</span></a>.
+Also known as an “out-degree one” node. In some cases, unifurcations
+may be used to represent information (e.g., a change in some value
+associated with edges, such as population size or a rate of some kind),
+but they more typically arise as side-effect of tree manipulation
+operations, such as re-rooting or pruning. Though DendroPy has no
+problem in handling unifurcations, trees with unifurcating nodes are
+considered pathological in many contexts and operations, and DendroPy
+thus provides facilities for suppressing unifurcations, either on
+existing trees or as they occur as a side-effect of other operations.</p>
+</dd>
+<dt id="term-unrooted-tree">unrooted tree<a class="headerlink" href="#term-unrooted-tree" title="Link to this term">¶</a></dt><dd><p>A state of a <a class="reference internal" href="#term-tree"><span class="xref std std-term">tree</span></a> in which its <a class="reference internal" href="#term-seed-node"><span class="xref std std-term">seed node</span></a> is an
+algorithmic artifact, and not necessarily represents the most-recent
+common ancestor of all the <a class="reference internal" href="#term-leaf-node"><span class="xref std std-term">leaf nodes</span></a> on the tree.
+In an unrooted trees, ancestor-descendent relationships are also
+algorithmic artifacts and can be (conceptually) inverted without
+changing the information represented by the tree, though this operation
+usually requires a fundamental restructuring of the computational
+representation of the tree.</p>
+</dd>
+</dl>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="index.html"><img src="_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="programs/sumtrees.html"
+                          title="previous chapter">SumTrees: Phylogenetic Tree Summarization and Annotation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="migration.html"
+                          title="next chapter">DendroPy 4 Changes and Migration Primer</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="schemas/fasta.html">FASTA</a></li>
+                    <li><a href="schemas/newick.html">Newick</a></li>
+                    <li><a href="schemas/nexml.html">NeXML</a></li>
+                    <li><a href="schemas/nexus.html">Nexus</a></li>
+                    <li><a href="schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="#">Glossary and Terminological Reference</a></li>
+            <li><a href="developer.html">Developer Guide</a></li>
+            <li><a href="planning.html">Ongoing Development</a></li>
+            <li><a href="changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="migration.html" title="DendroPy 4 Changes and Migration Primer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="programs/sumtrees.html" title="SumTrees: Phylogenetic Tree Summarization and Annotation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Glossary and Terminological Reference</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

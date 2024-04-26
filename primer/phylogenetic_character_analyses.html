@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Phylogenetic Character Analyses &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Population Genetic Summary Statistics" href="popgenstats.html" />
+    <link rel="prev" title="Character Matrices" href="chars.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="popgenstats.html" title="Population Genetic Summary Statistics"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="chars.html" title="Character Matrices"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Phylogenetic Character Analyses</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="phylogenetic-character-analyses">
+<h1>Phylogenetic Character Analyses<a class="headerlink" href="#phylogenetic-character-analyses" title="Link to this heading">¶</a></h1>
+<section id="phylogenetic-independent-contrasts-pic">
+<h2>Phylogenetic Independent Contrasts (PIC)<a class="headerlink" href="#phylogenetic-independent-contrasts-pic" title="Link to this heading">¶</a></h2>
+<section id="basic-analysis">
+<h3>Basic Analysis<a class="headerlink" href="#basic-analysis" title="Link to this heading">¶</a></h3>
+<p>A phylogenetic independent contrasts analysis (Felsenstein 1985; Garland et al. 2005) can be carried out using the <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticIndependentConstrasts</span></code> class.
+This requires you to have a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> and a <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousCharacterMatrix</span></code></a> which reference the same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>.
+Thus, if your data is in the same file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.cc.combined.nex&quot;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">chars</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">char_matrices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+</pre></div>
+</div>
+<p>While if you have the tree and characters in a different file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.cc.tre&quot;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">chars</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">ContinuousCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.cc.nex&quot;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In either case, we have a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object, <code class="docutils literal notranslate"><span class="pre">tree</span></code> and a <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousCharacterMatrix</span></code></a> object, <code class="docutils literal notranslate"><span class="pre">chars</span></code>, that both reference the same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>.</p>
+<p>Once the data is loaded, we create the <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticIndependentConstrasts</span></code> object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dendropy</span> <span class="kn">import</span> <span class="n">continuous</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pic</span> <span class="o">=</span> <span class="n">continuous</span><span class="o">.</span><span class="n">PhylogeneticIndependentContrasts</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span> <span class="n">char_matrix</span><span class="o">=</span><span class="n">chars</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>At this point, the data is ready for analysis. Typically, we want to map the contrasts onto a tree. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">contrasts_tree</span></code> method takes a single mandatory argument, the 0-based index of the character (or column) to be analyzed, and returns a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object that is a clone of the original input <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>, but with the following attributes added to each <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pic_state_value</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pic_state_variance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pic_contrast_raw</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pic_contrast_variance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pic_contrast_standardized</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pic_edge_length_error</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pic_corrected_edge_length</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>In addition to the 0-based index first argument, <code class="docutils literal notranslate"><span class="pre">character_index</span></code>, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">contrasts_tree</span></code> method takes the following optional arguments:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">annotate_pic_statistics</span></code></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the PIC statistics attributes will be <em>annotated</em> (i.e., serialized or persisted when the tree is written out or saved. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">state_values_as_node_labels</span></code></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the <code class="xref py py-attr docutils literal notranslate"><span class="pre">label</span></code> attribute of each <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> object will be set to the value of the character.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">corrected_edge_lengths</span></code></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> returned will have its edge lengths adjusted to the corrected edge lengths as yielded by the PIC analysis.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="results-as-a-table">
+<h3>Results as a Table<a class="headerlink" href="#results-as-a-table" title="Link to this heading">¶</a></h3>
+<p>So the following retrieves the constrasts tree for the first character (index=0), and prints a table of the various statistics:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ctree1</span> <span class="o">=</span> <span class="n">pic</span><span class="o">.</span><span class="n">contrasts_tree</span><span class="p">(</span><span class="n">character_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">annotate_pic_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">state_values_as_node_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">corrected_edge_lengths</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">ctree1</span><span class="o">.</span><span class="n">postorder_internal_node_iter</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">pic_state_value</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">nd</span><span class="o">.</span><span class="n">pic_state_variance</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">nd</span><span class="o">.</span><span class="n">pic_contrast_raw</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">nd</span><span class="o">.</span><span class="n">pic_edge_length_error</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="n">row_str</span> <span class="o">=</span> <span class="p">[((</span><span class="s2">&quot;</span><span class="si">%10.8f</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="n">row_str</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row_str</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">label</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">row_str</span><span class="p">)</span>
+<span class="go">HP     3.85263000    0.38500000    0.48342000    0.10500000</span>
+<span class="go">HPM    3.20037840    0.34560000    1.48239000    0.21560000</span>
+<span class="go">HPMA   2.78082358    0.60190555    1.17222840    0.22190555</span>
+<span class="go">Root   1.18372461    0.37574347    4.25050358    0.37574347</span>
+</pre></div>
+</div>
+</section>
+<section id="results-as-a-newick-string-with-state-values-as-node-labels">
+<h3>Results as a Newick String with State Values as Node Labels<a class="headerlink" href="#results-as-a-newick-string-with-state-values-as-node-labels" title="Link to this heading">¶</a></h3>
+<p>Alternatively, you might want to visualize the results as a tree showing the numeric values of the states. The following produces this for each character in the matrix by first requesting that <code class="xref py py-meth docutils literal notranslate"><span class="pre">contrasts_tree</span></code> replace existing node labels with the state values for that node, and then, when writing out in Newick format, suppressing taxon labels and printing node labels in their place:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">continuous</span>
+
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.cc.tre&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">chars</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">ContinuousCharacterMatrix</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+        <span class="s2">&quot;primates.cc.nex&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">pic</span> <span class="o">=</span> <span class="n">continuous</span><span class="o">.</span><span class="n">PhylogeneticIndependentContrasts</span><span class="p">(</span>
+        <span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+        <span class="n">char_matrix</span><span class="o">=</span><span class="n">chars</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">cidx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chars</span><span class="o">.</span><span class="n">vector_size</span><span class="p">):</span>
+    <span class="n">ctree1</span> <span class="o">=</span> <span class="n">pic</span><span class="o">.</span><span class="n">contrasts_tree</span><span class="p">(</span><span class="n">character_index</span><span class="o">=</span><span class="n">cidx</span><span class="p">,</span>
+            <span class="n">annotate_pic_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">state_values_as_node_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">corrected_edge_lengths</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ctree1</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+                <span class="n">suppress_leaf_taxon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">suppress_leaf_node_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">suppress_internal_taxon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">suppress_internal_node_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+
+
+
+
+
+
+
+
+
+</pre></div>
+</div>
+<p>This results in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">&amp;</span><span class="n">R</span><span class="p">]</span> <span class="p">((((</span><span class="mf">4.09434</span><span class="p">:</span><span class="mf">0.21</span><span class="p">,</span><span class="mf">3.61092</span><span class="p">:</span><span class="mf">0.21</span><span class="p">)</span><span class="mf">3.85263</span><span class="p">:</span><span class="mf">0.28</span><span class="p">,</span><span class="mf">2.37024</span><span class="p">:</span><span class="mf">0.49</span><span class="p">)</span><span class="mf">3.2003784</span><span class="p">:</span><span class="mf">0.13</span><span class="p">,</span><span class="mf">2.02815</span><span class="p">:</span><span class="mf">0.62</span><span class="p">)</span><span class="mf">2.78082357912</span><span class="p">:</span><span class="mf">0.38</span><span class="p">,</span><span class="s1">&#39;-1.46968&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">)</span><span class="mf">1.1837246134</span><span class="p">:</span><span class="mf">0.0</span><span class="p">;</span>
+
+<span class="p">[</span><span class="o">&amp;</span><span class="n">R</span><span class="p">]</span> <span class="p">((((</span><span class="mf">4.74493</span><span class="p">:</span><span class="mf">0.21</span><span class="p">,</span><span class="mf">3.3322</span><span class="p">:</span><span class="mf">0.21</span><span class="p">)</span><span class="mf">4.038565</span><span class="p">:</span><span class="mf">0.28</span><span class="p">,</span><span class="mf">3.3673</span><span class="p">:</span><span class="mf">0.49</span><span class="p">)</span><span class="mf">3.7432084</span><span class="p">:</span><span class="mf">0.13</span><span class="p">,</span><span class="mf">2.89037</span><span class="p">:</span><span class="mf">0.62</span><span class="p">)</span><span class="mf">3.43796714996</span><span class="p">:</span><span class="mf">0.38</span><span class="p">,</span><span class="mf">2.30259</span><span class="p">:</span><span class="mf">1.0</span><span class="p">)</span><span class="mf">3.01135659943</span><span class="p">:</span><span class="mf">0.0</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="results-as-a-nexus-document-with-analysis-statistics-as-node-metadata">
+<h3>Results as a NEXUS Document with Analysis Statistics as Node Metadata<a class="headerlink" href="#results-as-a-nexus-document-with-analysis-statistics-as-node-metadata" title="Link to this heading">¶</a></h3>
+<p>However, probably the best way to visualize the results would be as a tree marked up with metadata that can be viewed in <a class="reference external" href="http://tree.bio.ed.ac.uk/software/figtree/">FigTree</a> (by checking “Node Labels” and selecting the appropriate statistics from the drop-down menu). This is, in fact, even easier to do than the above, as it will result from the default options. The following illustrates this. It collects the metadata-annotated contrast analysis trees produced by <code class="xref py py-meth docutils literal notranslate"><span class="pre">contrasts_tree</span></code> in a <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> object, and then prints the <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> as NEXUS-formatted string. The default options to <code class="xref py py-meth docutils literal notranslate"><span class="pre">contrasts_tree</span></code> result in annotated attributes, while the default options to the writing method result in the annotations being written out as comment metadata.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">continuous</span>
+
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.cc.tre&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">chars</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">ContinuousCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;primates.cc.nex&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">pic</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">continuous</span><span class="o">.</span><span class="n">PhylogeneticIndependentContrasts</span><span class="p">(</span>
+        <span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+        <span class="n">char_matrix</span><span class="o">=</span><span class="n">chars</span><span class="p">)</span>
+<span class="n">pic_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">cidx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chars</span><span class="o">.</span><span class="n">vector_size</span><span class="p">):</span>
+    <span class="n">ctree1</span> <span class="o">=</span> <span class="n">pic</span><span class="o">.</span><span class="n">contrasts_tree</span><span class="p">(</span><span class="n">character_index</span><span class="o">=</span><span class="n">cidx</span><span class="p">)</span>
+    <span class="n">ctree1</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;PIC </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cidx</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pic_trees</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctree1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pic_trees</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">))</span>
+
+
+
+
+
+
+
+
+
+</pre></div>
+</div>
+<p>Thus, we get:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#NEXUS</span>
+
+
+<span class="n">BEGIN</span> <span class="n">TAXA</span><span class="p">;</span>
+    <span class="n">DIMENSIONS</span> <span class="n">NTAX</span><span class="o">=</span><span class="mi">5</span><span class="p">;</span>
+    <span class="n">TAXLABELS</span>
+        <span class="n">Homo</span>
+        <span class="n">Pongo</span>
+        <span class="n">Macaca</span>
+        <span class="n">Ateles</span>
+        <span class="n">Galago</span>
+<span class="p">;</span>
+<span class="n">END</span><span class="p">;</span>
+
+<span class="n">BEGIN</span> <span class="n">TREES</span><span class="p">;</span>
+    <span class="n">TREE</span> <span class="n">PIC_1</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">R</span><span class="p">]</span> <span class="p">((((</span><span class="n">Homo</span><span class="p">:</span><span class="mf">0.21</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.21</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">4.09434</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">],</span><span class="n">Pongo</span><span class="p">:</span><span class="mf">0.21</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.21</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">3.61092</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">])</span><span class="n">HP</span><span class="p">:</span><span class="mf">0.28</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="mf">0.42</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.105</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="mf">0.385</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.385</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">3.85263</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="mf">0.745933254387</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="mf">0.48342</span><span class="p">],</span><span class="n">Macaca</span><span class="p">:</span><span class="mf">0.49</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.49</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">2.37024</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">])</span><span class="n">HPM</span><span class="p">:</span><span class="mf">0.13</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="mf">0.875</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.2156</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="mf">0.3456</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.3456</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">3.2003784</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="mf">1.58474156959</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="mf">1.48239</span><span class="p">],</span><span class="n">Ateles</span><span class="p">:</span><span class="mf">0.62</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.62</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">2.02815</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">])</span><span class="n">HPMA</span><span class="p">:</span><span class="mf">0.38</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="mf">0.9656</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.221905550953</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="mf">0.601905550953</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.601905550953</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">2.78082357912</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="mf">1.19292629182</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="mf">1.1722284</span><span class="p">],</span><span class="n">Galago</span><span class="p">:</span><span class="mf">1.0</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=-</span><span class="mf">1.46968</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">])</span><span class="n">Root</span><span class="p">:</span><span class="mf">0.0</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="mf">1.60190555095</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.37574347039</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="mf">0.37574347039</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.37574347039</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">1.1837246134</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="mf">3.35831889583</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="mf">4.25050357912</span><span class="p">];</span>
+
+    <span class="n">TREE</span> <span class="n">PIC_2</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">R</span><span class="p">]</span> <span class="p">((((</span><span class="n">Homo</span><span class="p">:</span><span class="mf">0.21</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.21</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">4.74493</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">],</span><span class="n">Pongo</span><span class="p">:</span><span class="mf">0.21</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.21</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">3.3322</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">])</span><span class="n">HP</span><span class="p">:</span><span class="mf">0.28</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="mf">0.42</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.105</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="mf">0.385</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.385</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">4.038565</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="mf">2.17988971592</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="mf">1.41273</span><span class="p">],</span><span class="n">Macaca</span><span class="p">:</span><span class="mf">0.49</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.49</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">3.3673</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">])</span><span class="n">HPM</span><span class="p">:</span><span class="mf">0.13</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="mf">0.875</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.2156</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="mf">0.3456</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.3456</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">3.7432084</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="mf">0.717612470209</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="mf">0.671265</span><span class="p">],</span><span class="n">Ateles</span><span class="p">:</span><span class="mf">0.62</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.62</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">2.89037</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">])</span><span class="n">HPMA</span><span class="p">:</span><span class="mf">0.38</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="mf">0.9656</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.221905550953</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="mf">0.601905550953</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.601905550953</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">3.43796714996</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="mf">0.867896862104</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="mf">0.8528384</span><span class="p">],</span><span class="n">Galago</span><span class="p">:</span><span class="mf">1.0</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">2.30259</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">])</span><span class="n">Root</span><span class="p">:</span><span class="mf">0.0</span><span class="p">[</span><span class="o">&amp;</span><span class="n">pic_contrast_variance</span><span class="o">=</span><span class="mf">1.60190555095</span><span class="p">,</span><span class="n">pic_edge_length_error</span><span class="o">=</span><span class="mf">0.37574347039</span><span class="p">,</span><span class="n">pic_state_variance</span><span class="o">=</span><span class="mf">0.37574347039</span><span class="p">,</span><span class="n">pic_corrected_edge_length</span><span class="o">=</span><span class="mf">0.37574347039</span><span class="p">,</span><span class="n">pic_state_value</span><span class="o">=</span><span class="mf">3.01135659943</span><span class="p">,</span><span class="n">pic_contrast_standardized</span><span class="o">=</span><span class="mf">0.897060422518</span><span class="p">,</span><span class="n">pic_contrast_raw</span><span class="o">=</span><span class="mf">1.13537714996</span><span class="p">];</span>
+
+<span class="n">END</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="multifurcating-trees-and-polytomies">
+<h3>Multifurcating Trees and Polytomies<a class="headerlink" href="#multifurcating-trees-and-polytomies" title="Link to this heading">¶</a></h3>
+<p>By default, the <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticIndependentConstrasts</span></code> class only handles fully-bifurcating trees, and throws an exception if the input tree has polytomies.
+You can change this behavior by specifying one of the following strings to the “<code class="docutils literal notranslate"><span class="pre">polytomy_strategy</span></code>” argument of the class constructor:</p>
+<blockquote>
+<div><dl>
+<dt>“<code class="docutils literal notranslate"><span class="pre">ignore</span></code>”</dt><dd><p>Polytomies will handled without complaint:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pic</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">continuous</span><span class="o">.</span><span class="n">PhylogeneticIndependentContrasts</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">char_matrix</span><span class="o">=</span><span class="n">chars</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">polytomy_strategy</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that in this case the raw contrast and the raw contrast variance calculated for nodes that have more than two children will be invalid. The reconstructed state values should be still valid, though.</p>
+</dd>
+<dt>“<code class="docutils literal notranslate"><span class="pre">resolve</span></code>”</dt><dd><p>Polytomies will be arbitrarily resolved with 0-length branches:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pic</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">continuous</span><span class="o">.</span><span class="n">PhylogeneticIndependentContrasts</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">char_matrix</span><span class="o">=</span><span class="n">chars</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">polytomy_strategy</span><span class="o">=</span><span class="s1">&#39;resolve&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case this validity of the analysis for nodes with (originally) more than two children is dubious, as the resulting contrasts are non-independent.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Phylogenetic Character Analyses</a><ul>
+<li><a class="reference internal" href="#phylogenetic-independent-contrasts-pic">Phylogenetic Independent Contrasts (PIC)</a><ul>
+<li><a class="reference internal" href="#basic-analysis">Basic Analysis</a></li>
+<li><a class="reference internal" href="#results-as-a-table">Results as a Table</a></li>
+<li><a class="reference internal" href="#results-as-a-newick-string-with-state-values-as-node-labels">Results as a Newick String with State Values as Node Labels</a></li>
+<li><a class="reference internal" href="#results-as-a-nexus-document-with-analysis-statistics-as-node-metadata">Results as a NEXUS Document with Analysis Statistics as Node Metadata</a></li>
+<li><a class="reference internal" href="#multifurcating-trees-and-polytomies">Multifurcating Trees and Polytomies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="chars.html"
+                          title="previous chapter">Character Matrices</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="popgenstats.html"
+                          title="next chapter">Population Genetic Summary Statistics</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="popgenstats.html" title="Population Genetic Summary Statistics"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="chars.html" title="Character Matrices"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Phylogenetic Character Analyses</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

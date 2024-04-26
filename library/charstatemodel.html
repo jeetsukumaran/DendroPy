@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.datamodel.charstatemodel: Character State Identities and Alphabets &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.datamodel.charmatrixmodel: Character Sequences and Matrices" href="charmatrixmodel.html" />
+    <link rel="prev" title="dendropy.datamodel.treecollectionmodel: Collections of Trees" href="treecollectionmodel.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="charmatrixmodel.html" title="dendropy.datamodel.charmatrixmodel: Character Sequences and Matrices"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="treecollectionmodel.html" title="dendropy.datamodel.treecollectionmodel: Collections of Trees"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.charstatemodel</span></code>: Character State Identities and Alphabets</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.datamodel.charstatemodel">
+<span id="dendropy-datamodel-charstatemodel-character-state-identities-and-alphabets"></span><h1><a class="reference internal" href="#module-dendropy.datamodel.charstatemodel" title="dendropy.datamodel.charstatemodel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.charstatemodel</span></code></a>: Character State Identities and Alphabets<a class="headerlink" href="#module-dendropy.datamodel.charstatemodel" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="the-statealphabet-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet" title="dendropy.datamodel.charstatemodel.StateAlphabet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateAlphabet</span></code></a> Class<a class="headerlink" href="#the-statealphabet-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.charstatemodel.</span></span><span class="sig-name descname"><span class="pre">StateAlphabet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fundamental_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ambiguous_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polymorphic_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol_synonyms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data_symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gap_symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet" title="Link to this definition">¶</a></dt>
+<dd><p>A master registry mapping state symbols to their definitions.</p>
+<p>There are two classes or “denominations” of states:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>fundamental states</dt><dd><p>These are the basic, atomic, self-contained states of the alphabet,
+distinct and mutually-exclusive from every other fundamental state.
+E.g., for DNA: adenine, guanine, cytosine, and thymine.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>multi-state states</dt><dd><p>The states are second-level or “pseudo-states”, in that they are
+not properly states in and of themselves, but rather each consist
+of a set of other states. That is, a multi-state state is a set of
+two or more fundamental states.  Multi-state states are of one of
+two types: “ambiguous” and “polymorphic” states. “Ambiguous” states
+represent states in which the true fundamental state is unknown,
+but consists of one of the fundamental states to which the
+ambiguous states map. “Polymorphic” states represent states in
+which the entity actually has multiple fundamental states
+simultaneously. “Ambiguous” states are an expression of uncertainty
+or lack of knowledge about the identity of state. With
+“polymorphic” states, on the other hand, there is no uncertaintly
+or lack of knowledge about the state: the state is known
+definitively, and it consists of multiple fundamental states.  An
+example of an ambiguous state would be ‘N’, representing any base
+in molecular sequence data. An example of a polymorphic state would
+be the range of a widespread species found in multiple geographic
+units.  Note that multi-state states can be specified in terms of
+other multi-state states, but that upon instantiation, these member
+multi-states will be expanded to their fundamental states.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>State definitions or identities are immutable: their symbology and mappings
+cannot be changed after creation/initialization. State definitions and
+identities, however, can be added/removed from a state alphabet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – The name for this state alphabet.</p></li>
+<li><p><strong>fundamental_states</strong> (<em>iterable</em><em> of </em><em>strings</em>) – An iterable of symbols defining the fundamental (i.e., non-ambiguous
+and non-polymorphic states of this alphabet), with a 1-to-1
+correspodence between symbols and states. Each state will also be
+automatically indexed base on its position in this list. For DNA, this
+would be something like: <code class="docutils literal notranslate"><span class="pre">'ACGT'</span></code> or <code class="docutils literal notranslate"><span class="pre">('A',</span> <span class="pre">'C',</span> <span class="pre">'G',</span> <span class="pre">T')</span></code>. For
+“standard” characters, this would be something like <code class="docutils literal notranslate"><span class="pre">'01'</span></code> or <code class="docutils literal notranslate"><span class="pre">('0',</span>
+<span class="pre">'1')</span></code>.</p></li>
+<li><p><strong>no_data_symbol</strong> (<em>string</em>) – If specified, automatically creates a “no data” ambiguous state,
+represented by the (canonical, or primary) symbol
+“no_data_symbol”, which maps to all fundamental states.
+This will also insert <code class="docutils literal notranslate"><span class="pre">None</span></code> into all symbol look-up maps, which, when
+dereferenced will return this state. Furthermore, the attribute
+<code class="docutils literal notranslate"><span class="pre">self.no_data_symbol</span></code> will return this symbol and <code class="docutils literal notranslate"><span class="pre">self.no_data_state</span></code>
+will return this state. The ‘no data’ state will be an ambiguous
+multistate type.</p></li>
+<li><p><strong>ambiguous_states</strong> (<em>iterable</em><em> of </em><em>tuples</em>) – An iterable consisting of tuples expressing ambiguous state symbols and
+the set of symbols representing the fundamental states to which they
+map. The first element in the tuple is the symbol used to represent the
+ambiguous state; this can be blank (“”), but if not blank it needs to
+be unique across all symbols (including case-variants if the state
+alphabet is case-insensitive).  The second element is an
+iterable of fundamental state symbols to which this ambiguous state
+maps. The fundamental state symbols <em>must</em> have already been defined,
+i.e. given in the value passed to <code class="docutils literal notranslate"><span class="pre">fundamental_states</span></code>. Note: a
+dictionary may seem like a more tractable structure than iterable of
+tuples, but we may need to specify multiple anonymous or blank
+ambiguous states.</p></li>
+<li><p><strong>polymorphic_states</strong> (<em>iterable</em><em> of </em><em>tuples</em>) – An iterable consisting of tuples expressing polymorphic state symbols and
+the set of symbols representing the fundamental states to which they
+map. The first element in the tuple is the symbol used to represent the
+polymorphic state; this can be blank (“”), but if not blank it needs to
+be unique across all symbols (including case-variants if the state
+alphabet is case-insensitive).  The second element is an
+iterable of fundamental state symbols to which this polymorphic state
+maps. The fundamental state symbols <em>must</em> have already been defined,
+i.e. given in the value passed to <code class="docutils literal notranslate"><span class="pre">fundamental_states</span></code>. Note: a
+dictionary may seem like a more tractable structure than iterable of
+tuples, but we may need to specify multiple anonymous or blank
+polymorphic states.</p></li>
+<li><p><strong>symbol_synonyms</strong> (<em>dictionary</em>) – A mapping of symbols, with keys being the new symbols and values being
+(already-defined) symbols of states to which they map. This provides a
+mechanism by which states with multiple symbols can be managed. For
+example, an ambiguous state, “unknown”, representing all fundamental
+states might be defined with ‘?’ as its primary symbol, and a synonym
+symbol for this state might be ‘X’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns state identity corresponding to <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>integer</em><em> or </em><em>string</em>) – If and integer value, looks up and returns state identity by index.
+If a string value, looks up and returns state identity by symbol.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>|StateIdentity| instance</em>) – Returns a <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> corresponding to <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>KeyError if key is not valid.</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.__iter__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.state_iter" title="dendropy.datamodel.charstatemodel.StateAlphabet.state_iter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">StateAlphabet.state_iter</span></code></a>: iterator over all state
+identities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.__len__" title="Link to this definition">¶</a></dt>
+<dd><p>Number of states.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.ambiguous_state_iter">
+<span class="sig-name descname"><span class="pre">ambiguous_state_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.ambiguous_state_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.ambiguous_state_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all ambiguous state identities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.ambiguous_symbol_iter">
+<span class="sig-name descname"><span class="pre">ambiguous_symbol_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_synonyms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.ambiguous_symbol_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.ambiguous_symbol_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all symbols (including synonyms, unless
+<code class="docutils literal notranslate"><span class="pre">include_synonyms</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) that map to ambiguous states.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.canonical_symbol_state_map">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">canonical_symbol_state_map</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.canonical_symbol_state_map" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary with state symbols as keys and states as values. Does not
+include symbol synonyms or case variations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.compile_lookup_mappings">
+<span class="sig-name descname"><span class="pre">compile_lookup_mappings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.compile_lookup_mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.compile_lookup_mappings" title="Link to this definition">¶</a></dt>
+<dd><p>Builds lookup tables/mappings for quick referencing and dereferencing
+of symbols/states.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.compile_member_states_lookup_mappings">
+<span class="sig-name descname"><span class="pre">compile_member_states_lookup_mappings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.compile_member_states_lookup_mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.compile_member_states_lookup_mappings" title="Link to this definition">¶</a></dt>
+<dd><p>Builds lookup tables/mappings for quick referencing and dereferencing
+of ambiguous/polymorphic states based on the fundamental states to
+which they map.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.compile_symbol_lookup_mappings">
+<span class="sig-name descname"><span class="pre">compile_symbol_lookup_mappings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.compile_symbol_lookup_mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.compile_symbol_lookup_mappings" title="Link to this definition">¶</a></dt>
+<dd><p>Builds lookup tables/mappings for quick referencing and dereferencing
+of state symbology.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.full_symbol_state_map">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">full_symbol_state_map</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.full_symbol_state_map" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary with state symbols as keys and states as values.
+Includes symbol synonyms or case variations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.fundamental_state_iter">
+<span class="sig-name descname"><span class="pre">fundamental_state_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.fundamental_state_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.fundamental_state_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all fundamental state identities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.fundamental_symbol_iter">
+<span class="sig-name descname"><span class="pre">fundamental_symbol_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_synonyms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.fundamental_symbol_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.fundamental_symbol_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all symbols (including synonyms, unless
+<code class="docutils literal notranslate"><span class="pre">include_synonyms</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) that map to fundamental states.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.get_canonical_symbol_for_symbol">
+<span class="sig-name descname"><span class="pre">get_canonical_symbol_for_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.get_canonical_symbol_for_symbol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.get_canonical_symbol_for_symbol" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the canonical state symbol for the state to which <code class="docutils literal notranslate"><span class="pre">symbol</span></code>
+maps. E.g., in a DNA alphabet, return ‘A’ for ‘a’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>symbol</strong> (<em>string</em>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>string</em>) – Canonical symbol for state with symbol or synonym symbol of
+<code class="docutils literal notranslate"><span class="pre">symbol</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.get_fundamental_states_for_symbols">
+<span class="sig-name descname"><span class="pre">get_fundamental_states_for_symbols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbols</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.get_fundamental_states_for_symbols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.get_fundamental_states_for_symbols" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of <em>fundamental</em> states corresponding to symbols.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>symbols</strong> (<em>iterable</em><em> of </em><em>symbols</em>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>list of |StateIdentity|</em>) – A list of fundamental <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> instances corresponding
+to symbols given in <code class="docutils literal notranslate"><span class="pre">symbols</span></code>, with multi-state states expanded
+into their fundamental symbols.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.get_states_for_symbols">
+<span class="sig-name descname"><span class="pre">get_states_for_symbols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbols</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.get_states_for_symbols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.get_states_for_symbols" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of states corresponding to symbols.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>symbols</strong> (<em>iterable</em><em> of </em><em>symbols</em>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>list of |StateIdentity|</em>) – A list of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> instances corresponding to symbols
+given in <code class="docutils literal notranslate"><span class="pre">symbols</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.match_ambiguous_state">
+<span class="sig-name descname"><span class="pre">match_ambiguous_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbols</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.match_ambiguous_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.match_ambiguous_state" title="Link to this definition">¶</a></dt>
+<dd><p>Returns ambiguous state with fundamental member states
+represented by symbols given in <code class="docutils literal notranslate"><span class="pre">symbols</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>symbols</strong> (<em>iterable</em><em> of </em><em>symbols</em>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>|StateIdentity| instance</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.match_polymorphic_state">
+<span class="sig-name descname"><span class="pre">match_polymorphic_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbols</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.match_polymorphic_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.match_polymorphic_state" title="Link to this definition">¶</a></dt>
+<dd><p>Returns polymorphic state with fundamental member states
+represented by symbols given in <code class="docutils literal notranslate"><span class="pre">symbols</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>symbols</strong> (<em>iterable</em><em> of </em><em>symbols</em>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>|StateIdentity| instance</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.match_state">
+<span class="sig-name descname"><span class="pre">match_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_denomination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.match_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.match_state" title="Link to this definition">¶</a></dt>
+<dd><p>Returns ambiguous or polymorphic state with fundamental member states
+represented by symbols given in <code class="docutils literal notranslate"><span class="pre">symbols</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbols</strong> (<em>iterable</em><em> of </em><em>string symbols</em>) – Symbols representing states to be dereferenced.</p></li>
+<li><p><strong>state_denomination</strong> (<em>{StateAlphabet.AMBIGUOUS</em><em> or </em><em>StateAlphabet.POLYPMORPHIC_STATE}</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>|StateIdentity| instance</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.multistate_state_iter">
+<span class="sig-name descname"><span class="pre">multistate_state_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.multistate_state_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.multistate_state_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all ambiguous and polymorphic state
+identities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.multistate_symbol_iter">
+<span class="sig-name descname"><span class="pre">multistate_symbol_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_synonyms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.multistate_symbol_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.multistate_symbol_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all symbols (including synonyms, unless
+<code class="docutils literal notranslate"><span class="pre">include_synonyms</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) that map to multistate states.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.new_ambiguous_state">
+<span class="sig-name descname"><span class="pre">new_ambiguous_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.new_ambiguous_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_ambiguous_state" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a new ambiguous state to the collection
+of states in this alphabet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> (<em>string</em><em> or </em><em>None</em>) – The symbol used to represent this state. Cannot have previously
+been used to refer to any other state, fundamental or otherwise, as
+a primary or synonymous symbol (including implicit synonyms given
+by case-variants if the state alphabet is not case-sensitive). Can
+be blank (“”) or <code class="docutils literal notranslate"><span class="pre">None</span></code> if there.</p></li>
+<li><p><strong>**kwargs</strong> (<em>keyword arguments</em><em>, </em><em>mandatory</em>) – <p>Exactly one of the following must be specified:</p>
+<blockquote>
+<div><dl>
+<dt>member_state_symbols<span class="classifier">iterable of strings</span></dt><dd><p>List of symbols representing states to which this state maps. Symbols
+representing multistates will taken to refer to the set of
+fundamental states to which they, in turn, map.</p>
+</dd>
+<dt>member_states<span class="classifier">iterable of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> objects</span></dt><dd><p>List of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> representing states to which this state maps.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>|StateIdentity|</em>) – The new state created and added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.new_fundamental_state">
+<span class="sig-name descname"><span class="pre">new_fundamental_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.new_fundamental_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_fundamental_state" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a new fundamental state to the collection
+of states in this alphabet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>symbol</strong> (<em>string</em>) – The symbol used to represent this state. Cannot have previously
+been used to refer to any other state, fundamental or otherwise, as
+a primary or synonymous symbol (including implicit synonyms given
+by case-variants if the state alphabet is not case-sensitive).
+Cannot be blank (“”) or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>|StateIdentity|</em>) – The new state created and added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.new_multistate">
+<span class="sig-name descname"><span class="pre">new_multistate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_denomination</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.new_multistate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_multistate" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a new polymorphic or ambiguous state to the collection
+of states in this alphabet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> (<em>string</em><em> or </em><em>None</em>) – The symbol used to represent this state. Cannot have previously
+been used to refer to any other state, fundamental or otherwise, as
+a primary or synonymous symbol (including implicit synonyms given
+by case-variants if the state alphabet is not case-sensitive). Can
+be blank (“”) or <code class="docutils literal notranslate"><span class="pre">None</span></code> if there.</p></li>
+<li><p><strong>state_denomination</strong> (<em>enum</em>) – StateAlphabet.POLYMORPHIC_STATE or StateAlphabet.AMBIGUOUS_STATE</p></li>
+<li><p><strong>**kwargs</strong> (<em>keyword arguments</em><em>, </em><em>mandatory</em>) – <p>Exactly one of the following must be specified:</p>
+<blockquote>
+<div><dl>
+<dt>member_state_symbols<span class="classifier">iterable of strings</span></dt><dd><p>List of symbols representing states to which this state maps. Symbols
+representing multistates will taken to refer to the set of
+fundamental states to which they, in turn, map.</p>
+</dd>
+<dt>member_states<span class="classifier">iterable of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> objects</span></dt><dd><p>List of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> representing states to which this state maps.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>|StateIdentity|</em>) – The new state created and added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.new_polymorphic_state">
+<span class="sig-name descname"><span class="pre">new_polymorphic_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.new_polymorphic_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_polymorphic_state" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a new polymorphic state to the collection
+of states in this alphabet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> (<em>string</em><em> or </em><em>None</em>) – The symbol used to represent this state. Cannot have previously
+been used to refer to any other state, fundamental or otherwise, as
+a primary or synonymous symbol (including implicit synonyms given
+by case-variants if the state alphabet is not case-sensitive). Can
+be blank (“”) or <code class="docutils literal notranslate"><span class="pre">None</span></code> if there.</p></li>
+<li><p><strong>**kwargs</strong> (<em>keyword arguments</em><em>, </em><em>mandatory</em>) – <p>Exactly one of the following must be specified:</p>
+<blockquote>
+<div><dl>
+<dt>member_state_symbols<span class="classifier">iterable of strings</span></dt><dd><p>List of symbols representing states to which this state maps. Symbols
+representing multistates will taken to refer to the set of
+fundamental states to which they, in turn, map.</p>
+</dd>
+<dt>member_states<span class="classifier">iterable of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> objects</span></dt><dd><p>List of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> representing states to which this state maps.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>|StateIdentity|</em>) – The new state created and added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.new_symbol_synonym">
+<span class="sig-name descname"><span class="pre">new_symbol_synonym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol_synonym</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenced_symbol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.new_symbol_synonym"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_symbol_synonym" title="Link to this definition">¶</a></dt>
+<dd><p>Defines an alternative symbol mapping for an existing state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol_synonym</strong> (<em>string</em>) – The (new) alternative symbol.</p></li>
+<li><p><strong>referenced_symbol</strong> (<em>string</em>) – The symbol for the state to which the alternative symbol will also
+map.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>s</strong> (<em>|StateIdentity|</em>) – The state to which this synonym maps.</p></li>
+<li><p><em>——</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.polymorphic_state_iter">
+<span class="sig-name descname"><span class="pre">polymorphic_state_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.polymorphic_state_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.polymorphic_state_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all polymorphic state identities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.polymorphic_symbol_iter">
+<span class="sig-name descname"><span class="pre">polymorphic_symbol_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_synonyms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.polymorphic_symbol_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.polymorphic_symbol_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all symbols (including synonyms, unless
+<code class="docutils literal notranslate"><span class="pre">include_synonyms</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) that map to polymorphic states.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.set_state_as_attribute">
+<span class="sig-name descname"><span class="pre">set_state_as_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.set_state_as_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.set_state_as_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the given state as an attribute of this alphabet.
+The name of the attribute will be <code class="docutils literal notranslate"><span class="pre">attr_name</span></code> if specified,
+or the state symbol otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a>) – The state to be made an attribute of this alphabet.</p></li>
+<li><p><strong>attr_name</strong> (<em>string</em>) – The name of the attribute. If not specified, the state
+symbol will be used.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.state_iter">
+<span class="sig-name descname"><span class="pre">state_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.state_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.state_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all state identities.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.states">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">states</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.states" title="Link to this definition">¶</a></dt>
+<dd><p>Tuple of all state identities in this alphabet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.symbol_state_pair_iter">
+<span class="sig-name descname"><span class="pre">symbol_state_pair_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_synonyms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.symbol_state_pair_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.symbol_state_pair_iter" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an iterator over all symbols paired with the state to which the
+they symbols map.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.symbols">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">symbols</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.symbols" title="Link to this definition">¶</a></dt>
+<dd><p>Tuple of all state symbols in this alphabet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateAlphabet.taxon_namespace_scoped_copy">
+<span class="sig-name descname"><span class="pre">taxon_namespace_scoped_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateAlphabet.taxon_namespace_scoped_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateAlphabet.taxon_namespace_scoped_copy" title="Link to this definition">¶</a></dt>
+<dd><p>Cloning level: 1.
+Taxon-namespace-scoped copy: All member objects are full independent
+instances, <em>except</em> for <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> and <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects: these are preserved as references.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-stateidentity-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> Class<a class="headerlink" href="#the-stateidentity-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.charstatemodel.</span></span><span class="sig-name descname"><span class="pre">StateIdentity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_denomination</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateIdentity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="Link to this definition">¶</a></dt>
+<dd><p>A character state definition, which can either be a fundamental state or
+a mapping to a set of other character states (for polymorphic or ambiguous
+characters).</p>
+<p>A state is immutable with respect to its definition and identity.
+Specifically, it ‘symbol’, ‘index’, ‘multistate’, and ‘member_states’
+properties are set upon definition/creation, and after that are
+read-only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> (<em>string</em>) – A text symbol or token representation of this character state.
+E.g., ‘G’ for the base guanine in a DNA state alphabet, or ‘1’ for
+presence of a wing in a morphological data set.</p></li>
+<li><p><strong>index</strong> (<em>integer</em>) – The (0-based) numeric index for this state in the state alphabet.
+E.g., for a DNA alphabet: 0 = ‘A’/adenine, 1 = ‘C’/cytosine, 2 =
+‘G’/guanine, 3 = ‘T’/thymine. Or for a “standard” alphabet: 0 =
+‘0’, 1 = ‘1’. Note that ambiguous and polymorphic state definitions
+typically are not indexed.</p></li>
+<li><p><strong>state_denomination</strong> (<em>'enum'</em>) – One of: <code class="docutils literal notranslate"><span class="pre">StateAlphabet.FUNDAMENTAL_STATE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">StateAlphabet.AMBIGUOUS_STATE</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">StateAlphabet.POLYMORPHIC_STATE</span></code>.</p></li>
+<li><p><strong>member_states</strong> (iterable of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> instances.) – If a multi-state, then a collection of <a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a>
+instances to which this state maps.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.fundamental_indexes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fundamental_indexes</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.fundamental_indexes" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a tuple of fundamental state indexes (i.e., tuple of index
+values of single states) to which this state maps.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.fundamental_indexes_with_gaps_as_missing">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fundamental_indexes_with_gaps_as_missing</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.fundamental_indexes_with_gaps_as_missing" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a tuple of fundamental state indexes (i.e., tuple of index
+values of single states) to which this state maps, with gaps being
+substituted with missing (no-data) states.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.fundamental_states">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fundamental_states</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.fundamental_states" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a tuple of fundamental states (i.e., tupe of single states)
+to which this state maps.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.fundamental_symbols">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fundamental_symbols</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.fundamental_symbols" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a tuple of fundamental state symbols (i.e., tuple of symbols
+representing single states) to which this state maps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.is_exact_correspondence">
+<span class="sig-name descname"><span class="pre">is_exact_correspondence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateIdentity.is_exact_correspondence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.is_exact_correspondence" title="Link to this definition">¶</a></dt>
+<dd><p>Tries to determine if two StateIdentity definitions
+are equivalent by matching symbols.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.is_fundamental_state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_fundamental_state</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.is_fundamental_state" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if a FUNDAMENTAL state.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.is_single_state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_single_state</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.is_single_state" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if a FUNDAMENTAL state.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.member_states">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">member_states</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.member_states" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the (fundamental) member states that this state maps to if not
+itself a fundamental state.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.member_states_str">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">member_states_str</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.member_states_str" title="Link to this definition">¶</a></dt>
+<dd><p>Representation of member states of self.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.state_denomination">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_denomination</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.state_denomination" title="Link to this definition">¶</a></dt>
+<dd><p>Type of multi-statedness: FUNDAMENTAL (not a multistate), AMBIGUOUS, or
+POLYMORPHIC.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.symbol">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.symbol" title="Link to this definition">¶</a></dt>
+<dd><p>Canonical (primary) symbol of this state.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.symbol_synonyms">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">symbol_synonyms</span></span><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.symbol_synonyms" title="Link to this definition">¶</a></dt>
+<dd><p>The collection of symbol synonyms (alternatives/equivalents to the
+canonical symbol) which also map to this state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.charstatemodel.StateIdentity.taxon_namespace_scoped_copy">
+<span class="sig-name descname"><span class="pre">taxon_namespace_scoped_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/charstatemodel.html#StateIdentity.taxon_namespace_scoped_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.charstatemodel.StateIdentity.taxon_namespace_scoped_copy" title="Link to this definition">¶</a></dt>
+<dd><p>Cloning level: 1.
+Taxon-namespace-scoped copy: All member objects are full independent
+instances, <em>except</em> for <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> and <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects: these are preserved as references.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.charstatemodel</span></code>: Character State Identities and Alphabets</a><ul>
+<li><a class="reference internal" href="#the-statealphabet-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">StateAlphabet</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet"><code class="docutils literal notranslate"><span class="pre">StateAlphabet</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.__getitem__"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.__getitem__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.__iter__"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.__iter__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.__len__"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.__len__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.ambiguous_state_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.ambiguous_state_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.ambiguous_symbol_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.ambiguous_symbol_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.canonical_symbol_state_map"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.canonical_symbol_state_map</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.compile_lookup_mappings"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.compile_lookup_mappings</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.compile_member_states_lookup_mappings"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.compile_member_states_lookup_mappings</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.compile_symbol_lookup_mappings"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.compile_symbol_lookup_mappings</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.full_symbol_state_map"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.full_symbol_state_map</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.fundamental_state_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.fundamental_state_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.fundamental_symbol_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.fundamental_symbol_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.get_canonical_symbol_for_symbol"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.get_canonical_symbol_for_symbol</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.get_fundamental_states_for_symbols"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.get_fundamental_states_for_symbols</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.get_states_for_symbols"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.get_states_for_symbols</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.match_ambiguous_state"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.match_ambiguous_state</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.match_polymorphic_state"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.match_polymorphic_state</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.match_state"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.match_state</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.multistate_state_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.multistate_state_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.multistate_symbol_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.multistate_symbol_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_ambiguous_state"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.new_ambiguous_state</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_fundamental_state"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.new_fundamental_state</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_multistate"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.new_multistate</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_polymorphic_state"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.new_polymorphic_state</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.new_symbol_synonym"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.new_symbol_synonym</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.polymorphic_state_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.polymorphic_state_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.polymorphic_symbol_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.polymorphic_symbol_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.set_state_as_attribute"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.set_state_as_attribute</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.state_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.state_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.states"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.states</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.symbol_state_pair_iter"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.symbol_state_pair_iter</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.symbols"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.symbols</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateAlphabet.taxon_namespace_scoped_copy"><code class="docutils literal notranslate"><span class="pre">StateAlphabet.taxon_namespace_scoped_copy</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-stateidentity-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity"><code class="docutils literal notranslate"><span class="pre">StateIdentity</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.fundamental_indexes"><code class="docutils literal notranslate"><span class="pre">StateIdentity.fundamental_indexes</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.fundamental_indexes_with_gaps_as_missing"><code class="docutils literal notranslate"><span class="pre">StateIdentity.fundamental_indexes_with_gaps_as_missing</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.fundamental_states"><code class="docutils literal notranslate"><span class="pre">StateIdentity.fundamental_states</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.fundamental_symbols"><code class="docutils literal notranslate"><span class="pre">StateIdentity.fundamental_symbols</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.is_exact_correspondence"><code class="docutils literal notranslate"><span class="pre">StateIdentity.is_exact_correspondence</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.is_fundamental_state"><code class="docutils literal notranslate"><span class="pre">StateIdentity.is_fundamental_state</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.is_single_state"><code class="docutils literal notranslate"><span class="pre">StateIdentity.is_single_state</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.member_states"><code class="docutils literal notranslate"><span class="pre">StateIdentity.member_states</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.member_states_str"><code class="docutils literal notranslate"><span class="pre">StateIdentity.member_states_str</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.state_denomination"><code class="docutils literal notranslate"><span class="pre">StateIdentity.state_denomination</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.symbol"><code class="docutils literal notranslate"><span class="pre">StateIdentity.symbol</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.symbol_synonyms"><code class="docutils literal notranslate"><span class="pre">StateIdentity.symbol_synonyms</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.charstatemodel.StateIdentity.taxon_namespace_scoped_copy"><code class="docutils literal notranslate"><span class="pre">StateIdentity.taxon_namespace_scoped_copy</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="treecollectionmodel.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.treecollectionmodel</span></code>: Collections of Trees</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="charmatrixmodel.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.charmatrixmodel</span></code>: Character Sequences and Matrices</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="charmatrixmodel.html" title="dendropy.datamodel.charmatrixmodel: Character Sequences and Matrices"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="treecollectionmodel.html" title="dendropy.datamodel.treecollectionmodel: Collections of Trees"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.charstatemodel</span></code>: Character State Identities and Alphabets</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

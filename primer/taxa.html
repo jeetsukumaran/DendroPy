@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Taxon Namespaces and Taxon Management &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Partitions of Taxon Sets" href="taxa_partitions.html" />
+    <link rel="prev" title="Converting Between Data Formats" href="converting.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="taxa_partitions.html" title="Partitions of Taxon Sets"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="converting.html" title="Converting Between Data Formats"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Taxon Namespaces and Taxon Management</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="taxon-namespaces-and-taxon-management">
+<h1>Taxon Namespaces and Taxon Management<a class="headerlink" href="#taxon-namespaces-and-taxon-management" title="Link to this heading">¶</a></h1>
+<section id="conceptual-background">
+<h2>Conceptual Background<a class="headerlink" href="#conceptual-background" title="Link to this heading">¶</a></h2>
+<p>Many elements of phylogenetic and, more generally, evo- or bioinformatic data
+are associated with some element in the real world.
+For example, a leaf <a class="reference internal" href="../glossary.html#term-node"><span class="xref std std-term">node</span></a> on a <a class="reference internal" href="../glossary.html#term-tree"><span class="xref std std-term">tree</span></a> or a sequence in a character
+matrix is typically associated with an individual biological organism, a
+population or deme, a species or higher-level taxonomic group, and so on.
+In classical phylogenetic literature, this referent is termed an “operational
+taxonomic unit” or OTU.
+In DendroPy, we use the term “taxon”.
+Regardless of whether the referent of the data represents an
+individual organism (or even a less distinct subunit, e.g., a fragment from a
+shotgun assay) or an actual taxonomic group, we apply the term “taxon”.
+We assign a (string) label to the concept of the entity (individual,
+sub-individual, or group) represented by a “taxon”, which allows us to relate
+different elements of data to the same or different real-world referent.
+These collections of labels representing taxon concepts are organized into
+“taxon namespaces”.</p>
+<p>The concept of a “taxon namespace” is fundamental to managing data in DendroPy.
+A “taxon namespace” represents a self-contained universe of <em>names</em> that
+map to operational taxonomic unit <em>concepts</em>.
+Operational taxonomic unit concepts are essentially names for groups of
+organisms in the “real world”. Operational taxonomic unit concepts are
+organized into taxonomic namespaces. A taxonomic namespace is a self-contained
+and functionally-complete collection of mutually-distinct operational taxonomic
+unit concepts, and provide the semantic context in which operational taxonomic
+units from across various data sources of different formats and provenances can
+be related through correct interpretation of their taxon labels.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Operational taxonomic units are modeled by a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object.</p></li>
+<li><p>Taxonomic namespaces, in which operational taxonomic units are organized,
+are modeled by a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object.</p></li>
+<li><p>A <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> manages a collection of <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects, where each
+object represents a distinct operational taxonomic unit concept within
+the taxonomic namespace represented by that <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object.</p></li>
+<li><p>Each <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object can belong to one and only one <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>:
+<a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects are not shared across <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> objects.</p></li>
+<li><p>Each <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object has an attribute, <code class="docutils literal notranslate"><span class="pre">label</span></code>, whose (string) value
+is the name of the operational taxon unit concept that it represents.</p></li>
+<li><p>Different <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects represent different operational taxonomic
+unit concepts, even if they have the same label value.</p></li>
+<li><p>All client objects (<a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated" title="dendropy.datamodel.taxonmodel.TaxonNamespaceAssociated"><code class="xref any py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated</span></code></a> objects) that reference
+the same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> reference the same “universe” or domain of
+operational taxonomic unit concepts.</p></li>
+<li><p>Operational taxonomic units from across different data sources are mapped
+to distinct <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects within a particular <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> based on
+matching the string values of labels of the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object.</p></li>
+<li><p>A particular taxonomic unit concept in one data source will only be
+correctly related to the same taxonomic unit concept (i.e, the same
+<a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object) in another data source only if they have both
+been parsed with reference to the same taxonomic namespace (i.e., the
+same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> has been used).</p></li>
+<li><p>A <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> assigned an “accession index” to every <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object
+added to it. This is a stable and unique number within the context of any
+given <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object (though a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object may have different
+accession indexes in different <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> objects if it
+belongs to multiple namespaces). This number is will be used to
+calculate the “split bitmask” hash of the trivial split or external edge
+subtending the node to which this <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object is assigned on a tree.
+The concept of a “split bitmask” hash is fundamental to DendroPy’s tree
+operations. The split bitmask is a hash that uniquely identifies every
+split on a tree.  It is calculated by OR’ing the split bitmask of all the
+child splits of the given split. Terminal edges, of course, do not have
+child edges, and their split bitmask is given by the accession index of
+the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object at their head or target nodes.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="management-of-shared-taxon-namespaces">
+<h2>Management of Shared Taxon Namespaces<a class="headerlink" href="#management-of-shared-taxon-namespaces" title="Link to this heading">¶</a></h2>
+<p>Operational taxonomic units in DendroPy are represented by <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects, and distinct collections of operational taxonomic units are represented by <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> objects.
+Two distinct <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects are considered distinct entities, <em>even if they share the same label</em>.
+Understanding this is crucial to understanding management of data in DendroPy.
+Many operations in DendroPy are based on the identity of the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects (e.g., counting of splits on trees).
+Many errors by novices using DendroPy come from inadventently creating and using multiple <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects to refer to the same taxon concept.</p>
+<p>Every time a definition of taxa is encountered in a data source, for example, a “TAXA” block in a NEXUS file, a new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object is created and populated with <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects corresponding to the taxa defined in the data source.
+Some data formats do not have explicit definition of taxa, e.g. a Newick tree source.
+These nonetheless can be considered to have an implicit definition of a collection of operational taxonomic units given by the aggregate of all operational taxonomic units referenced in the data (i.e., the set of all distinct labels on trees in a Newick file).</p>
+<p>Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object is searched for corresponding <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with a matching label (see below for details on how the match is made).
+If found, the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object is used to represent the taxon.
+If not, a new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object is created, added to the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object, and used to represent the taxon.</p>
+<p>If multiple data sources are read, then with <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> or <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeArray" title="dendropy.datamodel.treecollectionmodel.TreeArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeArray</span></code></a> the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> instance associated with the collection through the <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> attribute will always be used to manage the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects, resulting in correct association of labels with <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects across multiple reads. So, for example, the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">tree_str1</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+
+<span class="n">tree_list</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">()</span>
+<span class="n">tree_list</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tree_list</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="n">tree_list</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tree_list</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">nd1</span><span class="p">,</span> <span class="n">nd2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tree_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tree_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="k">assert</span> <span class="n">nd1</span><span class="o">.</span><span class="n">taxon</span> <span class="ow">is</span> <span class="n">nd2</span><span class="o">.</span><span class="n">taxon</span> <span class="c1"># OK</span>
+
+</pre></div>
+</div>
+<p>results in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Note how the total number of taxa is three, and there is full correspondence between the taxa.
+That is, the taxa referenced by “A”, “B”, and “C” in the second read operation were correctly mapped to the taxa from the second read operation.</p>
+<p>With <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> instances, however, each independent read operation will, by default, be managed under a <em>new</em> (i.e., independent and different) <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
+
+<span class="n">tree_str1</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+<span class="n">tree_str2</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">taxon_namespaces</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="n">ds</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ds</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># Results in:</span>
+<span class="c1"># 2</span>
+<span class="c1"># False</span>
+<span class="c1"># False</span>
+</pre></div>
+</div>
+<p>So, if reading data from multiple data sources using a <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> instance that should all be managed under the same taxon namespace, then the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> instance to use should be explicitly passed in using the “<code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>” keyword argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
+
+<span class="n">tree_str1</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+<span class="n">tree_str2</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+
+<span class="n">ds2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="n">ds2</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">ds2</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds2</span><span class="o">.</span><span class="n">taxon_namespaces</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># Results in:</span>
+<span class="c1"># 1</span>
+<span class="c1"># True</span>
+<span class="c1"># True</span>
+
+<span class="n">ds2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="n">tns</span> <span class="o">=</span> <span class="n">ds2</span><span class="o">.</span><span class="n">new_taxon_namespace</span><span class="p">()</span>
+<span class="n">ds2</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">tns</span><span class="p">)</span>
+<span class="n">ds2</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">tns</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds2</span><span class="o">.</span><span class="n">taxon_namespaces</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ds2</span><span class="o">.</span><span class="n">tree_lists</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># Results in:</span>
+<span class="c1"># 1</span>
+<span class="c1"># True</span>
+<span class="c1"># True</span>
+
+</pre></div>
+</div>
+<p>While each <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> manages all its member <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> objects under the same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> reference, if two different <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> instances have different <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> references, then the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects read/managed by them <em>will</em> be necessarily different from each other, even if the labels are the same.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
+
+<span class="n">tree_str1</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+
+<span class="n">tree_list1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">()</span>
+<span class="n">tree_list1</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">tree_list2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">()</span>
+<span class="n">tree_list2</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">tree_list1</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">tree_list2</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+        <span class="c1"># this branch is never visited</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Taxon &#39;</span><span class="si">{}</span><span class="s2">&#39;: found in both trees&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+
+<span class="c1">## Following will result in:</span>
+<span class="c1">## dendropy.utility.error.TaxonNamespaceIdentityError: Non-identical taxon namespace references: ...</span>
+<span class="c1"># print(treecompare.symmetric_difference(tree_list1[0], tree_list2[0]))</span>
+</pre></div>
+</div>
+<p>Again, this can be addressed by ensuring that the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> reference is the same for <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> instances that need to interact:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
+
+<span class="n">tree_str1</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+
+<span class="n">tree_list1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">()</span>
+<span class="n">tree_list1</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">tree_list2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="n">tree_list1</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="n">tree_list2</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+
+<span class="c1"># Results in: 0</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">treecompare</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="n">tree_list1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tree_list2</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The same obtains for <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> and <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived instances: if the associated <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> references are different, then the associated <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects will be different, even if the labels are the same. This will make comparison or any operation between them impossible:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">tree_str1</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+
+<span class="n">tree1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">tree2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tree1</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span>  <span class="n">tree2</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span> <span class="c1"># False</span>
+<span class="k">for</span> <span class="n">nd1</span><span class="p">,</span> <span class="n">nd2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">nd1</span><span class="o">.</span><span class="n">taxon</span> <span class="ow">is</span> <span class="n">nd2</span><span class="o">.</span><span class="n">taxon</span> <span class="c1"># Assertion Error</span>
+
+</pre></div>
+</div>
+<p>So, if taxa are shared, then the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> to use should be passed in explicitly to ensure that each <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> or <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived instance also share the same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">tree_str1</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
+
+<span class="n">tree1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">tree2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">tree_str1</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">tree1</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tree1</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span>  <span class="n">tree2</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span> <span class="c1"># True</span>
+<span class="k">for</span> <span class="n">nd1</span><span class="p">,</span> <span class="n">nd2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">nd1</span><span class="o">.</span><span class="n">taxon</span> <span class="ow">is</span> <span class="n">nd2</span><span class="o">.</span><span class="n">taxon</span> <span class="c1"># OK</span>
+
+</pre></div>
+</div>
+</section>
+<section id="managing-taxon-name-mapping-within-a-taxon-namespace">
+<h2>Managing Taxon Name Mapping Within a Taxon Namespace<a class="headerlink" href="#managing-taxon-name-mapping-within-a-taxon-namespace" title="Link to this heading">¶</a></h2>
+<p>DendroPy maps taxon definitions encountered in a data source to <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects by the taxon label.
+The labels have to match <strong>exactly</strong> for the taxa to be correctly mapped.
+By default, this matching is case-insensitive, though case-sensitivity can be set by specifying “<code class="docutils literal notranslate"><span class="pre">case_sensitive_taxon_labels=True</span></code>”.</p>
+<p>Some quirks may arise due to some schema-specific idiosyncracies.
+For example, the NEXUS standard dictates that an underscore (“_”) should be substituted for a space in all labels.
+Thus, when reading a NEXUS or Newick source, the taxon labels “Python_regius” and “Python regius” are exactly equivalent, and will be mapped to the same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object.</p>
+<p>However, this underscore-to-space mapping does <strong>not</strong> take place when reading, for example, a FASTA schema file.
+Here, underscores are preserved, and thus “Python_regius” does not map to “Python regius”.
+This means that if you were to read a NEXUS file with the taxon label, “Python_regius”, and later a read a FASTA file with the same taxon label, i.e., “Python_regius”, these would map to different taxa!
+This is illustrated by the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">nexus1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">#NEXUS</span>
+
+<span class="s2">begin taxa;</span>
+<span class="s2">    dimensions ntax=2;</span>
+<span class="s2">    taxlabels Python_regius Python_sebae;</span>
+<span class="s2">end;</span>
+
+<span class="s2">begin characters;</span>
+<span class="s2">    dimensions nchar=5;</span>
+<span class="s2">    format datatype=dna gap=- missing=? matchchar=.;</span>
+<span class="s2">    matrix</span>
+<span class="s2">        Python_regius ACGTA</span>
+<span class="s2">        Python_sebae   ACGTA</span>
+<span class="s2">    ;</span>
+<span class="s2">end;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">fasta1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&gt;Python_regius</span>
+<span class="s2">AAAA</span>
+<span class="s2">&gt;Python_sebae</span>
+<span class="s2">ACGT</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="n">tns</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">new_taxon_namespace</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">attach_taxon_namespace</span><span class="p">(</span><span class="n">tns</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">nexus1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">fasta1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;dnafasta&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">taxon_namespaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Which produces the following, almost certainly incorrect, result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TaxonNamespace</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x43b4e0</span> <span class="p">(</span><span class="n">TaxonNamespace4437216</span><span class="p">):</span> <span class="mi">4</span> <span class="n">Taxa</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x22867b0</span> <span class="p">(</span><span class="n">Taxon36202416</span><span class="p">):</span> <span class="s1">&#39;Python regius&#39;</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x2286810</span> <span class="p">(</span><span class="n">Taxon36202512</span><span class="p">):</span> <span class="s1">&#39;Python sebae&#39;</span>
+    <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x22867d0</span> <span class="p">(</span><span class="n">Taxon36202448</span><span class="p">):</span> <span class="s1">&#39;Python_regius&#39;</span>
+    <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x2286830</span> <span class="p">(</span><span class="n">Taxon36202544</span><span class="p">):</span> <span class="s1">&#39;Python_sebae&#39;</span>
+</pre></div>
+</div>
+<p>Even more confusingly, if this file is written out in NEXUS schema, it would result in the space/underscore substitution taking place, resulting in two pairs of taxa with the same labels.</p>
+<p>If you plan on mixing sources from different formats, it is important to keep in mind the space/underscore substitution that takes place by default with NEXUS/Newick formats, but does not take place with other formats.</p>
+<p>You could simply avoid underscores and use only spaces instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">nexus1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">#NEXUS</span>
+
+<span class="s2">begin taxa;</span>
+<span class="s2">    dimensions ntax=2;</span>
+<span class="s2">    taxlabels &#39;Python regius&#39; &#39;Python sebae&#39;;</span>
+<span class="s2">end;</span>
+
+<span class="s2">begin characters;</span>
+<span class="s2">    dimensions nchar=5;</span>
+<span class="s2">    format datatype=dna gap=- missing=? matchchar=.;</span>
+<span class="s2">    matrix</span>
+<span class="s2">        &#39;Python regius&#39; ACGTA</span>
+<span class="s2">        &#39;Python sebae&#39;   ACGTA</span>
+<span class="s2">    ;</span>
+<span class="s2">end;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">fasta1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&gt;Python regius</span>
+<span class="s2">AAAA</span>
+<span class="s2">&gt;Python sebae</span>
+<span class="s2">ACGT</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="n">tns</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">new_taxon_namespace</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">attach_taxon_namespace</span><span class="p">(</span><span class="n">tns</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">nexus1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">fasta1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;dna&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">taxon_namespaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Which results in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TaxonNamespace</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x43b4e0</span> <span class="p">(</span><span class="n">TaxonNamespace4437216</span><span class="p">):</span> <span class="mi">2</span> <span class="n">Taxa</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x22867b0</span> <span class="p">(</span><span class="n">Taxon36202416</span><span class="p">):</span> <span class="s1">&#39;Python_regius&#39;</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x2286810</span> <span class="p">(</span><span class="n">Taxon36202512</span><span class="p">):</span> <span class="s1">&#39;Python_sebae&#39;</span>
+</pre></div>
+</div>
+<p>Or use underscores in the NEXUS-formatted data, but spaces in the non-NEXUS data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">nexus1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">#NEXUS</span>
+
+<span class="s2">begin taxa;</span>
+<span class="s2">    dimensions ntax=2;</span>
+<span class="s2">    taxlabels Python_regius Python_sebae;</span>
+<span class="s2">end;</span>
+
+<span class="s2">begin characters;</span>
+<span class="s2">    dimensions nchar=5;</span>
+<span class="s2">    format datatype=dna gap=- missing=? matchchar=.;</span>
+<span class="s2">    matrix</span>
+<span class="s2">        Python_regius ACGTA</span>
+<span class="s2">        Python_sebae   ACGTA</span>
+<span class="s2">    ;</span>
+<span class="s2">end;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">fasta1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&gt;Python regius</span>
+<span class="s2">AAAA</span>
+<span class="s2">&gt;Python sebae</span>
+<span class="s2">ACGT</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="n">tns</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">new_taxon_namespace</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">attach_taxon_namespace</span><span class="p">(</span><span class="n">tns</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">nexus1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">fasta1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;dna&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">taxon_namespaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Which results in the same as the preceding example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TaxonNamespace</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x43b4e0</span> <span class="p">(</span><span class="n">TaxonNamespace4437216</span><span class="p">):</span> <span class="mi">2</span> <span class="n">Taxa</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x22867b0</span> <span class="p">(</span><span class="n">Taxon36202416</span><span class="p">):</span> <span class="s1">&#39;Python regius&#39;</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x2286810</span> <span class="p">(</span><span class="n">Taxon36202512</span><span class="p">):</span> <span class="s1">&#39;Python sebae&#39;</span>
+</pre></div>
+</div>
+<p>You can also wrap the underscore-bearing labels in the NEXUS/Newick source in quotes, which preserves them from being substituted for spaces:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">nexus1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">#NEXUS</span>
+
+<span class="s2">begin taxa;</span>
+<span class="s2">    dimensions ntax=2;</span>
+<span class="s2">    taxlabels &#39;Python_regius&#39; &#39;Python_sebae&#39;;</span>
+<span class="s2">end;</span>
+
+<span class="s2">begin characters;</span>
+<span class="s2">    dimensions nchar=5;</span>
+<span class="s2">    format datatype=dna gap=- missing=? matchchar=.;</span>
+<span class="s2">    matrix</span>
+<span class="s2">        &#39;Python_regius&#39; ACGTA</span>
+<span class="s2">        &#39;Python_sebae&#39;   ACGTA</span>
+<span class="s2">    ;</span>
+<span class="s2">end;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">fasta1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&gt;Python_regius</span>
+<span class="s2">AAAA</span>
+<span class="s2">&gt;Python_sebae</span>
+<span class="s2">ACGT</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="n">tns</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">new_taxon_namespace</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">attach_taxon_namespace</span><span class="p">(</span><span class="n">tns</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">nexus1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">fasta1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;dna&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">taxon_namespaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Which will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TaxonNamespace</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x43c780</span> <span class="p">(</span><span class="n">TaxonNamespace4441984</span><span class="p">):</span> <span class="mi">2</span> <span class="n">Taxa</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x2386770</span> <span class="p">(</span><span class="n">Taxon37250928</span><span class="p">):</span> <span class="s1">&#39;Python_regius&#39;</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x2386790</span> <span class="p">(</span><span class="n">Taxon37250960</span><span class="p">):</span> <span class="s1">&#39;Python_sebae&#39;</span>
+</pre></div>
+</div>
+<p>Finally, you can also override the default behavior of DendroPy’s NEXUS/Newick parser by passing the keyword argument <code class="docutils literal notranslate"><span class="pre">preserve_underscores=True</span></code> to any “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read_from_*()</span></code>” or “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get_from_*()</span></code>” method. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">nexus1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">#NEXUS</span>
+
+<span class="s2">begin taxa;</span>
+<span class="s2">    dimensions ntax=2;</span>
+<span class="s2">    taxlabels Python_regius Python_sebae;</span>
+<span class="s2">end;</span>
+
+<span class="s2">begin characters;</span>
+<span class="s2">    dimensions nchar=5;</span>
+<span class="s2">    format datatype=dna gap=- missing=? matchchar=.;</span>
+<span class="s2">    matrix</span>
+<span class="s2">        Python_regius ACGTA</span>
+<span class="s2">        Python_sebae   ACGTA</span>
+<span class="s2">    ;</span>
+<span class="s2">end;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">fasta1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&gt;Python_regius</span>
+<span class="s2">AAAA</span>
+<span class="s2">&gt;Python_sebae</span>
+<span class="s2">ACGT</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="n">tns</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">new_taxon_namespace</span><span class="p">()</span>
+<span class="n">d</span><span class="o">.</span><span class="n">attach_taxon_namespace</span><span class="p">(</span><span class="n">tns</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">nexus1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span> <span class="n">preserve_underscores</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">fasta1</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;dna&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">taxon_namespaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<p>will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TaxonNamespace</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x43c780</span> <span class="p">(</span><span class="n">TaxonNamespace4441984</span><span class="p">):</span> <span class="mi">2</span> <span class="n">Taxa</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x2386770</span> <span class="p">(</span><span class="n">Taxon37250928</span><span class="p">):</span> <span class="s1">&#39;Python_regius&#39;</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">Taxon</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x2386790</span> <span class="p">(</span><span class="n">Taxon37250960</span><span class="p">):</span> <span class="s1">&#39;Python_sebae&#39;</span>
+</pre></div>
+</div>
+<p>This may seem the simplest solution, in so far as it means that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/Newick schema, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be “hard” underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s1">&#39;nexus&#39;</span><span class="p">))</span>
+<span class="go">#NEXUS</span>
+
+<span class="go">BEGIN TAXA;</span>
+<span class="go">    TITLE TaxonNamespace5736800;</span>
+<span class="go">    DIMENSIONS NTAX=2;</span>
+<span class="go">    TAXLABELS</span>
+<span class="go">        &#39;Python_regius&#39;</span>
+<span class="go">        &#39;Python_sebae&#39;</span>
+<span class="go">  ;</span>
+<span class="go">END;</span>
+
+<span class="go">BEGIN CHARACTERS;</span>
+<span class="go">    TITLE DnaCharacterMatrix37505040;</span>
+<span class="go">    LINK TAXA = TaxonNamespace5736800;</span>
+<span class="go">    DIMENSIONS  NCHAR=5;</span>
+<span class="go">    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;</span>
+<span class="go">    MATRIX</span>
+<span class="go">&#39;Python_regius&#39;    ACGTA</span>
+<span class="go">&#39;Python_sebae&#39;      ACGTA</span>
+<span class="go">    ;</span>
+<span class="go">END;</span>
+
+<span class="go">BEGIN CHARACTERS;</span>
+<span class="go">    TITLE DnaCharacterMatrix37504848;</span>
+<span class="go">    LINK TAXA = TaxonNamespace5736800;</span>
+<span class="go">    DIMENSIONS  NCHAR=4;</span>
+<span class="go">    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;</span>
+<span class="go">    MATRIX</span>
+<span class="go">&#39;Python_regius&#39;    AAAA</span>
+<span class="go">&#39;Python_sebae&#39;      ACGT</span>
+<span class="go">    ;</span>
+<span class="go">END;</span>
+</pre></div>
+</div>
+<p>Note that the taxon labels have changed semantically between the input and the NEXUS output, as, according to the NEXUS standard, “Python_regius”, while equivalent to “Python regius”, is <strong>not</strong> equivalent to “‘Python_regius’”.
+To control this, you can pass the keyword argument <code class="docutils literal notranslate"><span class="pre">quote_underscores=False</span></code> to any <code class="xref py py-meth docutils literal notranslate"><span class="pre">write_to_*</span></code>, or <code class="xref py py-meth docutils literal notranslate"><span class="pre">as_string</span></code> method, which will omit the quotes even if the labels contain underscores:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s1">&#39;nexus&#39;</span><span class="p">,</span> <span class="n">quote_underscores</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="go">#NEXUS</span>
+
+<span class="go">BEGIN TAXA;</span>
+<span class="go">    TITLE TaxonNamespace5736800;</span>
+<span class="go">    DIMENSIONS NTAX=2;</span>
+<span class="go">    TAXLABELS</span>
+<span class="go">        Python_regius</span>
+<span class="go">        Python_sebae</span>
+<span class="go">  ;</span>
+<span class="go">END;</span>
+
+<span class="go">BEGIN CHARACTERS;</span>
+<span class="go">    TITLE DnaCharacterMatrix37505040;</span>
+<span class="go">    LINK TAXA = TaxonNamespace5736800;</span>
+<span class="go">    DIMENSIONS  NCHAR=5;</span>
+<span class="go">    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;</span>
+<span class="go">    MATRIX</span>
+<span class="go">Python_regius    ACGTA</span>
+<span class="go">Python_sebae      ACGTA</span>
+<span class="go">    ;</span>
+<span class="go">END;</span>
+
+<span class="go">BEGIN CHARACTERS;</span>
+<span class="go">    TITLE DnaCharacterMatrix37504848;</span>
+<span class="go">    LINK TAXA = TaxonNamespace5736800;</span>
+<span class="go">    DIMENSIONS  NCHAR=4;</span>
+<span class="go">    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;</span>
+<span class="go">    MATRIX</span>
+<span class="go">Python_regius    AAAA</span>
+<span class="go">Python_sebae      ACGT</span>
+<span class="go">    ;</span>
+<span class="go">END;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Taxon Namespaces and Taxon Management</a><ul>
+<li><a class="reference internal" href="#conceptual-background">Conceptual Background</a></li>
+<li><a class="reference internal" href="#management-of-shared-taxon-namespaces">Management of Shared Taxon Namespaces</a></li>
+<li><a class="reference internal" href="#managing-taxon-name-mapping-within-a-taxon-namespace">Managing Taxon Name Mapping Within a Taxon Namespace</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="converting.html"
+                          title="previous chapter">Converting Between Data Formats</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="taxa_partitions.html"
+                          title="next chapter">Partitions of Taxon Sets</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="taxa_partitions.html" title="Partitions of Taxon Sets"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="converting.html" title="Converting Between Data Formats"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Taxon Namespaces and Taxon Management</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

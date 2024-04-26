@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.model.birthdeath: The Birth-Death and Related Processes &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.model.coalescent: The Coalescent" href="coalescent.html" />
+    <link rel="prev" title="dendropy.calculate.phylogeneticdistance: Phylogenetic Distance Calculations and Operations" href="phylogeneticdistance.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="coalescent.html" title="dendropy.model.coalescent: The Coalescent"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="phylogeneticdistance.html" title="dendropy.calculate.phylogeneticdistance: Phylogenetic Distance Calculations and Operations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.birthdeath</span></code>: The Birth-Death and Related Processes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.model.birthdeath">
+<span id="dendropy-model-birthdeath-the-birth-death-and-related-processes"></span><h1><a class="reference internal" href="#module-dendropy.model.birthdeath" title="dendropy.model.birthdeath"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.birthdeath</span></code></a>: The Birth-Death and Related Processes<a class="headerlink" href="#module-dendropy.model.birthdeath" title="Link to this heading">¶</a></h1>
+<p>Models, modeling and model-fitting of birth-death processes.</p>
+<ul class="simple">
+<li><p>Nee, S.  2001.  Inferring speciation rates from phylogenies.
+Evolution 55:661-668.</p></li>
+<li><p>Yule, G. U. 1924. A mathematical theory of evolution based on the
+conclusions of Dr.  J. C. Willis. Phil. Trans. R. Soc. Lond. B
+213:21-87.</p></li>
+<li><p>Hoehna, S. (2015). The time-dependent reconstructed evolutionary process
+with a key-role for mass-extinction events. Journal of theoretical biology,
+380, 321-331.</p></li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.birthdeath.birth_death_likelihood">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.birthdeath.</span></span><span class="sig-name descname"><span class="pre">birth_death_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/birthdeath.html#birth_death_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.birthdeath.birth_death_likelihood" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the log-likelihood of a tree (or a set of internal nodes) under
+a birth death model.</p>
+<p>Requires either a <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object or an interable of <em>internal</em> node
+ages to be passed in via keyword arguments <code class="docutils literal notranslate"><span class="pre">tree</span></code> or <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code>,
+respectively. The former is more convenient when doing one-off
+calculations, while the latter is more efficient if the list of internal
+node ages needs to be used in other places and you already have it
+calculated and want to avoid re-calculating it here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>keyword arguments</em><em>, </em><em>mandatory</em>) – <p>Exactly <em>one</em> of the following <em>must</em> be specified:</p>
+<blockquote>
+<div><dl>
+<dt>tree<span class="classifier">a <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object.</span></dt><dd><p>A <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object. The tree needs to be ultrametric for the
+internal node ages (time from each internal node to the tips)
+to make sense. The precision by which the ultrametricity is
+checked can be specified using the <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision</span></code> keyword
+argument (see below). If <code class="docutils literal notranslate"><span class="pre">tree</span></code> is given, then
+<code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code> cannot be given, and vice versa. If <code class="docutils literal notranslate"><span class="pre">tree</span></code>
+is not given, then <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code> must be given.</p>
+</dd>
+<dt>internal_node_ages<span class="classifier">iterable (of numerical values)</span></dt><dd><p>Iterable of node ages of the internal nodes of a tree, i.e., the
+list of sum of the edge lengths between each internal node and
+the tips of the tree. If <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code> is given, then
+<code class="docutils literal notranslate"><span class="pre">tree</span></code> cannot be given, and vice versa. If <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code>
+is not given, then <code class="docutils literal notranslate"><span class="pre">tree</span></code> must be given.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The following keyword parameters are mandatory:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>birth_rate<span class="classifier">float</span></dt><dd><p>The birth rate.</p>
+</dd>
+<dt>death_rate<span class="classifier">float</span></dt><dd><p>The death rate.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The following keyword parameters are optional:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>sampling_probability</dt><dd><p>The probability for a species to be included in the sample. Defaults to 1.0 (all species sampled).</p>
+</dd>
+<dt>sampling_strategy</dt><dd><p>The strategy how samples were obtained. Options are: uniform|diversified|age.</p>
+</dd>
+<dt>is_mrca_included</dt><dd><p>Does the process start with the most recent common ancestor?</p>
+</dd>
+<dt>condition_on<span class="classifier">string</span></dt><dd><p>Do we condition the process on: “time”, “survival”, or “taxa”?</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The following are optional, and are only used if internal node ages
+need to be calculated (i.e., ‘tree’ is passed in).</p>
+<blockquote>
+<div><dl class="simple">
+<dt>ultrametricity_precision<span class="classifier">float</span></dt><dd><p>When calculating the node ages, an error will be raised if the tree in
+o ultrametric. This error may be due to floating-point or numerical
+imprecision. You can set the precision of the ultrametricity validation
+by setting the <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision</span></code> parameter. E.g., use
+<code class="docutils literal notranslate"><span class="pre">ultrametricity_precision=0.01</span></code> for a more relaxed precision,
+down to 2 decimal places. Use <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision=False</span></code>
+to disable checking of ultrametricity precision.</p>
+</dd>
+<dt>ignore_likelihood_calculation_failure: bool (default: False)</dt><dd><p>In some cases (typically, abnormal trees, e.g., 1-tip), the
+likelihood estimation will fail. In this case a ValueError will
+be raised. If <code class="docutils literal notranslate"><span class="pre">ignore_likelihood_calculation_failure</span></code> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>, then the function call will still succeed, with the
+likelihood set to -<code class="docutils literal notranslate"><span class="pre">inf</span></code>.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The following are optional, and are only used if internal node ages are
+specified (i.e., ‘internal_node_ages’ are passed in):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>is_node_ages_presorted<span class="classifier">bool</span></dt><dd><p>By default, the vector of node ages are sorted. If this
+argument is specified as <code class="docutils literal notranslate"><span class="pre">True</span></code>, then this sorting will be
+skipped, in which case it is the client code’s responsibility
+to make sure that the node ages are given in REVERSE order
+(i.e., oldest nodes – nodes closer to the root – given
+first).</p>
+</dd>
+</dl>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Lifted directly from the (fantastic!) TESS package for R:</p>
+<blockquote>
+<div><p>H{“o}hna S. 2013. Fast simulation of reconstructed phylogenies under
+global time-dependent birth–death processes. Bioinformatics, 29(11)
+1367-1374.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>lnl</strong> (<em>float</em>)</p></li>
+<li><p><em>The log-likehood of the tree under the birth-death model.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.birthdeath.birth_death_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.birthdeath.</span></span><span class="sig-name descname"><span class="pre">birth_death_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">death_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">birth_rate_sd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">death_rate_sd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/birthdeath.html#birth_death_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.birthdeath.birth_death_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a birth-death tree with birth rate specified by <code class="docutils literal notranslate"><span class="pre">birth_rate</span></code>, and
+death rate specified by <code class="docutils literal notranslate"><span class="pre">death_rate</span></code>, with edge lengths in continuous (real)
+units.</p>
+<p>Tree growth is controlled by one or more of the following arguments, of which
+at least one must be specified:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">num_extant_tips</span></code> is given as a keyword argument, tree is grown until the
+number of EXTANT tips equals this number.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">num_extinct_tips</span></code> is given as a keyword argument, tree is grown until the
+number of EXTINCT tips equals this number.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">num_total_tips</span></code> is given as a keyword argument, tree is grown until the
+number of EXTANT plus EXTINCT tips equals this number.</p></li>
+<li><p>If ‘max_time’ is given as a keyword argument, tree is grown for
+a maximum of <code class="docutils literal notranslate"><span class="pre">max_time</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">gsa_ntax</span></code> is given then the tree will be simulated up to this number of
+EXTANT tips (or 0 tips), then a tree will be randomly selected from the
+intervals which corresond to times at which the tree had exactly <code class="docutils literal notranslate"><span class="pre">num_extant_tips</span></code>
+leaves. This allows for simulations according to the “General
+Sampling Approach” of Hartmann et al. (2010). If this option is
+specified, then <code class="docutils literal notranslate"><span class="pre">num_extant_tips</span></code> MUST be specified and
+<code class="docutils literal notranslate"><span class="pre">num_extinct_tips</span></code> and <code class="docutils literal notranslate"><span class="pre">num_total_tips</span></code> CANNOT be specified.</p></li>
+</ul>
+</div></blockquote>
+<p>If more than one of the above is given, then tree growth will terminate when
+<em>any</em> one of the termination conditions are met.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>birth_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The birth rate.</p></li>
+<li><p><strong>death_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The death rate.</p></li>
+<li><p><strong>birth_rate_sd</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The standard deviation of the normally-distributed mutation added to
+the birth rate as it is inherited by daughter nodes; if 0, birth rate
+does not evolve on the tree.</p></li>
+<li><p><strong>death_rate_sd</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The standard deviation of the normally-distributed mutation added to
+the death rate as it is inherited by daughter nodes; if 0, death rate
+does not evolve on the tree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>num_extant_tips</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – If specified, branching process is terminated when number of EXTANT
+tips equals this number.</p></li>
+<li><p><strong>num_extinct_tips</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – If specified, branching process is terminated when number of EXTINCT
+tips equals this number.</p></li>
+<li><p><strong>num_total_tips</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – If specified, branching process is terminated when number of EXTINCT
+plus EXTANT tips equals this number.</p></li>
+<li><p><strong>max_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – If specified, branching process is terminated when time reaches or
+exceeds this value.</p></li>
+<li><p><strong>gsa_ntax</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The General Sampling Approach threshold for number of taxa. See above
+for details.</p></li>
+<li><p><strong>tree</strong> (<em>Tree instance</em>) – If given, then this tree will be used; otherwise a new one will be created.</p></li>
+<li><p><strong>taxon_namespace</strong> (<em>TaxonNamespace instance</em>) – If given, then this will be assigned to the new tree, and, in addition,
+taxa assigned to tips will be sourced from or otherwise created with
+reference to this.</p></li>
+<li><p><strong>is_assign_extant_taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> [</em><em>default: True</em><em>]</em>) – If False, then taxa will not be assigned to extant tips. If True
+(default), then taxa will be assigned to extant tips. Taxa will be
+assigned from the specified <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> or
+<code class="docutils literal notranslate"><span class="pre">tree.taxon_namespace</span></code>. If the number of taxa required exceeds the
+number of taxa existing in the taxon namespace, new <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects
+will be created as needed and added to the taxon namespace.</p></li>
+<li><p><strong>is_assign_extinct_taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> [</em><em>default: True</em><em>]</em>) – If False, then taxa will not be assigned to extant tips. If True
+(default), then taxa will be assigned to extant tips. Taxa will be
+assigned from the specified <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> or
+<code class="docutils literal notranslate"><span class="pre">tree.taxon_namespace</span></code>. If the number of taxa required exceeds the
+number of taxa existing in the taxon namespace, new <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects
+will be created as needed and added to the taxon namespace. Note that
+this option only makes sense if extinct tips are retained (specified via
+‘is_retain_extinct_tips’ option), and will otherwise be ignored.</p></li>
+<li><p><strong>is_add_extinct_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> [</em><em>default: True</em><em>]</em>) – If True (default), add an boolean attribute indicating whether or not a
+node is an extinct tip or not. False will skip this. Name of attribute
+is set by ‘extinct_attr_name’ argument, defaulting to ‘is_extinct’.
+Note that this option only makes sense if extinct tips are retained
+(specified via ‘is_retain_extinct_tips’ option), and will otherwise be
+ignored.</p></li>
+<li><p><strong>extinct_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> [</em><em>default: 'is_extinct'</em><em>]</em>) – Name of attribute to add to nodes indicating whether or not tip is extinct.
+Note that this option only makes sense if extinct tips are retained
+(specified via ‘is_retain_extinct_tips’ option), and will otherwise be
+ignored.</p></li>
+<li><p><strong>is_retain_extinct_tips</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> [</em><em>default: False</em><em>]</em>) – If True, extinct tips will be retained on tree. Defaults to False:
+extinct lineages removed from tree.</p></li>
+<li><p><strong>repeat_until_success</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> [</em><em>default: True</em><em>]</em>) – Under some conditions, it is possible for all lineages on a tree to go
+extinct. In this case, if this argument is given as <code class="docutils literal notranslate"><span class="pre">True</span></code> (the
+default), then a new branching process is initiated. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(default), then a TreeSimTotalExtinctionException is raised.</p></li>
+<li><p><strong>rng</strong> (<a class="reference external" href="https://docs.python.org/3/library/random.html#random.Random" title="(in Python v3.12)"><em>random.Random</em></a><em>(</em><em>) or </em><em>equivalent instance</em>) – A Random() object or equivalent can be passed using the <code class="docutils literal notranslate"><span class="pre">rng</span></code> keyword;
+otherwise GLOBAL_RNG is used.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Hartmann, Wong, and Stadler “Sampling Trees from Evolutionary Models” Systematic Biology. 2010. 59(4). 465-476</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.birthdeath.discrete_birth_death_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.birthdeath.</span></span><span class="sig-name descname"><span class="pre">discrete_birth_death_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">death_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">birth_rate_sd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">death_rate_sd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/birthdeath.html#discrete_birth_death_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.birthdeath.discrete_birth_death_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a birth-death tree with birth rate specified by <code class="docutils literal notranslate"><span class="pre">birth_rate</span></code>, and
+death rate specified by <code class="docutils literal notranslate"><span class="pre">death_rate</span></code>, with edge lengths in discrete (integer)
+units.</p>
+<p><code class="docutils literal notranslate"><span class="pre">birth_rate_sd</span></code> is the standard deviation of the normally-distributed mutation
+added to the birth rate as it is inherited by daughter nodes; if 0, birth
+rate does not evolve on the tree.</p>
+<p><code class="docutils literal notranslate"><span class="pre">death_rate_sd</span></code> is the standard deviation of the normally-distributed mutation
+added to the death rate as it is inherited by daughter nodes; if 0, death
+rate does not evolve on the tree.</p>
+<p>Tree growth is controlled by one or more of the following arguments, of which
+at least one must be specified:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">ntax</span></code> is given as a keyword argument, tree is grown until the number of
+tips == ntax.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> is given as a keyword argument, tree is grown until the
+number of tips == len(taxon_namespace), and the taxa are assigned randomly to the
+tips.</p></li>
+<li><p>If ‘max_time’ is given as a keyword argument, tree is grown for <code class="docutils literal notranslate"><span class="pre">max_time</span></code>
+number of generations.</p></li>
+</ul>
+</div></blockquote>
+<p>If more than one of the above is given, then tree growth will terminate when
+<em>any</em> of the termination conditions (i.e., number of tips == <code class="docutils literal notranslate"><span class="pre">ntax</span></code>, or number
+of tips == len(taxon_namespace) or number of generations = <code class="docutils literal notranslate"><span class="pre">max_time</span></code>) are met.</p>
+<p>Also accepts a Tree object (with valid branch lengths) as an argument passed
+using the keyword <code class="docutils literal notranslate"><span class="pre">tree</span></code>: if given, then this tree will be used; otherwise
+a new one will be created.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">assign_taxa</span></code> is False, then taxa will <em>not</em> be assigned to the tips;
+otherwise (default), taxa will be assigned. If <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> is given
+(<code class="docutils literal notranslate"><span class="pre">tree.taxon_namespace</span></code>, if <code class="docutils literal notranslate"><span class="pre">tree</span></code> is given), and the final number of tips on the
+tree after the termination condition is reached is less then the number of
+taxa in <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> (as will be the case, for example, when
+<code class="docutils literal notranslate"><span class="pre">ntax</span></code> &lt; len(<code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>)), then a random subset of taxa in <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> will
+be assigned to the tips of tree. If the number of tips is more than the number
+of taxa in the <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>, new Taxon objects will be created and added
+to the <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> if the keyword argument <code class="docutils literal notranslate"><span class="pre">create_required_taxa</span></code> is not given as
+False.</p>
+<p>Under some conditions, it is possible for all lineages on a tree to go extinct.
+In this case, if the keyword argument <code class="docutils literal notranslate"><span class="pre">repeat_until_success</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then a new
+branching process is initiated.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), then a TreeSimTotalExtinctionException is raised.</p>
+<p>A Random() object or equivalent can be passed using the <code class="docutils literal notranslate"><span class="pre">rng</span></code> keyword;
+otherwise GLOBAL_RNG is used.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.birthdeath.fit_pure_birth_model">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.birthdeath.</span></span><span class="sig-name descname"><span class="pre">fit_pure_birth_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/birthdeath.html#fit_pure_birth_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.birthdeath.fit_pure_birth_model" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the maximum-likelihood estimate of the birth rate of a set of <em>internal</em> node ages under a Yule (pure-birth) model.</p>
+<p>Requires either a <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object or an interable of <em>internal</em> node ages to be passed in via keyword arguments <code class="docutils literal notranslate"><span class="pre">tree</span></code> or <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code>, respectively. The former is more convenient when doing one-off calculations, while the latter is more efficient if the list of internal node ages needs to be used in other places and you already have it calculated and want to avoid re-calculating it here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>keyword arguments</em><em>, </em><em>mandatory</em>) – <p>Exactly <em>one</em> of the following <em>must</em> be specified:</p>
+<blockquote>
+<div><dl>
+<dt>tree<span class="classifier">a <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object.</span></dt><dd><p>A <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object. The tree needs to be ultrametric for the internal node ages (time from each internal node to the tips) to make sense. The precision by which the ultrametricity is checked can be specified using the <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision</span></code> keyword argument (see below). If <code class="docutils literal notranslate"><span class="pre">tree</span></code> is given, then <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code> cannot be given, and vice versa. If <code class="docutils literal notranslate"><span class="pre">tree</span></code> is not given, then <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code> must be given.</p>
+</dd>
+<dt>internal_node_ages<span class="classifier">iterable (of numerical values)</span></dt><dd><p>Iterable of node ages of the internal nodes of a tree, i.e., the list of sum of the edge lengths between each internal node and the tips of the tree. If <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code> is given, then <code class="docutils literal notranslate"><span class="pre">tree</span></code> cannot be given, and vice versa. If <code class="docutils literal notranslate"><span class="pre">internal_node_ages</span></code> is not given, then <code class="docutils literal notranslate"><span class="pre">tree</span></code> must be given.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The following are optional, and are only used if internal node ages are
+specified (i.e., ‘internal_node_ages’ are passed in):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>is_node_ages_presorted<span class="classifier">bool</span></dt><dd><p>By default, the vector of node ages are sorted. If this
+argument is specified as <code class="docutils literal notranslate"><span class="pre">True</span></code>, then this sorting will be
+skipped, in which case it is the client code’s responsibility
+to make sure that the node ages are given in REVERSE order
+(i.e., oldest nodes – nodes closer to the root – given
+first).</p>
+</dd>
+</dl>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul>
+<li><p><strong>m</strong> (<em>dictionary</em>)</p></li>
+<li><p><em>A dictionary with keys being parameter names and values being</em></p></li>
+<li><p><em>estimates</em> –</p>
+<dl class="simple">
+<dt>“birth_rate”</dt><dd><p>The birth rate.</p>
+</dd>
+<dt>”log_likelihood”</dt><dd><p>The log-likelihood of the model and given birth rate.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Birth rates can be estimated by passing in trees directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">tree</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trees</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">birthdeath</span><span class="o">.</span><span class="n">fit_pure_birth_model</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tree </span><span class="si">{}</span><span class="s2">: birth rate = </span><span class="si">{}</span><span class="s2"> (logL = </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;birth_rate&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;log_likelihood&quot;</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>Or by pre-calculating and passing in a list of node ages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">tree</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trees</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">birthdeath</span><span class="o">.</span><span class="n">fit_pure_birth_model</span><span class="p">(</span>
+            <span class="n">internal_node_ages</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">internal_node_ages</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tree </span><span class="si">{}</span><span class="s2">: birth rate = </span><span class="si">{}</span><span class="s2"> (logL = </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;birth_rate&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;log_likelihood&quot;</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Adapted from the laser package for R:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Dan Rabosky and Klaus Schliep (2013). laser: Likelihood Analysis of
+Speciation/Extinction Rates from Phylogenies. R package version
+2.4-1. <a class="reference external" href="http://CRAN.R-project.org/package=laser">http://CRAN.R-project.org/package=laser</a></p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.birthdeath.fit_pure_birth_model_to_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.birthdeath.</span></span><span class="sig-name descname"><span class="pre">fit_pure_birth_model_to_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ultrametricity_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/birthdeath.html#fit_pure_birth_model_to_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.birthdeath.fit_pure_birth_model_to_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the maximum-likelihood estimate of the birth rate a tree under a
+Yule (pure-birth) model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object) – A tree to be fitted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>m</strong> (<em>dictionary</em>)</p></li>
+<li><p><em>A dictionary with keys being parameter names and values being</em></p></li>
+<li><p><em>estimates</em> –</p>
+<ul>
+<li><p>“birth_rate”
+The birth rate.</p></li>
+<li><p>”log_likelihood”
+The log-likelihood of the model and given birth rate.</p></li>
+</ul>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">birthdeath</span>
+<span class="n">trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+        <span class="s2">&quot;pythonidae.nex&quot;</span><span class="p">,</span> <span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">tree</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trees</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">birthdeath</span><span class="o">.</span><span class="n">fit_pure_birth_model_to_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tree </span><span class="si">{}</span><span class="s2">: birth rate = </span><span class="si">{}</span><span class="s2"> (logL = </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;birth_rate&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s2">&quot;log_likelihood&quot;</span><span class="p">]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.birthdeath.uniform_pure_birth_tree">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.birthdeath.</span></span><span class="sig-name descname"><span class="pre">uniform_pure_birth_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon_namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">birth_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/birthdeath.html#uniform_pure_birth_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.birthdeath.uniform_pure_birth_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a uniform-rate pure-birth process tree.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.birthdeath</span></code>: The Birth-Death and Related Processes</a><ul>
+<li><a class="reference internal" href="#dendropy.model.birthdeath.birth_death_likelihood"><code class="docutils literal notranslate"><span class="pre">birth_death_likelihood</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.birthdeath.birth_death_tree"><code class="docutils literal notranslate"><span class="pre">birth_death_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.birthdeath.discrete_birth_death_tree"><code class="docutils literal notranslate"><span class="pre">discrete_birth_death_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.birthdeath.fit_pure_birth_model"><code class="docutils literal notranslate"><span class="pre">fit_pure_birth_model</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.birthdeath.fit_pure_birth_model_to_tree"><code class="docutils literal notranslate"><span class="pre">fit_pure_birth_model_to_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.birthdeath.uniform_pure_birth_tree"><code class="docutils literal notranslate"><span class="pre">uniform_pure_birth_tree</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="phylogeneticdistance.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.phylogeneticdistance</span></code>: Phylogenetic Distance Calculations and Operations</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="coalescent.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.coalescent</span></code>: The Coalescent</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="coalescent.html" title="dendropy.model.coalescent: The Coalescent"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="phylogeneticdistance.html" title="dendropy.calculate.phylogeneticdistance: Phylogenetic Distance Calculations and Operations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.birthdeath</span></code>: The Birth-Death and Related Processes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

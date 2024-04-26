@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.simulate.popgensim &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.simulate.popgensim</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.simulate.popgensim</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Population genetic simlations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">GLOBAL_RNG</span>
+<span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">seqgen</span>
+<span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">discrete</span>
+<span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">coalescent</span>
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="k">class</span> <span class="nc">FragmentedPopulations</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">div_time_gens</span><span class="p">,</span>
+                 <span class="n">num_desc_pops</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                 <span class="n">mutrate_per_site_per_generation</span><span class="o">=</span><span class="mf">10e-8</span><span class="p">,</span>
+                 <span class="n">desc_pop_size</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+                 <span class="n">use_seq_gen</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">rng</span><span class="o">=</span><span class="n">GLOBAL_RNG</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        __init__ arguments:</span>
+
+<span class="sd">            - ``div_time_gens`` : generations since divergence,</span>
+<span class="sd">            - ``num_desc_pops`` : number of descendent populations,</span>
+<span class="sd">            - ``mutrate_per_site_per_generation`` : sequence mutation rate, per-site per-generation</span>
+<span class="sd">            - ``desc_diploid_pop_size`` : descendent lineage population size (=N; ancestral pop size = num_desc_pops * N)</span>
+<span class="sd">            - ``rng`` : random number generator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">div_time_gens</span> <span class="o">=</span> <span class="n">div_time_gens</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_desc_pops</span> <span class="o">=</span> <span class="n">num_desc_pops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutrate_per_site_per_generation</span> <span class="o">=</span> <span class="n">mutrate_per_site_per_generation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">desc_pop_size</span> <span class="o">=</span> <span class="n">desc_pop_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="n">rng</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kappa</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_freqs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seqgen_path</span> <span class="o">=</span> <span class="s1">&#39;seq-gen&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_seq_gen</span> <span class="o">=</span> <span class="n">use_seq_gen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gene_tree</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_get_theta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutrate_per_gene_per_generation</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc_pop_size</span>
+
+    <span class="k">def</span> <span class="nf">generate_sequences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">species_name</span><span class="p">,</span>
+                           <span class="n">samples_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                           <span class="n">seq_len</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+                           <span class="n">use_seq_gen</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_pop_tree</span><span class="p">(</span><span class="n">species_name</span><span class="o">=</span><span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="n">samples_per_pop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_gene_tree</span><span class="p">(</span><span class="n">species_name</span><span class="o">=</span><span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="n">samples_per_pop</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_seq_gen</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">sg</span> <span class="o">=</span> <span class="n">seqgen</span><span class="o">.</span><span class="n">SeqGen</span><span class="p">()</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">seqgen_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seqgen_path</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">num_replicates</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">rng</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rng</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">char_model</span> <span class="o">=</span> <span class="s1">&#39;HKY&#39;</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">ti_tv</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kappa</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">state_freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_freqs</span>
+            <span class="n">sg</span><span class="o">.</span><span class="n">trees</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span><span class="p">]</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">generate_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">char_matrix</span> <span class="o">=</span> <span class="n">discrete</span><span class="o">.</span><span class="n">hky85_chars</span><span class="p">(</span>
+                    <span class="n">seq_len</span><span class="o">=</span><span class="n">seq_len</span><span class="p">,</span>
+                    <span class="n">tree_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span><span class="p">,</span>
+                    <span class="n">mutation_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">kappa</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">base_freqs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
+                    <span class="n">root_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">rng</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">add_char_matrix</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="nf">generate_pop_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">tree_data</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;sp&#39;</span><span class="p">:</span> <span class="n">species_name</span><span class="p">,</span> <span class="s1">&#39;divt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">div_time_gens</span> <span class="p">}</span>
+        <span class="n">desc_lineages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_desc_pops</span><span class="p">):</span>
+            <span class="n">tree_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">desc_lineages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(sp)s%(id)d</span><span class="s2">:</span><span class="si">%(divt)d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tree_data</span><span class="p">)</span>
+        <span class="n">tree_string</span> <span class="o">=</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_lineages</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;):</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#% (self.num_desc_pops * self.desc_pop_size * 10))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_string</span><span class="p">(</span><span class="n">tree_string</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span>
+
+    <span class="k">def</span> <span class="nf">generate_gene_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given:</span>
+<span class="sd">            ``species_name`` : string identifying species/taxon</span>
+<span class="sd">            ``samples_per_pop`` : number of samples (genes) per population</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DendroPy tree, with branch lengths in generations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_pop_tree</span><span class="p">(</span><span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">leaf</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span><span class="o">.</span><span class="n">leaf_iter</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># ancestral population = num_desc_pops * desc population</span>
+                <span class="n">leaf</span><span class="o">.</span><span class="n">parent_node</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">pop_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_desc_pops</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc_pop_size</span>
+            <span class="n">leaf</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">pop_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">desc_pop_size</span>
+            <span class="n">leaf</span><span class="o">.</span><span class="n">num_genes</span> <span class="o">=</span> <span class="n">samples_per_pop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gene_tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span> <span class="o">=</span> <span class="n">coalescent</span><span class="o">.</span><span class="n">constrained_kingman_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span><span class="p">,</span>
+                                                          <span class="n">gene_node_label_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">X</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span>
+                                                          <span class="n">rng</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gene_tree</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span><span class="o">.</span><span class="n">preorder_edge_iter</span><span class="p">():</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutrate_per_site_per_generation</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gene_tree</span>
+
+<div class="viewcode-block" id="pop_gen_tree">
+<a class="viewcode-back" href="../../../library/popgensim.html#dendropy.simulate.popgensim.pop_gen_tree">[docs]</a>
+<span class="k">def</span> <span class="nf">pop_gen_tree</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">taxon_namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">ages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">num_genes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">pop_sizes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">num_genes_attr</span> <span class="o">=</span> <span class="s1">&#39;num_genes&#39;</span><span class="p">,</span>
+                 <span class="n">pop_size_attr</span> <span class="o">=</span> <span class="s1">&#39;pop_size&#39;</span><span class="p">,</span>
+                 <span class="n">rng</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This will simulate and return a tree with edges decorated with</span>
+<span class="sd">    population sizes and leaf nodes decorated by the number of genes</span>
+<span class="sd">    (samples or lineages) in each leaf.</span>
+
+<span class="sd">    If ``tree`` is given, then this is used as the tree to be decorated.</span>
+<span class="sd">    Otherwise, a Yule tree is generated based on the given taxon_namespace.</span>
+<span class="sd">    Either ``tree`` or ``taxon_namespace`` must be given.</span>
+
+<span class="sd">    The timing of the divergences can be controlled by specifying a vector of</span>
+<span class="sd">    ages, ``ages``. This should be sequences of values specifying the ages of the</span>
+<span class="sd">    first, second, third etc. divergence events, in terms of time from the</span>
+<span class="sd">    present, specified either in generations (if the ``pop_sizes`` vector is</span>
+<span class="sd">    given) or population units (if the pop_size vector is not given).</span>
+<span class="sd">    If an ages vector is given and there are less than num_pops-1 of these,</span>
+<span class="sd">    then an exception is raised.</span>
+
+<span class="sd">    The number of gene lineages per population can be specified through</span>
+<span class="sd">    the &#39;num_genes&#39;, which can either be an scalar integer or a list.</span>
+<span class="sd">    If it is an integer, all the population get the same number of</span>
+<span class="sd">    genes. If it is a list, it must be at least as long as num_pops.</span>
+
+<span class="sd">    The population sizes of each edge can be specified using the ``pop_sizes``</span>
+<span class="sd">    vector, which should be a sequence of values specifying the population</span>
+<span class="sd">    sizes of the edges in postorder. If the pop_size vector is given, then it</span>
+<span class="sd">    must be at least as long as there are branches on a tree, i.e. 2 * num_pops</span>
+<span class="sd">    + 1, otherwise it is an error.  The population size should be the effective</span>
+<span class="sd">    *haploid* population size; i.e., number of gene copies in the population: 2</span>
+<span class="sd">    * N in a diploid population of N individuals, or N in a haploid population</span>
+<span class="sd">    * of N individuals.</span>
+
+<span class="sd">    If ``pop_size`` is 1 or 0 or None, then edge lengths of the tree are in</span>
+<span class="sd">    haploid population units; i.e. where 1 unit of time equals 2N generations</span>
+<span class="sd">    for a diploid population of size N, or N generations for a haploid</span>
+<span class="sd">    population of size N. Otherwise edge lengths of the tree are in</span>
+<span class="sd">    generations.</span>
+
+<span class="sd">    This function first generates a tree using a pure-birth model with a</span>
+<span class="sd">    uniform birth rate of 1.0. If an ages vector is given, it then sweeps</span>
+<span class="sd">    through the internal nodes, assigning branch lengths such that the</span>
+<span class="sd">    divergence events correspond to the ages in the vector. If a population</span>
+<span class="sd">    sizes vector is given, it then visits all the edges in postorder, assigning</span>
+<span class="sd">    population sizes to the attribute with the name specified in</span>
+<span class="sd">    &#39;pop_size_attr&#39; (which is persisted as an annotation). During this, if an</span>
+<span class="sd">    ages vector was *not* given, then the edge lengths are multiplied by the</span>
+<span class="sd">    population size of the edge so the branch length units will be in</span>
+<span class="sd">    generations. If an ages vector was given, then it is assumed that the ages</span>
+<span class="sd">    are already in the proper scale/units.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get our random number generator</span>
+    <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">GLOBAL_RNG</span> <span class="c1"># use the global rng by default</span>
+
+    <span class="c1"># get a yule tree</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tree</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">taxon_namespace</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">dendropy.simulate</span> <span class="kn">import</span> <span class="n">treesim</span>
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">treesim</span><span class="o">.</span><span class="n">uniform_pure_birth_tree</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxon_namespace</span><span class="p">,</span>
+                                      <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Either tree or taxon namespace must be given&quot;</span><span class="p">)</span>
+
+    <span class="n">num_pops</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">leaf_nodes</span><span class="p">())</span>
+
+    <span class="c1"># basic idiot-checking</span>
+    <span class="k">if</span> <span class="n">ages</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ages</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">num_pops</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Too few ages specified.&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_genes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_genes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_genes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_pops</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Too few number of gene samples specified&quot;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">samples</span> <span class="o">=</span> <span class="n">num_genes</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">num_genes</span> <span class="k">for</span> <span class="n">tax</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_pops</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">pop_sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pop_sizes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">num_pops</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Too few population sizes specified.&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># set the ages</span>
+    <span class="k">if</span> <span class="n">ages</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="c1"># get the internal nodes on the tree in reverse branching</span>
+        <span class="c1"># order, so that newest nodes are returned first</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">filter_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">())</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">distance_from_root</span><span class="p">())</span>
+        <span class="c1"># assign the ages</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">():</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">ages</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">-</span> <span class="n">child</span><span class="o">.</span><span class="n">distance_from_tip</span><span class="p">()</span>
+
+    <span class="c1"># set the gene samples</span>
+    <span class="k">if</span> <span class="n">samples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">leaf</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">leaf_node_iter</span><span class="p">()):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">leaf</span><span class="p">,</span> <span class="n">num_genes_attr</span><span class="p">,</span> <span class="n">samples</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="n">leaf</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">add_bound_attribute</span><span class="p">(</span><span class="n">num_genes_attr</span><span class="p">)</span>
+
+    <span class="c1"># set the population sizes</span>
+    <span class="k">if</span> <span class="n">pop_sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">pop_size_attr</span><span class="p">,</span> <span class="n">pop_sizes</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">add_bound_attribute</span><span class="p">(</span><span class="n">pop_size_attr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ages</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">*</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">pop_size_attr</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">tree</span></div>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.simulate.popgensim</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

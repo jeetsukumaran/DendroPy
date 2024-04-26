@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.datamodel.basemodel: Core Infrastructure for Phylogenetic Data Objects &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.datamodel.taxonmodel: Taxonomic Namespace Reference and Management" href="taxonmodel.html" />
+    <link rel="prev" title="DendroPy Library Reference" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="taxonmodel.html" title="dendropy.datamodel.taxonmodel: Taxonomic Namespace Reference and Management"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="DendroPy Library Reference"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.basemodel</span></code>: Core Infrastructure for Phylogenetic Data Objects</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.datamodel.basemodel">
+<span id="dendropy-datamodel-basemodel-core-infrastructure-for-phylogenetic-data-objects"></span><h1><a class="reference internal" href="#module-dendropy.datamodel.basemodel" title="dendropy.datamodel.basemodel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.basemodel</span></code></a>: Core Infrastructure for Phylogenetic Data Objects<a class="headerlink" href="#module-dendropy.datamodel.basemodel" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="the-dataobject-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.basemodel.DataObject" title="dendropy.datamodel.basemodel.DataObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataObject</span></code></a> Class<a class="headerlink" href="#the-dataobject-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.DataObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.basemodel.</span></span><span class="sig-name descname"><span class="pre">DataObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#DataObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.DataObject" title="Link to this definition">¶</a></dt>
+<dd><p>Base class for all phylogenetic data objects.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.DataObject.clone">
+<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#DataObject.clone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.DataObject.clone" title="Link to this definition">¶</a></dt>
+<dd><p>Creates and returns a copy of <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>depth</strong> (<em>integer</em>) – <p>The depth of the copy:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>0: shallow-copy: All member objects are references,
+except for :attr:<code class="docutils literal notranslate"><span class="pre">annotation_set</span></code> of top-level object and
+member <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> objects: these are full,
+independent instances (though any complex objects in the
+<code class="docutils literal notranslate"><span class="pre">value</span></code> field of <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> objects are also
+just references).</p></li>
+<li><p>1: taxon-namespace-scoped copy: All member objects are full
+independent instances, <em>except</em> for <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>
+and <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances: these are references.</p></li>
+<li><p>2: Exhaustive deep-copy: all objects are cloned.</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.DataObject.taxon_namespace_scoped_copy">
+<span class="sig-name descname"><span class="pre">taxon_namespace_scoped_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#DataObject.taxon_namespace_scoped_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.DataObject.taxon_namespace_scoped_copy" title="Link to this definition">¶</a></dt>
+<dd><p>Cloning level: 1.
+Taxon-namespace-scoped copy: All member objects are full independent
+instances, <em>except</em> for <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> and <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>
+objects: these are preserved as references.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-annotable-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a> Class<a class="headerlink" href="#the-annotable-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.Annotable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.basemodel.</span></span><span class="sig-name descname"><span class="pre">Annotable</span></span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#Annotable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.Annotable" title="Link to this definition">¶</a></dt>
+<dd><p>Mixin class which all classes that need to persist object attributes
+or other information as metadata should subclass.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.Annotable.__copy__">
+<span class="sig-name descname"><span class="pre">__copy__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#Annotable.__copy__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.Annotable.__copy__" title="Link to this definition">¶</a></dt>
+<dd><p>Cloning level: 0.
+:attr:<code class="docutils literal notranslate"><span class="pre">annotation_set</span></code> of top-level object and member <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
+objects are full, independent instances. All other member objects (include
+objects referenced by dynamically-bound attribute values of
+<a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> objects) are references.
+All member objects are references, except for</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.Annotable.copy_annotations_from">
+<span class="sig-name descname"><span class="pre">copy_annotations_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_object_mapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#Annotable.copy_annotations_from"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.Annotable.copy_annotations_from" title="Link to this definition">¶</a></dt>
+<dd><p>Copies annotations from <code class="docutils literal notranslate"><span class="pre">other</span></code>, which must be of <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>
+type.</p>
+<p>Copies are deep-copies, in that the <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> objects added
+to the <code class="docutils literal notranslate"><span class="pre">annotation_set</span></code> <a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet" title="dendropy.datamodel.basemodel.AnnotationSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a> collection of <code class="docutils literal notranslate"><span class="pre">self</span></code> are
+independent copies of those in the <code class="docutils literal notranslate"><span class="pre">annotate_set</span></code> collection of
+<code class="docutils literal notranslate"><span class="pre">other</span></code>. However, dynamic bound-attribute annotations retain references
+to the original objects as given in <code class="docutils literal notranslate"><span class="pre">other</span></code>, which may or may not be
+desirable. This is handled by updated the objects to which attributes
+are bound via mappings found in <code class="docutils literal notranslate"><span class="pre">attribute_object_mapper</span></code>.
+In dynamic bound-attribute annotations, the <code class="docutils literal notranslate"><span class="pre">_value</span></code> attribute of the
+annotations object (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Annotation._value</span></code>) is a tuple consisting of
+“<code class="docutils literal notranslate"><span class="pre">(obj,</span> <span class="pre">attr_name)</span></code>”, which instructs the <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> object to
+return “<code class="docutils literal notranslate"><span class="pre">getattr(obj,</span> <span class="pre">attr_name)</span></code>” (via: “<code class="docutils literal notranslate"><span class="pre">getattr(*self._value)</span></code>”)
+when returning the value of the Annotation. “<code class="docutils literal notranslate"><span class="pre">obj</span></code>” is typically the object
+to which the <a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet" title="dendropy.datamodel.basemodel.AnnotationSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a> belongs (i.e., <code class="docutils literal notranslate"><span class="pre">self</span></code>). When a copy
+of <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> is created, the object reference given in the
+first element of the <code class="docutils literal notranslate"><span class="pre">_value</span></code> tuple of dynamic bound-attribute
+annotations are unchanged, unless the id of the object reference is fo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>) – Source of annotations to copy.</p></li>
+<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
+purpose of this is to update the parent or owner objects of dynamic
+attribute annotations.
+If a dynamic attribute <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
+gives object <code class="docutils literal notranslate"><span class="pre">x</span></code> as the parent or owner of the attribute (that is,
+the first element of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Annotation._value</span></code> tuple is
+<code class="docutils literal notranslate"><span class="pre">other</span></code>) and <code class="docutils literal notranslate"><span class="pre">id(x)</span></code> is found in <code class="docutils literal notranslate"><span class="pre">attribute_object_mapper</span></code>,
+then in the copy the owner of the attribute is changed to
+<code class="docutils literal notranslate"><span class="pre">attribute_object_mapper[id(x)]</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">attribute_object_mapper</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), then the
+following mapping is automatically inserted: <code class="docutils literal notranslate"><span class="pre">id(other):</span> <span class="pre">self</span></code>.
+That is, any references to <code class="docutils literal notranslate"><span class="pre">other</span></code> in any <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
+object will be remapped to <code class="docutils literal notranslate"><span class="pre">self</span></code>.  If really no reattribution
+mappings are desired, then an empty dictionary should be passed
+instead.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.Annotable.deep_copy_annotations_from">
+<span class="sig-name descname"><span class="pre">deep_copy_annotations_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#Annotable.deep_copy_annotations_from"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.Annotable.deep_copy_annotations_from" title="Link to this definition">¶</a></dt>
+<dd><p>Note that all references to <code class="docutils literal notranslate"><span class="pre">other</span></code> in any annotation value (and
+sub-annotation, and sub-sub-sub-annotation, etc.) will be
+replaced with references to <code class="docutils literal notranslate"><span class="pre">self</span></code>. This may not always make sense
+(i.e., a reference to a particular entity may be absolute regardless of
+context).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-annotation-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> Class<a class="headerlink" href="#the-annotation-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.Annotation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.basemodel.</span></span><span class="sig-name descname"><span class="pre">Annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype_hint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_is_prefixed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate_as_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_value_format_specifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#Annotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.Annotation" title="Link to this definition">¶</a></dt>
+<dd><p>Metadata storage, composition and persistance, with the following attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">datatype_hint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name_prefix</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">namespace</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">annotate_as_reference</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_hidden</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">real_value_format_specifier</span></code> - format specifier for printing or rendering
+values as string, given in Python’s format specification
+mini-language. E.g., ‘.8f’, ‘4E’, ‘&gt;04d’.</p></li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.Annotation.clone">
+<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_object_mapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#Annotation.clone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.Annotation.clone" title="Link to this definition">¶</a></dt>
+<dd><p>Essentially a shallow-copy, except that any objects in the <code class="docutils literal notranslate"><span class="pre">_value</span></code>
+field with an <code class="docutils literal notranslate"><span class="pre">id</span></code> found in <code class="docutils literal notranslate"><span class="pre">attribute_object_mapper</span></code> will be replaced
+with <code class="docutils literal notranslate"><span class="pre">attribute_object_mapper[id]</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.Annotation.copy_annotations_from">
+<span class="sig-name descname"><span class="pre">copy_annotations_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_object_mapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.Annotation.copy_annotations_from" title="Link to this definition">¶</a></dt>
+<dd><p>Copies annotations from <code class="docutils literal notranslate"><span class="pre">other</span></code>, which must be of <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>
+type.</p>
+<p>Copies are deep-copies, in that the <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> objects added
+to the <code class="docutils literal notranslate"><span class="pre">annotation_set</span></code> <a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet" title="dendropy.datamodel.basemodel.AnnotationSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a> collection of <code class="docutils literal notranslate"><span class="pre">self</span></code> are
+independent copies of those in the <code class="docutils literal notranslate"><span class="pre">annotate_set</span></code> collection of
+<code class="docutils literal notranslate"><span class="pre">other</span></code>. However, dynamic bound-attribute annotations retain references
+to the original objects as given in <code class="docutils literal notranslate"><span class="pre">other</span></code>, which may or may not be
+desirable. This is handled by updated the objects to which attributes
+are bound via mappings found in <code class="docutils literal notranslate"><span class="pre">attribute_object_mapper</span></code>.
+In dynamic bound-attribute annotations, the <code class="docutils literal notranslate"><span class="pre">_value</span></code> attribute of the
+annotations object (<code class="xref py py-attr docutils literal notranslate"><span class="pre">Annotation._value</span></code>) is a tuple consisting of
+“<code class="docutils literal notranslate"><span class="pre">(obj,</span> <span class="pre">attr_name)</span></code>”, which instructs the <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> object to
+return “<code class="docutils literal notranslate"><span class="pre">getattr(obj,</span> <span class="pre">attr_name)</span></code>” (via: “<code class="docutils literal notranslate"><span class="pre">getattr(*self._value)</span></code>”)
+when returning the value of the Annotation. “<code class="docutils literal notranslate"><span class="pre">obj</span></code>” is typically the object
+to which the <a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet" title="dendropy.datamodel.basemodel.AnnotationSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a> belongs (i.e., <code class="docutils literal notranslate"><span class="pre">self</span></code>). When a copy
+of <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> is created, the object reference given in the
+first element of the <code class="docutils literal notranslate"><span class="pre">_value</span></code> tuple of dynamic bound-attribute
+annotations are unchanged, unless the id of the object reference is fo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>) – Source of annotations to copy.</p></li>
+<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
+purpose of this is to update the parent or owner objects of dynamic
+attribute annotations.
+If a dynamic attribute <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
+gives object <code class="docutils literal notranslate"><span class="pre">x</span></code> as the parent or owner of the attribute (that is,
+the first element of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Annotation._value</span></code> tuple is
+<code class="docutils literal notranslate"><span class="pre">other</span></code>) and <code class="docutils literal notranslate"><span class="pre">id(x)</span></code> is found in <code class="docutils literal notranslate"><span class="pre">attribute_object_mapper</span></code>,
+then in the copy the owner of the attribute is changed to
+<code class="docutils literal notranslate"><span class="pre">attribute_object_mapper[id(x)]</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">attribute_object_mapper</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), then the
+following mapping is automatically inserted: <code class="docutils literal notranslate"><span class="pre">id(other):</span> <span class="pre">self</span></code>.
+That is, any references to <code class="docutils literal notranslate"><span class="pre">other</span></code> in any <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
+object will be remapped to <code class="docutils literal notranslate"><span class="pre">self</span></code>.  If really no reattribution
+mappings are desired, then an empty dictionary should be passed
+instead.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.Annotation.deep_copy_annotations_from">
+<span class="sig-name descname"><span class="pre">deep_copy_annotations_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.Annotation.deep_copy_annotations_from" title="Link to this definition">¶</a></dt>
+<dd><p>Note that all references to <code class="docutils literal notranslate"><span class="pre">other</span></code> in any annotation value (and
+sub-annotation, and sub-sub-sub-annotation, etc.) will be
+replaced with references to <code class="docutils literal notranslate"><span class="pre">self</span></code>. This may not always make sense
+(i.e., a reference to a particular entity may be absolute regardless of
+context).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-annotationset-class">
+<h2>The <a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet" title="dendropy.datamodel.basemodel.AnnotationSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a> Class<a class="headerlink" href="#the-annotationset-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.basemodel.</span></span><span class="sig-name descname"><span class="pre">AnnotationSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.__add__">
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.__add__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">OrderedSet</span></code> consisting of union of values in <code class="docutils literal notranslate"><span class="pre">self</span></code>
+and <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.__contains__">
+<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.__contains__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">value</span></code> is in <code class="docutils literal notranslate"><span class="pre">self</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.__delitem__">
+<span class="sig-name descname"><span class="pre">__delitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.__delitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Deletes value at <code class="docutils literal notranslate"><span class="pre">index</span></code>.
+Note takes <em>index</em> of than value as key.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Experimental! Inefficient! Volatile! Subject to change!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.__iter__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns iterator over values in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.__reversed__">
+<span class="sig-name descname"><span class="pre">__reversed__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.__reversed__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">OrderedSet</span></code> with values in reversed order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.__setitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.__setitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Experimental! Inefficient! Volatile! Subject to change!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.add" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a new element, <code class="docutils literal notranslate"><span class="pre">value</span></code>, to <code class="docutils literal notranslate"><span class="pre">self</span></code> if <code class="docutils literal notranslate"><span class="pre">value</span></code> is not already in
+<code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.add_bibtex">
+<span class="sig-name descname"><span class="pre">add_bibtex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">citation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bibtex'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.add_bibtex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.add_bibtex" title="Link to this definition">¶</a></dt>
+<dd><p>Add a citation as an annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>citation</strong> (string or dict or <a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry" title="dendropy.utility.bibtex.BibTexEntry"><code class="xref any py py-class docutils literal notranslate"><span class="pre">BibTexEntry</span></code></a>) – The citation to be added. If a string, then it must be a
+BibTex-formatted entry. If a dictionary, then it must have
+BibTex fields as keys and contents as values.</p></li>
+<li><p><strong>store_as</strong> (<em>string</em><em>, </em><em>optional</em>) – Specifies how to record the citation, with one of the
+following strings as values: “bibtex” (a set of annotations, where
+each BibTex field becomes a separate annotation); “prism”
+(a set of PRISM [Publishing Requirements for Industry Standard
+Metadata] annotations); “dublin” (A set of of Dublic Core
+annotations). Defaults to “bibtex”.</p></li>
+<li><p><strong>name_prefix</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “dc:”).</p></li>
+<li><p><strong>namespace</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “<a class="reference external" href="http://www.w3.org/XML/1998/namespace">http://www.w3.org/XML/1998/namespace</a>”).</p></li>
+<li><p><strong>is_hidden</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Do not write or print this annotation when writing data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>annotation</strong> (<em>|Annotation|</em>) – The new <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.add_bound_attribute">
+<span class="sig-name descname"><span class="pre">add_bound_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype_hint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_is_prefixed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate_as_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_value_format_specifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.add_bound_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.add_bound_attribute" title="Link to this definition">¶</a></dt>
+<dd><p>Add an attribute of an object as a dynamic annotation. The value of the
+annotation will be dynamically bound to the value of the attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr_name</strong> (<em>string</em>) – The (string) name of the attribute to be used as the source of the
+content or value of the annotation.</p></li>
+<li><p><strong>annotation_name</strong> (<em>string</em><em>, </em><em>optional</em>) – Use this string as the annotation field/name rather than the attribute
+name.</p></li>
+<li><p><strong>datatype_hint</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “xsd:string”).</p></li>
+<li><p><strong>namespace_prefix</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “dc:”).</p></li>
+<li><p><strong>namespace</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “<a class="reference external" href="http://www.w3.org/XML/1998/namespace">http://www.w3.org/XML/1998/namespace</a>”).</p></li>
+<li><p><strong>name_is_prefixed</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML <em>input</em>: name will be split into prefix and local part
+before storage (e.g., “dc:citations” will result in prefix = “dc” and
+name=”citations”)</p></li>
+<li><p><strong>annotate_as_reference</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – The value should be interpreted as a URI that points to content.</p></li>
+<li><p><strong>is_hidden</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Do not write or print this annotation when writing data.</p></li>
+<li><p><strong>owner_instance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a><em>, </em><em>optional</em>) – The object whose attribute is to be used as the value of the
+annotation. Defaults to <code class="docutils literal notranslate"><span class="pre">self.target</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>annotation</strong> (<em>|Annotation|</em>) – The new <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.add_citation">
+<span class="sig-name descname"><span class="pre">add_citation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">citation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bibtex'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bibtex'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.add_citation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.add_citation" title="Link to this definition">¶</a></dt>
+<dd><p>Add a citation as an annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>citation</strong> (string or dict or <a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry" title="dendropy.utility.bibtex.BibTexEntry"><code class="xref any py py-class docutils literal notranslate"><span class="pre">BibTexEntry</span></code></a>) – The citation to be added. If a string, then it must be a
+BibTex-formatted entry. If a dictionary, then it must have
+BibTex fields as keys and contents as values.</p></li>
+<li><p><strong>read_as</strong> (<em>string</em><em>, </em><em>optional</em>) – Specifies the format/schema/structure of the citation. Currently
+only supports ‘bibtex’.</p></li>
+<li><p><strong>store_as</strong> (<em>string</em><em>, </em><em>optional</em>) – Specifies how to record the citation, with one of the
+following strings as values: “bibtex” (a set of annotations, where
+each BibTex field becomes a separate annotation); “prism”
+(a set of PRISM [Publishing Requirements for Industry Standard
+Metadata] annotations); “dublin” (A set of of Dublic Core
+annotations). Defaults to “bibtex”.</p></li>
+<li><p><strong>name_prefix</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “dc:”).</p></li>
+<li><p><strong>namespace</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “<a class="reference external" href="http://www.w3.org/XML/1998/namespace">http://www.w3.org/XML/1998/namespace</a>”).</p></li>
+<li><p><strong>is_hidden</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Do not write or print this annotation when writing data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>annotation</strong> (<em>|Annotation|</em>) – The new <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.add_new">
+<span class="sig-name descname"><span class="pre">add_new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype_hint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_is_prefixed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate_as_reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_value_format_specifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.add_new"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.add_new" title="Link to this definition">¶</a></dt>
+<dd><p>Add an annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – The property/subject/field of the annotation (e.g. “color”,
+“locality”, “dc:citation”)</p></li>
+<li><p><strong>value</strong> (<em>string</em>) – The content of the annotation.</p></li>
+<li><p><strong>datatype_hint</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “xsd:string”).</p></li>
+<li><p><strong>namespace_prefix</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “dc:”).</p></li>
+<li><p><strong>namespace</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML output (e.g. “<a class="reference external" href="http://www.w3.org/XML/1998/namespace">http://www.w3.org/XML/1998/namespace</a>”).</p></li>
+<li><p><strong>name_is_prefixed</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML <em>input</em>: name will be split into prefix and local part
+before storage (e.g., “dc:citations” will result in prefix = “dc” and
+name=”citations”)</p></li>
+<li><p><strong>is_attribute</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If value is passed as a tuple of (object, “attribute_name”) and this
+is True, then actual content will be the result of calling
+<code class="docutils literal notranslate"><span class="pre">getattr(object,</span> <span class="pre">&quot;attribute_name&quot;)</span></code>.</p></li>
+<li><p><strong>annotate_as_reference</strong> (<em>boolean</em><em>, </em><em>optional</em>) – The value should be interpreted as a URI that points to content.</p></li>
+<li><p><strong>is_hidden</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Do not write or print this annotation when writing data.</p></li>
+<li><p><strong>real_value_format_specifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Format specifier for printing or rendering values as string, given
+in Python’s format specification mini-language. E.g., ‘.8f’, ‘4E’,
+‘&gt;04d’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>annotation</strong> (<em>|Annotation|</em>) – The new <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.discard">
+<span class="sig-name descname"><span class="pre">discard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.discard" title="Link to this definition">¶</a></dt>
+<dd><p>Deletes value of <code class="docutils literal notranslate"><span class="pre">key</span></code> from <code class="docutils literal notranslate"><span class="pre">self</span></code>.
+No error if no value of <code class="docutils literal notranslate"><span class="pre">key</span></code> is not in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.drop">
+<span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.drop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.drop" title="Link to this definition">¶</a></dt>
+<dd><p>Removes Annotation objects that match based on <em>all</em> criteria specified
+in keyword arguments.</p>
+<p>Remove all annotation objects with <code class="docutils literal notranslate"><span class="pre">name</span></code> ==
+“color”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;color&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Remove all annotation objects with <code class="docutils literal notranslate"><span class="pre">namespace</span></code> ==
+“<a class="reference external" href="http://pypi.org/project/DendroPy/">http://pypi.org/project/DendroPy/</a>”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;http://pypi.org/project/DendroPy/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Remove all annotation objects with <code class="docutils literal notranslate"><span class="pre">namespace</span></code> ==
+“<a class="reference external" href="http://pypi.org/project/DendroPy/">http://pypi.org/project/DendroPy/</a>” <em>and</em> <code class="docutils literal notranslate"><span class="pre">name</span></code> == “color”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;http://pypi.org/project/DendroPy/&quot;</span><span class="p">,</span>
+<span class="go">        name=&quot;color&quot;)</span>
+</pre></div>
+</div>
+<p>Remove all annotation objects with <code class="docutils literal notranslate"><span class="pre">name_prefix</span></code> == “dc”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;dc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Remove all annotation objects with <code class="docutils literal notranslate"><span class="pre">prefixed_name</span></code> == “dc:color”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">prefixed_name</span><span class="o">=</span><span class="s2">&quot;dc:color&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no keyword argument filter criteria are given, <em>all</em> annotations are
+removed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>results</strong> (<em>|AnnotationSet|</em>) – <a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet" title="dendropy.datamodel.basemodel.AnnotationSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a> containing <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> objects that
+were removed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.find" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the <em>first</em> Annotation associated with self.target
+which matches based on <em>all</em> criteria specified in keyword arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">note</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;color&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">note</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;dc&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;color&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">note</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">prefixed_name</span><span class="o">=</span><span class="s2">&quot;dc:color&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no match is found, None is returned.</p>
+<p>If no keyword arguments are given, a TypeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>results</strong> (<em>|Annotation| or |None|</em>) – First <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> object found that matches criteria, or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if no matching annotations found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.findall">
+<span class="sig-name descname"><span class="pre">findall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.findall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.findall" title="Link to this definition">¶</a></dt>
+<dd><p>Returns AnnotationSet of Annotation objects associated with self.target
+that match based on <em>all</em> criteria specified in keyword arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">notes</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;color&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">notes</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;http://pypi.org/project/DendroPy/&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">notes</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;http://pypi.org/project/DendroPy/&quot;</span><span class="p">,</span>
+<span class="go">                              name=&quot;color&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">notes</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;dc&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">notes</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">prefixed_name</span><span class="o">=</span><span class="s2">&quot;dc:color&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no matches are found, the return AnnotationSet is empty.</p>
+<p>If no keyword arguments are given, <em>all</em> annotations are returned:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">notes</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">findall</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>results</strong> (<em>|AnnotationSet| or |None|</em>) – <a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet" title="dendropy.datamodel.basemodel.AnnotationSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a> containing <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> objects that
+match criteria, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no matching annotations found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.get_value" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the <em>value</em> of the <em>first</em> Annotation associated with
+self.target which has <code class="docutils literal notranslate"><span class="pre">name</span></code> in the name field.</p>
+<p>If no match is found, then <code class="docutils literal notranslate"><span class="pre">default</span></code> is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – Name of <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> object whose value is to be returned.</p></li>
+<li><p><strong>default</strong> (<em>any</em><em>, </em><em>optional</em>) – Value to return if no matching <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> object found.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>results</strong> (<em>|Annotation| or |None|</em>) – <code class="docutils literal notranslate"><span class="pre">value</span></code> of first <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> object found that matches
+criteria, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no matching annotations found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.index" title="Link to this definition">¶</a></dt>
+<dd><p>Returns index of element with value of <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.next">
+<span class="sig-name descname"><span class="pre">next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.next" title="Link to this definition">¶</a></dt>
+<dd><p>Returns iterator over values in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.pop" title="Link to this definition">¶</a></dt>
+<dd><p>Removes and return value in <code class="docutils literal notranslate"><span class="pre">self</span></code>.
+By default, removes last value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Deletes value of <code class="docutils literal notranslate"><span class="pre">key</span></code> from <code class="docutils literal notranslate"><span class="pre">self</span></code>.
+KeyErrorif no value of <code class="docutils literal notranslate"><span class="pre">key</span></code> is not in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.require_value">
+<span class="sig-name descname"><span class="pre">require_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.require_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.require_value" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the <em>value</em> of the <em>first</em> Annotation associated with
+self.target which has <code class="docutils literal notranslate"><span class="pre">name</span></code> in the name field.</p>
+<p>If no match is found, then KeyError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>string</em>) – Name of <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> object whose value is to be returned.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>results</strong> (<em>|Annotation| or |None|</em>) – <code class="docutils literal notranslate"><span class="pre">value</span></code> of first <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a> object found that matches
+criteria.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.update" title="Link to this definition">¶</a></dt>
+<dd><p>Updates <code class="docutils literal notranslate"><span class="pre">self</span></code> with values in <code class="docutils literal notranslate"><span class="pre">other</span></code> for each value in <code class="docutils literal notranslate"><span class="pre">other</span></code> that is
+not already in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.basemodel.AnnotationSet.values_as_dict">
+<span class="sig-name descname"><span class="pre">values_as_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/basemodel.html#AnnotationSet.values_as_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.basemodel.AnnotationSet.values_as_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Returns annotation set as a dictionary. The keys and values for the dictionary will
+be generated based on the following keyword arguments:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.12)"><em>string</em></a>) – String specifying an Annotation object attribute name to be used
+as keys for the dictionary.</p></li>
+<li><p><strong>key_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.12)"><em>string</em></a>) – Function that takes an Annotation object as an argument and returns
+the value to be used as a key for the dictionary.</p></li>
+<li><p><strong>value_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.12)"><em>string</em></a>) – String specifying an Annotation object attribute name to be used
+as values for the dictionary.</p></li>
+<li><p><strong>value_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.12)"><em>string</em></a>) – Function that takes an Annotation object as an argument and returns
+the value to be used as a value for the dictionary.</p></li>
+<li><p><strong>neither</strong> (<em>At most one</em><em> of </em><em>value_attr</em><em> or </em><em>value_fn can be specified. If</em>) – </p></li>
+<li><p><strong>Annotation.name.</strong> (<em>is specified</em><em>, </em><em>then by default the keys are generated from</em>) – </p></li>
+<li><p><strong>neither</strong> – </p></li>
+<li><p><strong>Annotation.value.</strong> (<em>is specified</em><em>, </em><em>then by default the values are generated from</em>) – </p></li>
+<li><p><strong>being</strong> (<em>Key collisions will result in the dictionary entry for that key</em>) – </p></li>
+<li><p><strong>overwritten.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>values</strong> (<em>dict</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="supporting-classes">
+<h2>Supporting Classes<a class="headerlink" href="#supporting-classes" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.utility.bibtex.</span></span><span class="sig-name descname"><span class="pre">BibTexEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">citation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry" title="Link to this definition">¶</a></dt>
+<dd><p>Tracks a single BibTeX entry.</p>
+<p>Sets up internal dictionary of BibTeX fields, and initializes
+if argument is given.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.__delattr__">
+<span class="sig-name descname"><span class="pre">__delattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.__delattr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.__delattr__" title="Link to this definition">¶</a></dt>
+<dd><p>Allows bibtex fields (and any additional ones) to be treated
+like object attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.__getattr__">
+<span class="sig-name descname"><span class="pre">__getattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.__getattr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.__getattr__" title="Link to this definition">¶</a></dt>
+<dd><p>Allows bibtex fields (and any additional ones) to be treated
+like object attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Internal representation of self.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.__setattr__">
+<span class="sig-name descname"><span class="pre">__setattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.__setattr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.__setattr__" title="Link to this definition">¶</a></dt>
+<dd><p>Allows bibtex fields (and any additional ones) to be treated
+like object attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.__str__" title="Link to this definition">¶</a></dt>
+<dd><p>String representation of self.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.as_bibtex">
+<span class="sig-name descname"><span class="pre">as_bibtex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrap_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">78</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.as_bibtex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.as_bibtex" title="Link to this definition">¶</a></dt>
+<dd><p>Composes entry in BibTex format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.as_compact_bibtex">
+<span class="sig-name descname"><span class="pre">as_compact_bibtex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.as_compact_bibtex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.as_compact_bibtex" title="Link to this definition">¶</a></dt>
+<dd><p>Composes entry in BibTex format.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.fields">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fields</span></span><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.fields" title="Link to this definition">¶</a></dt>
+<dd><p>Returns list of populated fields in order (does not include
+bibtype and citekey).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.fields_as_dict">
+<span class="sig-name descname"><span class="pre">fields_as_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.fields_as_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.fields_as_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the fields (i.e., all public attributes except for
+bibtype and citekey as a dictionary).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.utility.bibtex.BibTexEntry.parse_text">
+<span class="sig-name descname"><span class="pre">parse_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/utility/bibtex.html#BibTexEntry.parse_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.utility.bibtex.BibTexEntry.parse_text" title="Link to this definition">¶</a></dt>
+<dd><p>Parses a BibTeX text entry.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.basemodel</span></code>: Core Infrastructure for Phylogenetic Data Objects</a><ul>
+<li><a class="reference internal" href="#the-dataobject-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">DataObject</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.DataObject"><code class="docutils literal notranslate"><span class="pre">DataObject</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.DataObject.clone"><code class="docutils literal notranslate"><span class="pre">DataObject.clone</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.DataObject.taxon_namespace_scoped_copy"><code class="docutils literal notranslate"><span class="pre">DataObject.taxon_namespace_scoped_copy</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-annotable-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable"><code class="docutils literal notranslate"><span class="pre">Annotable</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable.__copy__"><code class="docutils literal notranslate"><span class="pre">Annotable.__copy__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable.copy_annotations_from"><code class="docutils literal notranslate"><span class="pre">Annotable.copy_annotations_from</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable.deep_copy_annotations_from"><code class="docutils literal notranslate"><span class="pre">Annotable.deep_copy_annotations_from</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-annotation-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation"><code class="docutils literal notranslate"><span class="pre">Annotation</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation.clone"><code class="docutils literal notranslate"><span class="pre">Annotation.clone</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation.copy_annotations_from"><code class="docutils literal notranslate"><span class="pre">Annotation.copy_annotations_from</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation.deep_copy_annotations_from"><code class="docutils literal notranslate"><span class="pre">Annotation.deep_copy_annotations_from</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-annotationset-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code> Class</a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet"><code class="docutils literal notranslate"><span class="pre">AnnotationSet</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.__add__"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.__add__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.__contains__"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.__contains__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.__delitem__"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.__delitem__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.__getitem__"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.__getitem__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.__iter__"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.__iter__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.__reversed__"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.__reversed__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.__setitem__"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.__setitem__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.add"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.add</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.add_bibtex"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.add_bibtex</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.add_bound_attribute"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.add_bound_attribute</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.add_citation"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.add_citation</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.add_new"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.add_new</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.discard"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.discard</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.drop"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.drop</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.find"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.find</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.findall"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.findall</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.get_value"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.get_value</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.index"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.index</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.next"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.next</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.pop"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.pop</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.remove"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.remove</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.require_value"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.require_value</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.update"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.update</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.basemodel.AnnotationSet.values_as_dict"><code class="docutils literal notranslate"><span class="pre">AnnotationSet.values_as_dict</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#supporting-classes">Supporting Classes</a><ul>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry"><code class="docutils literal notranslate"><span class="pre">BibTexEntry</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.__delattr__"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.__delattr__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.__getattr__"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.__getattr__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.__repr__"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.__repr__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.__setattr__"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.__setattr__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.__str__"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.__str__</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.as_bibtex"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.as_bibtex</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.as_compact_bibtex"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.as_compact_bibtex</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.fields"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.fields</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.fields_as_dict"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.fields_as_dict</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.utility.bibtex.BibTexEntry.parse_text"><code class="docutils literal notranslate"><span class="pre">BibTexEntry.parse_text</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">DendroPy Library Reference</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="taxonmodel.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.taxonmodel</span></code>: Taxonomic Namespace Reference and Management</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="taxonmodel.html" title="dendropy.datamodel.taxonmodel: Taxonomic Namespace Reference and Management"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="DendroPy Library Reference"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.basemodel</span></code>: Core Infrastructure for Phylogenetic Data Objects</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

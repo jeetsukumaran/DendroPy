@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Bipartitions &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tree Simulation and Generation" href="treesims.html" />
+    <link rel="prev" title="Tree Manipulation and Restructuring" href="treemanips.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treesims.html" title="Tree Simulation and Generation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="treemanips.html" title="Tree Manipulation and Restructuring"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Bipartitions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="bipartitions">
+<h1>Bipartitions<a class="headerlink" href="#bipartitions" title="Link to this heading">¶</a></h1>
+<p>Many tree statistics and operations in DendroPy use the <em>bipartition encoding</em>
+of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code> instance in the background, including, for example:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>tree statistics and metrics</p></li>
+<li><p>tree comparisons</p></li>
+<li><p>tree scoring</p></li>
+</ul>
+</div></blockquote>
+<p>By default, the DendroPy functions assume that bipartitions are <em>not</em> encoded,
+or are not up-to-date with respect to the current tree structure, resulting in
+their recalculation <em>every</em> time. This is computationally inefficient, and you
+want to avoid it if, indeed, the bipartition encoding of a tree is current. You
+can control whether or not these service functions recalculate the bipartition
+encoding by passing in the argument <code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code> to
+suppress the recalculation or <code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=False</span></code> to force it.</p>
+<p>If you are doing multiple operations that require a bipartition encoding, you
+should call <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree.encode_bipartitions()</span></code> <em>once</em> for each tree, and,
+then, as long as the trees are <em>not</em> <em>modified</em> since the encoding, specify the
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code> argument to each of the functions that use it
+to ensure that the bipartitions are not recalculated each time.</p>
+<p>If, on the other hand, you modify a tree structure in any way, e.g., rerooting,
+pruning, add/removing nodes or subtrees, you should update the bipartition
+encoding of a tree yourself by calling <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree.encode_bipartitions()</span></code>, or
+make sure to specify <code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=False</span></code> to the <em>first</em> function
+that you call following the tree modification.</p>
+<section id="modeling-bipartitions">
+<h2>Modeling Bipartitions<a class="headerlink" href="#modeling-bipartitions" title="Link to this heading">¶</a></h2>
+<section id="a-bipartition-is-a-partitioning-of-taxa-corresponding-to-an-edge-of-a-tree">
+<h3>A Bipartition is a Partitioning of Taxa Corresponding to an Edge of a Tree<a class="headerlink" href="#a-bipartition-is-a-partitioning-of-taxa-corresponding-to-an-edge-of-a-tree" title="Link to this heading">¶</a></h3>
+<p>A bipartition is the division or sorting of the leaves/tips of a tree into two
+mutually-exclusive and collectively-exhaustive subsets (i.e., a <em>partition</em>, in
+the set theory sense, of the leaves of the tree into exactly two non-empty
+subsets; hence the term, “<em>bi</em>-partition”). Every edge on a tree corresponds to
+a bipartition in the sense that if were were to split or bisect a tree at a
+particular edge, the leaf sets of each of the two new trees constitute the a
+bipartition of the leaf set of the original tree. In the context of
+evolutionary trees like a phylogeny, the leaves typically are associated with
+operational taxonomic unit concepts, or, for short, taxa. So, just as we view a
+tree as a schematic representation of the relationships of taxa, we can see
+bipartitions as a representation of a clustering of taxa.</p>
+<p>For example, given a tree:</p>
+<blockquote>
+<div><p>((a,(b,c)),(d,(e,f)));</p>
+</div></blockquote>
+<p>the edge subtending the leaf node with taxon “d” corresponds to the bipartition
+that splits “d” from the rest of the taxa. Similarly, the edge subtending the
+most-recent common ancestor (MRCA) node of taxa “d”, “e”, and “f” corresponds
+to the bipartition that splits “d”, “e”, and “f” from the rest of the taxa,
+“a”, “b”, and “c”.</p>
+</section>
+<section id="a-bipartition-can-be-described-by-a-bitmask">
+<h3>A Bipartition Can Be Described by a <em>Bitmask</em><a class="headerlink" href="#a-bipartition-can-be-described-by-a-bitmask" title="Link to this heading">¶</a></h3>
+<p>If we were to index the taxa of the tree, with the first taxon getting index 1,
+the second index 2, the third index 3, etc. and so on until index $n$, we can
+represent any possible split as sequence of symbols, such as:</p>
+<blockquote>
+<div><p>abbabbaa</p>
+</div></blockquote>
+<p>where the symbol indicates membership in one arbitrarily-labeled group (e.g.,
+“a”) or the other (e.g., “b”) of a particular taxon, based on how we relate the
+taxon indexes to the position of the symbols in sequence.</p>
+<p>If we were to use a left-to-right order, such that the first element
+corresponded to the first taxon, the second to the second taxon, and so one,
+the above sequence would describe the a partition of the taxa {1,2,…,8} into
+the sets {1,4,7,8} and {2,3,5,6}. However, in DendroPy, we use a right-to-left
+order (for reasons explained below), such that the right-most element
+corresponds to the taxon with index 1, the next right-most element corresponds
+to the taxon with index 2 and so on, so the sequence above represents a
+partition of the taxa {1,2,…,8} into the sets {1,2,5,8} and {3,4,6,7}.</p>
+<p>Let us say that we had a set of 8 taxa {A,B,…,H}:</p>
+<blockquote>
+<div><p>A, B, C, D, E, F, G, H</p>
+</div></blockquote>
+<p>which we assign indexes {1,2,…,8} according to the following scheme:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Taxon</p></td>
+<td><p>A</p></td>
+<td><p>B</p></td>
+<td><p>C</p></td>
+<td><p>D</p></td>
+<td><p>E</p></td>
+<td><p>F</p></td>
+<td><p>G</p></td>
+<td><p>H</p></td>
+</tr>
+<tr class="row-even"><td><p>Index</p></td>
+<td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>3</p></td>
+<td><p>4</p></td>
+<td><p>5</p></td>
+<td><p>6</p></td>
+<td><p>7</p></td>
+<td><p>8</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Then we can describe a bipartition that divides the taxa into two groups
+{A,B,E,H} and {C,D,F,G}, using right-to-left ordering and symbols “0” and “1”
+(instead of “a” and “b”) as:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Taxon Index</p></td>
+<td><p>8</p></td>
+<td><p>7</p></td>
+<td><p>6</p></td>
+<td><p>5</p></td>
+<td><p>4</p></td>
+<td><p>3</p></td>
+<td><p>2</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Group</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>We can succintly and usefully represent the bipartition above with an integer
+given by interpreting the sequence of 0’s and 1’s as bits. Interpreting the
+sequence above, “01101100”, as a binary number or bitmask means that this
+bipartition can be represented as the decimal integer “108”.</p>
+<p>This, in essence, is how bipartitions are represented in DendroPy: as integers
+that are interpreted as <em>bitmasks</em> (also known as bit arrays, bit vectors, or
+bit fields, though exact application of terminology varies depending on whether
+or not primary operations are bitwise or dereferencing through offset indexes
+or field names, etc.), where the 0’s and 1’s assign taxa to different subsets
+of the bipartition.</p>
+<p>As an example, consider the following tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">&amp;</span><span class="n">R</span><span class="p">]</span> <span class="p">(</span><span class="n">A</span><span class="p">,(</span><span class="n">B</span><span class="p">,(</span><span class="n">C</span><span class="p">,(</span><span class="n">D</span><span class="p">,</span><span class="n">E</span><span class="p">))));</span>
+</pre></div>
+</div>
+<p>This would be encoded as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/-----------------------------</span> <span class="mi">00001</span> <span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="mi">11111</span>
+<span class="o">|</span>      <span class="o">/----------------------</span> <span class="mi">00010</span> <span class="p">(</span><span class="n">B</span><span class="p">)</span>
+\<span class="o">------</span><span class="mi">11110</span>
+    <span class="o">|</span>       <span class="o">/--------------</span> <span class="mi">00100</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span>
+    \<span class="o">-------</span><span class="mi">11100</span>
+            <span class="o">|</span>      <span class="o">/-------</span> <span class="mi">01000</span> <span class="p">(</span><span class="n">D</span><span class="p">)</span>
+            \<span class="o">------</span><span class="mi">11000</span>
+                    \<span class="o">-------</span> <span class="mi">10000</span> <span class="p">(</span><span class="n">E</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The leaves are assigned bitmasks based on the indexes of the taxa, while the
+internal nodes are given by a <a class="reference external" href="http://en.wikipedia.org/wiki/Bitwise_operation#OR">bitwise OR</a>-ing of the bitmasks of their children.</p>
+</section>
+<section id="modeling-bipartitions-using-leafset-bitmasks-and-split-bitmasks">
+<h3>Modeling Bipartitions Using Leafset Bitmasks and Split Bitmasks<a class="headerlink" href="#modeling-bipartitions-using-leafset-bitmasks-and-split-bitmasks" title="Link to this heading">¶</a></h3>
+<p>In DendroPy, bipartitions are modeled using bitmasks as discussed above, i.e.,
+integers that, when represented as a bitarray or bitstring, specify the
+assignment of taxa into one of two groups, based on whether or not the bit
+corresponding to the taxon index is set or not.</p>
+<p>In fact, each bipartition is actually modeled by <em>two</em> types of bitmasks: a
+<em>leafset bitmask</em> and a <em>split bitmask</em>:</p>
+<blockquote>
+<div><ul>
+<li><p>A leafset bitmask is a bit array in which the presence of a taxon in the
+leaves descending from the edge associated with the bipartition is
+represented by a set bit (“1”), while its absence is represented by an
+unset bit (“0”). The taxa are mapped to bit positions using a
+least-significant bit mapping scheme, in which the first taxon is represented by
+the least significant bit, the second taxon is represented by the next
+most significant bit, and so on.</p></li>
+<li><p>A split bitmask is a bit array which divides or partitions taxa by assign
+each taxon to one of two arbitrarily-labeled groups, “0” or “1”,
+depending on whether or not a bit is set or not in the position
+corresponding the taxon index under a least-signficant bit mapping scheme
+as described above.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>For bipartitions of rooted trees, the split bitmask is the same value
+as the leafset bitmask.</p></li>
+<li><p>For bipartitions of unrooted trees, the split bitmask is the same
+value as the leafset bitmask <em>if and only if</em> the least-signficant
+bit of the leafset bitmask is 0 (i.e., the first taxon is assigned to
+group “0”), or the <em>complement</em> of the leafset bitmask if this is the
+case. In other words, with unrooted trees we constrain the split
+bitmasks such that the first taxon and all other taxa grouped
+together with it are always placed in group “0”.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>Why this complication?</p>
+<p>Consider the following unrooted tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">A</span>    <span class="n">C</span>    <span class="n">D</span>
+ \   <span class="o">|</span>   <span class="o">/</span>
+  <span class="o">+--+--+</span>
+ <span class="o">/</span>       \
+<span class="n">B</span>         <span class="n">E</span>
+</pre></div>
+</div>
+<p>This could be represented by either of the following NEWICK strings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">&amp;</span><span class="n">U</span><span class="p">]</span> <span class="p">((</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">),(</span><span class="n">C</span><span class="p">,(</span><span class="n">D</span><span class="p">,</span><span class="n">E</span><span class="p">)));</span>
+<span class="p">[</span><span class="o">&amp;</span><span class="n">U</span><span class="p">]</span> <span class="p">(((</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">),</span><span class="n">C</span><span class="p">),(</span><span class="n">D</span><span class="p">,</span><span class="n">E</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Both the above topologies, while distinct if interpreted as rooted, represent
+<em>identical</em> unrooted toplogies.</p>
+<p>When the bipartitions are encoded as leafset bitmasks, we get the following if
+the first tree statement is parsed by DendroPy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    <span class="o">/---------</span> <span class="mi">00001</span> <span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="o">/-------------------</span><span class="mi">00011</span>
+<span class="o">|</span>                   \<span class="o">---------</span> <span class="mi">00010</span> <span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="mi">11111</span>
+<span class="o">|</span>         <span class="o">/-------------------</span> <span class="mi">00100</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span>
+\<span class="o">---------</span><span class="mi">11100</span>
+        <span class="o">|</span>         <span class="o">/---------</span> <span class="mi">01000</span> <span class="p">(</span><span class="n">D</span><span class="p">)</span>
+        \<span class="o">---------</span><span class="mi">11000</span>
+                    \<span class="o">---------</span> <span class="mi">10000</span> <span class="p">(</span><span class="n">E</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and the following if the second tree statement is parsed by DendroPy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    <span class="o">/---------</span> <span class="mi">00001</span> <span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="o">/---------</span><span class="mi">00011</span>
+<span class="o">/---------</span><span class="mi">00111</span>     \<span class="o">---------</span> <span class="mi">00010</span> <span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="o">|</span>         <span class="o">|</span>
+<span class="mi">11111</span>     \<span class="o">-------------------</span> <span class="mi">00100</span> <span class="p">(</span><span class="n">C</span><span class="p">)</span>
+<span class="o">|</span>
+<span class="o">|</span>                   <span class="o">/---------</span> <span class="mi">01000</span> <span class="p">(</span><span class="n">D</span><span class="p">)</span>
+\<span class="o">-------------------</span><span class="mi">11000</span>
+                    \<span class="o">---------</span> <span class="mi">10000</span> <span class="p">(</span><span class="n">E</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the leafset bitmask “11100” in the first tree is absent in the second
+tree, while conversely, the leafset bitmask “00111” in the second tree is
+absent in the first tree.</p>
+<p>This difference is due purely to the placement of the root to one side or the
+other of taxon ‘C’. In rooted trees, this root is a real root, and this
+difference in bipartitions as given by the leafset bitmasks is also real. In
+unrooted trees, this “root” is actually an artifact of the tree structure, and
+the placement is an artifact of the NEWICK string representation. In unrooted
+trees, then the difference in bipartitions as given by the leafset bitmasks is,
+thus, wholly artifactual. This means that it would be impossible to robustly
+and reliably compare, relate, and perform any operations on bipartitions coded
+using leafset bitmasks on unrooted trees: what is effectively the equivalent
+bipartition of taxa maybe represented either by placing, the first taxon and all
+the other taxa in the same group as it in group “0” in one representation, or
+group “1” in another one, and which representation is used is arbitrary and
+random and unpredictable.</p>
+<p>Thus, to allow for robustly establishing equivalence of bipartitions across
+different representations and instantiations of different unrooted trees, we
+<em>normalize</em> the bit array representation of bipartitions in unrooted trees to
+always ensure that the first taxon is assigned to group “0”, <em>whether</em> <em>or</em>
+<em>not</em> <em>this</em> <em>taxon</em> <em>is</em> <em>actually</em> <em>a</em> <em>descendent</em> <em>or</em> <em>a</em> <em>member</em> <em>of</em>
+<em>the</em> <em>leafset</em> <em>of</em> <em>the</em> <em>edge</em>. [We also collapse the basal bifurcation of
+unrooted trees to avoid redundant representation of artifactual bipartitions.]</p>
+<p>As the first taxon corresponds to the least-significant bit in the DendroPy
+scheme, this normalization is known as the least-significant bit 0 or “LSB-0”
+normalization scheme. The choice of 0 as opposed to 1 is arbitrary, but the
+reason is so ensure that we can have consistent comparisons of groups across
+trees of different rotations (and “pseudo-rootings” created by the constraints
+of tree representation in, e.g., the NEWICK format) by enforcing the convention
+that group “0” will always be the group that includes the first taxon (i.e.,
+the taxon with index 1, corresponding to the position of the least-significant
+or right-most bit).</p>
+<p>We refer to this normalized version of the leafset bitmask as a <em>split
+bitmask</em>. For consistency, bipartitions of rooted trees are also assigned split
+bitmasks, but here these are simply the unmodifed leafset bitmasks. For both
+unrooted and rooted trees we maintain the leafset bitmask representation in
+parallel for each bipartition, as this has useful information is lost when
+normalized, e.g., establishing whether or not a particular subtree or taxon can
+be found within bipartition.</p>
+<p>Thus, regardless of whether the tree is rooted or unrooted, each bipartition on
+is modeled by <em>two</em> bitmasks: a split bitmask and leafset bitmask. For rooted
+trees, these are identical in value. For unrooted trees, the split bitmask is
+the leafset bitmask normalized to constrain the least significant bit to be 0.</p>
+<p>A split bitmask is used to establish <em>identity</em> across different trees (for
+this reason it is also sometimes called a split or bipartition hash), while a
+leafset bitmask is used to work with various ancestor-descendent relationships
+within the same tree (it can be used to, for example, quickly assess if a taxon
+descends from a particular node, or if a particular node is a common ancestor
+of two taxa).</p>
+<p>Leafset bitmasks are unstable representations of bipartitions for unrooted
+trees, but remain accurate and convenient representations of the descendent
+leaf-sets of nodes in both unrooted and rooted trees. Split bitmasks, on the
+other hand, <em>are</em> stable representations of bipartitions for both unrooted as
+well as rooted trees, but are not accurate representations of the taxa
+associated with the leaves descended from the bipartition of a particular edge.</p>
+</section>
+</section>
+<section id="using-bipartitions">
+<h2>Using Bipartitions<a class="headerlink" href="#using-bipartitions" title="Link to this heading">¶</a></h2>
+<section id="bipartition-encoding">
+<h3>Bipartition Encoding<a class="headerlink" href="#bipartition-encoding" title="Link to this heading">¶</a></h3>
+<p>The bipartition encoding of a tree is a specification of the structure of tree
+in terms of the complete set of bipartitions that can be found on it. Given a
+bipartition encoding of a tree, the entire topology can be reconstructed
+completely and accurately. In addition, the bipartition encoding of trees can
+be used to quickly and accurately compare, relate, and calculate various
+statistics between different trees and within the same tree.</p>
+<p>In DendroPy, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> method calculates the
+bipartitions of a tree. The <code class="xref py py-attr docutils literal notranslate"><span class="pre">Edge.bipartition</span></code> attribute of each edge
+will be populated by a <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> instance, each of which has the
+bipartition’s split bitmask stored in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Bipartition.split_bitmask</span></code>
+attribute and the leafset bitmask stored in the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Bipartition.leaf_bitmask</span></code> attribute. In addition, each
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> also stores a reference to the edge to which it
+corresponds in its <code class="xref py py-attr docutils literal notranslate"><span class="pre">Bipartition.edge</span></code> attribute. For convenience, the
+split bitmask and the leafset bitmask associated with each bipartition of an
+edge can be also be accesed through the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Edge.split_bitmask</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Ede.leafset_bitmask</span></code> properties, respectively.</p>
+<p>You can access these <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> objects by iterating over the edges
+of the tree, but it might be more convenient to access them through the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Tree.bipartition_encoding</span></code> attribute of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code>. You can also
+access a dictionary mapping <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> instances to their
+corresponding edges through the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Tree.bipartition_edge_map</span></code> attribute, or
+a dictionary mapping split bitmasks to their corresponding edges through the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Tree.split_bitmask_edge_map</span></code> attribute.</p>
+<p>By default, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> instances created are immutable. This is
+to allow them to be used in sets or dictionary keys, and thus exploit O(1)
+look-up/access performance. The hash value of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> object is
+its <code class="xref py py-attr docutils literal notranslate"><span class="pre">Bipartition.split_bitmask</span></code> attribute; two distinct
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> objects are considered equivalent even if they refer to
+different <code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code> objects on different <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code> objects if their
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Bipartition.split_bitmask</span></code> values are the same. If you need to modify
+the values of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code>, you need to set the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Bipartition.is_mutable</span></code> attribute to <code class="docutils literal notranslate"><span class="pre">True</span></code>. Note that changing any
+values that modify the hash of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> instance that is already
+in a hash container such as a set or dictionary will make that instance or
+possibly other members of the container inaccessible: never change the value of
+a <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> instance if it is in a set or dictionary.</p>
+</section>
+<section id="calculating-bipartitions-on-trees">
+<h3>Calculating Bipartitions on Trees<a class="headerlink" href="#calculating-bipartitions-on-trees" title="Link to this heading">¶</a></h3>
+<p>A large number of DendroPy functions calculate the split and leafset bitmasks
+in the background: from tree comparison approaches (e.g., calculating the
+Robinson-Foulds distance), to working with within-tree operations (e.g.,
+finding the most-recent common ancestor between two nodes or patrisitic
+distances between taxa), to tree-set operations (e.g., building consensus trees
+or scoring tree leafset credibilities and finding the maximum leafset
+credibility tree).</p>
+<p>When passing trees to these methods and functions, these functions will call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> automatically for you unless you explicitly
+specify that this should not be done by passing in
+‘<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>’.</p>
+<p>The typical usage idiom in this context would be to:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Establish a common taxon namespace [i.e., creating a global
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code> object and pass it in to all
+reading/parsing/input operations]</p></li>
+<li><p>Read/load the trees, calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> on each one.</p></li>
+<li><p>Perform the calculations, making sure to specify <code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p></li>
+</ol>
+</div></blockquote>
+<p>For, example, the following snippet shows how you might count the number of trees in a bootstrap file that have the same topology as a tree of interest:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">target_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+    <span class="s2">&quot;mle.tre&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">sup_tree</span> <span class="ow">in</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">yield_from_files</span><span class="p">(</span>
+    <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;boots1.tre&quot;</span><span class="p">,</span> <span class="s2">&quot;boots2.tre&quot;</span><span class="p">,</span> <span class="s2">&quot;boostraps3.tre&quot;</span><span class="p">],</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">treecompare</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="n">target_tree</span><span class="p">,</span> <span class="n">sup_tree</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For this application, it is simpler just to let the calculations take place in the background. But, for example, if for some reason you wanted to do something more complicated, as it calculating the counts with respect to multiple trees of interest, you should try and avoid the redundant recalculation of the bitmasks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">tree1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+    <span class="s2">&quot;mle1.tre&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">tree1</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+<span class="n">tree2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+    <span class="s2">&quot;mle2.tre&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">tree2</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+<span class="n">counts1</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">counts2</span>
+<span class="k">for</span> <span class="n">sup_tree</span> <span class="ow">in</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">yield_from_files</span><span class="p">(</span>
+    <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;boots1.tre&quot;</span><span class="p">,</span> <span class="s2">&quot;boots2.tre&quot;</span><span class="p">,</span> <span class="s2">&quot;boostraps3.tre&quot;</span><span class="p">],</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+    <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">):</span>
+    <span class="n">sup_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">treecompare</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span>
+            <span class="n">tree1</span><span class="p">,</span> <span class="n">sup_tree</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">count1</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">treecompare</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span>
+            <span class="n">tree2</span><span class="p">,</span> <span class="n">sup_tree</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">count2</span> <span class="o">+=</span> <span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">count1</span><span class="p">,</span> <span class="n">count2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that in all cases, for bipartitions to be meaningfully compared two conditions must hold:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>The trees must reference the <em>same</em> operational taxonomic unit namespace
+object, <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code>.</p></li>
+<li><p>The trees must have the same rooting state (i.e., all rooted or all
+unrooted).</p></li>
+</ol>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Bipartitions</a><ul>
+<li><a class="reference internal" href="#modeling-bipartitions">Modeling Bipartitions</a><ul>
+<li><a class="reference internal" href="#a-bipartition-is-a-partitioning-of-taxa-corresponding-to-an-edge-of-a-tree">A Bipartition is a Partitioning of Taxa Corresponding to an Edge of a Tree</a></li>
+<li><a class="reference internal" href="#a-bipartition-can-be-described-by-a-bitmask">A Bipartition Can Be Described by a <em>Bitmask</em></a></li>
+<li><a class="reference internal" href="#modeling-bipartitions-using-leafset-bitmasks-and-split-bitmasks">Modeling Bipartitions Using Leafset Bitmasks and Split Bitmasks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-bipartitions">Using Bipartitions</a><ul>
+<li><a class="reference internal" href="#bipartition-encoding">Bipartition Encoding</a></li>
+<li><a class="reference internal" href="#calculating-bipartitions-on-trees">Calculating Bipartitions on Trees</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="treemanips.html"
+                          title="previous chapter">Tree Manipulation and Restructuring</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="treesims.html"
+                          title="next chapter">Tree Simulation and Generation</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treesims.html" title="Tree Simulation and Generation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="treemanips.html" title="Tree Manipulation and Restructuring"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Bipartitions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

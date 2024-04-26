@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Phylogenetic Distance-Based Operations &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Sets" href="datasets.html" />
+    <link rel="prev" title="Population Genetic Summary Statistics" href="popgenstats.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="datasets.html" title="Data Sets"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="popgenstats.html" title="Population Genetic Summary Statistics"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Phylogenetic Distance-Based Operations</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="phylogenetic-distance-based-operations">
+<h1>Phylogenetic Distance-Based Operations<a class="headerlink" href="#phylogenetic-distance-based-operations" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a> class is a comprehensive class for tracking taxon-to-taxon distances and operations associated with these values.</p>
+<section id="creating-a-phylogeneticdistancematrix-object">
+<h2>Creating a <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a> Object<a class="headerlink" href="#creating-a-phylogeneticdistancematrix-object" title="Link to this heading">¶</a></h2>
+<p>There are basically two ways to create a <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a>
+instance:</p>
+<ol class="arabic simple">
+<li><p>Create it from an existing tree based on the patristic distances on the tree</p></li>
+<li><p>Create it from an external data source specifying the distances between taxa.</p></li>
+</ol>
+<section id="creating-a-phylogeneticdistancematrix-object-from-a-tree">
+<h3>Creating a <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a> Object From a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a><a class="headerlink" href="#creating-a-phylogeneticdistancematrix-object-from-a-tree" title="Link to this heading">¶</a></h3>
+<p>If you have an existing <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> instance, e.g. <code class="docutils literal notranslate"><span class="pre">tree</span></code>, the <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree.phylogenetic_distance_matrix" title="dendropy.datamodel.treemodel.Tree.phylogenetic_distance_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">phylogenetic_distance_matrix</span></code></a> method returns a “snapshot” of the tip taxon-to-taxon distances given on the tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.mle.nex&quot;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">pdc</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">phylogenetic_distance_matrix</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distance between &#39;</span><span class="si">%s</span><span class="s2">&#39; and &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">t2</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">pdc</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>The new <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a> object will reference the same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> and member <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects as the tree, <code class="docutils literal notranslate"><span class="pre">tree</span></code>.</p>
+</section>
+<section id="creating-a-phylogeneticdistancematrix-object-from-an-external-data-source">
+<h3>Creating a <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a> Object From an External Data Source<a class="headerlink" href="#creating-a-phylogeneticdistancematrix-object-from-an-external-data-source" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.from_csv" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.from_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_csv</span></code></a> method reads a token-delimited external data source specifying taxon-to-taxon distances and creates and returns a corresponding <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a>.
+This data source is expected to provide a table where each row is a separate line and each column is separated from the preceding by a token (typically a comma or a tab character).
+The cells of the table are numeric (typically real) values that indicate the
+distance between the taxa of the current row and column. Note that <em>only</em> the
+upper right section of the table is considered. The diagonals values are
+typically zeroes and, in either case, ignored along with the lower diagonal.
+Despite being ignored by the PhylogeneticDistanceMatrix object, the values are
+parsed by the underlying reader and thus have to be valid numerical values.</p>
+<p>For example,  the data from Table 1 of Saitou and Nei (1987) can be represented by the following comma-separated value (CSV) file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">h</span>
+<span class="n">a</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">17</span>
+<span class="n">b</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">14</span>
+<span class="n">c</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span>
+<span class="n">d</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span>
+<span class="n">e</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span>
+<span class="n">f</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">13</span>
+<span class="n">g</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span>
+<span class="n">h</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>(Note the empty cell of the first column of the first row).</p>
+<p>This file can be instantiated into a <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a> by the following, which specifies the keyword argument <code class="docutils literal notranslate"><span class="pre">delimiter=&quot;,&quot;</span></code> for correct parsing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">pdm1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">),</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If tabs were used as a delimiter instead, then <code class="docutils literal notranslate"><span class="pre">delimiter=&quot;\t&quot;</span></code> would be specified:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="n">pdm1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;data.tsv&quot;</span><span class="p">),</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above examples, the taxon namespace into which the data was read was a new one, created by default.
+In many cases, e.g. if you want to compare the data to data from other sources, you will want to ensure that the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> is shared. You do this by passing in a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> instance using the <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">tns</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">mle_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.mle.nex&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">tns</span><span class="p">)</span>
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.mle.weighted.pdm.csv&quot;</span><span class="p">),</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">tns</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that if you do pass in a non-empty <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> value using the <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> argument, by default the reading process protects any new <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects from being created in this taxon namespace. This is to protect the integrity of the taxon namespace from errors due to inadverent label mismatches (see note below).
+You can specify <code class="docutils literal notranslate"><span class="pre">is_allow_new_taxa=True</span></code> to relax this restriction.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is important that the taxon labels specified in the data source match the taxon labels of the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with which you want to associate the data <em>exactly</em>. This includes taking into account format-based transformations. For example, by default, unless <code class="docutils literal notranslate"><span class="pre">preserve_underscores=True</span></code> is specified, when reading Newick and NEXUS format data underscores not protected by quotes will be translated into spaces. If the taxon labels in the distance file have underscores in them, however, by default these will <em>not</em> be translated into spaces. Thus the taxon “Python_regius” in a Newick/NEXUS tree file or a NEXUS character data file will be represented by “Python regius” internally, and this will not match the taxon label “Python_regius” given in the distance table. The solution is to ensure that the distance table file has spaces in place of underscores or use <code class="docutils literal notranslate"><span class="pre">preserve_underscores=True</span></code> when reading Newick/NEXUS data. For the former, in many cases you might be able to  pass in a function to transform or translate the distance data table labels using the <code class="docutils literal notranslate"><span class="pre">label_transform_fn</span></code> argument of the <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.from_csv" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.from_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_csv</span></code></a> method. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">label_transform_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.mle.weighted.pdm.csv&quot;</span><span class="p">),</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
+        <span class="n">label_transform_fn</span><span class="o">=</span><span class="n">label_transform_fn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="calculating-patristic-distances-and-most-recent-common-ancestors-mrca">
+<h2>Calculating Patristic Distances and Most-Recent Common Ancestors (MRCA)<a class="headerlink" href="#calculating-patristic-distances-and-most-recent-common-ancestors-mrca" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.mle.nex&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">phylogenetic_distance_matrix</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">idx1</span><span class="p">,</span> <span class="n">taxon1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">taxon2</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+        <span class="n">mrca</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">mrca</span><span class="p">(</span><span class="n">taxon1</span><span class="p">,</span> <span class="n">taxon2</span><span class="p">)</span>
+        <span class="n">weighted_patristic_distance</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">patristic_distance</span><span class="p">(</span><span class="n">taxon1</span><span class="p">,</span> <span class="n">taxon2</span><span class="p">)</span>
+        <span class="n">unweighted_patristic_distance</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">path_edge_count</span><span class="p">(</span><span class="n">taxon1</span><span class="p">,</span> <span class="n">taxon2</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; vs &#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2"> (distance (weighted-edges, unweighted-edges) = </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">taxon1</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">taxon2</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">mrca</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">split_as_bitstring</span><span class="p">(),</span>
+            <span class="n">weighted_patristic_distance</span><span class="p">,</span>
+            <span class="n">unweighted_patristic_distance</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>“Weighted” distances (or “weighted edge” distances) refers to distances taking the edge weights or branch lengths into account. “Unweighted” distances (or “unweighted edge”) distances refers to distances considering only the total <em>number</em> of edges connecting two taxa, rather than the total branch length.</p>
+</div>
+</section>
+<section id="generating-distance-trees-from-a-phylogeneticdistancematrix-object">
+<h2>Generating Distance Trees from a <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code></a> Object<a class="headerlink" href="#generating-distance-trees-from-a-phylogeneticdistancematrix-object" title="Link to this heading">¶</a></h2>
+<section id="neighbor-joining-trees">
+<h3>Neighbor-Joining Trees<a class="headerlink" href="#neighbor-joining-trees" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.nj_tree" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.nj_tree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nj_tree</span></code></a> method returns a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> representing the neighbor-joining tree calculated on the distances in the matrix:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.mle.weighted.pdm.csv&quot;</span><span class="p">),</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+<span class="n">nj_tree</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">nj_tree</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nj_tree</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;newick&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="upgma-trees">
+<h3>UPGMA Trees<a class="headerlink" href="#upgma-trees" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.upgma_tree" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.upgma_tree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upgma_tree</span></code></a> method returns a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> representing the UPGMA tree calculated on the distances in the matrix:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.mle.weighted.pdm.csv&quot;</span><span class="p">),</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+<span class="n">upgma_tree</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">upgma_tree</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">upgma_tree</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;newick&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="phylogenetic-community-statistics">
+<h2>Phylogenetic Community Statistics<a class="headerlink" href="#phylogenetic-community-statistics" title="Link to this heading">¶</a></h2>
+<section id="basic-phylogenetic-community-statistics">
+<h3>Basic Phylogenetic Community Statistics<a class="headerlink" href="#basic-phylogenetic-community-statistics" title="Link to this heading">¶</a></h3>
+<p>Various phylogenetic community statistics can be calculated for one or more definitions of “community”.</p>
+<blockquote>
+<div><ul>
+<li><p>The Mean Pairwise Distance (MPD) is returned by the <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.mean_pairwise_distance" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.mean_pairwise_distance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mean_pairwise_distance</span></code></a> method, which calculates:</p>
+<div class="math notranslate nohighlight">
+\[mpd = \frac{ \sum_{i}^{n} \sum_{j}^{n} \delta_{i,j} }{n \choose 2},\]</div>
+<p>where <span class="math notranslate nohighlight">\(i \neq j\)</span>, <span class="math notranslate nohighlight">\(\delta_{i,j}\)</span> is the phylogenetic
+distance between species <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>, and <span class="math notranslate nohighlight">\(n\)</span> is the number
+of species in the sample.</p>
+</li>
+<li><p>The Mean Nearest Taxon Distance (MNTD) is returned by the <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.mean_nearest_taxon_distance" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.mean_nearest_taxon_distance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mean_nearest_taxon_distance</span></code></a> method, which calculates:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[mntd = \frac{ \sum_{i}^{n} min(\delta_{i,j}) }{n},\]</div>
+</div></blockquote>
+<p>where <span class="math notranslate nohighlight">\(i \neq j\)</span>, <span class="math notranslate nohighlight">\(\delta_{i,j}\)</span> is the phylogenetic
+distance between species <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>, and <span class="math notranslate nohighlight">\(n\)</span> is the number
+of species in the sample.</p>
+</li>
+</ul>
+</div></blockquote>
+<p>Each of these methods takes a function object as a <code class="docutils literal notranslate"><span class="pre">filter_fn</span></code> argument.
+This function object serves to filter the taxa of the tree, reducing it to so that the tips are restricted to the community or assemblage of interest.
+If not specified, then all leaves are considered in the calculation.
+If specified, the function object should take a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object as its only argument and return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> is considered part of the assembalge or community or <code class="docutils literal notranslate"><span class="pre">False</span></code> if not.
+For example, to calculate the MPD of the entire tree and then of some (highly artificial) communities:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.mle.nex&quot;</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">phylogenetic_distance_matrix</span><span class="p">()</span>
+
+<span class="c1"># MPD of entire tree</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pdm</span><span class="o">.</span><span class="n">mean_pairwise_distance</span><span class="p">())</span>
+
+<span class="c1"># MNTD of entire tree</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pdm</span><span class="o">.</span><span class="n">mean_nearest_taxon_distance</span><span class="p">())</span>
+
+<span class="c1"># Statistics of a &quot;community&quot; consisting of first</span>
+<span class="c1"># 8 taxa</span>
+<span class="n">community_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">[:</span><span class="mi">8</span><span class="p">])</span>
+<span class="n">filter_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">taxon</span> <span class="p">:</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">community_taxa</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pdm</span><span class="o">.</span><span class="n">mean_pairwise_distance</span><span class="p">(</span><span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pdm</span><span class="o">.</span><span class="n">mean_nearest_taxon_distance</span><span class="p">(</span><span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">))</span>
+
+<span class="c1"># Statistics of a &quot;community&quot; consisting of</span>
+<span class="c1"># species not in the Python genus</span>
+<span class="n">filter_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">taxon</span> <span class="p">:</span> <span class="ow">not</span> <span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Python&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pdm</span><span class="o">.</span><span class="n">mean_pairwise_distance</span><span class="p">(</span><span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pdm</span><span class="o">.</span><span class="n">mean_nearest_taxon_distance</span><span class="p">(</span><span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>A more realistic example is where a tree is sampled across multiple communities, with the data read from a tab-delimited source:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">container</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+
+<span class="n">phylogeny_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">[&amp;R]((((spA:0.10,spB:0.10):0.67,(((spC:0.08,spD:0.08):0.24,(spE:0.13,spF:0.13):0.19):0.40,(spG:0.12,((spH:0.04,spI:0.04):0.07,spJ:0.12):0.00):0.60):0.05):0.78,((spK:0.05,(spL:0.04,spM:0.04):0.01):0.31,spN:0.37):1.19):1.22,spO:2.79);</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">assemblage_data_table_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">.,spA,spB,spC,spD,spE,spF,spG,spH,spI,spJ,spK,spL,spM,spN,spO</span>
+<span class="s2">C1,15,0,10,0,12,0,7,0,0,0,0,0,2,2,1</span>
+<span class="s2">C2,0,25,0,6,4,0,2,0,0,3,23,0,0,0,0</span>
+<span class="s2">C3,30,0,10,0,0,10,9,4,0,0,0,0,0,10,0</span>
+<span class="s2">C4,0,0,0,0,0,0,0,10,20,1,2,25,4,0,0</span>
+<span class="s2">C5,0,0,0,0,0,0,0,35,14,10,0,0,0,0,0</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># read the tree</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">phylogeny_str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="c1"># obtain the PhylogeneticDistanceMatrix corresponding to the taxon-to-taxon</span>
+<span class="c1"># distances of the above tree</span>
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">phylogenetic_distance_matrix</span><span class="p">()</span>
+
+
+<span class="c1"># read the assemblage data into a table,</span>
+<span class="c1"># being sure to specify an appropriate data type!</span>
+<span class="n">assemblage_data</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">DataTable</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">StringIO</span><span class="p">(</span><span class="n">assemblage_data_table_str</span><span class="p">),</span>
+        <span class="n">default_data_type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c1"># print the communities</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Assemblage Memberships:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row_name</span> <span class="ow">in</span> <span class="n">assemblage_data</span><span class="o">.</span><span class="n">row_name_iter</span><span class="p">():</span>
+    <span class="n">members</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_name</span> <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">assemblage_data</span><span class="o">.</span><span class="n">column_name_iter</span><span class="p">()</span> <span class="k">if</span> <span class="n">assemblage_data</span><span class="p">[</span><span class="n">row_name</span><span class="p">,</span> <span class="n">col_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row_name</span><span class="p">,</span> <span class="n">members</span><span class="p">))</span>
+
+<span class="c1"># calculate the statistics for each community:</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phylogenetic Community Statistics:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row_name</span> <span class="ow">in</span> <span class="n">assemblage_data</span><span class="o">.</span><span class="n">row_name_iter</span><span class="p">():</span>
+    <span class="n">members</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_name</span> <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">assemblage_data</span><span class="o">.</span><span class="n">column_name_iter</span><span class="p">()</span> <span class="k">if</span> <span class="n">assemblage_data</span><span class="p">[</span><span class="n">row_name</span><span class="p">,</span> <span class="n">col_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">filter_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">taxon</span><span class="p">:</span> <span class="n">taxon</span><span class="o">.</span><span class="n">label</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">members</span><span class="p">)</span>
+    <span class="n">mpd</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">mean_pairwise_distance</span><span class="p">(</span><span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">)</span>
+    <span class="n">mntd</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">mean_nearest_taxon_distance</span><span class="p">(</span><span class="n">filter_fn</span><span class="o">=</span><span class="n">filter_fn</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: MPD=</span><span class="si">{}</span><span class="s2">, MNTD=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row_name</span><span class="p">,</span> <span class="n">mpd</span><span class="p">,</span> <span class="n">mntd</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>which results in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Assemblage</span> <span class="n">Memberships</span><span class="p">:</span>
+<span class="n">C1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;spA&#39;</span><span class="p">,</span> <span class="s1">&#39;spC&#39;</span><span class="p">,</span> <span class="s1">&#39;spE&#39;</span><span class="p">,</span> <span class="s1">&#39;spG&#39;</span><span class="p">,</span> <span class="s1">&#39;spM&#39;</span><span class="p">,</span> <span class="s1">&#39;spN&#39;</span><span class="p">,</span> <span class="s1">&#39;spO&#39;</span><span class="p">]</span>
+<span class="n">C2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;spB&#39;</span><span class="p">,</span> <span class="s1">&#39;spD&#39;</span><span class="p">,</span> <span class="s1">&#39;spE&#39;</span><span class="p">,</span> <span class="s1">&#39;spG&#39;</span><span class="p">,</span> <span class="s1">&#39;spJ&#39;</span><span class="p">,</span> <span class="s1">&#39;spK&#39;</span><span class="p">]</span>
+<span class="n">C3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;spA&#39;</span><span class="p">,</span> <span class="s1">&#39;spC&#39;</span><span class="p">,</span> <span class="s1">&#39;spF&#39;</span><span class="p">,</span> <span class="s1">&#39;spG&#39;</span><span class="p">,</span> <span class="s1">&#39;spH&#39;</span><span class="p">,</span> <span class="s1">&#39;spN&#39;</span><span class="p">]</span>
+<span class="n">C4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;spH&#39;</span><span class="p">,</span> <span class="s1">&#39;spI&#39;</span><span class="p">,</span> <span class="s1">&#39;spJ&#39;</span><span class="p">,</span> <span class="s1">&#39;spK&#39;</span><span class="p">,</span> <span class="s1">&#39;spL&#39;</span><span class="p">,</span> <span class="s1">&#39;spM&#39;</span><span class="p">]</span>
+<span class="n">C5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;spH&#39;</span><span class="p">,</span> <span class="s1">&#39;spI&#39;</span><span class="p">,</span> <span class="s1">&#39;spJ&#39;</span><span class="p">]</span>
+<span class="n">Phylogenetic</span> <span class="n">Community</span> <span class="n">Statistics</span><span class="p">:</span>
+<span class="n">C1</span><span class="p">:</span> <span class="n">MPD</span><span class="o">=</span><span class="mf">3.19428571429</span><span class="p">,</span> <span class="n">MNTD</span><span class="o">=</span><span class="mf">1.61142857143</span>
+<span class="n">C2</span><span class="p">:</span> <span class="n">MPD</span><span class="o">=</span><span class="mf">1.88666666667</span><span class="p">,</span> <span class="n">MNTD</span><span class="o">=</span><span class="mf">1.06666666667</span>
+<span class="n">C3</span><span class="p">:</span> <span class="n">MPD</span><span class="o">=</span><span class="mf">1.88666666667</span><span class="p">,</span> <span class="n">MNTD</span><span class="o">=</span><span class="mf">1.06166666667</span>
+<span class="n">C4</span><span class="p">:</span> <span class="n">MPD</span><span class="o">=</span><span class="mf">1.91066666667</span><span class="p">,</span> <span class="n">MNTD</span><span class="o">=</span><span class="mf">0.108333333333</span>
+<span class="n">C5</span><span class="p">:</span> <span class="n">MPD</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">MNTD</span><span class="o">=</span><span class="mf">0.13</span>
+</pre></div>
+</div>
+</section>
+<section id="standardized-effect-size-statistics">
+<h3>Standardized Effect Size Statistics<a class="headerlink" href="#standardized-effect-size-statistics" title="Link to this heading">¶</a></h3>
+<p>The Standardized Effect Size (S.E.S.) of these statistics are useful to remove any bias associated with the decrease in variance as species richness increases to the point where assemblages are saturated.
+The S.E.S. is calculated under a null model, given here by random shuffling of the tip labels of the tree.
+The statistic is calculated for each randomization of the tip labels, and the mean and standard deviation of the collection of values across multiple randomization replicates is used to calculate the S.E.S
+For a particular statistic, the S.E.S. is obtained by dividing the difference between the value of the statistic as given by the original data and the mean of the statistic across the replicates generated under the null model, divided by the standard deviation of the statistic across the replicates generated under the null model:</p>
+<div class="math notranslate nohighlight">
+\[SES(statistic) = \frac{observed - mean(model_{null})}{sd(model_{null})}\]</div>
+<p>The S.E.S. of the MPD is calculated by the <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.standardized_effect_size_mean_pairwise_distance" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.standardized_effect_size_mean_pairwise_distance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">standardized_effect_size_mean_pairwise_distance</span></code></a> method, while the S.E.S of the MNTD is calculated by the <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.standardized_effect_size_mean_nearest_taxon_distance" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.standardized_effect_size_mean_nearest_taxon_distance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">standardized_effect_size_mean_nearest_taxon_distance</span></code></a> method.</p>
+<p>Instead of a filter function, as with the basic statistics above, these methods take an <code class="docutils literal notranslate"><span class="pre">assemblage_memberships</span></code> argument, the value of which should be an iterable of iterable of <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects. For e.g., a list of sets of <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects, where each set in the list specifies the membership of a single assemblage.
+The return value of these methods is a list of <code class="docutils literal notranslate"><span class="pre">namedtuple</span></code> objects, with each element in the list the result of associated with community/assemblage definition in the corresponding position of the input <code class="docutils literal notranslate"><span class="pre">assemblage_memberships</span></code> list.
+The result <code class="docutils literal notranslate"><span class="pre">namedtuple</span></code> objects have the following fields:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">obs</span></code></dt><dd><p>the observed value of the statistic</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">null_model_mean</span></code></dt><dd><p>the mean value of the statistic under the null model</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">null_model_sd</span></code></dt><dd><p>the standard deviation of the statistic under the null model</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">z</span></code></dt><dd><p>the standardized effect (S.E.S.) value of the statistic</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">p</span></code></dt><dd><p>the p-value of the observed value of the statistic</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>As an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">container</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="n">phylogeny_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">[&amp;R]((((spA:0.10,spB:0.10):0.67,(((spC:0.08,spD:0.08):0.24,(spE:0.13,spF:0.13):0.19):0.40,(spG:0.12,((spH:0.04,spI:0.04):0.07,spJ:0.12):0.00):0.60):0.05):0.78,((spK:0.05,(spL:0.04,spM:0.04):0.01):0.31,spN:0.37):1.19):1.22,spO:2.79);</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">assemblage_data_table_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">.,spA,spB,spC,spD,spE,spF,spG,spH,spI,spJ,spK,spL,spM,spN,spO</span>
+<span class="s2">C1,15,0,10,0,12,0,7,0,0,0,0,0,2,2,1</span>
+<span class="s2">C2,0,25,0,6,4,0,2,0,0,3,23,0,0,0,0</span>
+<span class="s2">C3,30,0,10,0,0,10,9,4,0,0,0,0,0,10,0</span>
+<span class="s2">C4,0,0,0,0,0,0,0,10,20,1,2,25,4,0,0</span>
+<span class="s2">C5,0,0,0,0,0,0,0,35,14,10,0,0,0,0,0</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># read the tree</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">phylogeny_str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="c1"># obtain the PhylogeneticDistanceMatrix corresponding to the taxon-to-taxon</span>
+<span class="c1"># distances of the above tree</span>
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">phylogenetic_distance_matrix</span><span class="p">()</span>
+
+
+<span class="c1"># read the assemblage data into a table,</span>
+<span class="c1"># being sure to specify an appropriate data type!</span>
+<span class="n">assemblage_data</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">DataTable</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">StringIO</span><span class="p">(</span><span class="n">assemblage_data_table_str</span><span class="p">),</span>
+        <span class="n">default_data_type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c1"># generate the assemblage definitions</span>
+<span class="n">assemblage_names</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">assemblage_memberships</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">row_name</span> <span class="ow">in</span> <span class="n">assemblage_data</span><span class="o">.</span><span class="n">row_name_iter</span><span class="p">():</span>
+    <span class="n">assemblage_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row_name</span><span class="p">)</span>
+    <span class="n">member_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">col_name</span> <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">assemblage_data</span><span class="o">.</span><span class="n">column_name_iter</span><span class="p">()</span> <span class="k">if</span> <span class="n">assemblage_data</span><span class="p">[</span><span class="n">row_name</span><span class="p">,</span> <span class="n">col_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">member_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">pdm</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="ow">in</span> <span class="n">member_labels</span><span class="p">])</span>
+    <span class="n">assemblage_memberships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">member_taxa</span><span class="p">)</span>
+
+<span class="c1"># calculate the SES statistics for each assemblage</span>
+<span class="n">results_mpd</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">standardized_effect_size_mean_pairwise_distance</span><span class="p">(</span>
+        <span class="n">assemblage_memberships</span><span class="o">=</span><span class="n">assemblage_memberships</span><span class="p">)</span>
+
+<span class="c1"># inspect the results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phylogenetic Community Standardized Effect Size Statistics:&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results_mpd</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">assemblage_memberships</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results_mpd</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">assemblage_names</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">assemblage_name</span><span class="p">,</span> <span class="n">assemblage_membership</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">assemblage_names</span><span class="p">,</span> <span class="n">assemblage_memberships</span><span class="p">,</span> <span class="n">results_mpd</span><span class="p">,</span> <span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;# Assemblage &#39;</span><span class="si">{}</span><span class="s2">&#39; (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">assemblage_name</span><span class="p">,</span>
+        <span class="nb">sorted</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">assemblage_membership</span><span class="p">])))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   -     MPD: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">obs</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   - SES MPD: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">z</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   - p-value: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>which results in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Phylogenetic</span> <span class="n">Community</span> <span class="n">Standardized</span> <span class="n">Effect</span> <span class="n">Size</span> <span class="n">Statistics</span><span class="p">:</span>
+<span class="c1"># Assemblage &#39;C1&#39; ([&#39;spA&#39;, &#39;spC&#39;, &#39;spE&#39;, &#39;spG&#39;, &#39;spM&#39;, &#39;spN&#39;, &#39;spO&#39;])</span>
+<span class="o">-</span>     <span class="n">MPD</span><span class="p">:</span> <span class="mf">3.19428571429</span>
+<span class="o">-</span> <span class="n">SES</span> <span class="n">MPD</span><span class="p">:</span> <span class="mf">1.42344634503</span>
+<span class="o">-</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.982</span>
+<span class="c1"># Assemblage &#39;C2&#39; ([&#39;spB&#39;, &#39;spD&#39;, &#39;spE&#39;, &#39;spG&#39;, &#39;spJ&#39;, &#39;spK&#39;])</span>
+<span class="o">-</span>     <span class="n">MPD</span><span class="p">:</span> <span class="mf">1.88666666667</span>
+<span class="o">-</span> <span class="n">SES</span> <span class="n">MPD</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.917064662164</span>
+<span class="o">-</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.21</span>
+<span class="c1"># Assemblage &#39;C3&#39; ([&#39;spA&#39;, &#39;spC&#39;, &#39;spF&#39;, &#39;spG&#39;, &#39;spH&#39;, &#39;spN&#39;])</span>
+<span class="o">-</span>     <span class="n">MPD</span><span class="p">:</span> <span class="mf">1.88666666667</span>
+<span class="o">-</span> <span class="n">SES</span> <span class="n">MPD</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.769722690565</span>
+<span class="o">-</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.24</span>
+<span class="c1"># Assemblage &#39;C4&#39; ([&#39;spH&#39;, &#39;spI&#39;, &#39;spJ&#39;, &#39;spK&#39;, &#39;spL&#39;, &#39;spM&#39;])</span>
+<span class="o">-</span>     <span class="n">MPD</span><span class="p">:</span> <span class="mf">1.91066666667</span>
+<span class="o">-</span> <span class="n">SES</span> <span class="n">MPD</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.87070720087</span>
+<span class="o">-</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.229</span>
+<span class="c1"># Assemblage &#39;C5&#39; ([&#39;spH&#39;, &#39;spI&#39;, &#39;spJ&#39;])</span>
+<span class="o">-</span>     <span class="n">MPD</span><span class="p">:</span> <span class="mf">0.18</span>
+<span class="o">-</span> <span class="n">SES</span> <span class="n">MPD</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.99810309955</span>
+<span class="o">-</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.0</span>
+</pre></div>
+</div>
+<p>If you are unhappy with the extra book-keeping involved with co-ordinating all these different lists (<code class="docutils literal notranslate"><span class="pre">assemblage_memberships</span></code>, <code class="docutils literal notranslate"><span class="pre">assemblage_names</span></code>, etc.), you can associate at least some of these lists in an <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code> object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">container</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="n">phylogeny_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">[&amp;R]((((spA:0.10,spB:0.10):0.67,(((spC:0.08,spD:0.08):0.24,(spE:0.13,spF:0.13):0.19):0.40,(spG:0.12,((spH:0.04,spI:0.04):0.07,spJ:0.12):0.00):0.60):0.05):0.78,((spK:0.05,(spL:0.04,spM:0.04):0.01):0.31,spN:0.37):1.19):1.22,spO:2.79);</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">assemblage_data_table_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">.,spA,spB,spC,spD,spE,spF,spG,spH,spI,spJ,spK,spL,spM,spN,spO</span>
+<span class="s2">C1,15,0,10,0,12,0,7,0,0,0,0,0,2,2,1</span>
+<span class="s2">C2,0,25,0,6,4,0,2,0,0,3,23,0,0,0,0</span>
+<span class="s2">C3,30,0,10,0,0,10,9,4,0,0,0,0,0,10,0</span>
+<span class="s2">C4,0,0,0,0,0,0,0,10,20,1,2,25,4,0,0</span>
+<span class="s2">C5,0,0,0,0,0,0,0,35,14,10,0,0,0,0,0</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># read the tree</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">phylogeny_str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="c1"># obtain the PhylogeneticDistanceMatrix corresponding to the taxon-to-taxon</span>
+<span class="c1"># distances of the above tree</span>
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">phylogenetic_distance_matrix</span><span class="p">()</span>
+
+
+<span class="c1"># read the assemblage data into a table,</span>
+<span class="c1"># being sure to specify an appropriate data type!</span>
+<span class="n">assemblage_data</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">DataTable</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">StringIO</span><span class="p">(</span><span class="n">assemblage_data_table_str</span><span class="p">),</span>
+        <span class="n">default_data_type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c1"># generate the assemblage definitions</span>
+<span class="n">assemblage_membership_definitions</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">row_name</span> <span class="ow">in</span> <span class="n">assemblage_data</span><span class="o">.</span><span class="n">row_name_iter</span><span class="p">():</span>
+    <span class="n">member_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">col_name</span> <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">assemblage_data</span><span class="o">.</span><span class="n">column_name_iter</span><span class="p">()</span> <span class="k">if</span> <span class="n">assemblage_data</span><span class="p">[</span><span class="n">row_name</span><span class="p">,</span> <span class="n">col_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">member_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">pdm</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="ow">in</span> <span class="n">member_labels</span><span class="p">])</span>
+    <span class="n">assemblage_membership_definitions</span><span class="p">[</span><span class="n">row_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">member_taxa</span>
+
+<span class="c1"># calculate the SES statistics for each assemblage</span>
+<span class="n">results_mpd</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">standardized_effect_size_mean_pairwise_distance</span><span class="p">(</span>
+        <span class="n">assemblage_memberships</span><span class="o">=</span><span class="n">assemblage_membership_definitions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+<span class="c1"># inspect the results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phylogenetic Community Standardized Effect Size Statistics:&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results_mpd</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">assemblage_membership_definitions</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">assemblage_name</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">assemblage_membership_definitions</span><span class="p">,</span> <span class="n">results_mpd</span><span class="p">,</span> <span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;# Assemblage &#39;</span><span class="si">{}</span><span class="s2">&#39; (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">assemblage_name</span><span class="p">,</span>
+        <span class="nb">sorted</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">assemblage_membership_definitions</span><span class="p">[</span><span class="n">assemblage_name</span><span class="p">]])))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   -     MPD: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">obs</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   - SES MPD: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">z</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   - p-value: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>A convenience method is available to read community data from a delimited source, <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.assemblage_membership_definitions_from_csv" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.assemblage_membership_definitions_from_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">assemblage_membership_definitions_from_csv</span></code></a>, which makes the process somewhat easier:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># /usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="n">phylogeny_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">[&amp;R]((((spA:0.10,spB:0.10):0.67,(((spC:0.08,spD:0.08):0.24,(spE:0.13,spF:0.13):0.19):0.40,(spG:0.12,((spH:0.04,spI:0.04):0.07,spJ:0.12):0.00):0.60):0.05):0.78,((spK:0.05,(spL:0.04,spM:0.04):0.01):0.31,spN:0.37):1.19):1.22,spO:2.79);</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">assemblage_data_table_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">.,spA,spB,spC,spD,spE,spF,spG,spH,spI,spJ,spK,spL,spM,spN,spO</span>
+<span class="s2">C1,15,0,10,0,12,0,7,0,0,0,0,0,2,2,1</span>
+<span class="s2">C2,0,25,0,6,4,0,2,0,0,3,23,0,0,0,0</span>
+<span class="s2">C3,30,0,10,0,0,10,9,4,0,0,0,0,0,10,0</span>
+<span class="s2">C4,0,0,0,0,0,0,0,10,20,1,2,25,4,0,0</span>
+<span class="s2">C5,0,0,0,0,0,0,0,35,14,10,0,0,0,0,0</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># read the tree</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">phylogeny_str</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<span class="c1"># obtain the PhylogeneticDistanceMatrix corresponding to the taxon-to-taxon</span>
+<span class="c1"># distances of the above tree</span>
+<span class="n">pdm</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">phylogenetic_distance_matrix</span><span class="p">()</span>
+
+<span class="c1">## read the assemblage memberships</span>
+<span class="n">assemblage_membership_definitions</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">assemblage_membership_definitions_from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">StringIO</span><span class="p">(</span><span class="n">assemblage_data_table_str</span><span class="p">),</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+<span class="c1">## calculate the results</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">pdm</span><span class="o">.</span><span class="n">standardized_effect_size_mean_pairwise_distance</span><span class="p">(</span><span class="n">assemblage_memberships</span><span class="o">=</span><span class="n">assemblage_membership_definitions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">assemblage_membership_definitions</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">assemblage_name</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">assemblage_membership_definitions</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;# Assemblage &#39;</span><span class="si">{}</span><span class="s2">&#39; (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">assemblage_name</span><span class="p">,</span>
+        <span class="nb">sorted</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">assemblage_membership_definitions</span><span class="p">[</span><span class="n">assemblage_name</span><span class="p">]])))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   -     MPD: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">obs</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   - SES MPD: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">z</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   - p-value: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Phylogenetic Distance-Based Operations</a><ul>
+<li><a class="reference internal" href="#creating-a-phylogeneticdistancematrix-object">Creating a <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code> Object</a><ul>
+<li><a class="reference internal" href="#creating-a-phylogeneticdistancematrix-object-from-a-tree">Creating a <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code> Object From a <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a></li>
+<li><a class="reference internal" href="#creating-a-phylogeneticdistancematrix-object-from-an-external-data-source">Creating a <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code> Object From an External Data Source</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#calculating-patristic-distances-and-most-recent-common-ancestors-mrca">Calculating Patristic Distances and Most-Recent Common Ancestors (MRCA)</a></li>
+<li><a class="reference internal" href="#generating-distance-trees-from-a-phylogeneticdistancematrix-object">Generating Distance Trees from a <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code> Object</a><ul>
+<li><a class="reference internal" href="#neighbor-joining-trees">Neighbor-Joining Trees</a></li>
+<li><a class="reference internal" href="#upgma-trees">UPGMA Trees</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#phylogenetic-community-statistics">Phylogenetic Community Statistics</a><ul>
+<li><a class="reference internal" href="#basic-phylogenetic-community-statistics">Basic Phylogenetic Community Statistics</a></li>
+<li><a class="reference internal" href="#standardized-effect-size-statistics">Standardized Effect Size Statistics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="popgenstats.html"
+                          title="previous chapter">Population Genetic Summary Statistics</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="datasets.html"
+                          title="next chapter">Data Sets</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="datasets.html" title="Data Sets"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="popgenstats.html" title="Population Genetic Summary Statistics"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Phylogenetic Distance-Based Operations</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.datamodel.treemodel._edge &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.treemodel._edge</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.datamodel.treemodel._edge</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">dendropy.datamodel</span> <span class="kn">import</span> <span class="n">basemodel</span>
+<span class="kn">from</span> <span class="nn">dendropy.datamodel.treemodel</span> <span class="kn">import</span> <span class="n">_bipartition</span>
+
+<div class="viewcode-block" id="Edge">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Edge">[docs]</a>
+<span class="k">class</span> <span class="nc">Edge</span><span class="p">(</span><span class="n">basemodel</span><span class="o">.</span><span class="n">DataObject</span><span class="p">,</span> <span class="n">basemodel</span><span class="o">.</span><span class="n">Annotable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An :term:``edge`` on a :term:``tree``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        head_node : |Node|, optional</span>
+<span class="sd">            Node from to which this edge links, i.e., the child node of this</span>
+<span class="sd">            node ``tail_node``.</span>
+<span class="sd">        length : numerical, optional</span>
+<span class="sd">            A value representing the weight of the edge.</span>
+<span class="sd">        rootedge : boolean, optional</span>
+<span class="sd">            Is the child node of this edge the root or seed node of the tree?</span>
+<span class="sd">        label : string, optional</span>
+<span class="sd">            Label for this edge.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">basemodel</span><span class="o">.</span><span class="n">DataObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_head_node</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;head_node&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;tail_node&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Setting the tail node directly is no longer supported: instead, set&quot;</span>
+                <span class="s2">&quot; the parent node of the head node&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rootedge</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;rootedge&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;length&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unsupported keyword arguments: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bipartition</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot directly copy Edge&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Edge.taxon_namespace_scoped_copy">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Edge.taxon_namespace_scoped_copy">[docs]</a>
+    <span class="k">def</span> <span class="nf">taxon_namespace_scoped_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot directly copy Edge&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># call Annotable.__deepcopy__()</span>
+        <span class="k">return</span> <span class="n">basemodel</span><span class="o">.</span><span class="n">Annotable</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="o">=</span><span class="n">memo</span><span class="p">)</span>
+        <span class="c1"># return super(Edge, self).__deepcopy__(memo=memo)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">id</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_tail_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head_node</span><span class="o">.</span><span class="n">_parent_node</span>
+
+    <span class="k">def</span> <span class="nf">_set_tail_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;_head_node&#39; is &#39;None&#39;: cannot assign &#39;tail_node&#39;&quot;</span><span class="p">)</span>
+        <span class="c1"># Go through managed property instead of</span>
+        <span class="c1"># setting attribute to ensure book-keeping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_head_node</span><span class="o">.</span><span class="n">parent_node</span> <span class="o">=</span> <span class="n">node</span>
+    <span class="n">tail_node</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_tail_node</span><span class="p">,</span> <span class="n">_set_tail_node</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_head_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head_node</span>
+
+    <span class="k">def</span> <span class="nf">_set_head_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="c1"># Go through managed property instead of setting attribute to ensure</span>
+        <span class="c1"># book-keeping; following should also set ``_head_node`` of ``self``</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span>
+    <span class="n">head_node</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_head_node</span><span class="p">,</span> <span class="n">_set_head_node</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Edge.is_leaf">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Edge.is_leaf">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Returns True if the head node has no children&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">is_terminal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Edge.is_internal">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Edge.is_internal">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_internal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Returns True if the head node has children&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Edge.get_adjacent_edges">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Edge.get_adjacent_edges">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_adjacent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of all edges that &quot;share&quot; a node with ``self``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">he</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">incident_edges</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="n">te</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_node</span><span class="o">.</span><span class="n">incident_edges</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="n">he</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">te</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">he</span></div>
+
+    <span class="n">adjacent_edges</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_adjacent_edges</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Edge.collapse">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Edge.collapse">[docs]</a>
+    <span class="k">def</span> <span class="nf">collapse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adjust_collapsed_head_children_edge_lengths</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inserts all children of the head_node of self as children of the</span>
+<span class="sd">        tail_node of self in the same place in the child_node list that</span>
+<span class="sd">        head_node had occupied. The edge length and head_node will no longer be</span>
+<span class="sd">        part of the tree unless ``adjust_collapsed_head_children_edge_lengths``.</span>
+<span class="sd">        is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_del</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_node</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="n">to_del</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">children</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;collapse_self called with a terminal.&quot;</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">to_del</span><span class="p">)</span>
+        <span class="n">parent</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">to_del</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">insert_child</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+            <span class="n">pos</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">adjust_collapsed_head_children_edge_lengths</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># print id(child), child.edge.length, self.length</span>
+                <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">child</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">child</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span></div>
+
+
+<div class="viewcode-block" id="Edge.invert">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Edge.invert">[docs]</a>
+    <span class="k">def</span> <span class="nf">invert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_bipartitions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes polarity of edge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self.head_node, self.tail_node = self.tail_node, self.head_node</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot invert edge with &#39;None&#39; for head node&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_node</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot invert edge with &#39;None&#39; for tail node&quot;</span><span class="p">)</span>
+
+        <span class="n">old_head_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span>
+        <span class="n">new_tail_node</span> <span class="o">=</span> <span class="n">old_head_node</span>
+        <span class="n">old_tail_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_node</span>
+        <span class="n">new_head_node</span> <span class="o">=</span> <span class="n">old_tail_node</span>
+        <span class="n">grandparent</span> <span class="o">=</span> <span class="n">old_tail_node</span><span class="o">.</span><span class="n">_parent_node</span>
+        <span class="k">if</span> <span class="n">grandparent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grandparent</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">ch</span> <span class="ow">is</span> <span class="n">old_tail_node</span><span class="p">:</span>
+                    <span class="n">grandparent</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_head_node</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># we did not break loop: force insertion of old_head_node if</span>
+                <span class="c1"># not already there</span>
+                <span class="k">if</span> <span class="n">old_head_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grandparent</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">:</span>
+                    <span class="n">grandparent</span><span class="o">.</span><span class="n">_child_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">old_head_node</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">old_head_node</span> <span class="ow">in</span> <span class="n">old_tail_node</span><span class="o">.</span><span class="n">_child_nodes</span>
+        <span class="n">old_tail_node</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">old_head_node</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">old_head_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">old_tail_node</span><span class="o">.</span><span class="n">_child_nodes</span>
+        <span class="n">old_head_node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">old_tail_node</span><span class="p">)</span>
+        <span class="n">old_tail_node</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="n">old_head_node</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">old_head_node</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">,</span>
+            <span class="n">old_tail_node</span><span class="o">.</span><span class="n">edge_length</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_bipartition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bipartition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bipartition</span> <span class="o">=</span> <span class="n">_bipartition</span><span class="o">.</span><span class="n">Bipartition</span><span class="p">(</span>
+                <span class="n">edge</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">is_mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bipartition</span>
+
+    <span class="k">def</span> <span class="nf">_set_bipartition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bipartition</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="n">bipartition</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_bipartition</span><span class="p">,</span> <span class="n">_set_bipartition</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_split_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">_split_bitmask</span>
+
+    <span class="k">def</span> <span class="nf">_set_split_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="o">=</span> <span class="n">h</span>
+    <span class="n">split_bitmask</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_split_bitmask</span><span class="p">,</span> <span class="n">_set_split_bitmask</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">_leafset_bitmask</span>
+
+    <span class="k">def</span> <span class="nf">_set_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">_leafset_bitmask</span> <span class="o">=</span> <span class="n">h</span>
+    <span class="n">leafset_bitmask</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_leafset_bitmask</span><span class="p">,</span> <span class="n">_set_leafset_bitmask</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_tree_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span>
+
+    <span class="k">def</span> <span class="nf">_set_tree_leafset_bitmask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">_tree_leafset_bitmask</span> <span class="o">=</span> <span class="n">h</span>
+    <span class="n">tree_leafset_bitmask</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span>
+        <span class="n">_get_tree_leafset_bitmask</span><span class="p">,</span> <span class="n">_set_tree_leafset_bitmask</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">split_as_bitstring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">split_as_bitstring</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">leafset_as_bitstring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">leafset_as_bitstring</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Edge.description">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Edge.description">[docs]</a>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">itemize</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns description of object, up to level ``depth``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">output_strio</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">, Length=</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">: &#39;</span><span class="si">%s</span><span class="s2">&#39;, Length=</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">))</span>
+        <span class="n">output_strio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">Edge object at </span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">indent</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">itemize</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)),</span> <span class="n">label</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">leader1</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">leader2</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">8</span><span class="p">)</span>
+            <span class="n">output_strio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">[Length]&quot;</span> <span class="o">%</span> <span class="n">leader1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+            <span class="n">output_strio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">leader2</span><span class="p">,</span> <span class="n">length</span><span class="p">))</span>
+            <span class="n">output_strio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">[Tail Node]&quot;</span> <span class="o">%</span> <span class="n">leader1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_node</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tn</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+            <span class="n">output_strio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">leader2</span><span class="p">,</span> <span class="n">tn</span><span class="p">))</span>
+            <span class="n">output_strio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">[Head Node]&quot;</span> <span class="o">%</span> <span class="n">leader1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">hn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_node</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hn</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+            <span class="n">output_strio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">leader2</span><span class="p">,</span> <span class="n">hn</span><span class="p">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">output_strio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_format_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">ef</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;edge_formatter&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ef</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ef</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../../index.html"><img src="../../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.treemodel._edge</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

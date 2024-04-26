@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.model.parsimony: The Parsimony Model &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.model.protractedspeciation: The Protracted Speciation (Birth-Death) Model" href="protractedspeciation.html" />
+    <link rel="prev" title="dendropy.model.discrete: Discrete Character Evolution" href="discrete.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="protractedspeciation.html" title="dendropy.model.protractedspeciation: The Protracted Speciation (Birth-Death) Model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="discrete.html" title="dendropy.model.discrete: Discrete Character Evolution"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.parsimony</span></code>: The Parsimony Model</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.model.parsimony">
+<span id="dendropy-model-parsimony-the-parsimony-model"></span><h1><a class="reference internal" href="#module-dendropy.model.parsimony" title="dendropy.model.parsimony"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.parsimony</span></code></a>: The Parsimony Model<a class="headerlink" href="#module-dendropy.model.parsimony" title="Link to this heading">¶</a></h1>
+<p>Models, modeling and model-fitting of parsimony.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.parsimony.fitch_down_pass">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.parsimony.</span></span><span class="sig-name descname"><span class="pre">fitch_down_pass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">postorder_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_sets_attr_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'state_sets'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_state_sets_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_by_character_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/parsimony.html#fitch_down_pass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.parsimony.fitch_down_pass" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the parsimony score given a list of nodes in postorder and
+associated states, using Fitch’s (1971) unordered parsimony algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>postorder_nodes</strong> (iterable of/over <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects) – An iterable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in in order of post-order
+traversal of the tree.</p></li>
+<li><p><strong>state_sets_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of attribute on <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in which state set lists
+will stored/accessed. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then state sets will not be stored on
+the tree.</p></li>
+<li><p><strong>taxon_state_sets_map</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><em>taxon</em><em>] </em><em>= state sets</em>) – A dictionary that takes a taxon object as a key and returns a state set
+list as a value. This will be used to populate the state set of a node
+that has not yet had its state sets scored and recorded (typically,
+leaves of a tree that has not yet been processed).</p></li>
+<li><p><strong>weights</strong> (<em>iterable</em>) – A list of weights for each pattern.</p></li>
+<li><p><strong>score_by_character_list</strong> (<em>None</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, should be a reference to a list object.
+This list will be populated by the scores on a character-by-character
+basis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>s</strong> (<em>int</em>) – Parismony score of tree.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Currently this requires a bifurcating tree (even at the root).</p>
+<p class="rubric">Examples</p>
+<p>Assume that we have a tree, <code class="docutils literal notranslate"><span class="pre">tree</span></code>, and an associated data set, <code class="docutils literal notranslate"><span class="pre">data</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.model.parsimony</span> <span class="kn">import</span> <span class="n">fitch_down_pass</span>
+
+<span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">StandardCharacterMatrix</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+        <span class="s2">&quot;apternodus.chars.nexus&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+        <span class="s2">&quot;apternodus.tre&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">taxon_state_sets_map</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">taxon_state_sets_map</span><span class="p">(</span><span class="n">gaps_as_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following will return the parsimony score of the <code class="docutils literal notranslate"><span class="pre">tree</span></code> with
+respect to the data in <code class="docutils literal notranslate"><span class="pre">data</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score</span> <span class="o">=</span> <span class="n">fitch_down_pass</span><span class="p">(</span>
+        <span class="n">nodes</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">(),</span>
+        <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="n">taxon_set_map</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above, every <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> object of <code class="docutils literal notranslate"><span class="pre">tree</span></code> will have an attribute
+added, “state_sets”, that stores the list of state sets from the analysis:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">state_sets</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want to store the list of state sets in a different attribute, e.g.,
+“analysis1_states”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score</span> <span class="o">=</span> <span class="n">fitch_down_pass</span><span class="p">(</span>
+        <span class="n">nodes</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">(),</span>
+        <span class="n">state_sets_attr_name</span><span class="o">=</span><span class="s2">&quot;analysis1_states&quot;</span><span class="p">,</span>
+        <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="n">taxon_set_map</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">analysis1_states</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or not to store these at all:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score</span> <span class="o">=</span> <span class="n">fitch_down_pass</span><span class="p">(</span>
+        <span class="n">nodes</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">(),</span>
+        <span class="n">state_sets_attr_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="n">taxon_set_map</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Scoring custom data can be done by something like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">taxon_state_sets_map</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">taxa</span><span class="o">.</span><span class="n">require_taxon</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">taxa</span><span class="o">.</span><span class="n">require_taxon</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">)</span>
+<span class="n">t3</span> <span class="o">=</span> <span class="n">taxa</span><span class="o">.</span><span class="n">require_taxon</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+<span class="n">t4</span> <span class="o">=</span> <span class="n">taxa</span><span class="o">.</span><span class="n">require_taxon</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+<span class="n">t5</span> <span class="o">=</span> <span class="n">taxa</span><span class="o">.</span><span class="n">require_taxon</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">)</span>
+<span class="n">taxon_state_sets_map</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span>  <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span>  <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>     <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span> <span class="p">]</span>
+<span class="n">taxon_state_sets_map</span><span class="p">[</span><span class="n">t2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>    <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>    <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>     <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span> <span class="p">]</span>
+<span class="n">taxon_state_sets_map</span><span class="p">[</span><span class="n">t3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>    <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>    <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>     <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span> <span class="p">]</span>
+<span class="n">taxon_state_sets_map</span><span class="p">[</span><span class="n">t4</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>    <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>    <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span>   <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span>
+<span class="n">taxon_state_sets_map</span><span class="p">[</span><span class="n">t5</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>    <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>    <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>     <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_string</span><span class="p">(</span>
+        <span class="s2">&quot;(A,(B,(C,(D,E))));&quot;</span><span class="p">,</span> <span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">fitch_down_pass</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">(),</span>
+        <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="n">taxon_state_sets_map</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.parsimony.fitch_up_pass">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.parsimony.</span></span><span class="sig-name descname"><span class="pre">fitch_up_pass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preorder_node_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_sets_attr_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'state_sets'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_state_sets_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/parsimony.html#fitch_up_pass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.parsimony.fitch_up_pass" title="Link to this definition">¶</a></dt>
+<dd><p>Finalizes the state set lists associated with each node using the “final
+phase” of Fitch’s (1971) unordered parsimony algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>postorder_nodes</strong> (iterable of/over <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects) – An iterable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in in order of post-order
+traversal of the tree.</p></li>
+<li><p><strong>state_sets_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of attribute on <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in which state set lists
+will stored/accessed. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then state sets will not be stored on
+the tree.</p></li>
+<li><p><strong>taxon_state_sets_map</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><em>taxon</em><em>] </em><em>= state sets</em>) – A dictionary that takes a taxon object as a key and returns a state set
+list as a value. This will be used to populate the state set of a node
+that has not yet had its state sets scored and recorded (typically,
+leaves of a tree that has not yet been processed).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Currently this requires a bifurcating tree (even at the root).</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">taxa</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">StandardCharacterMatrix</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+        <span class="s2">&quot;apternodus.chars.nexus&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_path</span><span class="p">(</span>
+        <span class="s2">&quot;apternodus.tre&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxa</span><span class="p">)</span>
+<span class="n">taxon_state_sets_map</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">taxon_state_sets_map</span><span class="p">(</span><span class="n">gaps_as_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">fitch_down_pass</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">(),</span>
+        <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="n">taxon_state_sets_map</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+<span class="n">fitch_up_pass</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">preorder_node_iter</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">state_sets</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.parsimony.parsimony_score">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.parsimony.</span></span><span class="sig-name descname"><span class="pre">parsimony_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gaps_as_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_by_character_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/parsimony.html#parsimony_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.parsimony.parsimony_score" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the score of a tree, <code class="docutils literal notranslate"><span class="pre">tree</span></code>, given some character data,
+<code class="docutils literal notranslate"><span class="pre">chars</span></code>, under the parsimony model using the Fitch algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tree</strong> (a <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> instance) – A <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> to be scored. Must reference the same <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> as
+<code class="docutils literal notranslate"><span class="pre">chars</span></code>.</p></li>
+<li><p><strong>chars</strong> (a <a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a> instance) – A <a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived object with data to be scored. Must have
+the same <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> as <code class="docutils literal notranslate"><span class="pre">tree</span></code>.</p></li>
+<li><p><strong>gap_as_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> [default], then gaps will be treated as missing data.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then gaps will be treated as a new/additional state.</p></li>
+<li><p><strong>weights</strong> (<em>iterable</em>) – A list of weights for each pattern/column in the matrix.</p></li>
+<li><p><strong>score_by_character_list</strong> (<em>None</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, should be a reference to a list object.
+This list will be populated by the scores on a character-by-character
+basis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>pscore</strong> (<em>int</em>) – The parsimony score of the tree given the data.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treescore</span>
+
+<span class="c1"># establish common taxon namespace</span>
+<span class="n">taxon_namespace</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
+
+<span class="c1"># Read data; if data is, e.g., &quot;standard&quot;, use StandardCharacterMatrix.</span>
+<span class="c1"># If unsure of data type, can do:</span>
+<span class="c1">#       dataset = dendropy.DataSet.get(</span>
+<span class="c1">#               path=&quot;path/to/file.nex&quot;,</span>
+<span class="c1">#               schema=&quot;nexus&quot;,</span>
+<span class="c1">#               taxon_namespace=tns,)</span>
+<span class="c1">#       chars = dataset.char_matrices[0]</span>
+<span class="n">chars</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.chars.nexus&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxon_namespace</span><span class="p">)</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.mle.newick&quot;</span><span class="p">,</span>
+        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">,</span>
+        <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxon_namespace</span><span class="p">)</span>
+
+<span class="c1"># We store the site-specific scores here</span>
+<span class="c1"># This is optional; if we do not want to</span>
+<span class="c1"># use the per-site scores, just pass in |None|</span>
+<span class="c1"># for the ``score_by_character_list`` argument</span>
+<span class="c1"># or do not specify this argument at all.</span>
+<span class="n">score_by_character_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">score</span> <span class="o">=</span> <span class="n">treescore</span><span class="o">.</span><span class="n">parsimony_score</span><span class="p">(</span>
+        <span class="n">tree</span><span class="p">,</span>
+        <span class="n">chars</span><span class="p">,</span>
+        <span class="n">gaps_as_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">score_by_character_list</span><span class="o">=</span><span class="n">score_by_character_list</span><span class="p">)</span>
+
+<span class="c1"># Print the results: the score</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Score: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+
+<span class="c1"># Print the results: the per-site scores</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">score_by_character_list</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>If the same data is going to be used to score multiple trees or multiple times,
+it is probably better to generate the ‘taxon_state_sets_map’ once and call
+“fitch_down_pass” directly yourself, as this function generates a new map
+each time.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.parsimony</span></code>: The Parsimony Model</a><ul>
+<li><a class="reference internal" href="#dendropy.model.parsimony.fitch_down_pass"><code class="docutils literal notranslate"><span class="pre">fitch_down_pass</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.parsimony.fitch_up_pass"><code class="docutils literal notranslate"><span class="pre">fitch_up_pass</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.parsimony.parsimony_score"><code class="docutils literal notranslate"><span class="pre">parsimony_score</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="discrete.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.discrete</span></code>: Discrete Character Evolution</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="protractedspeciation.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.protractedspeciation</span></code>: The Protracted Speciation (Birth-Death) Model</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="protractedspeciation.html" title="dendropy.model.protractedspeciation: The Protracted Speciation (Birth-Death) Model"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="discrete.html" title="dendropy.model.discrete: Discrete Character Evolution"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.parsimony</span></code>: The Parsimony Model</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

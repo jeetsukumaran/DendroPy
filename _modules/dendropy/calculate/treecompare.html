@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.calculate.treecompare &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.calculate.treecompare</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.calculate.treecompare</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Statistics, metrics, measurements, and values calculated *between* *two* trees.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">error</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## Public Functions</span>
+
+<div class="viewcode-block" id="symmetric_difference">
+<a class="viewcode-back" href="../../../library/treecompare.html#dendropy.calculate.treecompare.symmetric_difference">[docs]</a>
+<span class="k">def</span> <span class="nf">symmetric_difference</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns *unweighted* Robinson-Foulds distance between two trees.</span>
+
+<span class="sd">    Trees need to share the same |TaxonNamespace| reference. The</span>
+<span class="sd">    bipartition bitmasks of the trees must be correct for the current tree</span>
+<span class="sd">    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the</span>
+<span class="sd">    ``is_bipartitions_updated`` argument must be |False| to force recalculation</span>
+<span class="sd">    of bipartitions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tree1 : |Tree| object</span>
+<span class="sd">        The first tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree2`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    tree2 : |Tree| object</span>
+<span class="sd">        The second tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree1`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    is_bipartitions_updated : bool</span>
+<span class="sd">        If |False|, then the bipartitions on *both* trees will be updated</span>
+<span class="sd">        before comparison. If |True| then the bipartitions will only be</span>
+<span class="sd">        calculated for a |Tree| object if they have not been calculated</span>
+<span class="sd">        before, either explicitly or implicitly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    d : int</span>
+<span class="sd">        The symmetric difference (a.k.a. the unweighted Robinson-Foulds</span>
+<span class="sd">        distance) between ``tree1`` and ``tree2``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        from dendropy import TaxonNamespace, Tree</span>
+<span class="sd">        from dendropy.calculate import treecompare</span>
+<span class="sd">        tns = TaxonNamespace()</span>
+<span class="sd">        tree1 = Tree.get_from_path(</span>
+<span class="sd">                &quot;t1.nex&quot;,</span>
+<span class="sd">                &quot;nexus&quot;,</span>
+<span class="sd">                taxon_namespace=tns)</span>
+<span class="sd">        tree2 = Tree.get_from_path(</span>
+<span class="sd">                &quot;t2.nex&quot;,</span>
+<span class="sd">                &quot;nexus&quot;,</span>
+<span class="sd">                taxon_namespace=tns)</span>
+<span class="sd">        tree1.encode_bipartitions()</span>
+<span class="sd">        tree2.encode_bipartitions()</span>
+<span class="sd">        print(treecompare.symmetric_difference(tree1, tree2))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">false_positives_and_negatives</span><span class="p">(</span>
+            <span class="n">tree1</span><span class="p">,</span>
+            <span class="n">tree2</span><span class="p">,</span>
+            <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="n">is_bipartitions_updated</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="unweighted_robinson_foulds_distance">
+<a class="viewcode-back" href="../../../library/treecompare.html#dendropy.calculate.treecompare.unweighted_robinson_foulds_distance">[docs]</a>
+<span class="k">def</span> <span class="nf">unweighted_robinson_foulds_distance</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Alias for ``symmetric_difference()``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">symmetric_difference</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="weighted_robinson_foulds_distance">
+<a class="viewcode-back" href="../../../library/treecompare.html#dendropy.calculate.treecompare.weighted_robinson_foulds_distance">[docs]</a>
+<span class="k">def</span> <span class="nf">weighted_robinson_foulds_distance</span><span class="p">(</span>
+        <span class="n">tree1</span><span class="p">,</span>
+        <span class="n">tree2</span><span class="p">,</span>
+        <span class="n">edge_weight_attr</span><span class="o">=</span><span class="s2">&quot;length&quot;</span><span class="p">,</span>
+        <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns *weighted* Robinson-Foulds distance between two trees based on</span>
+<span class="sd">    ``edge_weight_attr``.</span>
+
+<span class="sd">    Trees need to share the same |TaxonNamespace| reference. The</span>
+<span class="sd">    bipartition bitmasks of the trees must be correct for the current tree</span>
+<span class="sd">    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the</span>
+<span class="sd">    ``is_bipartitions_updated`` argument must be |False| to force recalculation of</span>
+<span class="sd">    bipartitions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tree1 : |Tree| object</span>
+<span class="sd">        The first tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree2`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    tree2 : |Tree| object</span>
+<span class="sd">        The second tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree1`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    edge_weight_attr : string</span>
+<span class="sd">        Name of attribute on edges of trees to be used as the weight.</span>
+<span class="sd">    is_bipartitions_updated : bool</span>
+<span class="sd">        If |True|, then the bipartitions on *both* trees will be updated before</span>
+<span class="sd">        comparison. If |False| (default) then the bipartitions will only be</span>
+<span class="sd">        calculated for a |Tree| object if they have not been calculated</span>
+<span class="sd">        before, either explicitly or implicitly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    d : float</span>
+<span class="sd">        The edge-weighted Robinson-Foulds distance between ``tree1`` and ``tree2``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        import dendropy</span>
+<span class="sd">        from dendropy.calculate import treecompare</span>
+<span class="sd">        tns = dendropy.TaxonNamespace()</span>
+<span class="sd">        tree1 = tree.get_from_path(</span>
+<span class="sd">                &quot;t1.nex&quot;,</span>
+<span class="sd">                &quot;nexus&quot;,</span>
+<span class="sd">                taxon_namespace=tns)</span>
+<span class="sd">        tree2 = tree.get_from_path(</span>
+<span class="sd">                &quot;t2.nex&quot;,</span>
+<span class="sd">                &quot;nexus&quot;,</span>
+<span class="sd">                taxon_namespace=tns)</span>
+<span class="sd">        tree1.encode_bipartitions()</span>
+<span class="sd">        tree2.encode_bipartitions()</span>
+<span class="sd">        print(treecompare.weighted_robinson_foulds_distance(tree1, tree2))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">length_diffs</span><span class="p">:</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">length_diffs</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">_bipartition_difference</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span>
+                           <span class="n">tree2</span><span class="p">,</span>
+                           <span class="n">dist_fn</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+                           <span class="n">edge_weight_attr</span><span class="o">=</span><span class="n">edge_weight_attr</span><span class="p">,</span>
+                           <span class="n">value_type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                           <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="n">is_bipartitions_updated</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="false_positives_and_negatives">
+<a class="viewcode-back" href="../../../library/treecompare.html#dendropy.calculate.treecompare.false_positives_and_negatives">[docs]</a>
+<span class="k">def</span> <span class="nf">false_positives_and_negatives</span><span class="p">(</span>
+        <span class="n">reference_tree</span><span class="p">,</span>
+        <span class="n">comparison_tree</span><span class="p">,</span>
+        <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Counts and returns number of false positive bipar (bipartitions found in</span>
+<span class="sd">    ``comparison_tree`` but not in ``reference_tree``) and false negative</span>
+<span class="sd">    bipartitions (bipartitions found in ``reference_tree`` but not in</span>
+<span class="sd">    ``comparison_tree``).</span>
+
+<span class="sd">    Trees need to share the same |TaxonNamespace| reference. The</span>
+<span class="sd">    bipartition bitmasks of the trees must be correct for the current tree</span>
+<span class="sd">    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the</span>
+<span class="sd">    ``is_bipartitions_updated`` argument must be |False| to force recalculation of</span>
+<span class="sd">    bipartitions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reference_tree : |Tree| object</span>
+<span class="sd">        The first tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree2`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    comparison_tree : |Tree| object</span>
+<span class="sd">        The second tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree1`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    is_bipartitions_updated : bool</span>
+<span class="sd">        If |True|, then the bipartitions on *both* trees will be updated</span>
+<span class="sd">        before comparison. If |False| (default) then the bipartitions</span>
+<span class="sd">        will only be calculated for a |Tree| object if they have not been</span>
+<span class="sd">        calculated before, either explicitly or implicitly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    t : tuple(int)</span>
+<span class="sd">        A pair of integers, with first integer being the number of false</span>
+<span class="sd">        positives and the second being the number of false negatives.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        import dendropy</span>
+<span class="sd">        from dendropy.calculate import treecompare</span>
+<span class="sd">        tns = dendropy.TaxonNamespace()</span>
+<span class="sd">        tree1 = tree.get_from_path(</span>
+<span class="sd">                &quot;t1.nex&quot;,</span>
+<span class="sd">                &quot;nexus&quot;,</span>
+<span class="sd">                taxon_namespace=tns)</span>
+<span class="sd">        tree2 = tree.get_from_path(</span>
+<span class="sd">                &quot;t2.nex&quot;,</span>
+<span class="sd">                &quot;nexus&quot;,</span>
+<span class="sd">                taxon_namespace=tns)</span>
+<span class="sd">        tree1.encode_bipartitions()</span>
+<span class="sd">        tree2.encode_bipartitions()</span>
+<span class="sd">        print(treecompare.false_positives_and_negatives(tree1, tree2))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">comparison_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">TaxonNamespaceIdentityError</span><span class="p">(</span><span class="n">reference_tree</span><span class="p">,</span> <span class="n">comparison_tree</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_bipartitions_updated</span><span class="p">:</span>
+        <span class="n">reference_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="n">comparison_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">reference_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">comparison_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comparison_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+    <span class="n">ref_bipartitions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">reference_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span><span class="p">)</span>
+    <span class="n">comparison_bipartitions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">comparison_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span><span class="p">)</span>
+    <span class="n">false_positives</span> <span class="o">=</span> <span class="n">comparison_bipartitions</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">ref_bipartitions</span><span class="p">)</span>
+    <span class="n">false_negatives</span> <span class="o">=</span> <span class="n">ref_bipartitions</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">comparison_bipartitions</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">false_positives</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">false_negatives</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="euclidean_distance">
+<a class="viewcode-back" href="../../../library/treecompare.html#dendropy.calculate.treecompare.euclidean_distance">[docs]</a>
+<span class="k">def</span> <span class="nf">euclidean_distance</span><span class="p">(</span>
+        <span class="n">tree1</span><span class="p">,</span>
+        <span class="n">tree2</span><span class="p">,</span>
+        <span class="n">edge_weight_attr</span><span class="o">=</span><span class="s2">&quot;length&quot;</span><span class="p">,</span>
+        <span class="n">value_type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the Euclidean distance (a.k.a. Felsenstein&#39;s 2004 &quot;branch length</span>
+<span class="sd">    distance&quot;) between two trees based on ``edge_weight_attr``.</span>
+
+<span class="sd">    Trees need to share the same |TaxonNamespace| reference. The</span>
+<span class="sd">    bipartition bitmasks of the trees must be correct for the current tree</span>
+<span class="sd">    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the</span>
+<span class="sd">    ``is_bipartitions_updated`` argument must be |False| to force recalculation of</span>
+<span class="sd">    bipartitions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tree1 : |Tree| object</span>
+<span class="sd">        The first tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree2`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    tree2 : |Tree| object</span>
+<span class="sd">        The second tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree1`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    edge_weight_attr : string</span>
+<span class="sd">        Name of attribute on edges of trees to be used as the weight.</span>
+<span class="sd">    is_bipartitions_updated : bool</span>
+<span class="sd">        If |True|, then the bipartitions on *both* trees will be updated</span>
+<span class="sd">        before comparison. If |False| (default) then the bipartitions</span>
+<span class="sd">        will only be calculated for a |Tree| object if they have not been</span>
+<span class="sd">        calculated before, either explicitly or implicitly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    d : int</span>
+<span class="sd">        The Euclidean distance between ``tree1`` and ``tree2``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        import dendropy</span>
+<span class="sd">        from dendropy.calculate import treecompare</span>
+<span class="sd">        tns = dendropy.TaxonNamespace()</span>
+<span class="sd">        tree1 = tree.get_from_path(</span>
+<span class="sd">                &quot;t1.nex&quot;,</span>
+<span class="sd">                &quot;nexus&quot;,</span>
+<span class="sd">                taxon_namespace=tns)</span>
+<span class="sd">        tree2 = tree.get_from_path(</span>
+<span class="sd">                &quot;t2.nex&quot;,</span>
+<span class="sd">                &quot;nexus&quot;,</span>
+<span class="sd">                taxon_namespace=tns)</span>
+<span class="sd">        tree1.encode_bipartitions()</span>
+<span class="sd">        tree2.encode_bipartitions()</span>
+<span class="sd">        print(treecompare.euclidean_distance(tree1, tree2))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">length_diffs</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">pow</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">length_diffs</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">_bipartition_difference</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span>
+                           <span class="n">tree2</span><span class="p">,</span>
+                           <span class="n">dist_fn</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+                           <span class="n">edge_weight_attr</span><span class="o">=</span><span class="n">edge_weight_attr</span><span class="p">,</span>
+                           <span class="n">value_type</span><span class="o">=</span><span class="n">value_type</span><span class="p">,</span>
+                           <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="n">is_bipartitions_updated</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="find_missing_bipartitions">
+<a class="viewcode-back" href="../../../library/treecompare.html#dendropy.calculate.treecompare.find_missing_bipartitions">[docs]</a>
+<span class="k">def</span> <span class="nf">find_missing_bipartitions</span><span class="p">(</span><span class="n">reference_tree</span><span class="p">,</span> <span class="n">comparison_tree</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of bipartitions that are in ``reference_tree``, but</span>
+<span class="sd">    not in ``comparison_tree``.</span>
+
+<span class="sd">    Trees need to share the same |TaxonNamespace| reference. The</span>
+<span class="sd">    bipartition bitmasks of the trees must be correct for the current tree</span>
+<span class="sd">    structures (by calling :meth:`Tree.encode_bipartitions()` method) or the</span>
+<span class="sd">    ``is_bipartitions_updated`` argument must be |False| to force recalculation of</span>
+<span class="sd">    bipartitions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reference_tree : |Tree| object</span>
+<span class="sd">        The first tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree2`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    comparison_tree : |Tree| object</span>
+<span class="sd">        The second tree of the two trees being compared. This must share the</span>
+<span class="sd">        same |TaxonNamespace| reference as ``tree1`` and must have</span>
+<span class="sd">        bipartitions encoded.</span>
+<span class="sd">    is_bipartitions_updated : bool</span>
+<span class="sd">        If |True|, then the bipartitions on *both* trees will be updated</span>
+<span class="sd">        before comparison. If |False| (default) then the bipartitions</span>
+<span class="sd">        will only be calculated for a |Tree| object if they have not been</span>
+<span class="sd">        calculated before, either explicitly or implicitly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    s : list[|Bipartition|]</span>
+<span class="sd">        A list of bipartitions that are in the first tree but not in the second.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">missing</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">comparison_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">TaxonNamespaceIdentityError</span><span class="p">(</span><span class="n">reference_tree</span><span class="p">,</span> <span class="n">comparison_tree</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_bipartitions_updated</span><span class="p">:</span>
+        <span class="n">reference_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="n">comparison_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">reference_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">comparison_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comparison_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">bipartition</span> <span class="ow">in</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bipartition</span> <span class="ow">in</span> <span class="n">comparison_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">missing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bipartition</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">missing</span></div>
+
+
+<span class="c1">##############################################################################</span>
+<span class="c1">### TreeshapeKernel</span>
+
+<span class="k">class</span> <span class="nc">TreeShapeKernel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="n">_TreeShapeKernelNodeCache</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;_TreeShapeKernelNodeCache&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;production&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;edge_lengths&quot;</span><span class="p">,</span> <span class="s2">&quot;sum_of_square_edge_lengths&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculator for tree shape kernel tricking.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        [1] Poon, A. F., Pond, S. L. K., Bennett, P., Richman, D. D., Brown, A.</span>
+<span class="sd">        J. L., &amp; Frost, S. D. (2007). Adaptation to human populations is</span>
+<span class="sd">        revealed by within-host polymorphisms in HIV-1 and hepatitis C virus.</span>
+<span class="sd">        PLoS Pathog, 3(3), e45.</span>
+
+<span class="sd">        [2] Poon, A. F., Walker, L. W., Murray, H., McCloskey, R. M., Harrigan,</span>
+<span class="sd">        P. R., &amp; Liang, R. H. (2013). Mapping the shapes of phylogenetic trees</span>
+<span class="sd">        from human and zoonotic RNA viruses. PLoS one, 8(11), e78122.</span>
+
+<span class="sd">        [3] Poon, A. F., Walker, L. W., Murray, H., McCloskey, R. M., Harrigan,</span>
+<span class="sd">        P. R., &amp; Liang, R. H. (2013). Mapping the shapes of phylogenetic trees</span>
+<span class="sd">        from human and zoonotic RNA viruses. PLoS one, 8(11), e78122.</span>
+
+<span class="sd">        [4] Poon, A. F. (2015). Phylodynamic inference with kernel ABC and its</span>
+<span class="sd">        application to HIV epidemiology. Molecular biology and evolution,</span>
+<span class="sd">        msv123.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># kernel function</span>
+        <span class="c1"># sigma=1,</span>
+        <span class="c1"># gauss_factor=1,</span>
+        <span class="c1"># decay_factor=0.1,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gauss_factor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;gauss_factor&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decay_factor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;decay_factor&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="c1"># cache management</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">remove_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_cache</span><span class="p">[</span><span class="n">tree</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">update_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pre-computes values needed for the kernel trick with this tree and</span>
+<span class="sd">        caches them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_tree_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">leaf_node_iter</span><span class="p">():</span>
+            <span class="n">current_tree_cache</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="n">TreeShapeKernel</span><span class="o">.</span><span class="n">_TreeShapeKernelNodeCache</span><span class="p">(</span>
+                    <span class="n">production</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">edge_lengths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">sum_of_square_edge_lengths</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">nd</span><span class="o">.</span><span class="n">production</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">nd_idx</span><span class="p">,</span> <span class="n">nd</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">postorder_internal_node_iter</span><span class="p">()):</span>
+            <span class="n">nterms</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">edge_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">nd</span><span class="o">.</span><span class="n">child_node_iter</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">current_tree_cache</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span><span class="o">.</span><span class="n">production</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">nterms</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">edge_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+            <span class="n">production</span> <span class="o">=</span> <span class="n">nterms</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">nd_idx</span>
+            <span class="n">sum_of_square_edge_lengths</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">elen</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">elen</span> <span class="ow">in</span> <span class="n">edge_lengths</span><span class="p">])</span>
+            <span class="n">current_tree_cache</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="n">TreeShapeKernel</span><span class="o">.</span><span class="n">_TreeShapeKernelNodeCache</span><span class="p">(</span>
+                    <span class="n">production</span><span class="o">=</span><span class="n">production</span><span class="p">,</span>
+                    <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                    <span class="n">edge_lengths</span><span class="o">=</span><span class="n">edge_lengths</span><span class="p">,</span>
+                    <span class="n">sum_of_square_edge_lengths</span><span class="o">=</span><span class="n">sum_of_square_edge_lengths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_cache</span><span class="p">[</span><span class="n">tree</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_tree_cache</span>
+        <span class="k">return</span> <span class="n">current_tree_cache</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">tree1</span><span class="p">,</span>
+            <span class="n">tree2</span><span class="p">,</span>
+            <span class="n">is_tree1_cache_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">is_tree2_cache_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recursive function for computing tree convolution</span>
+<span class="sd">        kernel.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tree1 : |Tree| instance</span>
+<span class="sd">            First tree to be compared. If it has already been seen by self, its</span>
+<span class="sd">            values will have been cached. If the tree has changed since it has been</span>
+<span class="sd">            seen by self, it will need to be recached, either explicitly before</span>
+<span class="sd">            the calculation by calling &#39;update_cache&#39; or by specifying</span>
+<span class="sd">            &#39;is_tree1_cache_updated=False&#39;</span>
+<span class="sd">        tree2 : |Tree| instance</span>
+<span class="sd">            Second tree to be compared. If it has already been seen by self, its</span>
+<span class="sd">            values will have been cached. If the tree has changed since it has been</span>
+<span class="sd">            seen by self, it will need to be recached, either explicitly before</span>
+<span class="sd">            the calculation by calling &#39;update_cache&#39; or by specifying</span>
+<span class="sd">            &#39;is_tree2_cache_updated=True&#39;</span>
+<span class="sd">        is_tree1_cache_updated : bool</span>
+<span class="sd">            If ``tree1`` has not been seen before, then this is ignored as the</span>
+<span class="sd">            cache will be updated regardless. If ``tree1`` has been seen, then</span>
+<span class="sd">            the cached values representing it will be used unless</span>
+<span class="sd">            ``is_tree1_cache_updated`` is ``False``.</span>
+<span class="sd">        is_tree2_cache_updated : bool</span>
+<span class="sd">            If ``tree1`` has not been seen before, then this is ignored as the</span>
+<span class="sd">            cache will be updated regardless. If ``tree1`` has been seen, then</span>
+<span class="sd">            the cached values representing it will be used unless</span>
+<span class="sd">            ``is_tree1_cache_updated`` is ``False``.</span>
+
+<span class="sd">        Acknowledgements</span>
+<span class="sd">        ----------------</span>
+
+<span class="sd">        Based in part on:</span>
+
+<span class="sd">            KAMPHIR</span>
+<span class="sd">            https://github.com/ArtPoon/kamphir.git</span>
+<span class="sd">            KAMPHIR is written and maintained by: Art F.Y. Poon.</span>
+<span class="sd">            With major contributions from: Rosemary McCloskey</span>
+
+<span class="sd">        Copyright (c) 2015, Art Poon. All rights reserved.</span>
+<span class="sd">        See https://github.com/ArtPoon/kamphir/blob/master/LICENSE.md for</span>
+<span class="sd">        more license information.</span>
+
+<span class="sd">        Original work adapted from Moschitti (2006) Making tree kernels</span>
+<span class="sd">        practical for natural language learning. Proceedings of the</span>
+<span class="sd">        11th Conference of the European Chapter of the Association</span>
+<span class="sd">        for Computational Linguistics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">internal_nodes2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tree2</span><span class="o">.</span><span class="n">postorder_internal_node_iter</span><span class="p">())</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tree1_cache_updated</span><span class="p">:</span>
+            <span class="n">tree1_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_cache</span><span class="p">(</span><span class="n">tree1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tree1_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_cache</span><span class="p">[</span><span class="n">tree1</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">tree1_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_cache</span><span class="p">(</span><span class="n">tree1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tree2_cache_updated</span><span class="p">:</span>
+            <span class="n">tree2_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_cache</span><span class="p">(</span><span class="n">tree2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tree2_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_cache</span><span class="p">[</span><span class="n">tree2</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">tree2_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_cache</span><span class="p">(</span><span class="n">tree2</span><span class="p">)</span>
+        <span class="n">dp_matrix</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ni</span><span class="p">,</span> <span class="n">tree1_node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tree1</span><span class="o">.</span><span class="n">postorder_internal_node_iter</span><span class="p">()):</span>
+            <span class="n">tree1_cache_node</span> <span class="o">=</span> <span class="n">tree1_cache</span><span class="p">[</span><span class="n">tree1_node</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">tree2_node</span> <span class="ow">in</span> <span class="n">internal_nodes2</span><span class="p">:</span>
+                <span class="n">tree2_cache_node</span> <span class="o">=</span> <span class="n">tree2_cache</span><span class="p">[</span><span class="n">tree2_node</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">tree1_cache_node</span><span class="o">.</span><span class="n">production</span> <span class="o">!=</span> <span class="n">tree2_cache_node</span><span class="o">.</span><span class="n">production</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay_factor</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="o">-</span><span class="mf">1.</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">gauss_factor</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="n">tree1_cache_node</span><span class="o">.</span><span class="n">sum_of_square_edge_lengths</span> <span class="o">+</span> <span class="n">tree2_cache_node</span><span class="o">.</span><span class="n">sum_of_square_edge_lengths</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="nb">sum</span><span class="p">([(</span><span class="n">tree1_cache_node</span><span class="o">.</span><span class="n">edge_lengths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">tree2_cache_node</span><span class="o">.</span><span class="n">edge_lengths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tree1_cache_node</span><span class="o">.</span><span class="n">edge_lengths</span><span class="p">))])))</span>
+                <span class="c1">## TODO:</span>
+                <span class="c1">##  - (check and) handles cases where unequal number of children</span>
+                <span class="c1">##  - how to handle rotation mismatch problems? or do we assume</span>
+                <span class="c1">##    trees have equal rotations</span>
+                <span class="c1"># for node_idx in range(2):</span>
+                <span class="c1">#     c1 = tree1_node.clades[node_idx]</span>
+                <span class="c1">#     c2 = tree2_node.clades[node_idx]</span>
+                <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tree1_node</span><span class="o">.</span><span class="n">child_node_iter</span><span class="p">(),</span> <span class="n">tree2_node</span><span class="o">.</span><span class="n">child_node_iter</span><span class="p">()):</span>
+                    <span class="k">if</span> <span class="n">tree1_cache</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span><span class="o">.</span><span class="n">production</span> <span class="o">!=</span> <span class="n">tree2_cache</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span><span class="o">.</span><span class="n">production</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">tree1_cache</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span><span class="o">.</span><span class="n">production</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># branches are terminal</span>
+                        <span class="n">res</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">decay_factor</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">res</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">+</span> <span class="n">dp_matrix</span><span class="p">[(</span><span class="n">tree1_cache</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">tree2_cache</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="n">res</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span>
+                <span class="n">dp_matrix</span><span class="p">[(</span><span class="n">tree1_cache</span><span class="p">[</span><span class="n">tree1_node</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">tree2_cache</span><span class="p">[</span><span class="n">tree2_node</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span> <span class="o">=</span> <span class="n">res</span>
+                <span class="n">k</span> <span class="o">+=</span> <span class="n">res</span>
+        <span class="k">return</span> <span class="n">k</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">### AssemblageInducedTree</span>
+
+<span class="k">class</span> <span class="nc">AssemblageInducedTreeManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_exchangeable_assemblage_classifications</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;is_exchangeable_assemblage_classifications&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_assemblage_classifications</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;num_assemblages&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">induced_tree_factory</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;induced_tree_factory&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">induced_tree_node_factory</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;induced_tree_node_factory&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skip_null_assemblages</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;skip_null_assemblages&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_assemblage_induced_trees_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">remove_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_assemblage_induced_trees_map</span><span class="p">[</span><span class="n">tree</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">generate_induced_trees</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">assemblage_leaf_sets</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">assemblage_leaf_sets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_assemblage_classifications</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expecting </span><span class="si">{}</span><span class="s2"> assemblage leaf set classifications, but none provided&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_assemblage_classifications</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_assemblage_classifications</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_num_assemblage_classifications</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">assemblage_leaf_sets</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">assemblage_leaf_sets</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_assemblage_classifications</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expecting </span><span class="si">{}</span><span class="s2"> assemblage leaf set classifications, but only </span><span class="si">{}</span><span class="s2"> specified&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_num_assemblage_classifications</span><span class="p">,</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">assemblage_leaf_sets</span><span class="p">)))</span>
+        <span class="n">induced_trees</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">assemblage_leaf_set</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">assemblage_leaf_sets</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">assemblage_leaf_set</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_null_assemblages</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">NullLeafSetException</span><span class="p">()</span>
+            <span class="n">node_filter_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">nd</span><span class="p">:</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">assemblage_leaf_set</span>
+            <span class="n">induced_tree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">extract_tree</span><span class="p">(</span>
+                               <span class="n">node_filter_fn</span><span class="o">=</span><span class="n">node_filter_fn</span><span class="p">,</span>
+                               <span class="n">is_apply_filter_to_leaf_nodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">is_apply_filter_to_internal_nodes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                               <span class="n">tree_factory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">induced_tree_factory</span><span class="p">,</span>
+                               <span class="n">node_factory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">induced_tree_node_factory</span><span class="p">)</span>
+            <span class="n">induced_trees</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">induced_tree</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_assemblage_induced_trees_map</span><span class="p">[</span><span class="n">tree</span><span class="p">]</span> <span class="o">=</span> <span class="n">induced_trees</span>
+        <span class="k">return</span> <span class="n">induced_trees</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">### AssemblageInducedTreeShapeKernel</span>
+
+<span class="k">class</span> <span class="nc">AssemblageInducedTreeShapeKernel</span><span class="p">(</span><span class="n">TreeShapeKernel</span><span class="p">,</span> <span class="n">AssemblageInducedTreeManager</span><span class="p">):</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_euclidean_distance</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">is_weight_values_by_comparison_size</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">v1_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span>
+        <span class="n">v2_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+        <span class="n">v1_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">v2_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">v1_size</span> <span class="o">&gt;</span> <span class="n">v2_size</span><span class="p">:</span>
+            <span class="n">v1_idx</span> <span class="o">=</span> <span class="n">v1_size</span> <span class="o">-</span> <span class="n">v2_size</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v2_size</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">v2_size</span> <span class="o">&gt;</span> <span class="n">v1_size</span><span class="p">:</span>
+            <span class="n">v2_idx</span> <span class="o">=</span> <span class="n">v2_size</span> <span class="o">-</span> <span class="n">v1_size</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v1_size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v1_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_weight_values_by_comparison_size</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">while</span> <span class="n">v1_idx</span> <span class="o">&lt;</span> <span class="n">v1_size</span> <span class="ow">and</span> <span class="n">v2_idx</span> <span class="o">&lt;</span> <span class="n">v2_size</span><span class="p">:</span>
+            <span class="n">ss</span> <span class="o">+=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">v1</span><span class="p">[</span><span class="n">v1_idx</span><span class="p">]</span><span class="o">/</span><span class="n">weight</span> <span class="o">-</span> <span class="n">v2</span><span class="p">[</span><span class="n">v2_idx</span><span class="p">]</span><span class="o">/</span><span class="n">weight</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">v1_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">v2_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exchangeable_assemblage_comparison_strategy</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exchangeable_assemblage_comparison_strategy&quot;</span><span class="p">,</span> <span class="s2">&quot;joint minimum&quot;</span><span class="p">)</span>
+        <span class="n">TreeShapeKernel</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">AssemblageInducedTreeManager</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">induced_tree</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_assemblage_induced_trees_map</span><span class="p">[</span><span class="n">tree</span><span class="p">]:</span>
+            <span class="n">TreeShapeKernel</span><span class="o">.</span><span class="n">remove_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">induced_tree</span><span class="p">)</span>
+        <span class="n">TreeShapeKernel</span><span class="o">.</span><span class="n">remove_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>
+        <span class="n">AssemblageInducedTreeManager</span><span class="o">.</span><span class="n">remove_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_assemblage_induced_tree_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">tree</span><span class="p">,</span>
+            <span class="n">assemblage_leaf_sets</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_cache</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">)</span>
+        <span class="n">induced_trees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_induced_trees</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+                <span class="n">assemblage_leaf_sets</span><span class="o">=</span><span class="n">assemblage_leaf_sets</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">induced_tree</span> <span class="ow">in</span> <span class="n">induced_trees</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_cache</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">induced_tree</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">tree1</span><span class="p">,</span>
+            <span class="n">tree2</span><span class="p">,</span>
+            <span class="n">tree1_assemblage_leaf_sets</span><span class="p">,</span>
+            <span class="n">tree2_assemblage_leaf_sets</span><span class="p">,</span>
+            <span class="n">is_tree1_cache_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">is_tree2_cache_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">):</span>
+        <span class="n">main_trees_score</span> <span class="o">=</span> <span class="n">TreeShapeKernel</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">tree1</span><span class="o">=</span><span class="n">tree1</span><span class="p">,</span>
+                <span class="n">tree2</span><span class="o">=</span><span class="n">tree2</span><span class="p">,</span>
+                <span class="n">is_tree1_cache_updated</span><span class="o">=</span><span class="n">is_tree1_cache_updated</span><span class="p">,</span>
+                <span class="n">is_tree2_cache_updated</span><span class="o">=</span><span class="n">is_tree2_cache_updated</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tree1_cache_updated</span> <span class="ow">or</span> <span class="n">tree1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_assemblage_induced_trees_map</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tree1_assemblage_leaf_sets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Uncached tree requires specification of &#39;tree1_assemblage_leaf_sets&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_assemblage_induced_tree_cache</span><span class="p">(</span>
+                    <span class="n">tree</span><span class="o">=</span><span class="n">tree1</span><span class="p">,</span>
+                    <span class="n">assemblage_leaf_sets</span><span class="o">=</span><span class="n">tree1_assemblage_leaf_sets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_tree2_cache_updated</span> <span class="ow">or</span> <span class="n">tree2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_assemblage_induced_trees_map</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tree2_assemblage_leaf_sets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Uncached tree requires specification of &#39;tree2_assemblage_leaf_sets&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_assemblage_induced_tree_cache</span><span class="p">(</span>
+                    <span class="n">tree</span><span class="o">=</span><span class="n">tree2</span><span class="p">,</span>
+                    <span class="n">assemblage_leaf_sets</span><span class="o">=</span><span class="n">tree2_assemblage_leaf_sets</span><span class="p">)</span>
+        <span class="c1">## ++ main tree score</span>
+        <span class="n">score_table</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">score_table</span><span class="p">[</span><span class="s2">&quot;primary.tree.kernel.trick.distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">main_trees_score</span>
+        <span class="n">induced_trees1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_assemblage_induced_trees_map</span><span class="p">[</span><span class="n">tree1</span><span class="p">]</span>
+        <span class="n">induced_trees2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_assemblage_induced_trees_map</span><span class="p">[</span><span class="n">tree2</span><span class="p">]</span>
+        <span class="c1"># assert len(induced_trees1) == len(induced_trees2) == self._num_assemblage_classifications</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_exchangeable_assemblage_classifications</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">induced_trees1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">induced_trees2</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Different numbers of induced trees not supported for non-exchangeable classifications: </span><span class="si">{}</span><span class="s2"> vs. </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">induced_trees1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">induced_trees2</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">induced_tree1</span><span class="p">,</span> <span class="n">induced_tree2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">induced_trees1</span><span class="p">,</span> <span class="n">induced_trees2</span><span class="p">)):</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">TreeShapeKernel</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                <span class="n">tree1</span><span class="o">=</span><span class="n">induced_tree1</span><span class="p">,</span>
+                                <span class="n">tree2</span><span class="o">=</span><span class="n">induced_tree2</span><span class="p">,</span>
+                                <span class="n">is_tree1_cache_updated</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">is_tree2_cache_updated</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="p">)</span>
+                <span class="c1">## ++ raw scores direct comparisons of each of the induced trees</span>
+                <span class="n">score_table</span><span class="p">[</span><span class="s2">&quot;induced.tree.</span><span class="si">{}</span><span class="s2">.kernel.trick.distance&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchangeable_assemblage_comparison_strategy</span> <span class="o">==</span> <span class="s2">&quot;joint minimum&quot;</span><span class="p">:</span>
+                <span class="c1"># if lengths are different, we want to fix the smaller set</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">induced_trees1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">induced_trees2</span><span class="p">):</span>
+                    <span class="n">induced_trees2</span><span class="p">,</span> <span class="n">induced_trees1</span> <span class="o">=</span> <span class="n">induced_trees1</span><span class="p">,</span> <span class="n">induced_trees2</span>
+                <span class="n">comparison_vector</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">induced_trees1</span><span class="p">)</span>
+                <span class="n">current_minimum_distance</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">current_joint_minimum_vector</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">induced_trees_permutation</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="n">induced_trees2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">induced_trees1</span><span class="p">)):</span>
+                    <span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">induced_trees_permutation</span><span class="p">,</span> <span class="n">induced_trees1</span><span class="p">):</span>
+                        <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TreeShapeKernel</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                <span class="n">tree1</span><span class="o">=</span><span class="n">t1</span><span class="p">,</span>
+                                <span class="n">tree2</span><span class="o">=</span><span class="n">t2</span><span class="p">,</span>
+                                <span class="n">is_tree1_cache_updated</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">is_tree2_cache_updated</span><span class="o">=</span><span class="kc">True</span><span class="p">,))</span>
+                    <span class="n">euclidean_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_euclidean_distance</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">comparison_vector</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">current_minimum_distance</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">euclidean_distance</span> <span class="o">&lt;</span> <span class="n">current_minimum_distance</span><span class="p">:</span>
+                        <span class="n">current_minimum_distance</span> <span class="o">=</span> <span class="n">euclidean_distance</span>
+                        <span class="n">current_joint_minimum_vector</span> <span class="o">=</span> <span class="n">distances</span>
+                <span class="k">for</span> <span class="n">didx</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">distances</span><span class="p">):</span>
+                    <span class="n">score_table</span><span class="p">[</span><span class="s2">&quot;induced.tree.</span><span class="si">{}</span><span class="s2">.kernel.trick.distance&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">didx</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">d</span>
+                <span class="k">for</span> <span class="n">didx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">didx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_assemblage_classifications</span><span class="p">):</span>
+                    <span class="n">score_table</span><span class="p">[</span><span class="s2">&quot;induced.tree.</span><span class="si">{}</span><span class="s2">.kernel.trick.distance&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">didx</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;NA&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">score_table</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## Legacy</span>
+
+<div class="viewcode-block" id="robinson_foulds_distance">
+<a class="viewcode-back" href="../../../library/treecompare.html#dendropy.calculate.treecompare.robinson_foulds_distance">[docs]</a>
+<span class="k">def</span> <span class="nf">robinson_foulds_distance</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">,</span> <span class="n">edge_weight_attr</span><span class="o">=</span><span class="s2">&quot;length&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DEPRECATED: Use :func:``symmetric_difference`` for the common</span>
+<span class="sd">    unweighged Robinson-Fould&#39;s distance metric (i.e., the symmetric difference between two trees)</span>
+<span class="sd">    :func:``weighted_robinson_foulds_distance`` or for the RF distance as defined by Felsenstein, 2004.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">weighted_robinson_foulds_distance</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">,</span> <span class="n">edge_weight_attr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mason_gamer_kellogg_score">
+<a class="viewcode-back" href="../../../library/treecompare.html#dendropy.calculate.treecompare.mason_gamer_kellogg_score">[docs]</a>
+<span class="k">def</span> <span class="nf">mason_gamer_kellogg_score</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mason-Gamer and Kellogg. Testing for phylogenetic conflict among molecular</span>
+<span class="sd">    data sets in the tribe Triticeae (Gramineae). Systematic Biology (1996)</span>
+<span class="sd">    vol. 45 (4) pp. 524</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">tree1</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">tree2</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">TaxonNamespaceIdentityError</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_bipartitions_updated</span><span class="p">:</span>
+        <span class="n">tree1</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="n">tree2</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tree1</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tree1</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">tree2</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tree2</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+    <span class="n">se1</span> <span class="o">=</span> <span class="n">tree1</span><span class="o">.</span><span class="n">bipartition_encoding</span>
+    <span class="n">se2</span> <span class="o">=</span> <span class="n">tree2</span><span class="o">.</span><span class="n">bipartition_encoding</span>
+    <span class="n">bipartitions</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">se1</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">+</span> <span class="n">se2</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## Supporting</span>
+
+<span class="k">def</span> <span class="nf">_get_length_diffs</span><span class="p">(</span>
+        <span class="n">tree1</span><span class="p">,</span>
+        <span class="n">tree2</span><span class="p">,</span>
+        <span class="n">edge_weight_attr</span><span class="o">=</span><span class="s2">&quot;length&quot;</span><span class="p">,</span>
+        <span class="n">value_type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">bipartition_length_diff_map</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of tuples, with the first element of each tuple representing</span>
+<span class="sd">    the length of the branch subtending a particular bipartition on ``tree1``, and</span>
+<span class="sd">    the second element the length of the same branch on ``tree2``. If a</span>
+<span class="sd">    particular bipartition is found on one tree but not in the other, a value of zero</span>
+<span class="sd">    is used for the missing bipartition.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">length_diffs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bipartition_length_diffs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">tree1</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">tree2</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">TaxonNamespaceIdentityError</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_bipartitions_updated</span><span class="p">:</span>
+        <span class="n">tree1</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="n">tree2</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tree1</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tree1</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">tree2</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tree2</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+
+    <span class="n">tree1_bipartition_edge_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">tree2</span><span class="o">.</span><span class="n">bipartition_edge_map</span><span class="p">)</span> <span class="c1"># O(n*(2*bind + dict_item_cost))</span>
+    <span class="n">tree2_bipartition_edge_map</span> <span class="o">=</span> <span class="n">tree1</span><span class="o">.</span><span class="n">bipartition_edge_map</span>
+    <span class="k">for</span> <span class="n">bipartition</span> <span class="ow">in</span> <span class="n">tree2_bipartition_edge_map</span><span class="p">:</span> <span class="c1"># O n : 2*bind</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="n">tree2_bipartition_edge_map</span><span class="p">[</span><span class="n">bipartition</span><span class="p">]</span>
+        <span class="n">elen1</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">edge_weight_attr</span><span class="p">)</span> <span class="c1"># attr + bind</span>
+        <span class="k">if</span> <span class="n">elen1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">elen1</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># worst-case: bind</span>
+        <span class="n">value1</span> <span class="o">=</span> <span class="n">value_type</span><span class="p">(</span><span class="n">elen1</span><span class="p">)</span> <span class="c1">#  ctor + bind</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">e2</span> <span class="o">=</span> <span class="n">tree1_bipartition_edge_map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">bipartition</span><span class="p">)</span> <span class="c1"># attr + dict_lookup + bind</span>
+            <span class="n">elen2</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e2</span><span class="p">,</span> <span class="n">edge_weight_attr</span><span class="p">)</span> <span class="c1"># attr + bind</span>
+            <span class="k">if</span> <span class="n">elen2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># allow root edge to have bipartition with no value: raise error if not root edge</span>
+                <span class="k">if</span> <span class="n">e2</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">elen2</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge length attribute is &#39;None&#39;: Tree: </span><span class="si">%s</span><span class="s2"> (&#39;</span><span class="si">%s</span><span class="s2">&#39;), Split: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">tree2</span><span class="p">),</span> <span class="n">tree2</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">bipartition</span><span class="o">.</span><span class="n">leafset_as_newick_string</span><span class="p">(</span><span class="n">tree2</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span> <span class="c1"># excep</span>
+            <span class="n">elen2</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">value2</span> <span class="o">=</span> <span class="n">value_type</span><span class="p">(</span><span class="n">elen2</span><span class="p">)</span> <span class="c1">#  ctor + bind # best case</span>
+        <span class="c1"># if abs(value2-value1) &gt; 1e-5:</span>
+        <span class="c1">#     print(&quot;{}: {}, {}&quot;.format(bipartition.leafset_as_newick_string(tree1.taxon_namespace), value2, value1))</span>
+        <span class="n">length_diffs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">value1</span><span class="p">,</span><span class="n">value2</span><span class="p">))</span> <span class="c1"># ctor + listappend</span>
+        <span class="n">bipartition_length_diffs</span><span class="p">[</span><span class="n">bipartition</span><span class="p">]</span> <span class="o">=</span> <span class="n">length_diffs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">bipartition</span> <span class="ow">in</span> <span class="n">tree1_bipartition_edge_map</span><span class="p">:</span> <span class="c1"># best-case not executed, worst case O(n) : 2*bind</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="n">tree1_bipartition_edge_map</span><span class="p">[</span><span class="n">bipartition</span><span class="p">]</span>
+        <span class="n">elen2</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">edge_weight_attr</span><span class="p">)</span> <span class="c1"># attr +  bind</span>
+        <span class="k">if</span> <span class="n">elen2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">elen2</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">value2</span> <span class="o">=</span> <span class="n">value_type</span><span class="p">(</span><span class="n">elen2</span><span class="p">)</span> <span class="c1">#  ctor + bind</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="n">tree2_bipartition_edge_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bipartition</span><span class="p">)</span> <span class="c1"># attr + dict_lookup + bind</span>
+        <span class="k">if</span> <span class="n">e1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">elen1</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">elen1</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">edge_weight_attr</span><span class="p">)</span> <span class="c1"># attr  + bind</span>
+            <span class="k">if</span> <span class="n">elen1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># allow root edge to have bipartition with no value: raise error if not root edge</span>
+                <span class="k">if</span> <span class="n">e1</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">elen1</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Edge length attribute is &#39;None&#39;: Tree: </span><span class="si">%s</span><span class="s2"> (&#39;</span><span class="si">%s</span><span class="s2">&#39;), Split: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">tree1</span><span class="p">),</span> <span class="n">tree1</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">bipartition</span><span class="p">))</span>
+                <span class="c1">#elen1 = 0</span>
+        <span class="n">value1</span> <span class="o">=</span> <span class="n">value_type</span><span class="p">(</span><span class="n">elen1</span><span class="p">)</span>
+        <span class="n">length_diffs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">value1</span><span class="p">,</span><span class="n">value2</span><span class="p">))</span> <span class="c1"># ctor + listappend</span>
+        <span class="n">bipartition_length_diffs</span><span class="p">[</span><span class="n">bipartition</span><span class="p">]</span> <span class="o">=</span> <span class="n">length_diffs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># the numbers below do not reflect additions to the code to protect against</span>
+    <span class="c1">#   edges with length None</span>
+    <span class="c1"># loops</span>
+    <span class="c1">#  best-case:</span>
+    <span class="c1">#   O(n * (dict_lookup + 3*attr + 3*ctor + 7*bind + listappend))</span>
+    <span class="c1">#  worst-case:</span>
+    <span class="c1">#     separated: O(n * (2*dict_lookup + 4*attr + 3*ctor + 8*bind + listappend + excep) + n*(2*dict_lookup + 4*attr + 3*ctor + 8*bind + listappend))</span>
+    <span class="c1">#   or:</span>
+    <span class="c1">#     O(2n*(2*dict_lookup + 4*attr + 3*ctor + 8*bind + listappend + 0.5*excep))</span>
+
+    <span class="c1"># total</span>
+    <span class="c1">#  best-case:</span>
+    <span class="c1">#       O(n * (dict_lookup + 3*attr + 3*ctor + 8*bind + listappend + dict_item_cost))</span>
+    <span class="c1">#  worst-case:</span>
+    <span class="c1">#     O(2n*(2*dict_lookup + 4*attr + 3*ctor + 9*bind + listappend + 0.5*(dict_item_cost + excep))</span>
+    <span class="k">if</span> <span class="n">bipartition_length_diff_map</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">length_diffs</span><span class="p">,</span> <span class="n">bipartition_length_diffs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">length_diffs</span>
+
+<span class="k">def</span> <span class="nf">_bipartition_difference</span><span class="p">(</span>
+        <span class="n">tree1</span><span class="p">,</span>
+        <span class="n">tree2</span><span class="p">,</span>
+        <span class="n">dist_fn</span><span class="p">,</span>
+        <span class="n">edge_weight_attr</span><span class="o">=</span><span class="s2">&quot;length&quot;</span><span class="p">,</span>
+        <span class="n">value_type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns distance between two trees, each represented by a dictionary of</span>
+<span class="sd">    bipartitions (as bipartition_mask strings) to edges, using ``dist_fn`` to calculate the</span>
+<span class="sd">    distance based on ``edge_weight_attr`` of the edges. ``dist_fn`` is a function</span>
+<span class="sd">    that takes a list of pairs of values, where the values correspond to the edge</span>
+<span class="sd">    lengths of a given bipartition on tree1 and tree2 respectively.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">length_diffs</span> <span class="o">=</span> <span class="n">_get_length_diffs</span><span class="p">(</span>
+            <span class="n">tree1</span><span class="p">,</span>
+            <span class="n">tree2</span><span class="p">,</span>
+            <span class="n">edge_weight_attr</span><span class="o">=</span><span class="n">edge_weight_attr</span><span class="p">,</span>
+            <span class="n">value_type</span><span class="o">=</span><span class="n">value_type</span><span class="p">,</span>
+            <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="n">is_bipartitions_updated</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dist_fn</span><span class="p">(</span><span class="n">length_diffs</span><span class="p">)</span>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.calculate.treecompare</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

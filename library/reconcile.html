@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.model.reconcile: Tree-Fitting (Gene/Species, Parasite/Host, etc.) &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.model.treeshape: Models of Tree Shape" href="treeshape.html" />
+    <link rel="prev" title="dendropy.model.protractedspeciation: The Protracted Speciation (Birth-Death) Model" href="protractedspeciation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treeshape.html" title="dendropy.model.treeshape: Models of Tree Shape"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="protractedspeciation.html" title="dendropy.model.protractedspeciation: The Protracted Speciation (Birth-Death) Model"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.reconcile</span></code>: Tree-Fitting (Gene/Species, Parasite/Host, etc.)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.model.reconcile">
+<span id="dendropy-model-reconcile-tree-fitting-gene-species-parasite-host-etc"></span><h1><a class="reference internal" href="#module-dendropy.model.reconcile" title="dendropy.model.reconcile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.reconcile</span></code></a>: Tree-Fitting (Gene/Species, Parasite/Host, etc.)<a class="headerlink" href="#module-dendropy.model.reconcile" title="Link to this heading">¶</a></h1>
+<p>Classes and Methods for working with tree reconciliation, fitting, embedding,
+contained/containing etc.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.model.reconcile.</span></span><span class="sig-name descname"><span class="pre">ContainingTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">containing_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contained_taxon_namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contained_to_containing_taxon_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contained_trees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_containing_edge_lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collapse_empty_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ultrametricity_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_root_deep_coalescences</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree" title="Link to this definition">¶</a></dt>
+<dd><p>A “containing tree” is a (usually rooted) tree data structure within which
+other trees are “contained”. For example, species trees and their contained
+gene trees; host trees and their contained parasite trees; biogeographical
+“area” trees and their contained species or taxon trees.</p>
+<p>__init__ converts <code class="docutils literal notranslate"><span class="pre">self</span></code> to ContainingTree class, embedding the trees
+given in the list, <code class="docutils literal notranslate"><span class="pre">contained_trees.</span></code></p>
+<p>Mandatory Arguments:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">containing_tree</span></code></dt><dd><p>A <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> or <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>-like object that describes the topological
+constraints or conditions of the containing tree (e.g., species,
+host, or biogeographical area trees).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">contained_taxon_namespace</span></code></dt><dd><p>A <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object that will be used to manage the taxa of
+the contained trees.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">contained_to_containing_taxon_map</span></code></dt><dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceMapping</span></code> object mapping <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the
+contained <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> to corresponding <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects in the
+containing tree.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Optional Arguments:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">contained_trees</span></code></dt><dd><p>An iterable container of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> or <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>-like objects that
+will be contained into <code class="docutils literal notranslate"><span class="pre">containing_tree</span></code>; e.g. gene or
+parasite trees.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">fit_containing_edge_lengths</span></code></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> [default], then the branch lengths of
+<code class="docutils literal notranslate"><span class="pre">containing_tree</span></code> will be adjusted to fit the contained tree
+as they are added. Otherwise, the containing tree edge lengths
+will not be changed.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">collapse_empty_edges</span></code></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> [default], after edge lengths are adjusted,
+zero-length branches will be collapsed.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ultrametricity_precision</span></code></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then trees will not be checked for
+ultrametricity. Otherwise this is the threshold within which
+all node to tip distances for sister nodes must be equal.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ignore_root_deep_coalescences</span></code></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> [default], then deep coalescences in the root will
+not be counted.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Other Keyword Arguments: Will be passed to Tree().</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.build_edge_taxa_sets">
+<span class="sig-name descname"><span class="pre">build_edge_taxa_sets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.build_edge_taxa_sets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.build_edge_taxa_sets" title="Link to this definition">¶</a></dt>
+<dd><p>Rebuilds sets of containing and corresponding contained taxa at each
+edge.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clears all contained trees and mapped edges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.clear_contained_edges">
+<span class="sig-name descname"><span class="pre">clear_contained_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.clear_contained_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.clear_contained_edges" title="Link to this definition">¶</a></dt>
+<dd><p>Clears all contained mapped edges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.deep_coalescences">
+<span class="sig-name descname"><span class="pre">deep_coalescences</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.deep_coalescences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.deep_coalescences" title="Link to this definition">¶</a></dt>
+<dd><p>Returns dictionary where the contained trees are keys, and the number of
+deep coalescences corresponding to the tree are values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.embed_contained_kingman">
+<span class="sig-name descname"><span class="pre">embed_contained_kingman</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_pop_size_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pop_size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_expected_tmrca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.embed_contained_kingman"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.embed_contained_kingman" title="Link to this definition">¶</a></dt>
+<dd><p>Simulates, <em>embeds</em>, and returns a “censored” (Kingman) neutral coalescence tree
+conditional on self.</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">rng</span></code></dt><dd><p>Random number generator to use. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default will
+be used.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">edge_pop_size_attr</span></code></dt><dd><p>Name of attribute of self’s edges that specify the population
+size. If this attribute does not exist, then the population
+size is taken to be 1.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Note that all edge-associated taxon sets must be up-to-date (otherwise,
+<code class="docutils literal notranslate"><span class="pre">build_edge_taxa_sets()</span></code> should be called).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.embed_tree">
+<span class="sig-name descname"><span class="pre">embed_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contained_tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.embed_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.embed_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Map edges of contained tree into containing tree (i.e., self).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.fit_edge_lengths">
+<span class="sig-name descname"><span class="pre">fit_edge_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contained_trees</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.fit_edge_lengths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.fit_edge_lengths" title="Link to this definition">¶</a></dt>
+<dd><p>Recalculate node ages / edge lengths of containing tree to accomodate
+contained trees.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.num_deep_coalescences">
+<span class="sig-name descname"><span class="pre">num_deep_coalescences</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.num_deep_coalescences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.num_deep_coalescences" title="Link to this definition">¶</a></dt>
+<dd><p>Returns total number of deep coalescences of the contained trees.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.rebuild">
+<span class="sig-name descname"><span class="pre">rebuild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rebuild_taxa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.rebuild"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.rebuild" title="Link to this definition">¶</a></dt>
+<dd><p>Recalculate edge taxa sets, node ages / edge lengths of containing
+tree, and embed edges of contained trees.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.simulate_contained_kingman">
+<span class="sig-name descname"><span class="pre">simulate_contained_kingman</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_pop_size_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pop_size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_expected_tmrca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.simulate_contained_kingman"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.simulate_contained_kingman" title="Link to this definition">¶</a></dt>
+<dd><p>Simulates and returns a “censored” (Kingman) neutral coalescence tree
+conditional on self.</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">rng</span></code></dt><dd><p>Random number generator to use. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default will
+be used.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">edge_pop_size_attr</span></code></dt><dd><p>Name of attribute of self’s edges that specify the population
+size. If this attribute does not exist, then the population
+size is taken to be 1.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Each coalescent tree terminal node will have a <code class="docutils literal notranslate"><span class="pre">container_tree_node</span></code>
+attribute added that references the node on the container tree from
+which it was sampled.</p>
+<p>Note that all edge-associated taxon sets must be up-to-date (otherwise,
+<code class="docutils literal notranslate"><span class="pre">build_edge_taxa_sets()</span></code> should be called), and that the tree
+is <em>not</em> added to the set of contained trees. For the latter, call
+<code class="docutils literal notranslate"><span class="pre">embed_contained_kingman</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.ContainingTree.write_as_mesquite">
+<span class="sig-name descname"><span class="pre">write_as_mesquite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#ContainingTree.write_as_mesquite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.ContainingTree.write_as_mesquite" title="Link to this definition">¶</a></dt>
+<dd><p>For debugging purposes, write out a Mesquite-format file.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.monophyletic_partition_discordance">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.reconcile.</span></span><span class="sig-name descname"><span class="pre">monophyletic_partition_discordance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_namespace_partition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#monophyletic_partition_discordance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.monophyletic_partition_discordance" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the number of deep coalescences on tree <code class="docutils literal notranslate"><span class="pre">tree</span></code> that would result
+if the taxa in <code class="docutils literal notranslate"><span class="pre">tax_sets</span></code> formed K mutually-exclusive monophyletic groups,
+where K = len(tax_sets)
+<code class="docutils literal notranslate"><span class="pre">taxon_namespace_partition</span></code> == TaxonNamespacePartition</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.reconcile.reconciliation_discordance">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.reconcile.</span></span><span class="sig-name descname"><span class="pre">reconciliation_discordance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gene_tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species_tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/reconcile.html#reconciliation_discordance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.reconcile.reconciliation_discordance" title="Link to this definition">¶</a></dt>
+<dd><p>Given two trees (with splits encoded), this returns the number of gene
+duplications implied by the gene tree reconciled on the species tree, based
+on the algorithm described here:</p>
+<blockquote>
+<div><p>Goodman, M. J. Czelnusiniak, G. W. Moore, A. E. Romero-Herrera, and
+G. Matsuda. 1979. Fitting the gene lineage into its species lineage,
+a parsimony strategy illustrated by cladograms constructed from globin
+sequences. Syst. Zool. 19: 99-113.</p>
+<p>Maddison, W. P. 1997. Gene trees in species trees. Syst. Biol. 46:
+523-536.</p>
+</div></blockquote>
+<p>This function requires that the gene tree and species tree <em>have the same
+leaf set</em>. Note that for correct results,</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>trees must be rooted (i.e., is_rooted = True)</p></li>
+<li><p>split masks must have been added as rooted (i.e., when
+encode_splits was called, is_rooted must have been set to True)</p></li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.reconcile</span></code>: Tree-Fitting (Gene/Species, Parasite/Host, etc.)</a><ul>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree"><code class="docutils literal notranslate"><span class="pre">ContainingTree</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.build_edge_taxa_sets"><code class="docutils literal notranslate"><span class="pre">ContainingTree.build_edge_taxa_sets</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.clear"><code class="docutils literal notranslate"><span class="pre">ContainingTree.clear</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.clear_contained_edges"><code class="docutils literal notranslate"><span class="pre">ContainingTree.clear_contained_edges</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.deep_coalescences"><code class="docutils literal notranslate"><span class="pre">ContainingTree.deep_coalescences</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.embed_contained_kingman"><code class="docutils literal notranslate"><span class="pre">ContainingTree.embed_contained_kingman</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.embed_tree"><code class="docutils literal notranslate"><span class="pre">ContainingTree.embed_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.fit_edge_lengths"><code class="docutils literal notranslate"><span class="pre">ContainingTree.fit_edge_lengths</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.num_deep_coalescences"><code class="docutils literal notranslate"><span class="pre">ContainingTree.num_deep_coalescences</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.rebuild"><code class="docutils literal notranslate"><span class="pre">ContainingTree.rebuild</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.simulate_contained_kingman"><code class="docutils literal notranslate"><span class="pre">ContainingTree.simulate_contained_kingman</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.ContainingTree.write_as_mesquite"><code class="docutils literal notranslate"><span class="pre">ContainingTree.write_as_mesquite</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.monophyletic_partition_discordance"><code class="docutils literal notranslate"><span class="pre">monophyletic_partition_discordance</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.reconcile.reconciliation_discordance"><code class="docutils literal notranslate"><span class="pre">reconciliation_discordance</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="protractedspeciation.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.protractedspeciation</span></code>: The Protracted Speciation (Birth-Death) Model</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="treeshape.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.treeshape</span></code>: Models of Tree Shape</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="treeshape.html" title="dendropy.model.treeshape: Models of Tree Shape"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="protractedspeciation.html" title="dendropy.model.protractedspeciation: The Protracted Speciation (Birth-Death) Model"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.reconcile</span></code>: Tree-Fitting (Gene/Species, Parasite/Host, etc.)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

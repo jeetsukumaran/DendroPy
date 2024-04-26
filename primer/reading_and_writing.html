@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Reading and Writing Phylogenetic Data &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Converting Between Data Formats" href="converting.html" />
+    <link rel="prev" title="Introduction to Phylogenetic Data Objects" href="dataobjects.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="converting.html" title="Converting Between Data Formats"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dataobjects.html" title="Introduction to Phylogenetic Data Objects"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Reading and Writing Phylogenetic Data</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="reading-and-writing-phylogenetic-data">
+<h1>Reading and Writing Phylogenetic Data<a class="headerlink" href="#reading-and-writing-phylogenetic-data" title="Link to this heading">¶</a></h1>
+<section id="creating-new-objects-from-an-external-data-source">
+<h2>Creating New Objects From an External Data Source<a class="headerlink" href="#creating-new-objects-from-an-external-data-source" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>, <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a>, <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived (i.e., <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a>,
+<a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinCharacterMatrix</span></code></a>, <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardCharacterMatrix</span></code></a>, etc.), and <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a>
+classes all support a “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” factory class-method that instantiates an object
+of the given class from a data source. This method takes, at a minumum, two
+keyword arguments that specify the <em>source</em> of the data and the <em>schema</em> (or
+format) of the data.</p>
+<p>The source must be specifed using one and exactly one of the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>a path to a file (specified using the keyword argument “<code class="docutils literal notranslate"><span class="pre">path</span></code>”)</p></li>
+<li><p>a file or a file-like object opened for reading (specified using the keyword argument <code class="docutils literal notranslate"><span class="pre">&quot;file&quot;</span></code>)</p></li>
+<li><p>a string value giving the data directly (specified using the keyword argument <code class="docutils literal notranslate"><span class="pre">&quot;data&quot;</span></code>)</p></li>
+<li><p>or a URL (specified using the keyword argument <code class="docutils literal notranslate"><span class="pre">&quot;url&quot;</span></code>)</p></li>
+</ul>
+</div></blockquote>
+<p>The schema is specified using the keyword argument <code class="docutils literal notranslate"><span class="pre">&quot;schema&quot;</span></code>, and takes a string value that identifies the format of data.
+This “<a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a>” can be one of: “<a class="reference internal" href="../schemas/fasta.html"><span class="doc">fasta</span></a>”, “<a class="reference internal" href="../schemas/newick.html"><span class="doc">newick</span></a>”, “<a class="reference internal" href="../schemas/nexus.html"><span class="doc">nexus</span></a>”, “<a class="reference internal" href="../schemas/nexml.html"><span class="doc">nexml</span></a>”, or “<a class="reference internal" href="../schemas/phylip.html"><span class="doc">phylip</span></a>”.
+Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> or <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> object from a <a class="reference internal" href="../schemas/fasta.html"><span class="doc">FASTA</span></a>-formatted data source).</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">tree1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;mle.tre&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">tree2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;mle.nex&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">tree3</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;((A,B),(C,D));&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">tree4</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+
+<span class="n">tree_list1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.mcmc.nex&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">tree_list2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.mcmc.nex&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">tree_list3</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;(A,(B,C));((A,B),C);&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+
+<span class="n">dna1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.fasta&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+<span class="n">dna2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DnaCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://purl.org/phylo/treebase/phylows/matrix/TB2:M2610?format=nexus&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">aa1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">ProteinCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.dat&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;phylip&quot;</span><span class="p">)</span>
+<span class="n">std1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">StandardCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;python_morph.nex&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">std2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">StandardCharacterMatrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;&gt;t1</span><span class="se">\n</span><span class="s2">01011</span><span class="se">\n\n</span><span class="s2">&gt;t2</span><span class="se">\n</span><span class="s2">11100&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+
+<span class="n">dataset1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.chars_and_trees.nex&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="n">dataset2</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://purl.org/phylo/treebase/phylows/study/TB2:S1925?format=nexml&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” method takes a number of other optional keyword arguments that provide control over how the data is interpreted and processed.
+Some are general to all classes (e.g., the “<code class="docutils literal notranslate"><span class="pre">label</span></code>” or “<code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>” arguments), while others specific to a given class (e.g. the “<code class="docutils literal notranslate"><span class="pre">exclude_trees</span></code>” argument when instantiating data into a <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> object, or the “<code class="docutils literal notranslate"><span class="pre">tree_offset</span></code>” argument when instantiating data into a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> or <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> object).
+These are all covered in detail in the documentation of the respective methods for each class:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree.get" title="dendropy.datamodel.treemodel.Tree.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList.get" title="dendropy.datamodel.treecollectionmodel.TreeList.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeList.get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.get" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DnaCharacterMatrix.get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.get" title="dendropy.datamodel.charmatrixmodel.RnaCharacterMatrix.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">RnaCharacterMatrix.get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.get" title="dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ProteinCharacterMatrix.get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.get" title="dendropy.datamodel.charmatrixmodel.RestrictionSitesCharacterMatrix.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">RestrictionSitesCharacterMatrix.get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.get" title="dendropy.datamodel.charmatrixmodel.InfiniteSitesCharacterMatrix.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InfiniteSitesCharacterMatrix.get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.get" title="dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">StandardCharacterMatrix.get</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet.get" title="dendropy.datamodel.datasetmodel.DataSet.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DataSet.get</span></code></a></p></li>
+</ul>
+</div></blockquote>
+<p>Other optional keyword arguments are <a class="reference internal" href="../schemas/index.html#schema-specific-keyword-arguments"><span class="std std-ref">specific to the schema or format</span></a> (e.g., the “<code class="docutils literal notranslate"><span class="pre">preserve_underscores</span></code>” argument when reading <a class="reference internal" href="../schemas/newick.html"><span class="doc">Newick</span></a> or <a class="reference internal" href="../schemas/nexus.html"><span class="doc">NEXUS</span></a> data).
+These are covered in detail in the <a class="reference internal" href="../schemas/index.html"><span class="doc">DendroPy Schema Guide</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>, <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a>, <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived, and <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> classes
+also support a “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get_from_*()</span></code>” family of factory class-methods that
+can be seen as specializations of the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” method for various types of
+sources (in fact, the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” method is actually a dispatcher that calls on
+one of these methods below for implementation of the functionality):</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_from_stream(src,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a file or file-like object opened for reading the data source as the first argument, and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> as the second.
+Optional <a class="reference internal" href="../glossary.html#term-schema"><span class="xref std std-term">schema</span></a>-specific keyword arguments can be to control the parsing and other options.
+This is equivalent to calling “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get(file=src,</span> <span class="pre">schema=schema,</span> <span class="pre">...)</span></code>”.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_from_path(src,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a string specifying the path to the the data source file as the first argument, and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> as the second.
+Optional <a class="reference internal" href="../glossary.html#term-schema"><span class="xref std std-term">schema</span></a>-specific keyword arguments can be to control the parsing and other options.
+This is equivalent to calling “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get(path=src,</span> <span class="pre">schema=schema,</span> <span class="pre">...)</span></code>”.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_from_string(src,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a string containing the source data as the first argument, and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> as the second.
+Optional <a class="reference internal" href="../glossary.html#term-schema"><span class="xref std std-term">schema</span></a>-specific keyword arguments can be to control the parsing and other options.
+This is equivalent to calling “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get(data=src,</span> <span class="pre">schema=schema,</span> <span class="pre">...)</span></code>”.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_from_url(src,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a string containing the URL of the data as the first argument, and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> as the second.
+Optional <a class="reference internal" href="../glossary.html#term-schema"><span class="xref std std-term">schema</span></a>-specific keyword arguments can be  to control the parsing and other options.
+This is equivalent to calling “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get(url=src,</span> <span class="pre">schema=schema,</span> <span class="pre">...)</span></code>”.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>As with the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” method, the additional keyword arguments are specific to the given class or schema type.</p>
+</div>
+</section>
+<section id="adding-data-to-existing-objects-from-an-external-data-source">
+<h2>Adding Data to Existing Objects from an External Data Source<a class="headerlink" href="#adding-data-to-existing-objects-from-an-external-data-source" title="Link to this heading">¶</a></h2>
+<p>In addition to the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” class factory method, the collection classes (<a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a>, <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeArray" title="dendropy.datamodel.treecollectionmodel.TreeArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeArray</span></code></a> and <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a>) each support a “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code>” <em>instance</em> method that <em>add</em> data from external sources to an existing object (as opposed to creating and returning a new object based on an external data source).
+This “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code>” instance method has a signature that parallels the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” factory method described above, requiring:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A specification of a source using one and exactly one of the following keyword arguments: “<code class="docutils literal notranslate"><span class="pre">path</span></code>”, “<code class="docutils literal notranslate"><span class="pre">file</span></code>”, “<code class="docutils literal notranslate"><span class="pre">data</span></code>”, “<code class="docutils literal notranslate"><span class="pre">url</span></code>”.</p></li>
+<li><p>A specification of the <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema</span></a> or format of the data.</p></li>
+<li><p>Optional keyword arguments to customize/control the parsing and interpretation of the data.</p></li>
+</ul>
+</div></blockquote>
+<p>As with the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” method, the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code>” method takes a number of other optional keyword arguments that provide control over how the data is interpreted and processed, which are covered in more detail in the documentation of the respective methods for each class:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../library/treecollectionmodel.html#id0" title="dendropy.datamodel.treecollectionmodel.TreeList.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeList.read</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeArray.read" title="dendropy.datamodel.treecollectionmodel.TreeArray.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeArray.read</span></code></a></p></li>
+<li><p><a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet.read" title="dendropy.datamodel.datasetmodel.DataSet.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DataSet.read</span></code></a></p></li>
+</ul>
+</div></blockquote>
+<p>as well as <a class="reference internal" href="../schemas/index.html#schema-specific-keyword-arguments"><span class="std std-ref">schema-specific keyword arguments</span></a> which are covered in detail in the <a class="reference internal" href="../schemas/index.html"><span class="doc">DendroPy Schema Guide</span></a>.</p>
+<p>For example, the following accumulates post-burn-in trees from several different files into a single <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a> object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">post_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">post_trees</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.nex.run1.t&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">tree_offset</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">post_trees</span><span class="p">))</span>
+<span class="go">800</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">post_trees</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">path</span><span class="o">=</span><span class="s2">&quot;pythonidae.nex.run2.t&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">tree_offset</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">post_trees</span><span class="p">))</span>
+<span class="go">1600</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.nex.run3.t&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">post_trees</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">data</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">tree_offset</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">post_trees</span><span class="p">))</span>
+<span class="go">2400</span>
+</pre></div>
+</div>
+<p>while the following accumulates data from a variety of sources into a single <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> object under the same <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> to ensure that they all reference the same set of <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tns</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">new_taxon_namespace</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">attach_taxon_namespace</span><span class="p">(</span><span class="n">tns</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://api.opentreeoflife.org/v2/study/pg_1144/tree/tree2324.nex&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.fasta&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://purl.org/phylo/treebase/phylows/matrix/TB2:M2610?format=nexus&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pythonidae.dat&quot;</span><span class="p">),</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;phylip&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;python_morph.nex&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;&gt;t1</span><span class="se">\n</span><span class="s2">01011</span><span class="se">\n\n</span><span class="s2">&gt;t2</span><span class="se">\n</span><span class="s2">11100&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>DendroPy 3.xx supported “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read_from_*()</span></code>” methods on <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> and <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived classes. This is no longer supported in DendroPy 4 and above. Instead of trying to re-populate an existing <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> or <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived object by using “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read_from_*()</span></code>”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">()</span>
+<span class="n">x</span><span class="o">.</span><span class="n">read_from_path</span><span class="p">(</span><span class="s2">&quot;tree1.nex&quot;</span><span class="p">,</span> <span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="o">.</span>
+<span class="o">.</span>
+<span class="o">.</span>
+<span class="n">x</span><span class="o">.</span><span class="n">read_from_path</span><span class="p">(</span><span class="s2">&quot;tree2.nex&quot;</span><span class="p">,</span> <span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>simply rebind the new object returned by “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;tree1.nex&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+<span class="o">.</span>
+<span class="o">.</span>
+<span class="o">.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;tree2.nex&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexus&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a>, <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeArray" title="dendropy.datamodel.treecollectionmodel.TreeArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeArray</span></code></a>, and <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> classes
+also support a “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read_from_*()</span></code>” family of instance methods that
+can be seen as specializations of the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code>” method for various types of
+sources (in fact, the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code>” method is actually a dispatcher that calls on
+one of these methods below for implementation of the functionality):</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_from_stream(src,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a file or file-like object opened for reading the data source as the first argument, and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> as the second.
+Optional <a class="reference internal" href="../glossary.html#term-schema"><span class="xref std std-term">schema</span></a>-specific keyword arguments can be to control the parsing and other options.
+This is equivalent to calling “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read(file=src,</span> <span class="pre">schema=schema,</span> <span class="pre">...)</span></code>”.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_from_path(src,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a string specifying the path to the the data source file as the first argument, and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> as the second.
+Optional <a class="reference internal" href="../glossary.html#term-schema"><span class="xref std std-term">schema</span></a>-specific keyword arguments can be to control the parsing and other options.
+This is equivalent to calling “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read(path=src,</span> <span class="pre">schema=schema,</span> <span class="pre">...)</span></code>”.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_from_string(src,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a string containing the source data as the first argument, and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> as the second.
+Optional <a class="reference internal" href="../glossary.html#term-schema"><span class="xref std std-term">schema</span></a>-specific keyword arguments can be to control the parsing and other options.
+This is equivalent to calling “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read(data=src,</span> <span class="pre">schema=schema,</span> <span class="pre">...)</span></code>”.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_from_url(src,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a string containing the URL of the data as the first argument, and a <a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a> as the second.
+Optional <a class="reference internal" href="../glossary.html#term-schema"><span class="xref std std-term">schema</span></a>-specific keyword arguments can be  to control the parsing and other options.
+This is equivalent to calling “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read(url=src,</span> <span class="pre">schema=schema,</span> <span class="pre">...)</span></code>”.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>As with the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code>” method, the additional keyword arguments are specific to the given class or schema type.</p>
+</div>
+</section>
+<section id="writing-out-phylogenetic-data">
+<h2>Writing Out Phylogenetic Data<a class="headerlink" href="#writing-out-phylogenetic-data" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>, <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a>, <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived (i.e., <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a>,
+<a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ProteinCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProteinCharacterMatrix</span></code></a>, <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardCharacterMatrix</span></code></a>, etc.), and <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a>
+classes all support a “<code class="xref py py-meth docutils literal notranslate"><span class="pre">write</span></code>” instance method for serialization of data to an
+external data source.
+This method takes two mandatory keyword arguments:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>One and exactly one of the following to specify the <em>destination</em>:
+-   a path to a file (specified using the keyword argument “<code class="docutils literal notranslate"><span class="pre">path</span></code>”)
+-   a file or a file-like object opened for writing (specified using the keyword argument <code class="docutils literal notranslate"><span class="pre">&quot;file&quot;</span></code>)</p></li>
+<li><p>A “<a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a>” given by the keyword argument “<code class="docutils literal notranslate"><span class="pre">schema</span></code>”, to identify the schema or format for the output.</p></li>
+</ul>
+</div></blockquote>
+<p>Alternatively, the <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>, <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a>, <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived, or <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a> objects may also be represented as a string by calling the “<code class="docutils literal notranslate"><span class="pre">as_string()</span></code>” method, which requires at least one single mandatory argument, “<code class="docutils literal notranslate"><span class="pre">schema</span></code>”, giving the “<a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a>” to identify the format of the output.</p>
+<p>In either case, the “<a class="reference internal" href="../schemas/index.html#specifying-the-data-source-format"><span class="std std-ref">schema specification string</span></a>” can be one of: “<a class="reference internal" href="../schemas/fasta.html"><span class="doc">fasta</span></a>”, “<a class="reference internal" href="../schemas/newick.html"><span class="doc">newick</span></a>”, “<a class="reference internal" href="../schemas/nexus.html"><span class="doc">nexus</span></a>”, “<a class="reference internal" href="../schemas/nexml.html"><span class="doc">nexml</span></a>”, or “<a class="reference internal" href="../schemas/phylip.html"><span class="doc">phylip</span></a>”.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;output.tre&quot;</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
+<span class="n">dest</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;output.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="n">tree_list</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;nexml&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dna_character_matrix</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="s2">&quot;fasta&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>As with the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code>” and “<code class="xref py py-meth docutils literal notranslate"><span class="pre">read</span></code>” methods, further keyword arguments can be specified to control behavior.
+These are covered in detail in the “<a class="reference internal" href="../schemas/index.html"><span class="doc">DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats</span></a>” section.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>, <a class="reference internal" href="../library/treecollectionmodel.html#dendropy.datamodel.treecollectionmodel.TreeList" title="dendropy.datamodel.treecollectionmodel.TreeList"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code></a>, <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived, and <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> classes also support a “<code class="xref py py-meth docutils literal notranslate"><span class="pre">write_to_*()</span></code>” family of instance methods that can be seen as specializations of the “<code class="xref py py-meth docutils literal notranslate"><span class="pre">write</span></code>” method for various types of destinations:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_to_stream(dest,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a file or file-like object opened for writing the data as the first argument, and a string specifying the schema as the second.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_to_path(dest,</span> <span class="pre">schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a string specifying the path to the file as the first argument, and a string specifying the schema as the second.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_string(schema,</span> <span class="pre">**kwargs)</span></code></dt><dd><p>Takes a string specifying the schema as the first argument, and returns a string containing the formatted-representation of the data.</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Reading and Writing Phylogenetic Data</a><ul>
+<li><a class="reference internal" href="#creating-new-objects-from-an-external-data-source">Creating New Objects From an External Data Source</a></li>
+<li><a class="reference internal" href="#adding-data-to-existing-objects-from-an-external-data-source">Adding Data to Existing Objects from an External Data Source</a></li>
+<li><a class="reference internal" href="#writing-out-phylogenetic-data">Writing Out Phylogenetic Data</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="dataobjects.html"
+                          title="previous chapter">Introduction to Phylogenetic Data Objects</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="converting.html"
+                          title="next chapter">Converting Between Data Formats</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="index.html">The DendroPy Primer</a></li>
+            <li><a href="../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="converting.html" title="Converting Between Data Formats"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dataobjects.html" title="Introduction to Phylogenetic Data Objects"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Reading and Writing Phylogenetic Data</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

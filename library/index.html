@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DendroPy Library Reference &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.datamodel.basemodel: Core Infrastructure for Phylogenetic Data Objects" href="basemodel.html" />
+    <link rel="prev" title="RAxML" href="../primer/raxml.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="basemodel.html" title="dendropy.datamodel.basemodel: Core Infrastructure for Phylogenetic Data Objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../primer/raxml.html" title="RAxML"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DendroPy Library Reference</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="dendropy-library-reference">
+<h1>DendroPy Library Reference<a class="headerlink" href="#dendropy-library-reference" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#data-model" id="id1">Data Model</a></p></li>
+<li><p><a class="reference internal" href="#process-models" id="id2">Process Models</a></p></li>
+<li><p><a class="reference internal" href="#calculations-statistics-and-metrics" id="id3">Calculations, Statistics, and Metrics</a></p></li>
+<li><p><a class="reference internal" href="#simulations" id="id4">Simulations</a></p></li>
+</ul>
+</nav>
+<section id="data-model">
+<h2>Data Model<a class="headerlink" href="#data-model" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basemodel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.basemodel</span></code>: Core Infrastructure for Phylogenetic Data Objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basemodel.html#the-dataobject-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">DataObject</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basemodel.html#the-annotable-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basemodel.html#the-annotation-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basemodel.html#the-annotationset-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">AnnotationSet</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basemodel.html#supporting-classes">Supporting Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="taxonmodel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.taxonmodel</span></code>: Taxonomic Namespace Reference and Management</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="taxonmodel.html#the-taxonnamespace-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taxonmodel.html#the-taxon-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taxonmodel.html#the-taxonnamespaceassociated-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespaceAssociated</span></code> Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treemodel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.treemodel</span></code>: Trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treemodel.html#the-tree-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemodel.html#the-node-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemodel.html#the-edge-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemodel.html#the-bipartition-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemodel.html#the-asciitreeplot-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">AsciiTreePlot</span></code> Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treecollectionmodel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.treecollectionmodel</span></code>: Collections of Trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treecollectionmodel.html#the-treelist-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">TreeList</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecollectionmodel.html#the-treearray-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">TreeArray</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecollectionmodel.html#the-splitdistribution-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">SplitDistribution</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecollectionmodel.html#the-splitdistributionsummarizer-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">SplitDistributionSummarizer</span></code> Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="charstatemodel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.charstatemodel</span></code>: Character State Identities and Alphabets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="charstatemodel.html#the-statealphabet-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">StateAlphabet</span></code> Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charstatemodel.html#the-stateidentity-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code> Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="charmatrixmodel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.charmatrixmodel</span></code>: Character Sequences and Matrices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="charmatrixmodel.html#character-sequences">Character Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charmatrixmodel.html#character-types">Character Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charmatrixmodel.html#character-subsets">Character Subsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="charmatrixmodel.html#character-matrices">Character Matrices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="datasetmodel.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.datasetmodel</span></code>: Datasets – Aggregate Collections of Taxon, Character, and Tree Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="phylogeneticdistance.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.phylogeneticdistance</span></code>: Phylogenetic Distance Calculations and Operations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phylogeneticdistance.html#the-phylogeneticdistancematrix-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">PhylogeneticDistanceMatrix</span></code> Class</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="process-models">
+<h2>Process Models<a class="headerlink" href="#process-models" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="birthdeath.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.birthdeath</span></code>: The Birth-Death and Related Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="birthdeath.html#dendropy.model.birthdeath.birth_death_likelihood"><code class="docutils literal notranslate"><span class="pre">birth_death_likelihood</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="birthdeath.html#dendropy.model.birthdeath.birth_death_tree"><code class="docutils literal notranslate"><span class="pre">birth_death_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="birthdeath.html#dendropy.model.birthdeath.discrete_birth_death_tree"><code class="docutils literal notranslate"><span class="pre">discrete_birth_death_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="birthdeath.html#dendropy.model.birthdeath.fit_pure_birth_model"><code class="docutils literal notranslate"><span class="pre">fit_pure_birth_model</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="birthdeath.html#dendropy.model.birthdeath.fit_pure_birth_model_to_tree"><code class="docutils literal notranslate"><span class="pre">fit_pure_birth_model_to_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="birthdeath.html#dendropy.model.birthdeath.uniform_pure_birth_tree"><code class="docutils literal notranslate"><span class="pre">uniform_pure_birth_tree</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="coalescent.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.coalescent</span></code>: The Coalescent</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.coalesce_nodes"><code class="docutils literal notranslate"><span class="pre">coalesce_nodes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.constrained_kingman_tree"><code class="docutils literal notranslate"><span class="pre">constrained_kingman_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.contained_coalescent_tree"><code class="docutils literal notranslate"><span class="pre">contained_coalescent_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.discrete_time_to_coalescence"><code class="docutils literal notranslate"><span class="pre">discrete_time_to_coalescence</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.expected_tmrca"><code class="docutils literal notranslate"><span class="pre">expected_tmrca</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.extract_coalescent_frames"><code class="docutils literal notranslate"><span class="pre">extract_coalescent_frames</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.log_probability_of_coalescent_frames"><code class="docutils literal notranslate"><span class="pre">log_probability_of_coalescent_frames</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.log_probability_of_coalescent_tree"><code class="docutils literal notranslate"><span class="pre">log_probability_of_coalescent_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.mean_kingman_tree"><code class="docutils literal notranslate"><span class="pre">mean_kingman_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.node_waiting_time_pairs"><code class="docutils literal notranslate"><span class="pre">node_waiting_time_pairs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.pure_kingman_tree"><code class="docutils literal notranslate"><span class="pre">pure_kingman_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.pure_kingman_tree_shape"><code class="docutils literal notranslate"><span class="pre">pure_kingman_tree_shape</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="coalescent.html#dendropy.model.coalescent.time_to_coalescence"><code class="docutils literal notranslate"><span class="pre">time_to_coalescence</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="continuous.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.continuous</span></code>: Continuous Character Evolution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="continuous.html#dendropy.model.continuous.PhylogeneticIndependentContrasts"><code class="docutils literal notranslate"><span class="pre">PhylogeneticIndependentContrasts</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="continuous.html#dendropy.model.continuous.evolve_continuous_char"><code class="docutils literal notranslate"><span class="pre">evolve_continuous_char</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="discrete.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.discrete</span></code>: Discrete Character Evolution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="discrete.html#dendropy.model.discrete.DiscreteCharacterEvolutionModel"><code class="docutils literal notranslate"><span class="pre">DiscreteCharacterEvolutionModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete.html#dendropy.model.discrete.DiscreteCharacterEvolver"><code class="docutils literal notranslate"><span class="pre">DiscreteCharacterEvolver</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete.html#dendropy.model.discrete.Hky85"><code class="docutils literal notranslate"><span class="pre">Hky85</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete.html#dendropy.model.discrete.Jc69"><code class="docutils literal notranslate"><span class="pre">Jc69</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete.html#dendropy.model.discrete.NucleotideCharacterEvolutionModel"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete.html#dendropy.model.discrete.hky85_chars"><code class="docutils literal notranslate"><span class="pre">hky85_chars</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete.html#dendropy.model.discrete.simulate_discrete_char_dataset"><code class="docutils literal notranslate"><span class="pre">simulate_discrete_char_dataset</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete.html#dendropy.model.discrete.simulate_discrete_chars"><code class="docutils literal notranslate"><span class="pre">simulate_discrete_chars</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parsimony.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.parsimony</span></code>: The Parsimony Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parsimony.html#dendropy.model.parsimony.fitch_down_pass"><code class="docutils literal notranslate"><span class="pre">fitch_down_pass</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="parsimony.html#dendropy.model.parsimony.fitch_up_pass"><code class="docutils literal notranslate"><span class="pre">fitch_up_pass</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="parsimony.html#dendropy.model.parsimony.parsimony_score"><code class="docutils literal notranslate"><span class="pre">parsimony_score</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protractedspeciation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.protractedspeciation</span></code>: The Protracted Speciation (Birth-Death) Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protractedspeciation.html#dendropy.model.protractedspeciation.expected_duration_of_speciation"><code class="docutils literal notranslate"><span class="pre">expected_duration_of_speciation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protractedspeciation.html#dendropy.model.protractedspeciation.log_probability_of_duration_of_speciation"><code class="docutils literal notranslate"><span class="pre">log_probability_of_duration_of_speciation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protractedspeciation.html#dendropy.model.protractedspeciation.maximum_probability_duration_of_speciation"><code class="docutils literal notranslate"><span class="pre">maximum_probability_duration_of_speciation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protractedspeciation.html#dendropy.model.protractedspeciation.probability_of_duration_of_speciation"><code class="docutils literal notranslate"><span class="pre">probability_of_duration_of_speciation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="protractedspeciation.html#the-protractedspeciationprocess-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">ProtractedSpeciationProcess</span></code> Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reconcile.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.reconcile</span></code>: Tree-Fitting (Gene/Species, Parasite/Host, etc.)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reconcile.html#dendropy.model.reconcile.ContainingTree"><code class="docutils literal notranslate"><span class="pre">ContainingTree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reconcile.html#dendropy.model.reconcile.monophyletic_partition_discordance"><code class="docutils literal notranslate"><span class="pre">monophyletic_partition_discordance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reconcile.html#dendropy.model.reconcile.reconciliation_discordance"><code class="docutils literal notranslate"><span class="pre">reconciliation_discordance</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treeshape.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.treeshape</span></code>: Models of Tree Shape</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treeshape.html#dendropy.model.treeshape.star_tree"><code class="docutils literal notranslate"><span class="pre">star_tree</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="calculations-statistics-and-metrics">
+<h2>Calculations, Statistics, and Metrics<a class="headerlink" href="#calculations-statistics-and-metrics" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="treemeasure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.treemeasure</span></code>: Unary Tree Statistics and Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treemeasure.html#dendropy.calculate.treemeasure.B1"><code class="docutils literal notranslate"><span class="pre">B1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemeasure.html#dendropy.calculate.treemeasure.N_bar"><code class="docutils literal notranslate"><span class="pre">N_bar</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemeasure.html#dendropy.calculate.treemeasure.PatristicDistanceMatrix"><code class="docutils literal notranslate"><span class="pre">PatristicDistanceMatrix</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemeasure.html#dendropy.calculate.treemeasure.colless_tree_imbalance"><code class="docutils literal notranslate"><span class="pre">colless_tree_imbalance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemeasure.html#dendropy.calculate.treemeasure.patristic_distance"><code class="docutils literal notranslate"><span class="pre">patristic_distance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemeasure.html#dendropy.calculate.treemeasure.pybus_harvey_gamma"><code class="docutils literal notranslate"><span class="pre">pybus_harvey_gamma</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemeasure.html#dendropy.calculate.treemeasure.sackin_index"><code class="docutils literal notranslate"><span class="pre">sackin_index</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treemeasure.html#dendropy.calculate.treemeasure.treeness"><code class="docutils literal notranslate"><span class="pre">treeness</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treecompare.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.treecompare</span></code>: Distances and Comparison Between Trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treecompare.html#dendropy.calculate.treecompare.euclidean_distance"><code class="docutils literal notranslate"><span class="pre">euclidean_distance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecompare.html#dendropy.calculate.treecompare.false_positives_and_negatives"><code class="docutils literal notranslate"><span class="pre">false_positives_and_negatives</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecompare.html#dendropy.calculate.treecompare.find_missing_bipartitions"><code class="docutils literal notranslate"><span class="pre">find_missing_bipartitions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecompare.html#dendropy.calculate.treecompare.mason_gamer_kellogg_score"><code class="docutils literal notranslate"><span class="pre">mason_gamer_kellogg_score</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecompare.html#dendropy.calculate.treecompare.robinson_foulds_distance"><code class="docutils literal notranslate"><span class="pre">robinson_foulds_distance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecompare.html#dendropy.calculate.treecompare.symmetric_difference"><code class="docutils literal notranslate"><span class="pre">symmetric_difference</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecompare.html#dendropy.calculate.treecompare.unweighted_robinson_foulds_distance"><code class="docutils literal notranslate"><span class="pre">unweighted_robinson_foulds_distance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treecompare.html#dendropy.calculate.treecompare.weighted_robinson_foulds_distance"><code class="docutils literal notranslate"><span class="pre">weighted_robinson_foulds_distance</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="treescore.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.treescore</span></code>: Scoring Trees with Reference to Data and a Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="popgenstat.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.popgenstat</span></code>: Population Genetics Statistics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="popgenstat.html#dendropy.calculate.popgenstat.average_number_of_pairwise_differences"><code class="docutils literal notranslate"><span class="pre">average_number_of_pairwise_differences</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="popgenstat.html#dendropy.calculate.popgenstat.derived_state_matrix"><code class="docutils literal notranslate"><span class="pre">derived_state_matrix</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="popgenstat.html#dendropy.calculate.popgenstat.nucleotide_diversity"><code class="docutils literal notranslate"><span class="pre">nucleotide_diversity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="popgenstat.html#dendropy.calculate.popgenstat.num_segregating_sites"><code class="docutils literal notranslate"><span class="pre">num_segregating_sites</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="popgenstat.html#dendropy.calculate.popgenstat.tajimas_d"><code class="docutils literal notranslate"><span class="pre">tajimas_d</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="popgenstat.html#dendropy.calculate.popgenstat.unfolded_site_frequency_spectrum"><code class="docutils literal notranslate"><span class="pre">unfolded_site_frequency_spectrum</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="popgenstat.html#dendropy.calculate.popgenstat.wattersons_theta"><code class="docutils literal notranslate"><span class="pre">wattersons_theta</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="probability.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.probability</span></code>: General Probability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.binomial_rv"><code class="docutils literal notranslate"><span class="pre">binomial_rv</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.chisq_pdf"><code class="docutils literal notranslate"><span class="pre">chisq_pdf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.exp_pdf"><code class="docutils literal notranslate"><span class="pre">exp_pdf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.geometric_rv"><code class="docutils literal notranslate"><span class="pre">geometric_rv</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.hypergeometric_pmf"><code class="docutils literal notranslate"><span class="pre">hypergeometric_pmf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.num_poisson_events"><code class="docutils literal notranslate"><span class="pre">num_poisson_events</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.poisson_pmf"><code class="docutils literal notranslate"><span class="pre">poisson_pmf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.poisson_rv"><code class="docutils literal notranslate"><span class="pre">poisson_rv</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.sample_multinomial"><code class="docutils literal notranslate"><span class="pre">sample_multinomial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.weighted_choice"><code class="docutils literal notranslate"><span class="pre">weighted_choice</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.weighted_index_choice"><code class="docutils literal notranslate"><span class="pre">weighted_index_choice</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="probability.html#dendropy.calculate.probability.z_pmf"><code class="docutils literal notranslate"><span class="pre">z_pmf</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.calculate.statistics</span></code>: General Statistics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.FishersExactTest"><code class="docutils literal notranslate"><span class="pre">FishersExactTest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.empirical_cdf"><code class="docutils literal notranslate"><span class="pre">empirical_cdf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.empirical_hpd"><code class="docutils literal notranslate"><span class="pre">empirical_hpd</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.mean_and_population_variance"><code class="docutils literal notranslate"><span class="pre">mean_and_population_variance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.mean_and_sample_variance"><code class="docutils literal notranslate"><span class="pre">mean_and_sample_variance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.median"><code class="docutils literal notranslate"><span class="pre">median</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.mode"><code class="docutils literal notranslate"><span class="pre">mode</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.quantile_5_95"><code class="docutils literal notranslate"><span class="pre">quantile_5_95</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.rank"><code class="docutils literal notranslate"><span class="pre">rank</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.summarize"><code class="docutils literal notranslate"><span class="pre">summarize</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#dendropy.calculate.statistics.variance_covariance"><code class="docutils literal notranslate"><span class="pre">variance_covariance</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="simulations">
+<h2>Simulations<a class="headerlink" href="#simulations" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="treesim.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.simulate.treesim</span></code>: Unified Namespace Aggregating Functions and Classes for Tree Simulations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="treesim.html#dendropy.simulate.treesim.birth_death_tree"><code class="docutils literal notranslate"><span class="pre">birth_death_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesim.html#dendropy.simulate.treesim.constrained_kingman_tree"><code class="docutils literal notranslate"><span class="pre">constrained_kingman_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesim.html#dendropy.simulate.treesim.contained_coalescent_tree"><code class="docutils literal notranslate"><span class="pre">contained_coalescent_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesim.html#dendropy.simulate.treesim.discrete_birth_death_tree"><code class="docutils literal notranslate"><span class="pre">discrete_birth_death_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesim.html#dendropy.simulate.treesim.mean_kingman_tree"><code class="docutils literal notranslate"><span class="pre">mean_kingman_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesim.html#dendropy.simulate.treesim.pure_kingman_tree"><code class="docutils literal notranslate"><span class="pre">pure_kingman_tree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="treesim.html#dendropy.simulate.treesim.star_tree"><code class="docutils literal notranslate"><span class="pre">star_tree</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="popgensim.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.simulate.popgensim</span></code>: Population Genetics Simulations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="popgensim.html#dendropy.simulate.popgensim.pop_gen_tree"><code class="docutils literal notranslate"><span class="pre">pop_gen_tree</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">DendroPy Library Reference</a><ul>
+<li><a class="reference internal" href="#data-model">Data Model</a></li>
+<li><a class="reference internal" href="#process-models">Process Models</a></li>
+<li><a class="reference internal" href="#calculations-statistics-and-metrics">Calculations, Statistics, and Metrics</a></li>
+<li><a class="reference internal" href="#simulations">Simulations</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../primer/raxml.html"
+                          title="previous chapter">RAxML</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="basemodel.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.basemodel</span></code>: Core Infrastructure for Phylogenetic Data Objects</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="#">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="basemodel.html" title="dendropy.datamodel.basemodel: Core Infrastructure for Phylogenetic Data Objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../primer/raxml.html" title="RAxML"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DendroPy Library Reference</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

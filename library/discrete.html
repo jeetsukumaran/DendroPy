@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dendropy.model.discrete: Discrete Character Evolution &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dendropy.model.parsimony: The Parsimony Model" href="parsimony.html" />
+    <link rel="prev" title="dendropy.model.continuous: Continuous Character Evolution" href="continuous.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="parsimony.html" title="dendropy.model.parsimony: The Parsimony Model"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="continuous.html" title="dendropy.model.continuous: Continuous Character Evolution"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.discrete</span></code>: Discrete Character Evolution</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-dendropy.model.discrete">
+<span id="dendropy-model-discrete-discrete-character-evolution"></span><h1><a class="reference internal" href="#module-dendropy.model.discrete" title="dendropy.model.discrete"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.discrete</span></code></a>: Discrete Character Evolution<a class="headerlink" href="#module-dendropy.model.discrete" title="Link to this heading">¶</a></h1>
+<p>Models and modeling of discrete character evolution.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.model.discrete.DiscreteCharacterEvolutionModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.model.discrete.</span></span><span class="sig-name descname"><span class="pre">DiscreteCharacterEvolutionModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_alphabet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stationary_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#DiscreteCharacterEvolutionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.DiscreteCharacterEvolutionModel" title="Link to this definition">¶</a></dt>
+<dd><p>Base class for discrete character substitution models.</p>
+<p>__init__ initializes the state_alphabet to define the character type on which
+this model acts.  The objects random number generator will be <code class="docutils literal notranslate"><span class="pre">rng</span></code> or ‘GLOBAL_RNG’</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.DiscreteCharacterEvolutionModel.pmatrix">
+<span class="sig-name descname"><span class="pre">pmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tlen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#DiscreteCharacterEvolutionModel.pmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.DiscreteCharacterEvolutionModel.pmatrix" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a matrix of nucleotide substitution
+probabilities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.DiscreteCharacterEvolutionModel.simulate_descendant_states">
+<span class="sig-name descname"><span class="pre">simulate_descendant_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ancestral_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#DiscreteCharacterEvolutionModel.simulate_descendant_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.DiscreteCharacterEvolutionModel.simulate_descendant_states" title="Link to this definition">¶</a></dt>
+<dd><p>Returns descendent sequence given ancestral sequence.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.model.discrete.DiscreteCharacterEvolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.model.discrete.</span></span><span class="sig-name descname"><span class="pre">DiscreteCharacterEvolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sequences'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_model_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seq_model'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_length_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_rate_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mutation_rate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_label_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'taxon'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#DiscreteCharacterEvolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.DiscreteCharacterEvolver" title="Link to this definition">¶</a></dt>
+<dd><p>Evolves sequences on a tree.</p>
+<p>__init__ sets up meta-data dealing with object nomenclature and semantics.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.DiscreteCharacterEvolver.evolve_states">
+<span class="sig-name descname"><span class="pre">evolve_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulate_root_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#DiscreteCharacterEvolver.evolve_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.DiscreteCharacterEvolver.evolve_states" title="Link to this definition">¶</a></dt>
+<dd><p>Appends a new sequence of length <code class="docutils literal notranslate"><span class="pre">seq_len</span></code> to a list at each node
+in <code class="docutils literal notranslate"><span class="pre">tree</span></code>.  The attribute name of this list in each node is given
+by <code class="docutils literal notranslate"><span class="pre">seq_attr</span></code>. If <code class="docutils literal notranslate"><span class="pre">seq_model</span></code> is None, <code class="docutils literal notranslate"><span class="pre">tree.seq_model</span></code> or
+<code class="docutils literal notranslate"><span class="pre">seq_model</span></code> at each node must be specified. If <code class="docutils literal notranslate"><span class="pre">in_place</span></code> is
+False, the tree is copied first, otherwise original tree is modified.
+If <code class="docutils literal notranslate"><span class="pre">root_states</span></code> is given, this will be used as the sequence for the root.
+If not, and if <code class="docutils literal notranslate"><span class="pre">simulate_root_states</span></code> is True, then the sequence for the
+root will be drawn from the stationary distribution of the character model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.DiscreteCharacterEvolver.extend_char_matrix_with_characters_on_tree">
+<span class="sig-name descname"><span class="pre">extend_char_matrix_with_characters_on_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">char_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#DiscreteCharacterEvolver.extend_char_matrix_with_characters_on_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.DiscreteCharacterEvolver.extend_char_matrix_with_characters_on_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a character matrix with new sequences (or extends sequences of
+an existing character matrix if provided via <code class="docutils literal notranslate"><span class="pre">char_matrix</span></code>),
+where the the sequence for each taxon corresponds to the concatenation
+of all sequences in the list of sequences associated with tip that
+references the given taxon.
+Specific sequences to be included/excluded can be fine-tuned using the
+<code class="docutils literal notranslate"><span class="pre">include</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude</span></code> args, where <code class="docutils literal notranslate"><span class="pre">include=None</span></code> means to include all
+by default, and <code class="docutils literal notranslate"><span class="pre">exclude=None</span></code> means to exclude all by default.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.model.discrete.Hky85">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.model.discrete.</span></span><span class="sig-name descname"><span class="pre">Hky85</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_alphabet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#Hky85"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.Hky85" title="Link to this definition">¶</a></dt>
+<dd><p>Hasegawa et al. 1985 model. Implementation following Swofford et
+al., 1996.</p>
+<p>__init__: if no arguments given, defaults to JC69.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.Hky85.corrected_substitution_rate">
+<span class="sig-name descname"><span class="pre">corrected_substitution_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#Hky85.corrected_substitution_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.Hky85.corrected_substitution_rate" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the factor that we have to multiply to the branch length
+to make branch lengths proportional to # of substitutions per site.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.Hky85.pij">
+<span class="sig-name descname"><span class="pre">pij</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#Hky85.pij"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.Hky85.pij" title="Link to this definition">¶</a></dt>
+<dd><p>Returns probability, p_ij, of going from state i to state j
+over time tlen at given rate. (tlen * rate = nu, expected
+number of substitutions)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.Hky85.pmatrix">
+<span class="sig-name descname"><span class="pre">pmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tlen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#Hky85.pmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.Hky85.pmatrix" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a matrix of nucleotide substitution
+probabilities. Based on analytical solution by Swofford et
+al., 1996. (tlen * rate = nu, expected number of
+substitutions)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.Hky85.pvector">
+<span class="sig-name descname"><span class="pre">pvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#Hky85.pvector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.Hky85.pvector" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a vector of transition probabilities for a given state
+over time <code class="docutils literal notranslate"><span class="pre">tlen</span></code> at rate <code class="docutils literal notranslate"><span class="pre">rate</span></code> for <code class="docutils literal notranslate"><span class="pre">state</span></code>. (tlen * rate =
+nu, expected number of substitutions)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.Hky85.qmatrix">
+<span class="sig-name descname"><span class="pre">qmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#Hky85.qmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.Hky85.qmatrix" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the instantaneous rate of change matrix.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.model.discrete.Jc69">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.model.discrete.</span></span><span class="sig-name descname"><span class="pre">Jc69</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_alphabet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#Jc69"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.Jc69" title="Link to this definition">¶</a></dt>
+<dd><p>Jukes-Cantor 1969 model. Specializes HKY85 such that
+kappa = 1.0, and base frequencies = [0.25, 0.25, 0.25, 0.25].</p>
+<p>__init__: uses Hky85.__init__</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dendropy.model.discrete.NucleotideCharacterEvolutionModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.model.discrete.</span></span><span class="sig-name descname"><span class="pre">NucleotideCharacterEvolutionModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_alphabet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#NucleotideCharacterEvolutionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel" title="Link to this definition">¶</a></dt>
+<dd><p>General nucleotide substitution model.</p>
+<p>__init__ calls SeqModel.__init__ and sets the base_freqs field</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_purine">
+<span class="sig-name descname"><span class="pre">is_purine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#NucleotideCharacterEvolutionModel.is_purine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_purine" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if state_index represents a purine (A or G) row or column
+index: 0, 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_purine_transition">
+<span class="sig-name descname"><span class="pre">is_purine_transition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state1_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state2_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#NucleotideCharacterEvolutionModel.is_purine_transition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_purine_transition" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if the change from state1 to state2, as
+represented by the row or column indices, is a purine
+transitional change.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_pyrimidine">
+<span class="sig-name descname"><span class="pre">is_pyrimidine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#NucleotideCharacterEvolutionModel.is_pyrimidine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_pyrimidine" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if state_index represents a pyrimidine (C or T) row or column
+index: 1, 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_pyrimidine_transition">
+<span class="sig-name descname"><span class="pre">is_pyrimidine_transition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state1_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state2_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#NucleotideCharacterEvolutionModel.is_pyrimidine_transition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_pyrimidine_transition" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if the change from state1 to state2, as
+represented by the row or column indices, is a pyrimidine
+transitional change.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_transition">
+<span class="sig-name descname"><span class="pre">is_transition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state1_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state2_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#NucleotideCharacterEvolutionModel.is_transition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_transition" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if the change from state1 to state2, as
+represented by the row or column indices, is a
+transitional change.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_transversion">
+<span class="sig-name descname"><span class="pre">is_transversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state1_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state2_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#NucleotideCharacterEvolutionModel.is_transversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_transversion" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if the change from state1 to state2, as
+represented by the row or column indices, is a transversional
+change.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.model.discrete.NucleotideCharacterEvolutionModel.stationary_sample">
+<span class="sig-name descname"><span class="pre">stationary_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#NucleotideCharacterEvolutionModel.stationary_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.stationary_sample" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a NucleotideSequence() object with length <code class="docutils literal notranslate"><span class="pre">length</span></code>
+representing a sample of characters drawn from this model’s
+stationary distribution.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.discrete.hky85_chars">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.discrete.</span></span><span class="sig-name descname"><span class="pre">hky85_chars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_freqs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.25,</span> <span class="pre">0.25,</span> <span class="pre">0.25,</span> <span class="pre">0.25]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_sequences_on_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#hky85_chars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.hky85_chars" title="Link to this definition">¶</a></dt>
+<dd><p>Convenience class to wrap generation of characters (as a CharacterBlock
+object) based on the HKY model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
+<li><p><strong>tree_model</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – Tree on which to simulate.</p></li>
+<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
+reflect true expected number of changes).</p></li>
+<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
+<li><p><strong>char_matrix</strong> (<a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a>) – If given, new sequences for taxa on <code class="docutils literal notranslate"><span class="pre">tree_model</span></code> leaf_nodes will be
+appended to existing sequences of corresponding taxa in char_matrix; if
+not, a new <a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a> object will be created.</p></li>
+<li><p><strong>retain_sequences_on_tree</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, sequence annotations will be cleared from tree after
+simulation. Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> if you want to, e.g., evolve and accumulate
+different sequences on tree, or retain information for other purposes.</p></li>
+<li><p><strong>rng</strong> (<em>random number generator</em>) – If not given, ‘GLOBAL_RNG’ will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>d</strong> (<em>|DnaCharacterMatrix|</em>) – The simulated alignment.</p></li>
+<li><p><em>Since characters will be appended to existing sequences, you can simulate a</em></p></li>
+<li><p><em>sequences under a mixed model by calling this method multiple times with</em></p></li>
+<li><p><em>different character model parameter values and/or different mutation</em></p></li>
+<li><p>rates, passing in the same <code class="docutils literal notranslate"><span class="pre">char_matrix</span></code> object each time.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.discrete.simulate_discrete_char_dataset">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.discrete.</span></span><span class="sig-name descname"><span class="pre">simulate_discrete_char_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#simulate_discrete_char_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.simulate_discrete_char_dataset" title="Link to this definition">¶</a></dt>
+<dd><p>Wrapper to conveniently generate a DataSet simulated under
+the given tree and character model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
+<li><p><strong>tree_model</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – Tree on which to simulate.</p></li>
+<li><p><strong>seq_model</strong> (<a class="reference internal" href="#dendropy.model.discrete.DiscreteCharacterEvolutionModel" title="dendropy.model.discrete.DiscreteCharacterEvolutionModel"><em>dendropy.model.discrete.DiscreteCharacterEvolutionModel</em></a>) – The character substitution model under which to to evolve the
+characters.</p></li>
+<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
+reflect true expected number of changes).</p></li>
+<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a>) – If given, the new dendropy.CharacterMatrix object will be
+added to this (along with a new taxon_namespace if
+required). Otherwise, a new dendropy.DataSet
+object will be created.</p></li>
+<li><p><strong>rng</strong> (<em>random number generator</em>) – If not given, ‘GLOBAL_RNG’ will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>d</strong> (<em>|DataSet|</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.model.discrete.simulate_discrete_chars">
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.discrete.</span></span><span class="sig-name descname"><span class="pre">simulate_discrete_chars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_sequences_on_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/discrete.html#simulate_discrete_chars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.discrete.simulate_discrete_chars" title="Link to this definition">¶</a></dt>
+<dd><p>Wrapper to conveniently generate a characters simulated under
+the given tree and character model.</p>
+<p>Since characters will be appended to existing sequences, you can simulate a
+sequences under a mixed model by calling this method multiple times with
+different character models and/or different mutation rates, passing
+in the same <code class="docutils literal notranslate"><span class="pre">char_matrix</span></code> object each time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
+<li><p><strong>tree_model</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – Tree on which to simulate.</p></li>
+<li><p><strong>seq_model</strong> (<a class="reference internal" href="#dendropy.model.discrete.DiscreteCharacterEvolutionModel" title="dendropy.model.discrete.DiscreteCharacterEvolutionModel"><em>dendropy.model.discrete.DiscreteCharacterEvolutionModel</em></a>) – The character substitution model under which to to evolve the
+characters.</p></li>
+<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
+reflect true expected number of changes).</p></li>
+<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
+<li><p><strong>char_matrix</strong> (<a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a>) – If given, new sequences for taxa on <code class="docutils literal notranslate"><span class="pre">tree_model</span></code> leaf_nodes will be
+appended to existing sequences of corresponding taxa in char_matrix; if
+not, a new <a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a> object will be created.</p></li>
+<li><p><strong>retain_sequences_on_tree</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, sequence annotations will be cleared from tree after
+simulation. Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> if you want to, e.g., evolve and accumulate
+different sequences on tree, or retain information for other purposes.</p></li>
+<li><p><strong>rng</strong> (<em>random number generator</em>) – If not given, ‘GLOBAL_RNG’ will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>d</strong> (<em>a dendropy.datamodel.CharacterMatrix object.</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../index.html"><img src="../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.discrete</span></code>: Discrete Character Evolution</a><ul>
+<li><a class="reference internal" href="#dendropy.model.discrete.DiscreteCharacterEvolutionModel"><code class="docutils literal notranslate"><span class="pre">DiscreteCharacterEvolutionModel</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.model.discrete.DiscreteCharacterEvolutionModel.pmatrix"><code class="docutils literal notranslate"><span class="pre">DiscreteCharacterEvolutionModel.pmatrix</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.DiscreteCharacterEvolutionModel.simulate_descendant_states"><code class="docutils literal notranslate"><span class="pre">DiscreteCharacterEvolutionModel.simulate_descendant_states</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dendropy.model.discrete.DiscreteCharacterEvolver"><code class="docutils literal notranslate"><span class="pre">DiscreteCharacterEvolver</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.model.discrete.DiscreteCharacterEvolver.evolve_states"><code class="docutils literal notranslate"><span class="pre">DiscreteCharacterEvolver.evolve_states</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.DiscreteCharacterEvolver.extend_char_matrix_with_characters_on_tree"><code class="docutils literal notranslate"><span class="pre">DiscreteCharacterEvolver.extend_char_matrix_with_characters_on_tree</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dendropy.model.discrete.Hky85"><code class="docutils literal notranslate"><span class="pre">Hky85</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.model.discrete.Hky85.corrected_substitution_rate"><code class="docutils literal notranslate"><span class="pre">Hky85.corrected_substitution_rate</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.Hky85.pij"><code class="docutils literal notranslate"><span class="pre">Hky85.pij</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.Hky85.pmatrix"><code class="docutils literal notranslate"><span class="pre">Hky85.pmatrix</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.Hky85.pvector"><code class="docutils literal notranslate"><span class="pre">Hky85.pvector</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.Hky85.qmatrix"><code class="docutils literal notranslate"><span class="pre">Hky85.qmatrix</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dendropy.model.discrete.Jc69"><code class="docutils literal notranslate"><span class="pre">Jc69</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel</span></code></a><ul>
+<li><a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_purine"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel.is_purine</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_purine_transition"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel.is_purine_transition</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_pyrimidine"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel.is_pyrimidine</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_pyrimidine_transition"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel.is_pyrimidine_transition</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_transition"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel.is_transition</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.is_transversion"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel.is_transversion</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel.stationary_sample"><code class="docutils literal notranslate"><span class="pre">NucleotideCharacterEvolutionModel.stationary_sample</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dendropy.model.discrete.hky85_chars"><code class="docutils literal notranslate"><span class="pre">hky85_chars</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.simulate_discrete_char_dataset"><code class="docutils literal notranslate"><span class="pre">simulate_discrete_char_dataset</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.model.discrete.simulate_discrete_chars"><code class="docutils literal notranslate"><span class="pre">simulate_discrete_chars</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="continuous.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.continuous</span></code>: Continuous Character Evolution</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="parsimony.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.parsimony</span></code>: The Parsimony Model</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="index.html">Library API Reference</a></li>
+            <li>
+                <a href="../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../schemas/newick.html">Newick</a></li>
+                    <li><a href="../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../developer.html">Developer Guide</a></li>
+            <li><a href="../planning.html">Ongoing Development</a></li>
+            <li><a href="../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="parsimony.html" title="dendropy.model.parsimony: The Parsimony Model"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="continuous.html" title="dendropy.model.continuous: Continuous Character Evolution"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.discrete</span></code>: Discrete Character Evolution</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

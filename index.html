@@ -1,80 +1,418 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	<title>jeetsukumaran/DendroPy @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #e4e8d4;
-		  font-family: "Helvetica,Arial,FreeSans"; 
-  		color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #1b172b; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #1b172b; }
-    h3 { text-align: center; color: #1b172b; }
-    a { color: #1b172b; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
-</head>
-
-<body>
-  <a href="http://github.com/jeetsukumaran/DendroPy"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-  
-  <div id="container">
-
-    <div class="download">
-      <a href="http://github.com/jeetsukumaran/DendroPy/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/jeetsukumaran/DendroPy/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-      
-    <h1><a href="http://github.com/jeetsukumaran/DendroPy">DendroPy</a> 
-      <span class="small">by <a href="http://github.com/jeetsukumaran">jeetsukumaran</a></span></h1>
-
-    <div class="description">
-      A Python library for phylogenetic computation, scripting, simulation, data processing and manipulation.
-    </div>
-
-    <h2>Authors</h2>
-<p>Jeet Sukumaran (jeetsukumaran@gmail.com)<br/>Mark T. Holder (mtholder@ku.edu)<br/><br/>      </p>
-<h2>Contact</h2>
-<p> (jeetsukumaran@gmail.com)<br/>      </p>
-
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/jeetsukumaran/DendroPy/zipball/master">zip</a> or
-      <a href="http://github.com/jeetsukumaran/DendroPy/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/jeetsukumaran/DendroPy</pre>
-    </p>
-      
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/jeetsukumaran/DendroPy">jeetsukumaran/DendroPy</a>
-    </div>
+    <title>DendroPy Phylogenetic Computing Library &#8212; DendroPy 4.6.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/rtd.css?v=cedc6a2f" />
     
-  </div>
+    <script src="_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Downloading and Installing DendroPy" href="downloading.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="downloading.html" title="Downloading and Installing DendroPy"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DendroPy Phylogenetic Computing Library</a></li> 
+      </ul>
+    </div>  
 
-  
-</body>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="dendropy-phylogenetic-computing-library">
+<h1>DendroPy Phylogenetic Computing Library<a class="headerlink" href="#dendropy-phylogenetic-computing-library" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>DendroPy is a <a class="reference external" href="http://www.python.org/">Python</a> library for phylogenetic computing.
+It provides classes and functions for the simulation, processing, and manipulation of phylogenetic trees and character matrices, and supports the reading and writing of phylogenetic data in a range of formats, such as NEXUS, NEWICK, NeXML, Phylip, FASTA, etc.
+Application scripts for performing some useful phylogenetic operations, such as data conversion and tree posterior distribution summarization, are also distributed and installed as part of the libary.
+DendroPy can thus function as a stand-alone library for phylogenetics, a component of more complex multi-library phyloinformatic pipelines, or as a scripting “glue” that assembles and drives such pipelines.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<p>DendroPy is a pure-Python library with no dependencies, and runs under any version of Python 3 and Python 2.7. If you want to run DendroPy under Python version of less than 2.7, you should download the <a class="reference external" href="https://github.com/jeetsukumaran/DendroPy/releases/tag/v3.12.1">DendroPy legacy release</a>.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 4.0.0: </span>Python 2.4, 2.5, and 2.6 support removed.
+Python 3.x support added.</p>
+</div>
+</section>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
+<p>You can install directly from the main GitHub repository using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 -m pip install git+https://github.com/jeetsukumaran/DendroPy.git
+$ python3 -m pip install git+git://github.com/jeetsukumaran/DendroPy.git
+</pre></div>
+</div>
+<p>Alternatively, if you want to install from a particular branch, e.g., the latest development branch, <code class="docutils literal notranslate"><span class="pre">development-main</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 -m pip install git+https://github.com/jeetsukumaran/DendroPy.git@development-main
+$ python3 -m pip install git+git://github.com/jeetsukumaran/DendroPy.git@development-main
+</pre></div>
+</div>
+<p>DendroPy is also fully easy-installable and can be installed using <a class="reference external" href="http://pypi.python.org/pypi/pip">pip</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 -m pip install -U dendropy
+</pre></div>
+</div>
+<p>If you do not have <a class="reference external" href="http://pypi.python.org/pypi/pip">pip</a> installed, you should <em>definitely</em> <a class="reference external" href="https://pip.pypa.io/en/latest/installing.html">install it</a> !
+Other ways of obtaining and installing DendroPy (e.g., by downloading the <a class="reference external" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">DendroPy source code archive</a>, or by cloning the <a class="reference external" href="http://github.com/jeetsukumaran/DendroPy">DendroPy Git repository</a>), are discussed in detail in the “<a class="reference internal" href="downloading.html"><span class="doc">Downloading and Installing DendroPy</span></a>” section.</p>
+<p>If you are using the <a class="reference external" href="https://conda.io/docs/">conda package manager</a>, DendroPy can be installed to your conda environment via pip. From within an Anaconda terminal, or a <a class="reference external" href="http://jupyter.org/">Jupyter Notebook</a>, type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ import pip
+$ pip.main([&#39;install&#39;, &#39;dendropy&#39;])
+</pre></div>
+</div>
+<p>DendroPy will now be available in your conda-managed environment.</p>
+<p>More information on downloading and installing DendroPy can be found in our <a class="reference internal" href="downloading.html"><span class="doc">setup instructions</span></a>.</p>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><p><a class="reference internal" href="downloading.html"><span class="doc">Downloading and Installing DendroPy</span></a></p>
+<blockquote>
+<div><p>The many ways to get DendroPy up and running on your system.</p>
+</div></blockquote>
+<p><a class="reference internal" href="primer/index.html"><span class="doc">DendroPy Primer</span></a></p>
+<blockquote>
+<div><p>A detailed primer on how to use the DendroPy library, with lots of annotated practical examples and code walk-throughs.</p>
+</div></blockquote>
+<p><a class="reference internal" href="library/index.html"><span class="doc">DendroPy Library API Reference</span></a></p>
+<blockquote>
+<div><p>The technical details of the modules, classes and methods of the DendroPy library. Almost all of this information is also readily available from the <a class="reference external" href="http://www.python.org/">Python</a> interpreter by invoking <code class="docutils literal notranslate"><span class="pre">help()</span></code> on an object or name.</p>
+</div></blockquote>
+<p><a class="reference internal" href="programs/sumtrees.html"><span class="doc">SumTrees User Manual</span></a></p>
+<blockquote>
+<div><p>How to use SumTrees, an application script bundled with DendroPy that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.</p>
+</div></blockquote>
+<p><a class="reference internal" href="migration.html"><span class="doc">Migration Guide</span></a></p>
+<blockquote>
+<div><p>DendroPy 4 is improved in <em>many</em> ways over DendroPy 3. However, some of the changes are significant enough to break code written for DendroPy 3. This reference provides an overview of these changes, as well as notes on how to fix, handle or otherwise work-around issues that might result from trying to run code written for DendroPy 3 under DendroPy 4.</p>
+</div></blockquote>
+<p><a class="reference internal" href="developer.html"><span class="doc">Developer Guide</span></a></p>
+<blockquote>
+<div><p>This reference provides how-to’s for tasks like linting, testing, and releasing DendroPy. Great place to start for new contributors.</p>
+</div></blockquote>
+<p><a class="reference internal" href="changes.html"><span class="doc">Change History</span></a></p>
+<blockquote>
+<div><p>A summary of major changes (new features, bug fixes, bug creations, etc.) of each release of DendroPy.</p>
+</div></blockquote>
+<p><a class="reference internal" href="news.html"><span class="doc">News</span></a></p>
+<blockquote>
+<div><p>Announcements relating to DendroPy.</p>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="feature-requests">
+<h2>Feature Requests<a class="headerlink" href="#feature-requests" title="Link to this heading">¶</a></h2>
+<p>We are constantly expanding and improving the DendroPy library.
+And we are constantly looking for ideas on <em>how</em> to expand and improve DendroPy.
+If you have an idea that you would like to see implemented in DendroPy, or a need/requirement for some sort of functionality that DendroPy does not provide or does not provide easily, or, for that matter, a suggestion/idea for how something DendroPy already does that can be done better, <em>please</em> let us know by posting it as an issue on the <a class="reference external" href="https://github.com/jeetsukumaran/DendroPy/issues">DendroPy Issues</a> page.
+We take these very seriously, and look forward to ideas/suggestions/requests/critiques such as these, not only because they improve the library for the entire community of users, but also because they sometimes provide for interesting side-projects for us.</p>
+</section>
+<section id="bug-reports-and-other-issues">
+<h2>Bug Reports and Other Issues<a class="headerlink" href="#bug-reports-and-other-issues" title="Link to this heading">¶</a></h2>
+<p>Everyone has issues.
+And sometimes, not pointing them out is enabling rather than helping. So, if you encounter or think you have encountered a problem in the way DendroPy works, please report it on the <a class="reference external" href="https://github.com/jeetsukumaran/DendroPy/issues">DendroPy Issues</a> page.
+The DendroPy library has a really large suite of tests, but it is also a really, really, really, <em>really</em> large and complex library, and there are many nooks and crannies in which can scurry many crooks and nannies, so you will be doing us <em>and</em> the community a really generous favor by reporting bugs and problems.
+Even if you are not sure if you are actually dealing with a bug, please do not hesitate to report it as an issue: false positives are better than false negatives in this context.</p>
+<p>Having said that, <em>please</em> do take the trouble to write-up a decent bug report.
+It really is quite frustrating to receive vague and lackadaisical “reports” that are little more than stream-of-consciousness responses to stimuli from the monitor that were almost accidentally blurted into the keyboard (e.g., “doesn’t work”).
+At the very least, you should provide:</p>
+<blockquote>
+<div><ul>
+<li><p>A brief explication of what occurred, describing the operation that you were trying to do, and the result (or non-result) that you observed that led you to think there is an error.</p></li>
+<li><p>The environment in which this error occurred. This includes, at the very least, the operating system, as well as things such as the python version, DendroPy version, the installation locations of DendroPy and the Python libraries, etc. Apart from the operating system, you can retrieve all this information by running the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m dendropy
+</pre></div>
+</div>
+<p>The version of SumTrees that ships with DendroPy 4 onwards includes a special flag, “<code class="docutils literal notranslate"><span class="pre">--describe</span></code>” (i.e., you would type “<code class="docutils literal notranslate"><span class="pre">sumtrees.py</span> <span class="pre">--describe</span></code>”), that also provides this information.
+Including the details of either of these commands in their entirety along with the operating system is not only useful, but essential.</p>
+</li>
+<li><p>We have gone to great lengths to write sensible and meaningful error messages, and that chunk of text that usually appears on the screen on error (i.e., the “stack trace”) is packed with useful information, and should be included in its entirety should it appear.</p></li>
+<li><p>We need to be able to reproduce the error on our side to be able to fix. Thus, providing a <em>self-contained</em> and <em>minimum</em> example of the error is crucial. This might involve a little bit of work on your side, to extract the essential bits of code from their context and to ensure that it can run, at least, up to the point where it does not due to the error. The “steps to reproduce” section of a bug report is so important and useful that anyone who makes sure to include a good one into their bug report would be perfectly justified in expecting that strawberry cheesecake and a orange mocha frappuccino get delivered to their doorstep the moment the report is posted.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="help-discussion-and-comments">
+<h2>Help, Discussion, and Comments<a class="headerlink" href="#help-discussion-and-comments" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference external" href="http://groups.google.com/group/dendropy-users">DendroPy Users</a> discussion group is available for general discussion on the usage of the DendroPy library.
+If you want more information on how to use a particular feature or carry out specific task or want to make some general comments on the DendroPy library, you should post a message to the <a class="reference external" href="http://groups.google.com/group/dendropy-users">DendroPy Users</a> discussion group.
+I follow and respond to messages on this group fairly regularly, so you should get a response within 24 hours.</p>
+<p>Of course, we accept all bug reports, bad or good, and I guess we would prefer to have a bad bug report than no report at all, so if all the above seem enough of a hassle to discourage you from posting an issue at all, feel free to go ahead and write it up any way you see fit.</p>
+</section>
+<section id="code-of-conduct">
+<h2>Code of Conduct<a class="headerlink" href="#code-of-conduct" title="Link to this heading">¶</a></h2>
+<p>We are dedicated to fostering a supportive and inclusive atmosphere for everyone involved in our project.</p>
+<p>We oversee DendroPy according to a Code of Conduct from the <a class="reference external" href="https://www.contributor-covenant.org/">Contributor Covenant project</a>.
+This document describes expectations for project participants and provides mechanisms to address misconduct.
+Please take a moment to familiarize yourself with it <a class="reference external" href="./code_of_conduct.html">here</a>.</p>
+</section>
+<section id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Link to this heading">¶</a></h2>
+<p>If you use this library either in whole or in part in your analysis, or use any code derived from it, please cite it as:</p>
+<blockquote>
+<div><p>Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. <em>Bioinformatics</em> 26: 1569-1571.</p>
+</div></blockquote>
+<p>Note that, in the interests of scientific reproducibility, in addition to noting the primary citation for DendroPy as given above in the reference section, you should note in the text of your publications (e.g., in the “Methods” section, or, at the very least, in the “Supplemental Materials” section) the specific version of DendroPy that you used (e.g., “DendroPy version 4.0.0, revision 78e6a63”). You can get useful information about your DendroPy installation by typing “<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">dendropy</span></code>”.</p>
+<p>If you use or reference any part of this <em>documentation</em>, you can cite it as:</p>
+<blockquote>
+<div><p>Sukumaran, J. and Mark T. Holder. The DendroPy Phylogenetic Computing Library Documentation. Retrieved Apr 26, 2024, from <a class="reference external" href="http://dendropy.org/">http://dendropy.org/</a>.</p>
+</div></blockquote>
+</section>
+<section id="copyright-license-and-warranty">
+<h2>Copyright, License and Warranty<a class="headerlink" href="#copyright-license-and-warranty" title="Link to this heading">¶</a></h2>
+<div class="copyrightblock docutils container">
+<p>The DendroPy project, including all source code, documentation, images, and
+other supporting files and media, either as provided online or otherwise
+distributed, is (unless otherwise explicitly noted):</p>
+<blockquote>
+<div><div class="licenseblock docutils container">
+<p>Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder. All rights reserved.</p>
+</div>
+</div></blockquote>
+<ol class="arabic">
+<li><p>The DendroPy project source code and associated data files are licensed for
+redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.</p></li>
+<li><p>Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.</p></li>
+<li><p>The names of its contributors may not be used to endorse or promote
+products derived from this software without specific prior written
+permission.</p></li>
+</ul>
+</div></blockquote>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS”
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL JEET SUKUMARAN OR MARK T. HOLDER BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+</li>
+<li><p>All DendroPy documentation, (non-logo) images and other media, as
+provided online or otherwise distributed, can be used in accordance with the
+<a class="reference external" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Attribution-NonCommercial-ShareAlike 4.0 International License</a> , which allows anyone
+to copy, modify and redistribute modifications of all or part of the DendroPy
+documentation as long as:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The license is included with all copies or redistributions.</p></li>
+<li><p>the DendroPy documentation is attributed as the originating document.</p></li>
+<li><p>You must give appropriate credit, provide a link to the license, and
+indicate if changes were made. You may do so in any reasonable
+manner, but not in any way that suggests the licensor endorses you or
+your use.</p></li>
+<li><p>You may not use the material for commercial purposes.</p></li>
+<li><p>If you remix, transform, or build upon the material, you must
+distribute your contributions under the same license as the original.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>The <a class="reference external" href="_static/dendropy.png">DendroPy logo</a>  can be used and reproduced
+freely only to identify, advertise, or otherwise denote association
+or usage of the DendroPy library.</p></li>
+<li><p>The test data files (available at <code class="docutils literal notranslate"><span class="pre">dendropy/test/data</span></code>) have all been (a)
+sourced from public domain data, (b) obtained as part of example data
+bundled with other applications, and typically having been used in
+published analyses (c) generated using analysis programs from public domain
+data.</p>
+<p>In the case of (a), the data is from GenBank, and thus in public domain.
+Where possible, we have maintained citation information for the original
+authors/work that generated the data.</p>
+<p>In the case of (b), the original data is also available from the public
+domain. Where possible, we have maintained citation information for the
+original authors/work that generated the data.</p>
+<p>In the case of (c), no program we have used places any restriction on their
+output. We maintain the generated text (“File generated by DnaSp … etc”)
+to track provenance.</p>
+</li>
+</ol>
+</div>
+</section>
+<section id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading">¶</a></h2>
+<p>Portions of <a class="reference external" href="http://www.dendropy.org/">DendroPy</a> were developed under <a class="reference external" href="http://www.phylo.org">CIPRES</a>, a multi-site collaboration funded by the <a class="reference external" href="http://www.nsf.gov/">NSF</a> Information Technology Research (ITR) program grant entitled “<a class="reference external" href="http://www.phylo.org/about/acknowledgements">BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics</a>” and <a class="reference external" href="http://www.nsf.gov/">NSF</a> ATOL grant 0732920 to Mark Holder.</p>
+</section>
+<section id="authors">
+<h2>Authors<a class="headerlink" href="#authors" title="Link to this heading">¶</a></h2>
+<p>Jeet Sukumaran &lt;<a class="reference external" href="mailto:jeetsukumaran&#37;&#52;&#48;gmail&#46;com">jeetsukumaran<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;
+Mark T. Holder &lt;<a class="reference external" href="mailto:mtholder&#37;&#52;&#48;ku&#46;edu">mtholder<span>&#64;</span>ku<span>&#46;</span>edu</a>&gt;</p>
+<p>Find a comprehensive, up-to-date listing of project contributors <a class="reference external" href="https://github.com/jeetsukumaran/DendroPy/graphs/contributors">here</a>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="#"><img src="_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">DendroPy Phylogenetic Computing Library</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#installing">Installing</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#feature-requests">Feature Requests</a></li>
+<li><a class="reference internal" href="#bug-reports-and-other-issues">Bug Reports and Other Issues</a></li>
+<li><a class="reference internal" href="#help-discussion-and-comments">Help, Discussion, and Comments</a></li>
+<li><a class="reference internal" href="#code-of-conduct">Code of Conduct</a></li>
+<li><a class="reference internal" href="#citation">Citation</a></li>
+<li><a class="reference internal" href="#copyright-license-and-warranty">Copyright, License and Warranty</a></li>
+<li><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
+<li><a class="reference internal" href="#authors">Authors</a></li>
+</ul>
+</li>
+</ul>
+
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="downloading.html"
+                          title="next chapter">Downloading and Installing DendroPy</a></p>
+  </div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="schemas/fasta.html">FASTA</a></li>
+                    <li><a href="schemas/newick.html">Newick</a></li>
+                    <li><a href="schemas/nexml.html">NeXML</a></li>
+                    <li><a href="schemas/nexus.html">Nexus</a></li>
+                    <li><a href="schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="developer.html">Developer Guide</a></li>
+            <li><a href="planning.html">Ongoing Development</a></li>
+            <li><a href="changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="downloading.html" title="Downloading and Installing DendroPy"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DendroPy Phylogenetic Computing Library</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
 </html>
