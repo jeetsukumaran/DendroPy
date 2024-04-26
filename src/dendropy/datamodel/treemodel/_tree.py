@@ -3099,12 +3099,27 @@ class Tree(
         assert len(current_to_shuffled_taxon_map) == len(current_node_taxon_map)
         return current_to_shuffled_taxon_map
 
-    def ladderize(self, ascending=True):
+    def ladderize(self, ascending=True, default_order=False):
         """
         Sorts child nodes in ascending (if ``ascending`` is |True|) or
         descending (if ``ascending`` is |False|) order in terms of the number of
         children each child node has.
+        If ``default_order`` is |True| then leaf nodes get sorted by taxon
+        labels when they are in polytomies.
         """
+
+        if default_order:
+            order = tuple(sorted(leaf.taxon.label for leaf in self.leaf_node_iter()))
+
+        def dorder(node) -> int:
+            if default_order:
+                try:
+                    return order.index(node.taxon.label)
+                except:
+                    return len(order)
+            else:
+                return 0
+
         node_desc_counts = {}
         for nd in self.postorder_node_iter():
             if len(nd._child_nodes) == 0:
@@ -3116,7 +3131,8 @@ class Tree(
                 total += len(nd._child_nodes)
                 node_desc_counts[nd] = total
                 nd._child_nodes.sort(
-                    key=lambda n: node_desc_counts[n], reverse=not ascending
+                    key=lambda n: (node_desc_counts[n], dorder(n)),
+                    reverse=not ascending,
                 )
 
     def truncate_from_root(self, distance_from_root):
