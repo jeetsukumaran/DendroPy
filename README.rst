@@ -25,7 +25,7 @@ scripting "glue" that assembles and drives such pipelines.
 
 The primary home page for DendroPy, with detailed tutorials and documentation, is at:
 
-    http://dendropy.org/
+    https://dendropy.readthedocs.io/en/main/
 
 DendroPy is also hosted in the official Python repository:
 
@@ -42,20 +42,20 @@ You can install DendroPy by running::
 
 More information is available here:
 
-    http://dendropy.org/downloading.html
+    https://dendropy.readthedocs.io/en/main/downloading.html
 
 Documentation
 =============
 
 Full documentation is available here:
 
-    http://dendropy.org/
+    https://dendropy.readthedocs.io/en/main/
 
 This includes:
 
-    -   `A comprehensive "getting started" primer <http://dendropy.org/primer/index.html>`_ .
-    -   `API documentation <http://dendropy.org/library/index.html>`_ .
-    -   `Descriptions of data formats supported for reading/writing <http://dendropy.org/schemas/index.html>`_ .
+    -   `A comprehensive "getting started" primer <https://dendropy.readthedocs.io/en/main/primer/index.html>`_ .
+    -   `API documentation <https://dendropy.readthedocs.io/en/main/library/index.html>`_ .
+    -   `Descriptions of data formats supported for reading/writing <https://dendropy.readthedocs.io/en/main/schemas/index.html>`_ .
 
 and more.
 
