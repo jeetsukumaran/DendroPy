@@ -227,6 +227,8 @@ jobs:
         #   build_command: "echo Skipping building the web files"
         #   build_directory: docs/build/html
   deploy-docs:
+    if: github.ref == 'refs/heads/main'
+  
     # Add a dependency to the build job
     needs: docs
 
