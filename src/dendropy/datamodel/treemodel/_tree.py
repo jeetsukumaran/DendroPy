@@ -3116,7 +3116,7 @@ class Tree(
                 )
             }
 
-        def dorder(node) -> int:
+        def dorder(node):  # -> int
             if default_order:
                 try:
                     return order.index(node.taxon.label)
