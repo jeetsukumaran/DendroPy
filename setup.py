@@ -49,8 +49,8 @@ __project__ = re.match(r".*^__project__\s*=\s*['\"](.*?)['\"]\s*$.*", project_in
 setup(
     name=__project__,
     version=__version__,
-    author='Jeet Sukumaran, Mark T. Holder, and Matt Moreno',
-    author_email='jeetsukumaran@gmail.com, mtholder@ku.edu',
+    author='Jeet Sukumaran, Mark T. Holder, and Matthew Andres Moreno',
+    author_email='jeetsukumaran@gmail.com, mtholder@ku.edu, morenoma@umich.edu',
     packages=find_packages("src"),
     package_dir={"": "src"},
     entry_points={
