@@ -143,7 +143,7 @@ jobs:
       - name: Test sumtrees
         run: |
           sumtrees
-          sumtrees | grep SumTrees || exit 1
+          sumtrees  2>&1 | grep sumtrees || exit 1
       - name: Test sumlabels
         run: |
           sumlabels
