@@ -104,6 +104,59 @@ jobs:
       - name: Smoke tests with setup.py
         run: |
           python setup.py pytest --addopts "-m smoke" 
+
+  entrypoints:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: False
+      matrix:
+        python-version:
+          - "2.7"
+          - "3.5"
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        continue-on-error: true
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install python2 libpython2.7  # required by paup
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install .
+      - name: Test sumtrees
+        run: |
+          which sumtrees
+          sumtrees --help
+          sumtrees  2>&1 | grep sumtrees || exit 1
+      - name: Test sumlabels
+        run: |
+          which sumlabels
+          sumlabels --help
+          sumlabels 2>&1 | grep sumlabels || exit 1
+      - name: Test dendropy-format
+        run: |
+          which dendropy-format
+          dendropy-format --help
+          dendropy-format 2>&1 | grep dendropy-format || exit 1
+      - name: Test deprecated entrypoints
+        run: |
+          which sumtrees.py
+          sumtrees.py --help
+          sumtrees.py  2>&1 | grep sumtrees.py || exit 1
+          which sumlabels.py
+          sumlabels.py --help
+          sumlabels.py  2>&1 | grep sumlabels.py || exit 1
+
   coverage:
     runs-on: ubuntu-20.04
     steps:

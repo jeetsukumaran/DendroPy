@@ -38,6 +38,7 @@ import platform
 import dendropy
 from dendropy.utility.messaging import ConsoleMessenger
 from dendropy.utility.cli import confirm_overwrite, show_splash
+from dendropy.utility import deprecate
 
 _program_name = "SumLabels"
 _program_subtitle = "Phylogenetic Tree Label Concatenation"
@@ -51,6 +52,12 @@ _program_copyright = "Copyright (C) 2017 Jeet Sukumaran.\n" \
                  "There is NO WARRANTY,\nto the extent permitted by law."
 
 def main_cli():
+
+    if "bin/sumlabels.py" in sys.argv[0]:
+        deprecate.dendropy_deprecation_warning(
+            message="`sumlabels.py` entrypoint is deprecated since DendroPy 5. "
+            "Use `sumlabels` entrypoint (i.e., without `.py`) instead.",
+        )
 
     description =  "%s %s %s" % (_program_name, _program_version, _program_subtitle)
 
