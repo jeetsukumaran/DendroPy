@@ -155,6 +155,14 @@ jobs:
           which dendropy-format
           dendropy-format --help
           dendropy-format 2>&1 | grep dendropy-format || exit 1
+      - name: Test deprecated entrypoints
+        run: |
+          which sumtrees.py
+          sumtrees.py --help
+          sumtrees.py  2>&1 | grep sumtrees.py || exit 1
+          which sumlabels.py
+          sumlabels.py --help
+          sumlabels.py  2>&1 | grep sumlabels.py || exit 1
 
   coverage:
     runs-on: ubuntu-20.04
