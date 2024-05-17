@@ -61,7 +61,7 @@ setup(
             'dendropy-format=dendropy.application.dendropy_format:main',
             # Legacy: to be deprecated
             'sumtrees.py=dendropy.application.sumtrees:main',
-            'sumlabels.py=dendropy.application.sumlabels:main',
+            'sumlabels.py=dendropy.application.sumlabels:main_cli',
         ],
     },
     include_package_data=True,
