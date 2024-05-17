@@ -10,6 +10,4 @@ Note that, in the interests of scientific reproducibility, in addition to noting
 
 If you use or reference any part of this *documentation*, you can cite it as:
 
-    Sukumaran, J. and Mark T. Holder. The DendroPy Phylogenetic Computing Library Documentation. Retrieved |today|, from http://dendropy.org/.
-
-
+    Sukumaran, J. and Mark T. Holder. The DendroPy Phylogenetic Computing Library Documentation. Retrieved |today|, from https://jeetsukumaran.github.io/DendroPy/.

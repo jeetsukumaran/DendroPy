@@ -186,10 +186,10 @@ rst_prolog = """
 .. _mth: http://people.ku.edu/~mtholder
 
 .. |DendroPy| replace:: DendroPy
-.. _DendroPy: http://www.dendropy.org/
-.. |dendropy_homepage_url| replace:: http://www.dendropy.org/
-.. |dendropy_primer_url| replace:: http://www.dendropy.org/primer/index.html
-.. |dendropy_library_url| replace:: http://www.dendropy.org/library/index.html
+.. _DendroPy: https://jeetsukumaran.github.io/DendroPy/
+.. |dendropy_homepage_url| replace::https://jeetsukumaran.github.io/DendroPy/
+.. |dendropy_primer_url| replace::https://jeetsukumaran.github.io/DendroPy/primer/index.html
+.. |dendropy_library_url| replace::https://jeetsukumaran.github.io/DendroPy/library/index.html
 .. |dendropy_download_url| replace:: http://pypi.python.org/pypi/DendroPy
 .. |dendropy_public_repo_url| replace:: http://github.com/jeetsukumaran/DendroPy
 

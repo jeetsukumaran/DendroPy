@@ -8,8 +8,10 @@
 .. image:: https://img.shields.io/pypi/v/DendroPy.svg
         :target: https://pypi.org/project/DendroPy/
 
-.. image:: https://readthedocs.org/projects/DendroPy/badge/?version=main
-        :target: https://dendropy.readthedocs.io/en/main/?badge=main
+Docs:
+
+.. image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/pages/pages-build-deployment/badge.svg
+        :target: https://jeetsukumaran.github.io/DendroPy/
         :alt: Documentation Status
 
 DendroPy is a Python library for phylogenetic computing.
@@ -25,11 +27,11 @@ scripting "glue" that assembles and drives such pipelines.
 
 The primary home page for DendroPy, with detailed tutorials and documentation, is at:
 
-    http://dendropy.org/
+    https://jeetsukumaran.github.io/DendroPy/
 
 DendroPy is also hosted in the official Python repository:
 
-    http://pypi.org/project/DendroPy//
+    http://pypi.org/project/DendroPy/
 
 Requirements and Installation
 =============================
@@ -42,20 +44,20 @@ You can install DendroPy by running::
 
 More information is available here:
 
-    http://dendropy.org/downloading.html
+    https://jeetsukumaran.github.io/DendroPy/downloading.html
 
 Documentation
 =============
 
 Full documentation is available here:
 
-    http://dendropy.org/
+    https://jeetsukumaran.github.io/DendroPy/
 
 This includes:
 
-    -   `A comprehensive "getting started" primer <http://dendropy.org/primer/index.html>`_ .
-    -   `API documentation <http://dendropy.org/library/index.html>`_ .
-    -   `Descriptions of data formats supported for reading/writing <http://dendropy.org/schemas/index.html>`_ .
+    -   `A comprehensive "getting started" primer <https://jeetsukumaran.github.io/DendroPy/primer/index.html>`_ .
+    -   `API documentation <https://jeetsukumaran.github.io/DendroPy/library/index.html>`_ .
+    -   `Descriptions of data formats supported for reading/writing <https://jeetsukumaran.github.io/DendroPy/schemas/index.html>`_ .
 
 and more.
 

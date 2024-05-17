@@ -1,6 +1,6 @@
 name: ci
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   examples:
@@ -182,6 +182,65 @@ jobs:
         run: |
           find . -type f -name '*.py' -exec rm {} \;
           python3 -c "import dendropy; print(dendropy.__version__)"
+  docs:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        continue-on-error: true
+        with:
+          python-version: 3.9
+      - name: Upgrade pip
+        run: python3 -m pip install pip --upgrade
+      - name: Install from source
+        run: python3 -m pip install .
+      - name: Install documentation build dependencies
+        run: python3 -m pip install -r docs/requirements.txt
+      - name: Build documentation
+        run: make -C docs html
+      - name: Deploy docs
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/build/html # The folder the action should deploy.        
+        # uses: JamesIves/github-pages-deploy-action@v4
+        # with:
+        #   folder: docs/build/html # The folder the action should deploy.
+        # uses: jsmrcaga/action-netlify-deploy@v2.0.0
+        # with:
+        #   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        #   NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        #   NETLIFY_DEPLOY_MESSAGE: "Prod deploy v${{ github.ref }}"
+        #   NETLIFY_DEPLOY_TO_PROD: true
+        #   install_command: "echo Skipping installing the dependencies"
+        #   build_command: "echo Skipping building the web files"
+        #   build_directory: docs/build/html
+  deploy-docs:
+    if: github.ref == 'refs/heads/main'
+  
+    # Add a dependency to the build job
+    needs: docs
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this
   deploy:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')

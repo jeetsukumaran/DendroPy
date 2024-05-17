@@ -28,6 +28,8 @@ from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import constants
 from dendropy.calculate import probability
 from dendropy.calculate import combinatorics
+from dendropy.utility.error import ProcessFailedException
+from dendropy.utility.error import TreeSimTotalExtinctionException
 
 ###############################################################################
 ## Calculations and statistics
@@ -785,6 +787,8 @@ def constrained_kingman_tree(
                 )
             else:
                 final = edge.head_node.gene_nodes
+            if not final:
+                raise ProcessFailedException()
             gene_tree.seed_node = final[0]
         else:
             uncoal = coalesce_nodes(
