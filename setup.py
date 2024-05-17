@@ -57,7 +57,7 @@ setup(
         'console_scripts': [
             # Going forward ...
             'sumtrees=dendropy.application.sumtrees:main',
-            'sumlabels=dendropy.application.sumlabels:main',
+            'sumlabels=dendropy.application.sumlabels:main_cli',
             'dendropy-format=dendropy.application.dendropy_format:main',
             # Legacy: to be deprecated
             'sumtrees.py=dendropy.application.sumtrees:main',
