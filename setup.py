@@ -88,6 +88,11 @@ setup(
     },
     test_suite = "tests",
     url='http://github.com/jeetsukumaran/DendroPy',
+    project_urls={
+        'Documentation': 'https://jeetsukumaran.github.io/DendroPy/',
+        'Source': 'https://github.com/jeetsukumaran/DendroPy',
+        'Tracker': 'https://github.com/jeetsukumaran/DendroPy/issues',
+    },
     license='BSD',
     description="A Python library for phylogenetics and phylogenetic computing: reading, writing, simulation, processing and manipulation of phylogenetic trees (phylogenies) and characters.",
     long_description=_read(["README.rst"]),
