@@ -50,6 +50,7 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import cli
 from dendropy.utility import constants
+from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.utility import messaging
 from dendropy.utility import timeprocessing
@@ -561,7 +562,7 @@ clades expressed as proportions (posterior probabilities) on internal node
 labels and branch lengths the mean across all trees, dropping the first 200
 trees in each file as a burn-in, and saving the result to "``result.tre``"::
 
-    $ sumtrees.py \\
+    $ sumtrees \\
             --summary-target consensus \\
             --min-clade-freq=0.95 \\
             --edges mean-length \\
@@ -574,7 +575,7 @@ To use a different type of summary tree, e.g., the tree that maximizes the
 product of posterior probabilities, you can specify 'mcct' for the
 '--summary-tree' option:
 
-    $ sumtrees.py \\
+    $ sumtrees \\
             --summary-target mcct \\
             --min-clade-freq=0.95 \\
             --edges mean-length \\
@@ -586,7 +587,7 @@ product of posterior probabilities, you can specify 'mcct' for the
 If the input trees are ultrametric and you want to set the node ages to the
 median node age, set the '--edges' argument to 'median-age':
 
-    $ sumtrees.py \\
+    $ sumtrees \\
             --summary-target mcct \\
             --edges median-age \\
             --burnin=200 \\
@@ -597,7 +598,7 @@ Calculate support for nodes on a specific tree, "``best.tre``" as given by a
 set of tree files, with support reported as percentages rounded to integers,
 and saving the result to "``result.tre``"::
 
-    $ sumtrees.py \\
+    $ sumtrees \\
             --target=best.tre \\
             --decimals=0 \\
             --percentages \\
@@ -611,6 +612,11 @@ def print_description(dest=None):
     return dendropy.description(dest=dest)
 
 def main():
+    if "bin/sumtrees.py" in sys.argv[0]:
+        deprecate.dendropy_deprecation_warning(
+            message="`sumtrees.py` entrypoint is deprecated since DendroPy 5. "
+            "Use `sumtrees` entrypoint (i.e., without `.py`) instead.",
+        )
 
     ######################################################################
     ## Start Recording Total Job Time
@@ -1215,8 +1221,8 @@ def main():
     if len(args.tree_sources) == 0:
         parser.print_usage()
         sys.stdout.write("\n")
-        sys.stdout.write("Type 'sumtrees.py --help' for details on usage.\n")
-        sys.stdout.write("Type 'sumtrees.py --usage-examples' for examples of usage.\n")
+        sys.stdout.write("Type 'sumtrees --help' for details on usage.\n")
+        sys.stdout.write("Type 'sumtrees --usage-examples' for examples of usage.\n")
         sys.exit(0)
 
     tree_sources = []

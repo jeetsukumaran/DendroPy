@@ -49,19 +49,19 @@ __project__ = re.match(r".*^__project__\s*=\s*['\"](.*?)['\"]\s*$.*", project_in
 setup(
     name=__project__,
     version=__version__,
-    author='Jeet Sukumaran, Mark T. Holder, and Matt Moreno',
-    author_email='jeetsukumaran@gmail.com, mtholder@ku.edu',
+    author='Jeet Sukumaran, Mark T. Holder, and Matthew Andres Moreno',
+    author_email='jeetsukumaran@gmail.com, mtholder@ku.edu, morenoma@umich.edu',
     packages=find_packages("src"),
     package_dir={"": "src"},
     entry_points={
         'console_scripts': [
             # Going forward ...
             'sumtrees=dendropy.application.sumtrees:main',
-            'sumlabels=dendropy.application.sumlabels:main',
+            'sumlabels=dendropy.application.sumlabels:main_cli',
             'dendropy-format=dendropy.application.dendropy_format:main',
             # Legacy: to be deprecated
             'sumtrees.py=dendropy.application.sumtrees:main',
-            'sumlabels.py=dendropy.application.sumlabels:main',
+            'sumlabels.py=dendropy.application.sumlabels:main_cli',
         ],
     },
     include_package_data=True,
@@ -88,6 +88,11 @@ setup(
     },
     test_suite = "tests",
     url='http://github.com/jeetsukumaran/DendroPy',
+    project_urls={
+        'Documentation': 'https://jeetsukumaran.github.io/DendroPy/',
+        'Source': 'https://github.com/jeetsukumaran/DendroPy',
+        'Tracker': 'https://github.com/jeetsukumaran/DendroPy/issues',
+    },
     license='BSD',
     description="A Python library for phylogenetics and phylogenetic computing: reading, writing, simulation, processing and manipulation of phylogenetic trees (phylogenies) and characters.",
     long_description=_read(["README.rst"]),
@@ -95,5 +100,23 @@ setup(
     long_description_content_type="text/x-rst",
     # install_requires=_read_requirements("requirements.txt"),
     # extras_require={"test": _read_requirements("requirements-test.txt")},
+    classifiers = [
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: BSD License",
+        "Natural Language :: English",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python",
+        "Topic :: Scientific/Engineering :: Bio-Informatics",
+        ],
+    keywords='phylogenetics phylogeny phylogenies phylogeography evolution evolutionary biology systematics coalescent population genetics phyloinformatics bioinformatics',
 )
 
