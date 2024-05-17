@@ -50,6 +50,7 @@ if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
     from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import cli
 from dendropy.utility import constants
+from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.utility import messaging
 from dendropy.utility import timeprocessing
@@ -611,6 +612,11 @@ def print_description(dest=None):
     return dendropy.description(dest=dest)
 
 def main():
+    if "bin/sumtrees.py" in sys.argv[0]:
+        deprecate.dendropy_deprecation_warning(
+            message="`sumtrees.py` entrypoint is deprecated since DendroPy 5. "
+            "Use `sumtrees` entrypoint (i.e., without `.py`) instead.",
+        )
 
     ######################################################################
     ## Start Recording Total Job Time
