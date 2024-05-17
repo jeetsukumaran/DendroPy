@@ -112,7 +112,11 @@ class BibTexEntry(object):
         """
 
         deprecate.dendropy_deprecation_warning(
-            message="Deprecated since DendroPy 5: BibTexEntry is broken. If this is important, open an issue on GitHub."
+            message=(
+                "BibTexEntry is deprecated as of DendroPy 5.0 and will be removed in a future release ."
+                "It no longer maintaned, and known to be broken. "
+                "If this functionality is needed, please open an issue on GitHub."
+            ),
         )
         
         self.bibtype = None
@@ -313,7 +317,11 @@ class BibTexDb(object):
         """
 
         deprecate.dendropy_deprecation_warning(
-            message="Deprecated since DendroPy 5: BibTexEntry is broken. If this is important, open an issue on GitHub."
+            message=(
+                "BibTexEntry is deprecated as of DendroPy 5.0 and will be removed in a future release ."
+                "It no longer maintaned, and known to be broken. "
+                "If this functionality is needed, please open an issue on GitHub."
+            ),
         )
         
         self.entries = []
