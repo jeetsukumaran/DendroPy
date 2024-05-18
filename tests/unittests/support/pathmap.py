@@ -40,10 +40,7 @@ TESTS_COVERAGE_REPORT_DIR = os.path.join(TESTS_COVERAGE_DIR, "report")
 TESTS_COVERAGE_SOURCE_DIR = os.path.join(TESTS_COVERAGE_DIR, "source")
 
 def tree_source_stream(filename):
-    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-        return open(tree_source_path(filename), "rU")
-    else:
-        return open(tree_source_path(filename), "r")
+    return open(tree_source_path(filename), "r")
 
 def tree_source_path(filename=None):
     if filename is None:
@@ -67,10 +64,7 @@ def mixed_source_path(filename=None):
     return os.path.join(TESTS_DATA_DIR, "mixed", filename)
 
 def splits_source_stream(filename):
-    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-        return open(splits_source_path(filename), "rU")
-    else:
-        return open(splits_source_path(filename), "r")
+    return open(splits_source_path(filename), "r")
 
 def splits_source_path(filename=None):
     if filename is None:
@@ -78,10 +72,7 @@ def splits_source_path(filename=None):
     return os.path.join(TESTS_DATA_DIR, "splits", filename)
 
 def other_source_stream(filename):
-    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-        return open(other_source_path(filename), "rU")
-    else:
-        return open(other_source_path(filename), "r")
+    return open(other_source_path(filename), "r")
 
 def other_source_path(filename=None):
     if filename is None:

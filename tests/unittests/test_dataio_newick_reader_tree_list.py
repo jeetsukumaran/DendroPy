@@ -34,9 +34,6 @@ from support import pathmap
 import base_newick_test_cases
 import base_standard_trees_parsing_test_cases
 
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
-
 class NewickTreeListReaderDefaultTestCase(
         base_standard_trees_parsing_test_cases.StandardTreesParsingTestCase,
         standard_file_test_trees.NewickTestTreesChecker,

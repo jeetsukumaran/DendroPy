@@ -32,8 +32,6 @@ from support import pathmap
 from support import paupsplitsreference
 from support.dendropytest import ExtendedTestCase
 from dendropy.utility import messaging
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
 _LOG = messaging.get_logger(__name__)
 
 from dendropy.utility import bitprocessing

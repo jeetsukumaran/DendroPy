@@ -28,12 +28,9 @@ from setuptools import setup, find_packages
 
 def _read(path_components, **kwargs):
     path = os.path.join(os.path.dirname(__file__), *path_components)
-    if sys.version_info.major < 3:
-        return open(path, "rU").read()
-    else:
-        with open(path, encoding=kwargs.get("encoding", "utf8")) as src:
-            s = src.read()
-        return s
+    with open(path, encoding=kwargs.get("encoding", "utf8")) as src:
+        s = src.read()
+    return s
 
 def _read_requirements(path):
     return [

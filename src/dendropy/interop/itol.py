@@ -24,12 +24,8 @@ Wrappers for interacting with ITOL.
 import os
 import sys
 import tempfile
-if sys.version_info.major < 3:
-    from urllib import urlencode
-    from urllib import urlopen
-else:
-    from urllib.parse import urlencode
-    from urllib.request import urlopen
+from urllib.parse import urlencode
+from urllib.request import urlopen
 from urllib import request
 import zipfile
 try:

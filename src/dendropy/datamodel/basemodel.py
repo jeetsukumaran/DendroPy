@@ -26,8 +26,6 @@ import copy
 import sys
 import collections
 from dendropy.utility.textprocessing import StringIO
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import container
 from dendropy.utility import bibtex
 from dendropy.utility import textprocessing

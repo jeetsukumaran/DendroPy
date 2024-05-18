@@ -27,8 +27,6 @@ import random
 import unittest
 import math
 import sys
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
 import dendropy
 from dendropy.calculate.treescore import fitch_down_pass
 sys.path.insert(0, os.path.dirname(__file__))

@@ -46,8 +46,6 @@ except ImportError:
 import multiprocessing
 
 import dendropy
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import cli
 from dendropy.utility import constants
 from dendropy.utility import deprecate

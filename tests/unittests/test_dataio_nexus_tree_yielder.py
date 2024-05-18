@@ -30,8 +30,6 @@ from support import dendropytest
 from support import standard_file_test_trees
 from support import pathmap
 
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
 
 class NexusTreeYielderDefaultTestCase(
         standard_file_test_trees.NexusTestTreesChecker,

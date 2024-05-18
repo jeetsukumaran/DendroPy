@@ -148,8 +148,7 @@ else:
 
         @classmethod
         def setUpClass(cls):
-            if sys.version_info.major < 3:
-                cls.assertRaisesRegex = cls.assertRaisesRegexp
+            pass
 
         def check_split_counting(self,
                 tree_filename,

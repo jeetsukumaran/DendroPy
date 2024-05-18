@@ -31,8 +31,6 @@ from support import standard_file_test_trees
 from support import curated_test_tree
 from support import pathmap
 import base_standard_trees_parsing_test_cases
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
 
 class NexusStandardTreeParsingTestCase(
         base_standard_trees_parsing_test_cases.StandardTreesParsingTestCase,
