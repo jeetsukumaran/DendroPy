@@ -75,7 +75,7 @@ class FragmentedPopulations(object):
                 "Note that in previous versions of Dendropy, it was ignored and had no effect.",
             )
 
-        self.generate_pop_tree(species_name=species_name, samples_per_pop=samples_per_pop)
+        self.generate_pop_tree(species_name=species_name)
         self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
         d = dendropy.DataSet(self.mutation_tree.taxon_namespace)
         if self.use_seq_gen is True:
@@ -127,7 +127,7 @@ class FragmentedPopulations(object):
             DendroPy tree, with branch lengths in generations
         """
         if self.pop_tree is None:
-            self.generate_pop_tree(species_name, samples_per_pop=10)
+            self.generate_pop_tree(species_name)
         for idx, leaf in enumerate(self.pop_tree.leaf_iter()):
             if idx == 1:
                 # ancestral population = num_desc_pops * desc population
