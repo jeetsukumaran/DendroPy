@@ -88,14 +88,10 @@ def test_count_splits_on_trees():
 
 
 def test_consensus_tree():
-    # TODO: https://github.com/jeetsukumaran/DendroPy/issues/179#issue-1965884280
-    # s = TreeSummarizer()
-    # t = dendropy.Tree()
-    # l = []
-    # l.append(t)
-
-    # s.consensus_tree(l)
-    pass
+    s = TreeSummarizer()
+    t = dendropy.Tree()
+    t.seed_node.edge_length = 0.0
+    s.consensus_tree([t])
 
 
 def test_hash_topology():
