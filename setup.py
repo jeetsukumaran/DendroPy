@@ -103,7 +103,6 @@ setup(
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
     install_requires = ['setuptools'],
-    include_package_data = True,
     zip_safe = True,
     classifiers = [
         "Intended Audience :: Developers",
