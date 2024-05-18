@@ -100,8 +100,10 @@ class FragmentedPopulations(object):
             sg.char_model = 'HKY'
             sg.ti_tv = float(self.kappa) / 2
             sg.state_freqs = self.base_freqs
-            sg.trees = [self.mutation_tree]
-            d = sg.generate_dataset(dataset=d)
+            d = sg.generate(
+                trees=dendropy.TreeList([self.mutation_tree]),
+                dataset=d,
+            )
         else:
             char_matrix = discrete.hky85_chars(
                     seq_len=seq_len,
