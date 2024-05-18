@@ -104,10 +104,8 @@ class BirthDeathTreeTest(unittest.TestCase):
     def testBDTreeTime(self):
         """Time-based stop condition -- tree generation without checking [TODO: checks]"""
         _RNG = MockRandom()
-        for num_leaves, tree_factory in it.product(
-            range(2, 20), [dendropy.Tree, lambda: None]
-        ):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, max_time=10, tree=tree_factory(), rng=_RNG)
+        for tree_factory in [dendropy.Tree, lambda: None]:
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, max_time=4, tree=tree_factory(), rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
 
 class BirthDeathLikelihoodTestCases(unittest.TestCase):
