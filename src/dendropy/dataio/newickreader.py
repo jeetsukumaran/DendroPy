@@ -21,6 +21,7 @@
 Parsing of NEWICK-format tree from a stream.
 """
 
+import itertools as it
 import re
 import warnings
 from dendropy.utility import error
@@ -502,7 +503,7 @@ class NewickReader(ioservice.DataReader):
             # self._parenthesis_nesting_level += 1 # handled by calling code
             nexus_tokenizer.require_next_token()
             node_created = False
-            while True:
+            for count in it.count():
                 if nexus_tokenizer.current_token == ",":
                     if not node_created: #184
                         # no node has been created yet: ',' designates a
@@ -535,6 +536,13 @@ class NewickReader(ioservice.DataReader):
                         current_node.add_child(new_node)
                         node_created = True;
                 elif nexus_tokenizer.current_token == ")": #206
+                    if count == 0:
+                        # handle terminating unnamed unifurcation
+                        # see https://github.com/jeetsukumaran/DendroPy/issues/76
+                        new_node = tree.node_factory()
+                        is_new_internal_node = False
+                        self._finish_node(new_node)
+                        current_node.add_child(new_node)
                     # end of child nodes
                     self._parenthesis_nesting_level -= 1
                     nexus_tokenizer.require_next_token()
