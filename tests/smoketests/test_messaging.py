@@ -7,14 +7,14 @@ from . import marksmoke as pytestmark
 
 def test_error_leader():
     mess = ConsoleMessenger()
-    
+
     res = mess.error_leader()
     isinstance(res, str)
 
 
 def test_warning_leader():
     mess = ConsoleMessenger()
-    
+
     res = mess.warning_leader()
     assert isinstance(res, str)
 
