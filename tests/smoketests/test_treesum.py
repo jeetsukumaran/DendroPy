@@ -99,10 +99,8 @@ def test_consensus_tree():
 
 
 def test_hash_topology():
-    # TODO: https://github.com/jeetsukumaran/DendroPy/issues/179#issue-1965884280
-    # c = TopologyCounter()
-    # t = dendropy.Tree()
-    # t.update_bipartitions(is_bipartitions_mutable=False)
+    c = TopologyCounter()
+    t = dendropy.Tree()
+    t.update_bipartitions(is_bipartitions_mutable=False)
 
-    # res = c.hash_topology(t)
-    pass
+    res = c.hash_topology(t)

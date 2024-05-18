@@ -21,6 +21,7 @@
 Tree summarization and consensus tree building.
 """
 
+import copy
 import collections
 import dendropy
 from dendropy.calculate.statistics import mean_and_sample_variance
@@ -362,7 +363,16 @@ class TopologyCounter(object):
         """
         Set of all splits on tree: default topology hash.
         """
-        return frozenset(tree.bipartition_encoding)
+        def copy_and_freeze(bipartition):
+            bipartition = copy.copy(bipartition)
+            bipartition.is_mutable = False
+            return bipartition
+        return frozenset(
+            bipartition
+            if not bipartition.is_mutable
+            else copy_and_freeze(bipartition)
+            for bipartition in tree.bipartition_encoding
+        )
 
     def __init__(self):
         self.topology_hash_map = {}
