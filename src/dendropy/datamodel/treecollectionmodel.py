@@ -25,8 +25,6 @@ trees.
 import collections
 import math
 import copy
-import sys
-from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate

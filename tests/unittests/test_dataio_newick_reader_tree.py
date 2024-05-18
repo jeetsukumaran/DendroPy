@@ -24,8 +24,6 @@ Tests for general NEWICK reading.
 import sys
 import os
 import unittest
-import itertools
-import collections
 import random
 import dendropy
 from dendropy.utility import error
@@ -34,7 +32,6 @@ import os
 import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
-from support import compare_and_validate
 from support import standard_file_test_trees
 from support import curated_test_tree
 from support import pathmap

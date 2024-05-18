@@ -23,7 +23,6 @@ Serialization of NeXML-formatted data.
 
 from io import StringIO
 import json
-import textwrap
 import collections
 from dendropy.dataio import ioservice
 

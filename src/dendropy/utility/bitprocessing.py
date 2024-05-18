@@ -21,8 +21,6 @@
 Various bitwise utilities.
 """
 
-import sys
-
 def bit_length(n):
     """
     Return the number of bits necessary to represent an integer in binary,

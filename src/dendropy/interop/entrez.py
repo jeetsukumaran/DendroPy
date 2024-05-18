@@ -22,7 +22,6 @@ Low-level wrappers around the NCBI E-Utilities. Primarily meant to open
 file-like object handles on responses.
 """
 
-import sys
 from urllib.parse import urlencode
 from urllib.request import urlopen
 from dendropy.utility import textprocessing

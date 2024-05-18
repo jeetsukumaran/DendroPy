@@ -22,7 +22,6 @@ Extension to the basic unittest TestCase.
 """
 
 import collections
-import sys
 import re
 import os
 import unittest

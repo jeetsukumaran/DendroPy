@@ -21,11 +21,8 @@
 Implementation of NEXUS-schema tree iterator.
 """
 
-import sys
-from dendropy.utility import textprocessing
 from dendropy.dataio import ioservice
 from dendropy.dataio import nexusreader
-from dendropy.dataio import nexusprocessing
 
 class NexusTreeDataYielder(
         ioservice.TreeDataYielder,

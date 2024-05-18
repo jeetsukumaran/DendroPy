@@ -22,8 +22,6 @@ Parsing of NEWICK-format tree from a stream.
 """
 
 from io import StringIO
-import re
-import warnings
 from dendropy.utility import error
 from dendropy.utility import deprecate
 from dendropy.dataio import tokenizer

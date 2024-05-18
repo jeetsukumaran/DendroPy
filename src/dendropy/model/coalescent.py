@@ -29,7 +29,6 @@ from dendropy.utility import constants
 from dendropy.calculate import probability
 from dendropy.calculate import combinatorics
 from dendropy.utility.error import ProcessFailedException
-from dendropy.utility.error import TreeSimTotalExtinctionException
 
 ###############################################################################
 ## Calculations and statistics

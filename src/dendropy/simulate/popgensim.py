@@ -21,7 +21,6 @@
 Population genetic simlations.
 """
 
-import random
 import copy
 
 from dendropy.utility import GLOBAL_RNG

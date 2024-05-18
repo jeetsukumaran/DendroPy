@@ -21,11 +21,7 @@
 Writing of Newick-format tree to a stream.
 """
 
-import re
-import warnings
-from dendropy.utility import error
 from dendropy.utility import textprocessing
-from dendropy.dataio import tokenizer
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
 

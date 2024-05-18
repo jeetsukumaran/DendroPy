@@ -5,9 +5,6 @@ import sys
 import os
 import argparse
 import dendropy
-from dendropy.utility import cli
-from dendropy.utility import error
-from dendropy.utility import messaging
 
 usage = """\
 dendropy-format --from [FORMAT] --to [FORMAT] [OPTIONS] <SOURCE-FILE> > DEST-FILE

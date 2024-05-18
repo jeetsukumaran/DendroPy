@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import copy
 from io import StringIO
 from dendropy.datamodel import basemodel
 from dendropy.datamodel.treemodel import _bipartition

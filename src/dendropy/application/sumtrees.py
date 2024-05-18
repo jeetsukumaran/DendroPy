@@ -26,7 +26,6 @@ set of trees onto a target tree.
 
 import os
 import sys
-import re
 import getpass
 import argparse
 import collections
@@ -52,7 +51,6 @@ from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.utility import messaging
 from dendropy.utility import timeprocessing
-from dendropy.utility import bitprocessing
 from dendropy.utility import textprocessing
 
 ##############################################################################

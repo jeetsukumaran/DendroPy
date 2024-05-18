@@ -23,17 +23,11 @@ Wrapper for interacting with RSPR
 
 from io import StringIO
 import subprocess
-import uuid
-import tempfile
 import socket
-import random
 import os
-import sys
 
-import dendropy
 from dendropy.utility.messaging import get_logger
 from dendropy.utility import processio
-from dendropy.utility import textprocessing
 _LOG = get_logger("interop.rspr")
 
 HOSTNAME = socket.gethostname()

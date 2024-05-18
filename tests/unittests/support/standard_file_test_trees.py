@@ -17,10 +17,7 @@
 ##
 ##############################################################################
 
-import sys
 import json
-import random
-import dendropy
 import copy
 from . import pathmap
 from dendropy.utility.messaging import get_logger

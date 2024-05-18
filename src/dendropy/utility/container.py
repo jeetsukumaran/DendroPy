@@ -23,7 +23,6 @@ Various data structures.
 
 import collections
 import copy
-import sys
 import csv
 from dendropy.utility import deprecate
 try:

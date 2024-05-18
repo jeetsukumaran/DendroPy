@@ -25,7 +25,6 @@ read/writes to stdout/stderr/stdin.
 from dendropy.utility import textprocessing
 import sys
 import subprocess
-import threading
 
 try:
     from Queue import Queue, Empty

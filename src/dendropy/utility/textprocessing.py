@@ -22,12 +22,8 @@ Various text-manipulating and formatting utilities.
 """
 
 import re
-import sys
-import time
-import itertools
 import locale
 import codecs
-from io import StringIO
 
 ###############################################################################
 ## Unicode/String Conversions

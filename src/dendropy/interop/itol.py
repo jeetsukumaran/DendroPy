@@ -22,7 +22,6 @@ Wrappers for interacting with ITOL.
 """
 
 import os
-import sys
 import tempfile
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -33,8 +32,6 @@ try:
     COMPRESSION_TYPE = zipfile.ZIP_DEFLATED
 except:
     COMPRESSION_TYPE = zipfile.ZIP_STORED
-import dendropy
-from dendropy.utility import textprocessing
 from dendropy.utility import urlio
 from dendropy.utility import error
 

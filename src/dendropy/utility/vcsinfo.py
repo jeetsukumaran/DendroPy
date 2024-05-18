@@ -22,7 +22,6 @@ Wraps up source version control system system information.
 """
 
 import os
-import sys
 import subprocess
 import datetime
 from dendropy.utility import textprocessing

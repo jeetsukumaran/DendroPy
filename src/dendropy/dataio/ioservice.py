@@ -17,10 +17,7 @@
 ##
 ##############################################################################
 
-import sys
 import collections
-import warnings
-from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.utility import deprecate
 from dendropy.utility import textprocessing

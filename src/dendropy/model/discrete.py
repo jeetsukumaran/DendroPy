@@ -21,9 +21,7 @@
 Models and modeling of discrete character evolution.
 """
 
-import copy
 import math
-import itertools
 from dendropy.utility import GLOBAL_RNG
 from dendropy.calculate import probability
 import dendropy

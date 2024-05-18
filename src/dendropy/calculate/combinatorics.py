@@ -21,7 +21,6 @@
 Combinatoric and related functionCombinatoric and related functions.
 """
 
-import math
 from dendropy.utility import deprecate
 
 def factorial(num):

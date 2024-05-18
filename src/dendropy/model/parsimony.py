@@ -21,9 +21,6 @@
 Models, modeling and model-fitting of parsimony.
 """
 
-from functools import reduce
-import operator
-import dendropy
 from dendropy.utility.error import TaxonNamespaceIdentityError
 from dendropy.utility import deprecate
 

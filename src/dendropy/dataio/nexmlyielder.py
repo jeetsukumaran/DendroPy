@@ -21,7 +21,6 @@
 Implementation of NEXML-schema tree iterator.
 """
 
-import sys
 from dendropy.dataio import ioservice
 from dendropy.dataio import nexmlreader
 from dendropy.dataio import xmlprocessing

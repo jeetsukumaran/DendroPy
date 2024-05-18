@@ -21,8 +21,6 @@
 Wrappers for interacting with GBIF.
 """
 
-import sys
-from urllib.parse import urlencode
 from urllib.request import urlopen
 from dendropy.datamodel import basemodel
 from dendropy.dataio import xmlprocessing

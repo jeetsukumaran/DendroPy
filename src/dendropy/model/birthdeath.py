@@ -51,10 +51,7 @@ Models, modeling and model-fitting of birth-death processes.
 
 """
 
-import sys
 import math
-import collections
-import itertools
 from dendropy.calculate import combinatorics
 from dendropy.calculate import probability
 from dendropy.utility import GLOBAL_RNG

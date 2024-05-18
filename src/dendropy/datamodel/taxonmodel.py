@@ -76,13 +76,10 @@ be related through correct interpretation of their taxon labels.
 """
 
 
-import warnings
-import collections
 import copy
 from io import StringIO
 from dendropy.datamodel import basemodel
 from dendropy.utility import bitprocessing
-from dendropy.utility import textprocessing
 from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import deprecate

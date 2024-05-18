@@ -21,10 +21,8 @@
 Tree summarization and consensus tree building.
 """
 
-import math
 import collections
 import dendropy
-from dendropy.datamodel import taxonmodel
 from dendropy.calculate.statistics import mean_and_sample_variance
 
 ##############################################################################

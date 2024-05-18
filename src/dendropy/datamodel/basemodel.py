@@ -25,7 +25,6 @@ import os
 import copy
 from io import StringIO
 import sys
-import collections
 from dendropy.utility import container
 from dendropy.utility import bibtex
 from dendropy.utility import textprocessing

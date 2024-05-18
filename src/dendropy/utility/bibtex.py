@@ -23,7 +23,6 @@ BibTeX interface.
 
 import re
 import textwrap
-import sys
 from dendropy.utility.container import OrderedCaselessDict
 from dendropy.utility import deprecate
 

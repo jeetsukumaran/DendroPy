@@ -23,9 +23,6 @@ that manages collections of |TaxonNamespace|, |TreeList|, and
 (various kinds of) |CharacterMatrix| objects.
 """
 
-import warnings
-import copy
-import sys
 from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import deprecate
