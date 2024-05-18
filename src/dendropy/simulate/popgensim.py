@@ -69,6 +69,17 @@ class FragmentedPopulations(object):
                            samples_per_pop=10,
                            seq_len=2000,
                            use_seq_gen=None):
+        """
+        Generate sequence data from population and gene trees, creating them if necessary.
+
+        Parameters:
+            ``species_name`` : string identifying species/taxon
+            ``samples_per_pop`` : number of samples (genes) per population
+            ``seq_len`` : site length for generated sequences
+
+        Returns:
+            dendropy.DataSet: A dataset containing the generated sequences
+        """
         if use_seq_gen is not None:
             deprecate.dendropy_deprecation_warning(
                 message="Argument use_seq_gen is deprecated as of Dendropy 5. "
@@ -103,6 +114,14 @@ class FragmentedPopulations(object):
         return d
 
     def generate_pop_tree(self, species_name, samples_per_pop=None):
+        """
+        Parameters:
+            ``species_name`` : string identifying species/taxon
+            ``samples_per_pop`` : number of samples (genes) per population
+
+        Returns:
+            DendroPy tree, with branch lengths in generations
+        """
         if samples_per_pop is not None:
             deprecate.dendropy_deprecation_warning(
                 message="Argument samples_per_pop is deprecated as of Dendropy 5. "
