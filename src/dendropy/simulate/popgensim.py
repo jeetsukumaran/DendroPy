@@ -24,6 +24,7 @@ Population genetic simlations.
 import copy
 
 from dendropy.utility import GLOBAL_RNG
+from dendropy.utility import deprecate
 from dendropy.interop import seqgen
 from dendropy.model import discrete
 from dendropy.model import coalescent
@@ -67,7 +68,12 @@ class FragmentedPopulations(object):
                            species_name,
                            samples_per_pop=10,
                            seq_len=2000,
-                           use_seq_gen=True):
+                           use_seq_gen=None):
+        if use_seq_gen is not None:
+            deprecate.dendropy_deprecation_warning(
+                message="Argument use_seq_gen is deprecated as of Dendropy 5. "
+                "Note that in previous versions of Dendropy, it was ignored and had no effect.",
+            )
 
         self.generate_pop_tree(species_name=species_name, samples_per_pop=samples_per_pop)
         self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
@@ -96,7 +102,13 @@ class FragmentedPopulations(object):
             d.add_char_matrix(char_matrix)
         return d
 
-    def generate_pop_tree(self, species_name, samples_per_pop=10):
+    def generate_pop_tree(self, species_name, samples_per_pop=None):
+        if samples_per_pop is not None:
+            deprecate.dendropy_deprecation_warning(
+                message="Argument samples_per_pop is deprecated as of Dendropy 5. "
+                "Note that in previous versions of Dendropy, it was ignored and had no effect.",
+            )
+
         tree_data = { 'sp': species_name, 'divt': self.div_time_gens }
         desc_lineages = []
         for i in range(self.num_desc_pops):
