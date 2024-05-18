@@ -2363,6 +2363,21 @@ class Tree(
 
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
+    def polytomize_root(self, set_as_unrooted_tree=True):
+        """Works recursively to set root as a degree-3 node.
+
+        If ``self`` has two children and at least one of them is an internal
+        node, then it will be converted to an out-degree three node (with the
+        edge length added as needed).
+
+        Similar to :meth:`Tree.collapse_basal_bifurcation()`, but works
+        recursively to set root as a degree-3 node.
+        """
+        if self.seed_node is not None:
+            self.seed_node._convert_node_to_root_polytomy()
+        if set_as_unrooted_tree:
+            self.is_rooted = False
+
     def collapse_basal_bifurcation(self, set_as_unrooted_tree=True):
         "Converts a degree-2 node at the root to a degree-3 node."
         seed_node = self.seed_node

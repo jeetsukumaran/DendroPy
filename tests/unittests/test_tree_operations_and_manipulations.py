@@ -938,6 +938,24 @@ class TestStructureExtraction(
 
 class TreeRestructuring(dendropytest.ExtendedTestCase):
 
+    def test_polytomize_root(self):
+        t = dendropy.Tree.get(data="(B:0.2,((C:0.3,(D:0.4,Q:9.3)))E:0.5);", schema="newick")
+        t.polytomize_root(set_as_unrooted_tree=False)
+        self.assertEqual(t.as_string("newick").strip(), "(B:0.7,C:0.3,(D:0.4,Q:9.3));")
+
+        t = dendropy.Tree.get(data="(((A,((B,C)))));", schema="newick")
+        t.polytomize_root(set_as_unrooted_tree=False)
+        self.assertEqual(t.as_string("newick").strip(), "(A,B,C);")
+
+        newick_string = "(B:0.7,C:0.3,(D:0.4,Q:9.3):0.3):0.3;"
+        t = dendropy.Tree.get(data=newick_string, schema="newick")
+        t.polytomize_root(set_as_unrooted_tree=False)
+        self.assertEqual(t.as_string("newick").strip(), newick_string)
+
+        t = dendropy.Tree.get(data=newick_string, schema="newick")
+        t.polytomize_root(set_as_unrooted_tree=True)
+        self.assertEqual(t.is_rooted, False)
+
     def test_collapse_basal_bifurcation(self):
         self.assertFalse(self.fail_incomplete_tests())
 
