@@ -23,8 +23,6 @@ import random
 import dendropy
 import copy
 from . import pathmap
-if sys.hexversion < 0x03040000:
-    from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
 

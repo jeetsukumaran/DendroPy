@@ -85,10 +85,7 @@ class ExtendedTestCase(unittest.TestCase):
     logger = property(_get_logger, _set_logger)
 
     def assertCountEqual(self, *args, **kwargs):
-        if sys.hexversion >= 0x03020000:
-            super(ExtendedTestCase, self).assertCountEqual(*args, **kwargs)
-        else:
-            self.assertEqual(collections.Counter(args[0]), collections.Counter(args[1]))
+        super(ExtendedTestCase, self).assertCountEqual(*args, **kwargs)
 
     def fail_incomplete_tests(self):
         return bool(strtobool(os.environ.get(metavar.FAIL_INCOMPLETE_TESTS_ENVAR, "0")))

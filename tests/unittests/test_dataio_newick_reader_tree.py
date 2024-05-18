@@ -40,8 +40,6 @@ from support import curated_test_tree
 from support import pathmap
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
-if sys.hexversion < 0x03040000:
-    from dendropy.utility.filesys import pre_py34_open as open
 
 class NewickTreeReaderBasic(
         curated_test_tree.CuratedTestTree,
