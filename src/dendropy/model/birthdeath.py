@@ -261,7 +261,7 @@ def birth_death_tree(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.
         extinct_tips = []
         for nd in tree:
             if not nd._child_nodes:
-                if getattr(nd, extinct_attr_name, False):
+                if not getattr(nd, extinct_attr_name, False):
                     extant_tips.append(nd)
                     if is_add_extinct_attr:
                         setattr(nd, extinct_attr_name, False)
@@ -700,7 +700,7 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
         extinct_tips = []
         for nd in tree:
             if not nd._child_nodes:
-                if getattr(nd, extinct_attr_name, False):
+                if not getattr(nd, extinct_attr_name, False):
                     extant_tips.append(nd)
                     #NICOLA: the reason for this will become clear later
                     nd.edge.length=-nd.edge.length
