@@ -2,6 +2,7 @@ import dendropy
 from dendropy.model.birthdeath import (
     birth_death_likelihood,
     birth_death_tree,
+    fast_birth_death_tree,
     fit_pure_birth_model,
     fit_pure_birth_model_to_tree,
     uniform_pure_birth_tree,
@@ -44,3 +45,7 @@ def test_birth_death_likelihood():
 
     res = birth_death_likelihood(tree=tree, birth_rate=1, death_rate=2)
     assert isinstance(res, float)
+
+def test_fast_birth_death_tree():
+    res = fast_birth_death_tree(1, 1, max_time=1)
+    assert isinstance(res, dendropy.Tree)
