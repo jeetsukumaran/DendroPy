@@ -3088,7 +3088,7 @@ class Tree(
 
     def ladderize(self, ascending=True):
         """
-        Sorts child nodes in ascending (if ``ascending`` is |False|) or
+        Sorts child nodes in ascending (if ``ascending`` is |True|) or
         descending (if ``ascending`` is |False|) order in terms of the number of
         children each child node has.
         """
