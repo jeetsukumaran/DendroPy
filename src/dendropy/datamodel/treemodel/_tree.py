@@ -3949,7 +3949,7 @@ class Tree(
 
     def __str__(self):
         "Dump Newick string."
-        return "%s" % self._as_newick_string()
+        return self.as_string("newick").strip()
 
     def __repr__(self):
         return "<{} object at {}>".format(self.__class__.__name__, hex(id(self)))
