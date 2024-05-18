@@ -100,10 +100,10 @@ jobs:
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
       - name: Unit tests with setup.py
         run: |
-          python setup.py pytest --addopts '-m "not smoke"'  
+          python setup.py pytest --addopts '-m "not smoke"'
       - name: Smoke tests with setup.py
         run: |
-          python setup.py pytest --addopts "-m smoke" 
+          python setup.py pytest --addopts "-m smoke"
 
   entrypoints:
     runs-on: ubuntu-latest
@@ -259,7 +259,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/build/html # The folder the action should deploy.        
+          path: docs/build/html # The folder the action should deploy.
         # uses: JamesIves/github-pages-deploy-action@v4
         # with:
         #   folder: docs/build/html # The folder the action should deploy.
@@ -274,7 +274,7 @@ jobs:
         #   build_directory: docs/build/html
   deploy-docs:
     if: github.ref == 'refs/heads/main'
-  
+
     # Add a dependency to the build job
     needs: docs
 
