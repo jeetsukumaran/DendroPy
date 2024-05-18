@@ -25,9 +25,23 @@ import collections
 import re
 import os
 import unittest
-from distutils.util import strtobool
 from dendropy.utility import metavar
 from dendropy.utility import messaging
+
+# adapted from https://stackoverflow.com/a/71133268/17332200
+def strtobool(val):
+    """Convert a string representation of truth to true (1) or false (0).
+    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+    'val' is anything else.
+    """
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    else:
+        raise ValueError("invalid truth value %r" % (val,))
 
 # Defining this here means that unittest will exclude all lines from this
 # module in the traceback report when an assertion fails, allowing
