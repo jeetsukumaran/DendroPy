@@ -95,7 +95,17 @@ setup(
     },
     license='BSD',
     description="A Python library for phylogenetics and phylogenetic computing: reading, writing, simulation, processing and manipulation of phylogenetic trees (phylogenies) and characters.",
-    long_description=_read(["README.rst"]),
+    long_description=_read(["README.rst"]).replace(
+""".. raw:: html
+
+   <div align="center">
+""", ""
+    ).replace(
+""".. raw:: html
+
+   </div>
+""", ""
+    ),
     # long_description_content_type="text/markdown",
     long_description_content_type="text/x-rst",
     # install_requires=_read_requirements("requirements.txt"),
