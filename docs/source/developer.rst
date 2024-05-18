@@ -92,9 +92,9 @@ To update the project to a new version, run of the following
 
 .. code-block:: shell
 
-   bumpver --update patch
-   bumpver --update minor
-   bumpver --update major
+   bumpver update --patch
+   bumpver update --minor
+   bumpver update --major
 
 This will create a tagged commit that updates the source (i.e., `__version__`) with the new version number
 
