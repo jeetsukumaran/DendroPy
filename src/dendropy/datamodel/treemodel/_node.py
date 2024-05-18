@@ -829,7 +829,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         """
         Removes all child nodes.
         """
-        del self._child_nodes[:]  # list.clear() is not in Python 2.7
+        self._child_nodes.clear()
 
     def reversible_remove_child(self, node, suppress_unifurcations=False):
         """

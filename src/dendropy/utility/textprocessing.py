@@ -45,8 +45,6 @@ def bytes_to_text(s):
     to a text string.
 
     In Python 3, this is from type ``bytes`` to ``str``.
-    In Python 2, this is, confusingly, from type ``str`` to ``unicode``.
-
     """
     return codecs.decode(s, ENCODING)
 

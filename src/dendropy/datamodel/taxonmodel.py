@@ -986,8 +986,7 @@ class TaxonNamespace(
         """
         Removes all |Taxon| objects from this namespace.
         """
-        # self._taxa.clear() # Python 2 ``list`` class does not have `clear()` method
-        del self._taxa[:]
+        self._taxa.clear()
         self._accession_index_taxon_map.clear()
         self._taxon_accession_index_map.clear()
         self._taxon_bitmask_map.clear()

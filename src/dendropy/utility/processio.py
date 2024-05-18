@@ -25,11 +25,7 @@ read/writes to stdout/stderr/stdin.
 from dendropy.utility import textprocessing
 import sys
 import subprocess
-
-try:
-    from Queue import Queue, Empty
-except ImportError:
-    from queue import Queue, Empty  # python 3.x
+from queue import Queue, Empty
 
 ON_POSIX = 'posix' in sys.builtin_module_names
 

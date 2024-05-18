@@ -25,11 +25,7 @@ import collections
 import copy
 import csv
 from dendropy.utility import deprecate
-try:
-    from collections.abc import MutableMapping
-except ImportError:
-    # Python 2
-    from collections import MutableMapping
+from collections.abc import MutableMapping
 
 ###############################################################################
 ## OrderedSet

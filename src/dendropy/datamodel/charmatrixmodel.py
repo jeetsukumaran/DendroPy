@@ -255,8 +255,6 @@ class CharacterDataSequence(
         for v in self._character_values:
             yield v
 
-    next = __next__ # Python 2 legacy support
-
     def cell_iter(self):
         """
         Iterate over triplets of character values and associated
