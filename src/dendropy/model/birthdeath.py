@@ -699,6 +699,8 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
         extant_tips = []
         extinct_tips = []
         for nd in tree:
+            if nd.edge.length is None:
+                nd.edge.length = 0.0;
             if not nd._child_nodes:
                 if not getattr(nd, extinct_attr_name, False):
                     extant_tips.append(nd)
@@ -859,10 +861,10 @@ def fast_birth_death_tree(birth_rate, death_rate, **kwargs):
                 #c1.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
                 #c2.birth_rate = nd.birth_rate + rng.gauss(0, birth_rate_sd)
                 #c2.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
-                c1.birth_rate = nd.birth_rate
-                c1.death_rate = nd.death_rate
-                c2.birth_rate = nd.birth_rate
-                c2.death_rate = nd.death_rate
+                c1.birth_rate = birth_rate
+                c1.death_rate = death_rate
+                c2.birth_rate = birth_rate
+                c2.death_rate = death_rate
                 #extant_tips.append(c1)
                 extant_tips.append(c2)
             else:
