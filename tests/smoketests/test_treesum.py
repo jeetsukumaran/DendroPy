@@ -77,17 +77,14 @@ def test_summarize_edge_lengths_on_tree():
 
 def test_count_splits_on_trees():
     # TODO: https://github.com/jeetsukumaran/DendroPy/issues/179#issue-1965884280
-    # namespace = dendropy.TaxonNamespace(["A"])
-    # namespace.is_mutable = False
-    # summ = TreeSummarizer()
-    # tree = dendropy.Tree(taxon_namespace=namespace)
-    # tree.encode_bipartitions(is_bipartitions_mutable=False)
-    # dist = SplitDistribution(taxon_namespace=namespace)
-    # list = []
-    # list.append(tree)
+    namespace = dendropy.TaxonNamespace(["A"])
+    summ = TreeSummarizer()
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    dist = SplitDistribution(taxon_namespace=namespace)
+    list = []
+    list.append(tree)
 
-    # summ.count_splits_on_trees(list, dist)
-    pass
+    summ.count_splits_on_trees(list, dist)
 
 
 def test_consensus_tree():
