@@ -941,15 +941,6 @@ class Tree(
         suppress_unifurcations : bool
             If |True|, nodes of outdegree 1 will be deleted. Only will
             be done if some nodes are excluded from the cloned tree.
-        is_apply_filter_to_leaf_nodes : bool
-            If ``True`` then the above filter will be applied to leaf nodes. If
-            ``False`` then it will not (and all leaf nodes will be
-            automatically included, unless excluded by an ancestral node being
-            filtered out).
-        is_apply_filter_to_internal_nodes : bool
-            If ``True`` then the above filter will be applied to internal nodes. If
-            ``False`` then it will not (internal nodes without children will
-            still be filtered out).
 
         Examples
         --------
@@ -1006,15 +997,6 @@ class Tree(
         suppress_unifurcations : bool
             If |True|, nodes of outdegree 1 will be deleted. Only will
             be done if some nodes are excluded from the cloned tree.
-        is_apply_filter_to_leaf_nodes : bool
-            If ``True`` then the above filter will be applied to leaf nodes. If
-            ``False`` then it will not (and all leaf nodes will be
-            automatically included, unless excluded by an ancestral node being
-            filtered out).
-        is_apply_filter_to_internal_nodes : bool
-            If ``True`` then the above filter will be applied to internal nodes. If
-            ``False`` then it will not (internal nodes without children will
-            still be filtered out).
 
         Examples
         --------
