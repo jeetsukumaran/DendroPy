@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import copy
+import warnings
 from io import StringIO
 from dendropy.utility import terminal
 from dendropy.utility import error
@@ -1522,6 +1523,13 @@ class Tree(
             The most-recent common ancestor of the nodes specified, or |None|
             if no such node exists.
         """
+        if not self.is_rooted:
+            warnings.warn(
+                "Calculating MRCA on an unrooted tree implicitly implicitly "
+                "treats seed node as root. "
+                "Set tree.is_rooted = True to silence this warning.",
+            )
+
         start_node = kwargs.get("start_node", self.seed_node)
         leafset_bitmask = None
         if "leafset_bitmask" in kwargs:
