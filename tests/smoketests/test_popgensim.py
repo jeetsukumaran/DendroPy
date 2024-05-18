@@ -16,10 +16,8 @@ def test_generate_gene_tree():
     assert isinstance(res, dendropy.Tree)
 
 def test_generate_sequences():
-    # TODO: https://github.com/jeetsukumaran/DendroPy/issues/179#issue-1965884280
-    # populations = FragmentedPopulations(1)
-    # populations.generate_sequences("2X2")
-    pass
+    populations = FragmentedPopulations(2, use_seq_gen=False)
+    populations.generate_sequences("cheetah")
 
 def test_pop_gen_tree():
     tree = dendropy.Tree()

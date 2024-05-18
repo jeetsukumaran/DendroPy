@@ -88,7 +88,8 @@ class FragmentedPopulations(object):
 
         self.generate_pop_tree(species_name=species_name)
         self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
-        d = dendropy.DataSet(self.mutation_tree.taxon_namespace)
+        d = dendropy.DataSet()
+        d.attach_taxon_namespace(self.mutation_tree.taxon_namespace)
         if self.use_seq_gen is True:
             sg = seqgen.SeqGen()
             sg.seqgen_path = self.seqgen_path

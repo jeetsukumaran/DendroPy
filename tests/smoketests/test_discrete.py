@@ -2,6 +2,7 @@ import dendropy
 from dendropy.model.discrete import (
     Hky85,
     NucleotideCharacterEvolutionModel,
+    hky85_chars,
     simulate_discrete_char_dataset,
     simulate_discrete_chars,
 )
@@ -34,3 +35,10 @@ def test_simulate_discrete_chars():
 
     res = simulate_discrete_chars(1, tree, model)
     assert isinstance(res, dendropy.DnaCharacterMatrix)
+
+
+def test_hky85_chars():
+    namespace = dendropy.TaxonNamespace(["A"])
+    tree = dendropy.Tree(taxon_namespace=namespace)
+    tree.seed_node.taxon = namespace.get_taxon("A")
+    hky85_chars(10, tree)

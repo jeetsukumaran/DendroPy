@@ -498,6 +498,7 @@ def simulate_discrete_chars(
         seq_len=seq_len,
         root_states=None,
         rng=rng)
+    tree.migrate_taxon_namespace(tree_model.taxon_namespace)
     if char_matrix is None:
         char_matrix = dendropy.DnaCharacterMatrix(taxon_namespace=tree_model.taxon_namespace)
         char_matrix.taxon_namespace = tree_model.taxon_namespace
