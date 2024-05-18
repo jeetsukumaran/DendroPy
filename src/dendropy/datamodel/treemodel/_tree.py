@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import copy
-from dendropy.utility.textprocessing import StringIO
+from io import StringIO
 from dendropy.utility import terminal
 from dendropy.utility import error
 from dendropy.utility import bitprocessing

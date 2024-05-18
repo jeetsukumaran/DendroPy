@@ -17,10 +17,10 @@
 ##
 ##############################################################################
 
+from io import StringIO
 from . import pathmap
 from dendropy.datamodel import basemodel
 from dendropy.datamodel import charmatrixmodel
-from dendropy.utility.textprocessing import StringIO
 
 class ValidateWriteable(object):
 

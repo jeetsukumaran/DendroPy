@@ -21,6 +21,7 @@
 Tests native tree structuring routines.
 """
 
+from io import StringIO
 import os
 import sys
 import unittest
@@ -34,7 +35,6 @@ from support.dendropytest import ExtendedTestCase
 from support.mockrandom import MockRandom
 import dendropy
 from dendropy.calculate import treecompare
-from dendropy.utility.textprocessing import StringIO
 import re
 
 _LOG = messaging.get_logger(__name__)

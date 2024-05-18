@@ -23,9 +23,9 @@ Character and character-sequence data structures.
 
 import warnings
 import copy
+from io import StringIO
 import math
 import collections
-from dendropy.utility.textprocessing import StringIO
 from dendropy.utility import textprocessing
 from dendropy.utility import error
 from dendropy.utility import deprecate

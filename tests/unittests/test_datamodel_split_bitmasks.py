@@ -22,6 +22,7 @@ Testing of calculation of and operations with split bitmask hashes.
 """
 
 import warnings
+from io import StringIO
 import unittest
 import re
 import sys
@@ -33,7 +34,6 @@ from support.dendropytest import ExtendedTestCase
 from dendropy.utility import messaging
 from dendropy.utility import bitprocessing
 from dendropy.interop import paup
-from dendropy.utility.textprocessing import StringIO
 from dendropy.calculate import treecompare
 import dendropy
 

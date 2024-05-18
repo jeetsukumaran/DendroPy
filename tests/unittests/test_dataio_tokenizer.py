@@ -21,9 +21,9 @@
 Tests for tokenizers classes.
 """
 
+from io import StringIO
 import unittest
 from dendropy.dataio import nexusprocessing
-from dendropy.utility.textprocessing import StringIO
 
 class NexusTokenizerTestCase(unittest.TestCase):
     """

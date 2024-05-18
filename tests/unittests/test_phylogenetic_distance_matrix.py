@@ -17,11 +17,11 @@
 ##
 ##############################################################################
 
+from io import StringIO
 import unittest
 import dendropy
 import csv
 from dendropy.utility import container
-from dendropy.utility.textprocessing import StringIO
 import os
 import sys
 sys.path.insert(0, os.path.dirname(__file__))

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from dendropy.utility.textprocessing import StringIO
+from io import StringIO
 from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.datamodel import basemodel

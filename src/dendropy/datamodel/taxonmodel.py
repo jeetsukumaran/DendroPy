@@ -79,7 +79,7 @@ be related through correct interpretation of their taxon labels.
 import warnings
 import collections
 import copy
-from dendropy.utility.textprocessing import StringIO
+from io import StringIO
 from dendropy.datamodel import basemodel
 from dendropy.utility import bitprocessing
 from dendropy.utility import textprocessing

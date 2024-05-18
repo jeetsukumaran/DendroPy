@@ -22,6 +22,7 @@ Tests of tree metrics.
 """
 
 import random
+from io import StringIO
 import math
 import unittest
 import os
@@ -33,7 +34,6 @@ from support import pathmap
 import dendropy
 from dendropy.calculate import treemeasure
 from dendropy.calculate import treecompare
-from dendropy.utility.textprocessing import StringIO
 
 def _get_reference_tree_list(taxon_namespace=None):
     tree_list = dendropy.TreeList(label=None, taxon_namespace=taxon_namespace)

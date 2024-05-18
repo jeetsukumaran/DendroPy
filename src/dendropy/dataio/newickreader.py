@@ -21,11 +21,11 @@
 Parsing of NEWICK-format tree from a stream.
 """
 
+from io import StringIO
 import re
 import warnings
 from dendropy.utility import error
 from dendropy.utility import deprecate
-from dendropy.utility.textprocessing import StringIO
 from dendropy.dataio import tokenizer
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice

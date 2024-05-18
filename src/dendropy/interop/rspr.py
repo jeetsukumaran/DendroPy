@@ -21,6 +21,7 @@
 Wrapper for interacting with RSPR
 """
 
+from io import StringIO
 import subprocess
 import uuid
 import tempfile
@@ -150,8 +151,7 @@ class Rspr(object):
         """
         if newick_output_kwargs is None:
             newick_output_kwargs = {}
-        # tf = tempfile.NamedTemporaryFile("w", delete=True)
-        tf = textprocessing.StringIO()
+        tf = StringIO()
         ref_tree.write(file=tf, schema="newick", **newick_output_kwargs)
         for t in comparison_trees:
             t.write(file=tf, schema="newick", **newick_output_kwargs)
