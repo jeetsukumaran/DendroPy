@@ -387,6 +387,80 @@ class NewickTreeUnsupportedKeywordArguments(
         #         with self.assertRaises(TypeError):
         #             f(src, "newick", **reader_kwargs)
 
+class NewickTreeTerminatingUnnamedUnifurcation(unittest.TestCase):
+
+    def test_naked_unnamed_unifurcation1(self):
+        newick_str = "(()A,(B,C));"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
+    def test_naked_unnamed_unifurcation2(self):
+        newick_str = "();"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
+    def test_naked_unnamed_unifurcation3(self):
+        newick_str = "(());"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
+    def test_branchlength_unnamed_unifurcation1(self):
+        newick_str = "((:100.0)A,(B,C));"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
+    def test_branchlength_unnamed_unifurcation2(self):
+        newick_str = "(:100.0);"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
+    def test_branchlength_unnamed_unifurcation3(self):
+        newick_str = "((:42.0));"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
+    def test_naked_unnamed_bifurcation1(self):
+        newick_str = "((,)A,(B,C));"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
+    def test_naked_unnamed_bifurcation2(self):
+        newick_str = "(,);"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
+    def test_naked_unnamed_bifurcation3(self):
+        newick_str = "((,));"
+        tree = dendropy.Tree.get(
+            data=newick_str,
+            schema="newick",
+        )
+        self.assertEqual(newick_str, tree.as_string("newick").strip())
+
 
 class NewickTreeQuotedLabels(dendropytest.ExtendedTestCase):
 

@@ -1,18 +1,36 @@
+.. raw:: html
+
+   <div align="center">
+
 .. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
    :align: right
-   :alt: DendroPy
+   :target: https://github.com/jeetsukumaran/DendroPy
+   :alt: DendroPy wordmark
 
-.. image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml/badge.svg
++--------------------+-+---------------------+-+---------------------+
+| *automated tests:* | | *package version:*  | | *documentation:*    |
+|                    | |                     | |                     |
+| |CI|               | | |PyPI|              | | |Docs|              |
++--------------------+-+---------------------+-+---------------------+
+
+.. |CI| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml/badge.svg
    :target: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml
+   :alt: Continuous Integration build
+.. |PyPI| image:: https://img.shields.io/pypi/v/DendroPy.svg
+   :target: https://pypi.org/project/DendroPy/
+   :alt: PyPI version
+.. |Docs| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/pages/pages-build-deployment/badge.svg
+   :target: https://jeetsukumaran.github.io/DendroPy/
+   :alt: Documentation Status
+.. |nbsp| unicode:: 0xA0 
+   :trim:
 
-.. image:: https://img.shields.io/pypi/v/DendroPy.svg
-        :target: https://pypi.org/project/DendroPy/
+.. raw:: html
 
-Docs:
+   </div>
 
-.. image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/pages/pages-build-deployment/badge.svg
-        :target: https://jeetsukumaran.github.io/DendroPy/
-        :alt: Documentation Status
+-----
+
 
 DendroPy is a Python library for phylogenetic computing.
 It provides classes and functions for the simulation, processing, and

@@ -2395,6 +2395,15 @@ class Tree(
     def _set_seed_node(self, node):
         self._seed_node = node
         if self._seed_node is not None:
+            if node.parent_node is not None:
+                warnings.warn(
+                    "New seed_node has parent_node. The new seed_node and all "
+                    "descendants will be spliced out of their current context "
+                    "into this Tree. If this is not the desired behavior, pass "
+                    "node.extract_subtree() instead of node. Otherwise, to "
+                    "suppress this warning set node.parent_node = None before "
+                    "passing as new seed_node.",
+                )
             self._seed_node.parent_node = None
 
     seed_node = property(_get_seed_node, _set_seed_node)
@@ -2485,6 +2494,9 @@ class Tree(
                     new_seed_node.remove_child(nsn_ch)
                     for ch in nsn_ch._child_nodes:
                         new_seed_node.add_child(ch)
+            if new_seed_node is not None:
+                # uncouple before splicing
+                new_seed_node._parent_node = None
             self.seed_node = new_seed_node
 
         if update_bipartitions:
@@ -2740,8 +2752,8 @@ class Tree(
                     nd._parent_node = None
                 else:
                     # assert nd is self.seed_node
+                    children[0]._parent_node = None
                     self.seed_node = children[0]
-                    self.seed_node._parent_node = None
         if bipartitions_to_delete:
             old_encoding = self.bipartition_encoding
             self.bipartition_encoding = [
@@ -3614,8 +3626,8 @@ class Tree(
                     parent.insert_child(index=pos, node=child_nodes[0])
                     head_node._parent_node = None
                 else:
+                    child_nodes[0]._parent_node = None
                     self.seed_node = child_nodes[0]
-                    self.seed_node._parent_node = None
             else:
                 if num_children == 0:
                     tree_edges.append(edge)

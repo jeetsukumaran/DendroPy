@@ -22,6 +22,7 @@ Tests of birth-death model likelihood calculatio and fitting.
 """
 
 import unittest
+import itertools as it
 import json
 import os
 import sys
@@ -63,34 +64,98 @@ class BirthDeathTreeTest(unittest.TestCase):
     def testGSABD(self):
         """test that the birth-death process produces the correct number of tips with GSA."""
         _RNG = MockRandom()
-        for num_leaves in range(2, 15):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, gsa_ntax=3*num_leaves, rng=_RNG)
+        for num_leaves, tree_factory in it.product(
+            range(2, 15), [dendropy.Tree, lambda: None]
+        ):
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, gsa_ntax=3*num_leaves, tree=tree_factory(), rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
 
     def testYule(self):
         """test that the pure-birth process produces the correct number of tips."""
         _RNG = MockRandom()
-        for num_leaves in range(2, 20):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.0, num_extant_tips=num_leaves, rng=_RNG)
+        for num_leaves, tree_factory in it.product(
+            range(2, 20), [dendropy.Tree, lambda: None]
+        ):
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.0, num_extant_tips=num_leaves, tree=tree_factory(), rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
 
     def testGSA(self):
         """test that the pure-birth process produces the correct number of tips with GSA."""
         _RNG = MockRandom()
-        for num_leaves in range(2, 20):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.0, num_extant_tips=num_leaves, gsa_ntax=4*num_leaves, rng=_RNG)
+        for num_leaves, tree_factory in it.product(
+            range(2, 20), [dendropy.Tree, lambda: None]
+        ):
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.0, num_extant_tips=num_leaves, gsa_ntax=4*num_leaves, tree=tree_factory(), rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
 
     def testBDTree(self):
         """PureCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
         _RNG = MockRandom()
-        for num_leaves in range(2, 20):
-            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, rng=_RNG)
+        for num_leaves, tree_factory in it.product(
+            range(2, 20), [dendropy.Tree, lambda: None]
+        ):
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, tree=tree_factory(), rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEqual(num_leaves, len(t.leaf_nodes()))
+
+    def testBDTreeTime(self):
+        """Time-based stop condition -- tree generation without checking [TODO: checks]"""
+        _RNG = MockRandom()
+        for tree_factory in [dendropy.Tree, lambda: None]:
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, max_time=4, tree=tree_factory(), rng=_RNG)
+            self.assertTrue(t._debug_tree_is_valid())
+
+
+class FastBirthDeathTreeTest(unittest.TestCase):
+    def testGSABD(self):
+        """test that the birth-death process produces the correct number of tips with GSA."""
+        _RNG = MockRandom()
+        for num_leaves, tree_factory in it.product(
+            range(2, 15), [dendropy.Tree, lambda: None]
+        ):
+            t = birthdeath.birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, gsa_ntax=3*num_leaves, tree=tree_factory(), rng=_RNG)
+            self.assertTrue(t._debug_tree_is_valid())
+            self.assertEqual(num_leaves, len(t.leaf_nodes()))
+
+    def testYule(self):
+        """test that the pure-birth process produces the correct number of tips."""
+        _RNG = MockRandom()
+        for num_leaves, tree_factory in it.product(
+            range(2, 20), [dendropy.Tree, lambda: None]
+        ):
+            t = birthdeath.fast_birth_death_tree(birth_rate=1.0, death_rate=0.0, num_extant_tips=num_leaves, tree=tree_factory(), rng=_RNG)
+            self.assertTrue(t._debug_tree_is_valid())
+            self.assertEqual(num_leaves, len(t.leaf_nodes()))
+
+    def testGSA(self):
+        """test that the pure-birth process produces the correct number of tips with GSA."""
+        _RNG = MockRandom()
+        for num_leaves, tree_factory in it.product(
+            range(2, 20), [dendropy.Tree, lambda: None]
+        ):
+            t = birthdeath.fast_birth_death_tree(birth_rate=1.0, death_rate=0.0, num_extant_tips=num_leaves, gsa_ntax=4*num_leaves, tree=tree_factory(), rng=_RNG)
+            self.assertTrue(t._debug_tree_is_valid())
+            self.assertEqual(num_leaves, len(t.leaf_nodes()))
+
+    def testBDTree(self):
+        """PureCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
+        _RNG = MockRandom()
+        for num_leaves, tree_factory in it.product(
+            range(2, 20), [dendropy.Tree, lambda: None]
+        ):
+            t = birthdeath.fast_birth_death_tree(birth_rate=1.0, death_rate=0.2, num_extant_tips=num_leaves, tree=tree_factory(), rng=_RNG)
+            self.assertTrue(t._debug_tree_is_valid())
+            self.assertEqual(num_leaves, len(t.leaf_nodes()))
+
+    def testBDTreeTime(self):
+        """Time-based stop condition -- tree generation without checking [TODO: checks]"""
+        _RNG = MockRandom()
+        for tree_factory in [dendropy.Tree, lambda: None]:
+            t = birthdeath.fast_birth_death_tree(birth_rate=1.0, death_rate=0.2, max_time=4, tree=tree_factory(), rng=_RNG)
+            self.assertTrue(t._debug_tree_is_valid())
 
 class BirthDeathLikelihoodTestCases(unittest.TestCase):
 

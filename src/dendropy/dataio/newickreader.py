@@ -22,6 +22,7 @@ Parsing of NEWICK-format tree from a stream.
 """
 
 from io import StringIO
+import itertools as it
 from dendropy.utility import error
 from dendropy.utility import deprecate
 from dendropy.dataio import tokenizer
@@ -227,9 +228,6 @@ class NewickReader(ioservice.DataReader):
                     corrected = "default-rooted"
                 else:
                     corrected = "default-unrooted"
-            msg = StringIO()
-            # error.critical_deprecation_alert("\n{}\nUse of keyword argument '{}={}' is deprecated; use 'rooting=\"{}\"' instead".format(msg.getvalue(), kw, kwargs[kw], corrected),
-            #         stacklevel=4)
             deprecate.dendropy_deprecation_warning(
                     preamble="Deprecated since DendroPy 4:",
                     old_construct="{}={}".format(kw, kwargs[kw]),
@@ -503,7 +501,7 @@ class NewickReader(ioservice.DataReader):
             # self._parenthesis_nesting_level += 1 # handled by calling code
             nexus_tokenizer.require_next_token()
             node_created = False
-            while True:
+            for count in it.count():
                 if nexus_tokenizer.current_token == ",":
                     if not node_created: #184
                         # no node has been created yet: ',' designates a
@@ -536,6 +534,13 @@ class NewickReader(ioservice.DataReader):
                         current_node.add_child(new_node)
                         node_created = True;
                 elif nexus_tokenizer.current_token == ")": #206
+                    if count == 0:
+                        # handle terminating unnamed unifurcation
+                        # see https://github.com/jeetsukumaran/DendroPy/issues/76
+                        new_node = tree.node_factory()
+                        is_new_internal_node = False
+                        self._finish_node(new_node)
+                        current_node.add_child(new_node)
                     # end of child nodes
                     self._parenthesis_nesting_level -= 1
                     nexus_tokenizer.require_next_token()
