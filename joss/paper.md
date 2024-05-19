@@ -82,11 +82,13 @@ Sustainable long-term maintenance is the major focus of the version 5 release.
 To this end, we have implemented continuous integration through GitHub Actions comprising:
 
 - code linting with [Ruff](https://pypi.org/project/ruff/)
-- build and deployment of documentation via GitHub pages, hosted at [jeetsukumaran.github.io/DendroPy](https://jeetsukumaran.github.io/DendroPy),
+- build and deployment of documentation via GitHub pages,[^1]
 - unit tests, largely using the unittest framework,
 - new smoke tests using [pytest](https://pypi.org/project/pytest/),
 - code coverage reporting via the codecov service,
 - automatic deployment to PyPI upon creation of a new version.
+
+[^1]: Documentation is hosted at [https://jeetsukumaran.github.io/DendroPy](https://jeetsukumaran.github.io/DendroPy).
 
 Other key activities in preparing this release included triage of bug reports, creating an issue organization system to manage open issues, and creating issue templates to increase the quality of future bug reports and feature requests.
 
