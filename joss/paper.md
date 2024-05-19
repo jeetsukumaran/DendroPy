@@ -46,7 +46,7 @@ bibliography: paper.bib
 
 # Summary
 
-Phylogenies not only tell the history of life, but are phylogenetic also predictive and can be applied to do things: conservation, public health, medicine, and evolutionary algorithms.
+Phylogenies not only tell the history of life, but are phylogenetic also predictive and can be applied across a broad range of biological topics including, but not limited to, natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology[@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference,@voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023,@kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward,@lenski2003evolutionary] and application-oriented evolutionary algorithms [@lalejini2024phylogeny,@hernandez2022can,@shahbandegan2022untangling].
 
 
 # Statement of Need
