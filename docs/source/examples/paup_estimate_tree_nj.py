@@ -4,6 +4,8 @@
 import dendropy
 from dendropy.interop import paup
 
+warnings.warn("This example requires paup to be installed to run.")
+
 data = dendropy.DnaCharacterMatrix.get(
     path="pythonidae.nex",
     schema="nexus")

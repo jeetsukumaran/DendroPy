@@ -5,12 +5,7 @@ import warnings
 import dendropy
 from dendropy.interop import paup
 
-warnings.warn(
-    "This example is known to be broken! "
-    "It will be fixed or removed in the future. "
-    "See https://github.com/jeetsukumaran/DendroPy/issues/160 for details. ",
-    "Patch contributions are welcome.",
-)
+warnings.warn("This example requires paup to be installed to run.")
 
 data = dendropy.DnaCharacterMatrix.get(
     path="pythonidae.nex",
