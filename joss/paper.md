@@ -69,10 +69,12 @@ The library's use cases range across serving as stand-alone library for phylogen
 
 # Features
 
+Key features of DendroPy include,
 - rich object-oriented representations for manipulation of phylogenetic trees and character matrices,
-- reading and writing of phylogenetic data in a range of formats, such as NEXUS, Newick, NeXML, Phylip, FASTA, etc. [@maddison1997nexus, @olsen1990newick, @vos2012nexml, @felsenstein1981evolutionary, @lipman1985rapid]
-- simulation of phylogenetic trees under a range of models, including coalescent models, birth-death models, and population genetics simulations of gene trees.
-- application scripts for performing some useful phylogenetic operations, such as data conversion and tree posterior distribution summarization.
+- efficient, bit-level representation of nodes' leaf bipartitions,
+- loading and saving popular phylogenetic data formats including NEXUS, Newick, NeXML, Phylip, and FASTA [@maddison1997nexus, @olsen1990newick, @vos2012nexml, @felsenstein1981evolutionary, @lipman1985rapid];
+- simulation of phylogenetic trees under a range of models, including coalescent models, birth-death models, and population genetics simulations of gene trees; and
+- application scripts for performing data conversion, collating taxon labels from multiple trees, and tree posterior distribution summarization.
 
 # Maintenance
 
