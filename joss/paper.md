@@ -25,13 +25,12 @@ authors:
   - name: Mark T. Holder
     orcid: 0000-0001-5575-0536
     affiliation: "5, 6"
-
 affiliations:
- - name: Department of Ecology and Evolutionary Biology, University of Michigan, Ann Arbor, MI, USA
+  - name: Department of Ecology and Evolutionary Biology, University of Michigan, Ann Arbor, MI, USA
    index: 1
- - name: Center for the Study of Complex Systems, University of Michigan, Ann Arbor, MI, USA
+  - name: Center for the Study of Complex Systems, University of Michigan, Ann Arbor, MI, USA
    index: 2
- - name: Michigan Institute for Data Science, University of Michigan, Ann Arbor, MI, USA
+  - name: Michigan Institute for Data Science, University of Michigan, Ann Arbor, MI, USA
    index: 3
   - name: Department of Biology, San Diego State University, San Diego, CA, USA
    index: 4
