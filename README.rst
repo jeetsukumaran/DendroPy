@@ -22,7 +22,7 @@
 .. |Docs| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/pages/pages-build-deployment/badge.svg
    :target: https://jeetsukumaran.github.io/DendroPy/
    :alt: Documentation Status
-.. |nbsp| unicode:: 0xA0 
+.. |nbsp| unicode:: 0xA0
    :trim:
 
 .. raw:: html
