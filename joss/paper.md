@@ -98,11 +98,16 @@ This brings DendroPy in line with best practice, makes it easier to test and ens
 
 Over its nearly 15-year history, DendroPy’s stability has led to adoption as a core dependency of other software and pipelines.
 There are currently [85 projects](https://perma.cc/P865-JHXW) on PyPI listed as depending on DendroPy.
+Notable examples include:
 
-- PASTA [@mirarab2014pasta]
-- Physcraper [@sanchezreyes2021physcraper]
-- Espalier [@rasmussen2023espalier],
-- MetaPhlAn [@blancomiguez2023extending]
+- PASTA,  which performs multiple sequence alignment [@mirarab2014pasta];
+- Physcraper, which automates curation of gene trees [@sanchezreyes2021physcraper];
+- Espalier, a utility for constructing maximum agreement forests [@rasmussen2023espalier]; and
+- MetaPhlAn, which extracts information about microbial community composition from metagenomic shotgun sequencing data [@blancomiguez2023extending].
+
+During this time, DendroPy has also directly helped enable a large number of end-user phylogenetics projects.
+Notable examples include work on the early natural history of birds [@jarvis2014wholegenome], the molecular evolution of the Zika virus [@faye2014molecular], and early human migration within the Americas [@garcaortiz2021genomic].
+As of May 2024, Google Scholar counts 1,654 works referencing DendroPy [@sukumaran2010dendropy].
 
 # Acknowledgements
 
