@@ -79,6 +79,13 @@ This includes:
 
 and more.
 
+Citing
+======
+
+If you use this library or any portion thereof in published work, please cite it as:
+
+      Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571.
+
 License and Warranty
 ====================
 
