@@ -46,7 +46,7 @@ bibliography: paper.bib
 
 # Summary
 
-Phylogenies not only tell the history of life, but are phylogenetic also predictive and can be applied across a broad range of biological topics including, but not limited to, natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology[@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference,@voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023,@kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward,@lenski2003evolutionary] and application-oriented evolutionary algorithms [@lalejini2024phylogeny,@hernandez2022can,@shahbandegan2022untangling].
+Phylogenies not only tell the history of life, but are phylogenetic also predictive and can be applied across a broad range of biological topics including, but not limited to, natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology[@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference, @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023, @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward, @lenski2003evolutionary] and application-oriented evolutionary algorithms [@lalejini2024phylogeny, @hernandez2022can, @shahbandegan2022untangling].
 
 
 # Statement of Need
@@ -54,17 +54,17 @@ Phylogenies not only tell the history of life, but are phylogenetic also predict
 There are a broad range of packages, frameworks, toolkits, and software projects that are immediately relevant to this domain.
 The broader evolutionary biology analysis software landscape divides into the following major categories:
 
-1. High-performance specialized tools for inference (e.g., BEAST2, RAxML, MrBayes, PAUP, etc.) [@bouckaert2014beast2,@stamatakis2014raxml,@ronquist2012mrbayes,@wilgenbusch2003inferring];
+1. High-performance specialized tools for inference (e.g., BEAST2, RAxML, MrBayes, PAUP, etc.) [@bouckaert2014beast2, @stamatakis2014raxml, @ronquist2012mrbayes, @wilgenbusch2003inferring];
 2. Python phylogenetics libraries providing rich tree-centric data models and operations:
-  - ETE [@huertacepas2016ete]
-  - Scikit-bio [@rideout2024scikitbio]
-  - tskit [@kelleher2018efficient]
-  - TreeSwift and SuchTree, which feature lightweight,  high-performance tree representations [@moshiri2020treeswift,@neches2018suchtree]
-  - hstrat and Phylotrack, which are specialized for working with simulation-generated phylogenies [@dolson2024phylotrack,@moreno2022hstrat].
+    - ETE [@huertacepas2016ete]
+    - Scikit-bio [@rideout2024scikitbio]
+    - tskit [@kelleher2018efficient]
+    - TreeSwift and SuchTree, which feature lightweight,  high-performance tree representations [@moshiri2020treeswift, @neches2018suchtree]
+    - hstrat and Phylotrack, which are specialized for working with simulation-generated phylogenies [@dolson2024phylotrack, @moreno2022hstrat].
 3. Python phylogenetics libraries with genome/gene-centric data models and operations:
-  - PyCogent (now succeeded by Cogent3)[@knight2007pycogent],
-  - BioPython [@cock2009biopython]
-4/ In R, there are a large number of often highly-specialized tools that generally interoperate via `ape.phylo` data structures [@paradis2019ape].
+    - PyCogent (now succeeded by Cogent3)[@knight2007pycogent],
+    - BioPython [@cock2009biopython]
+4. In R, there are a large number of often highly-specialized tools that generally interoperate via `ape.phylo` data structures [@paradis2019ape].
 
 DendroPy provides a particularly broad portfolio of evolutionary models with comprehensive, systematic documentation
 DendroPy can thus function as a stand-alone library for phylogenetics, a component of more complex multi-library phyloinformatics pipelines, or as a scripting "glue" that assembles and drives such pipelines [@sukumaran2010dendropy].
@@ -72,7 +72,7 @@ DendroPy can thus function as a stand-alone library for phylogenetics, a compone
 # Features
 
 - rich object-oriented representations for manipulation of phylogenetic trees and character matrices,
-- reading and writing of phylogenetic data in a range of formats, such as NEXUS, Newick, NeXML, Phylip, FASTA, etc. [@maddison1997nexus,@olsen1990newick,@vos2012nexml,@felsenstein1981evolutionary,@lipman1985rapid]
+- reading and writing of phylogenetic data in a range of formats, such as NEXUS, Newick, NeXML, Phylip, FASTA, etc. [@maddison1997nexus, @olsen1990newick, @vos2012nexml, @felsenstein1981evolutionary, @lipman1985rapid]
 - simulation of phylogenetic trees under a range of models, including coalescent models, birth-death models, and population genetics simulations of gene trees.
 - application scripts for performing some useful phylogenetic operations, such as data conversion and tree posterior distribution summarization.
 
@@ -80,8 +80,9 @@ DendroPy can thus function as a stand-alone library for phylogenetics, a compone
 
 Sustainable long-term maintenance is the major focus of the version 5 release.
 To this end, we have implemented continuous integration through GitHub Actions comprising:
+
 - code linting with [Ruff](https://pypi.org/project/ruff/)
-- build and deployment of documentation via GitHub pages, hosted at <jeetsukumaran.github.io/DendroPy>,
+- build and deployment of documentation via GitHub pages, hosted at [jeetsukumaran.github.io/DendroPy](https://jeetsukumaran.github.io/DendroPy),
 - unit tests, largely using the unittest framework,
 - new smoke tests using [pytest](https://pypi.org/project/pytest/),
 - code coverage reporting via the codecov service,
