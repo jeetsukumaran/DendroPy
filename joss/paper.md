@@ -78,8 +78,13 @@ Key features of DendroPy include,
 
 # Maintenance
 
-Sustainable long-term maintenance is the major focus of the version 5 release.
-To this end, we have implemented continuous integration through GitHub Actions comprising:
+A major focus of DendroPy's version 5 release has been in establising a trajectory for sustainable long-term maintenance.
+Our intention is that effort reducing maintenaner burden will translate into a regular release schedule incorporating timely patches for reported issues, development of new features, and incorporation of user contributions.
+
+Among other enhancements, DendroPy's version 5 release also reflects substantial investment in adoption modern software development best practices.
+In version 5, DendroPy has officially dropped support for Python 2.7 and 3.X versions that have reached end of life.
+Focusing support on Python 3.6 and higher simplifies cross-environment testing and allows future development to leverage new language features.
+In addition, we have established a comprehensive continuous integration (CI) support via GitHub Actions, comprising
 
 - code linting with [Ruff](https://pypi.org/project/ruff/)
 - build and deployment of documentation via GitHub pages,[^1]
@@ -90,11 +95,10 @@ To this end, we have implemented continuous integration through GitHub Actions c
 
 [^1]: Documentation is hosted at [https://jeetsukumaran.github.io/DendroPy](https://jeetsukumaran.github.io/DendroPy).
 
-Other key activities in preparing this release included triage of bug reports, creating an issue organization system to manage open issues, and creating issue templates to increase the quality of future bug reports and feature requests.
+Other behind-the-scenes activities in preparing this release included repair of library components flagged by the new tooling, triage of user bug reports, applying a tag system to manage open issues, establishing a code of conduct, and creating issue templates to increase the quality of future bug reports and feature requests.
 
-The library has reached a major milestone in dropping support for end-of-life (EOL) Python versions, including Python 2.7.
-This brings DendroPy in line with best practice, makes it easier to test and ensure support, and allows us to take advantage of new language features.
-
+Together, these improvements provide a foundation for work maintaining and extending DendroPy in a manner that is reliable, stable, and responsive to user needs.
+We look forward to this next chapter.
 
 # Impact
 
