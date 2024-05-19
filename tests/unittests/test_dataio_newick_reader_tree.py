@@ -1012,7 +1012,7 @@ class JplaceParsingTest(dendropytest.ExtendedTestCase):
                                              is_parse_jplace_tokens=True)
         self.assertEqual([0.01, 0.02, 0.3, 0.04, None],
                          [e.length for e in tree.edge_index])
-        self.assertEqual('((A:0.01,B:0.02)D:0.3,C:0.04)',
+        self.assertEqual('((A:0.01,B:0.02)D:0.3,C:0.04);',
                          str(tree))
         self.assertEqual([0,1,3,4,5],
                          [e.edge_number for e in tree.edge_index])
