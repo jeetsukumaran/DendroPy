@@ -63,7 +63,7 @@ As such, this work positions DendroPy to continue fulfilling a key supporting ro
 DendroPy operates within a rich ecosystem of packages, frameworks, toolkits, and software projects supporting bioinformatics and phylogenetics research.
 The broader software landscape largely divides into the following major categories,
 
-1. High-performance specialized tools for inference (e.g., *BEAST2*, *RAxML*, *MrBayes*, *PAUP*, etc.) [@bouckaert2014beast2; @stamatakis2014raxml; @ronquist2012mrbayes; @wilgenbusch2003inferring];
+1. High-performance specialized tools for inference (e.g., *BEAST2*, *RAxML*, *MrBayes*, *PAUP*, etc.) [@bouckaert2014beast; @stamatakis2014raxml; @ronquist2012mrbayes; @wilgenbusch2003inferring];
 2. Python phylogenetics libraries that provide rich tree-centric data models and operations, such as
     - *ETE*, known in particular for powerful phylogeny visualization capabilities [@huertacepas2016ete],
     - *Scikit-bio* and tskit [@rideout2024scikitbio; @kelleher2018efficient],
