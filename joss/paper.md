@@ -49,7 +49,7 @@ bibliography: paper.bib
 Contemporary bioinformatics has seen in profound new visibility into the composition, structure, and history of the natural world around us.
 Arguably, the central pillar of bioinformatics is phylogenetics --- the study of hereditary relatedness among organisms.
 Insight from phylogenetic analysis has touched nearly every corner of biology.
-Examples range across natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology [@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference, @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023, @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward, @lenski2003evolutionary], application-oriented evolutionary algorithms [@lalejini2024phylogeny, @hernandez2022can, @shahbandegan2022untangling], and beyond.
+Examples range across natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology [@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference; @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023; @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward; @lenski2003evolutionary], application-oriented evolutionary algorithms [@lalejini2024phylogeny; @hernandez2022can; @shahbandegan2022untangling], and beyond.
 
 High-throughput genetic and phenotypic data has realized groundbreaking results, in large part, through conjunction with open-source software used to process and analyze it.
 Indeed, the preceding decades have ushered in a flourishing ecosystem of bioinformatics software applications and libraries.
@@ -63,13 +63,13 @@ As such, this work positions DendroPy to continue fulfilling a key supporting ro
 DendroPy operates within a rich ecosystem of packages, frameworks, toolkits, and software projects supporting bioinformatics and phylogenetics research.
 The broader software landscape largely divides into the following major categories,
 
-1. High-performance specialized tools for inference (e.g., *BEAST2*, *RAxML*, *MrBayes*, *PAUP*, etc.) [@bouckaert2014beast2, @stamatakis2014raxml, @ronquist2012mrbayes, @wilgenbusch2003inferring];
+1. High-performance specialized tools for inference (e.g., *BEAST2*, *RAxML*, *MrBayes*, *PAUP*, etc.) [@bouckaert2014beast2; @stamatakis2014raxml; @ronquist2012mrbayes; @wilgenbusch2003inferring];
 2. Python phylogenetics libraries that provide rich tree-centric data models and operations, such as
     - *ETE*, known in particular for powerful phylogeny visualization capabilities [@huertacepas2016ete],
-    - *Scikit-bio* and tskit [@rideout2024scikitbio, @kelleher2018efficient],
-    - *TreeSwift* and *SuchTree*, which provide lightweight, high-performance tree representations [@moshiri2020treeswift, @neches2018suchtree], and
-    - *hstrat* and *Phylotrack*, which specialize in collecting phylogenies from agent-based evolutionary simulation [@dolson2024phylotrack, @moreno2022hstrat];
-3. Python phylogenetics libraries with genome/gene-centric data models and operations (e.g., *PyCogent*/*Cogent3*, *BioPython*, etc.) [@knight2007pycogent, @cock2009biopython]; and
+    - *Scikit-bio* and tskit [@rideout2024scikitbio; @kelleher2018efficient],
+    - *TreeSwift* and *SuchTree*, which provide lightweight, high-performance tree representations [@moshiri2020treeswift; @neches2018suchtree], and
+    - *hstrat* and *Phylotrack*, which specialize in collecting phylogenies from agent-based evolutionary simulation [@dolson2024phylotrack; @moreno2022hstrat];
+3. Python phylogenetics libraries with genome/gene-centric data models and operations (e.g., *PyCogent*/*Cogent3*, *BioPython*, etc.) [@knight2007pycogent; @cock2009biopython]; and
 4. numerous R phylogenetics packages, which are often highly specialized but generally interoperate via `ape.phylo` data structures [@paradis2019ape].
 
 DendroPy falls largely within the second camp above.
@@ -82,7 +82,7 @@ The library's use cases range across serving as a stand-alone library for phylog
 Key features of DendroPy include,
 - rich object-oriented representations for manipulation of phylogenetic trees and character matrices,
 - efficient, bit-level representation of nodes' leaf bipartitions,
-- loading and saving popular phylogenetic data formats, including NEXUS, Newick, NeXML, Phylip, and FASTA [@maddison1997nexus, @olsen1990newick, @vos2012nexml, @felsenstein1981evolutionary, @lipman1985rapid];
+- loading and saving popular phylogenetic data formats, including NEXUS, Newick, NeXML, Phylip, and FASTA [@maddison1997nexus; @olsen1990newick; @vos2012nexml; @felsenstein1981evolutionary; @lipman1985rapid];
 - simulation of phylogenetic trees under a range of models, including coalescent models, birth-death models, and population genetics simulations of gene trees; and
 - application scripts for performing data conversion, collating taxon labels from multiple trees, and tree posterior distribution summarization.
 
