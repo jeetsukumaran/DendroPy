@@ -113,7 +113,7 @@ As of May 2024, Google Scholar counts 1,654 works referencing DendroPy [@sukumar
 
 # Acknowledgements
 
-Thank you to Connor Yang for his contributions in increasing test coverage, and to the community for bug reports, feature suggestions, and patch contributions over the years.
+Thank you to Connor Yang for his contributions in increasing test coverage, and to our open source community for bug reports, feature suggestions, and patch contributions over the years.
 This research is based upon work supported by the Eric and Wendy Schmidt AI in Science Postdoctoral Fellowship, a Schmidt Futures program.
 
 # References
