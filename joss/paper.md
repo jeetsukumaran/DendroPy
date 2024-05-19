@@ -46,8 +46,16 @@ bibliography: paper.bib
 
 # Summary
 
-Phylogenies not only tell the history of life, but are phylogenetic also predictive and can be applied across a broad range of biological topics including, but not limited to, natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology[@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference, @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023, @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward, @lenski2003evolutionary] and application-oriented evolutionary algorithms [@lalejini2024phylogeny, @hernandez2022can, @shahbandegan2022untangling].
+Contemporary bioinformatics has seen in profound new visibility into the composition, structure, and history of the natural world around us.
+Arguably the central pillar of bioinformatics is phylogenetics, the study of hereditary relatedness among organisms.
+Insight from phylogenetic analysis has touched nearly every corner of biology --- including, but not limited to, natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology[@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference, @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023, @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward, @lenski2003evolutionary] and application-oriented evolutionary algorithms [@lalejini2024phylogeny, @hernandez2022can, @shahbandegan2022untangling].
 
+New technology to collect high-throughput genetic amd phenotypic data has proven so useful in large part due through conjunction with open source software to process and analyze it.
+Indeed, the preceding decades have ushered in a flourishing ecosystem of bioinformatics software applications and libraries.
+Over the course of its nearly fifteen year history, the DendroPy library for phylogenetic computation in Python has established a generalist niche in serving the bioinformatics community [@sukumaran2010dendropy].
+Here, we report on the recent major release of the library, DendroPy version 5.
+The software release represents a major milestone in transitioning the library to a sustainable long-term development and maintenance trajectory.
+This work ensures DendroPy will be able to continue fulfilling its supporting role in phyloinformatics infrastructure.
 
 # Statement of Need
 
