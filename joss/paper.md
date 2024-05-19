@@ -1,5 +1,5 @@
 ---
-title: 'DendroPy 5: a versatile Python library for phylogenetic computing'
+title: 'DendroPy 5: a mature Python library for phylogenetic computing'
 tags:
   - Python
   - phylogenetics
