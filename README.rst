@@ -7,11 +7,11 @@
    :target: https://github.com/jeetsukumaran/DendroPy
    :alt: DendroPy wordmark
 
-+--------------------+-+---------------------+-+---------------------+
-| *automated tests:* | | *package version:*  | | *documentation:*    |
-|                    | |                     | |                     |
-| |CI|               | | |PyPI|              | | |Docs|              |
-+--------------------+-+---------------------+-+---------------------+
++--------------------+-+---------------------+-+---------------------+-+-------------------+
+| *automated tests:* | | *package version:*  | | *documentation:*    | | *test coverage:*  |
+|                    | |                     | |                     | |                   |
+| |CI|               | | |PyPI|              | | |Docs|              | | |Coverage|        |
++--------------------+-+---------------------+-+---------------------+-+-------------------+
 
 .. |CI| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml/badge.svg
    :target: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml
@@ -22,6 +22,9 @@
 .. |Docs| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/pages/pages-build-deployment/badge.svg
    :target: https://jeetsukumaran.github.io/DendroPy/
    :alt: Documentation Status
+.. |Coverage| image:: https://codecov.io/gh/jeetsukumaran/DendroPy/graph/badge.svg?token=JwMfFOpBBD
+   :target: https://codecov.io/gh/jeetsukumaran/DendroPy
+   :alt: codecov coverage
 .. |nbsp| unicode:: 0xA0
    :trim:
 
