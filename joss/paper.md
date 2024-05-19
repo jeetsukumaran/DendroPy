@@ -102,7 +102,7 @@ We look forward to this next chapter.
 
 # Impact
 
-Over its nearly 15-year history, DendroPy’s stability has led to adoption as a core dependency of other software and pipelines.
+Over its nearly 15-year history, DendroPy’s versatility and stability has led to adoption as a core dependency of many phylogenetics pipelines and bioinformatics software libraries.
 There are currently [85 projects](https://perma.cc/P865-JHXW) on PyPI listed as depending on DendroPy.
 Notable examples include:
 
