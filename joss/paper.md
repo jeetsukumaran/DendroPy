@@ -27,17 +27,17 @@ authors:
     affiliation: "5, 6"
 affiliations:
   - name: Department of Ecology and Evolutionary Biology, University of Michigan, Ann Arbor, MI, USA
-   index: 1
+    index: 1
   - name: Center for the Study of Complex Systems, University of Michigan, Ann Arbor, MI, USA
-   index: 2
+    index: 2
   - name: Michigan Institute for Data Science, University of Michigan, Ann Arbor, MI, USA
-   index: 3
+    index: 3
   - name: Department of Biology, San Diego State University, San Diego, CA, USA
-   index: 4
+    index: 4
   - name: Department of Ecology and Evolutionary Biology, University of Kansas, Lawrence, KS, USA
-   index: 5
+    index: 5
   - name: Biodiversity Institute, University of Kansas, Lawrence, KS, USA
-   index: 6
+    index: 6
 date: 19 May 2024
 bibliography: paper.bib
 ---
