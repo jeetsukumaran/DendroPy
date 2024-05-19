@@ -51,23 +51,21 @@ Phylogenies not only tell the history of life, but are phylogenetic also predict
 
 # Statement of Need
 
-There are a broad range of packages, frameworks, toolkits, and software projects that are immediately relevant to this domain.
-The broader evolutionary biology analysis software landscape divides into the following major categories:
+DendroPy operates within a rich ecosystem of packages, frameworks, toolkits, and software projects supporting bioinformatics and phylogenetics research.
+The broader software landscape largely divides into the following major categories:
 
 1. High-performance specialized tools for inference (e.g., BEAST2, RAxML, MrBayes, PAUP, etc.) [@bouckaert2014beast2, @stamatakis2014raxml, @ronquist2012mrbayes, @wilgenbusch2003inferring];
 2. Python phylogenetics libraries providing rich tree-centric data models and operations:
-    - ETE [@huertacepas2016ete]
-    - Scikit-bio [@rideout2024scikitbio]
-    - tskit [@kelleher2018efficient]
-    - TreeSwift and SuchTree, which feature lightweight,  high-performance tree representations [@moshiri2020treeswift, @neches2018suchtree]
-    - hstrat and Phylotrack, which are specialized for working with simulation-generated phylogenies [@dolson2024phylotrack, @moreno2022hstrat].
-3. Python phylogenetics libraries with genome/gene-centric data models and operations:
-    - PyCogent (now succeeded by Cogent3)[@knight2007pycogent],
-    - BioPython [@cock2009biopython]
-4. In R, there are a large number of often highly-specialized tools that generally interoperate via `ape.phylo` data structures [@paradis2019ape].
+    - ETE, known in particular for powerful phylogeny visualization capabilities [@huertacepas2016ete];
+    - Scikit-bio and tskit [@rideout2024scikitbio, @kelleher2018efficient];
+    - TreeSwift and SuchTree, which provide lightweight, high-performance tree representations [@moshiri2020treeswift, @neches2018suchtree];
+    - hstrat and Phylotrack, which specialize in collecting phylogenies from agent-based evolutionary simulation [@dolson2024phylotrack, @moreno2022hstrat];
+3. Python phylogenetics libraries with genome/gene-centric data models and operations (e.g., PyCogent/Cogent3, BioPython, etc.) [@knight2007pycogent, @cock2009biopython];
+4. in R, there are a large number of often highly-specialized tools that generally interoperate via `ape.phylo` data structures [@paradis2019ape].
 
-DendroPy provides a particularly broad portfolio of evolutionary models with comprehensive, systematic documentation
-DendroPy can thus function as a stand-alone library for phylogenetics, a component of more complex multi-library phyloinformatics pipelines, or as a scripting "glue" that assembles and drives such pipelines [@sukumaran2010dendropy].
+DendroPy falls largely within the second camp, differentiated in providing a particularly broad portfolio of evolutionary models, but also fields population genetics and sequence evolution utilities.
+DendroPy is also notable for its comprehensive, systematic documentation and rich, user-extensible tree representation.
+The library's use cases range across serving as stand-alone library for phylogenetics, a component of more complex multi-library phyloinformatics pipelines, or as a scripting "glue" that assembles and drives such pipelines.
 
 # Features
 
