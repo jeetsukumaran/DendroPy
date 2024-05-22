@@ -21,12 +21,11 @@
 Implementation of multiple-alignment PHYLIP-format data reader.
 """
 
+from io import StringIO
 import re
 from dendropy.dataio import ioservice
 from dendropy.dataio import phylipreader
-from dendropy.utility import filesys
 from dendropy.utility import error
-from dendropy.utility.textprocessing import StringIO
 
 class MultiPhylipReader(ioservice.DataReader):
 

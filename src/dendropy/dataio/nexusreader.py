@@ -21,10 +21,7 @@
 Implementation of NEXUS-schema data reader.
 """
 
-import re
-import collections
 from dendropy.utility import error
-from dendropy.utility import textprocessing
 from dendropy.dataio import ioservice
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import newickreader

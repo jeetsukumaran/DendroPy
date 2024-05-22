@@ -28,12 +28,9 @@ from setuptools import setup, find_packages
 
 def _read(path_components, **kwargs):
     path = os.path.join(os.path.dirname(__file__), *path_components)
-    if sys.version_info.major < 3:
-        return open(path, "rU").read()
-    else:
-        with open(path, encoding=kwargs.get("encoding", "utf8")) as src:
-            s = src.read()
-        return s
+    with open(path, encoding=kwargs.get("encoding", "utf8")) as src:
+        s = src.read()
+    return s
 
 def _read_requirements(path):
     return [
@@ -86,7 +83,7 @@ setup(
             # "../../resources/*.json",
         ],
     },
-    test_suite = "tests",
+    test_suite = "tests.unittests",
     url='http://github.com/jeetsukumaran/DendroPy',
     project_urls={
         'Documentation': 'https://jeetsukumaran.github.io/DendroPy/',
@@ -110,13 +107,17 @@ setup(
     long_description_content_type="text/x-rst",
     # install_requires=_read_requirements("requirements.txt"),
     # extras_require={"test": _read_requirements("requirements-test.txt")},
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"],
+    install_requires = ['setuptools'],
+    zip_safe = True,
+    python_requires='>=3.6',
     classifiers = [
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: BSD License",
         "Natural Language :: English",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",

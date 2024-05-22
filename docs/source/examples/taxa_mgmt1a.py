@@ -1,4 +1,12 @@
+import warnings
 import dendropy
+
+warnings.warn(
+    "This example is known to be broken! "
+    "It will be fixed or removed in the future. "
+    "See https://github.com/jeetsukumaran/DendroPy/issues/160 for details. "
+    "Patch contributions are welcome.",
+)
 
 tree_str1 = "((A,B),C);"
 

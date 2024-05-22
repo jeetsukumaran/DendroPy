@@ -17,6 +17,7 @@
 ##
 ##############################################################################
 
+from io import StringIO
 import sys
 
 ###############################################################################
@@ -163,7 +164,6 @@ def description(dest=None):
             fieldvalue=fieldvalue))
 
 def description_text():
-    from dendropy.utility.textprocessing import StringIO
     s = StringIO()
     description(s)
     return s.getvalue()

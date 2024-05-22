@@ -1,8 +1,8 @@
 # /usr/bin/env python
 
+from io import StringIO
 import dendropy
 from dendropy.utility import container
-from dendropy.utility.textprocessing import StringIO
 
 phylogeny_str = """\
 [&R]((((spA:0.10,spB:0.10):0.67,(((spC:0.08,spD:0.08):0.24,(spE:0.13,spF:0.13):0.19):0.40,(spG:0.12,((spH:0.04,spI:0.04):0.07,spJ:0.12):0.00):0.60):0.05):0.78,((spK:0.05,(spL:0.04,spM:0.04):0.01):0.31,spN:0.37):1.19):1.22,spO:2.79);

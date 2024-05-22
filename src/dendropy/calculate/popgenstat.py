@@ -23,7 +23,6 @@ Population genetic statistics.
 
 import math
 import dendropy
-from dendropy.calculate import probability
 from dendropy.calculate import combinatorics
 
 ###############################################################################

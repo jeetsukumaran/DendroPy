@@ -21,8 +21,6 @@
 Wrappers for interacting with the ETE library.
 """
 
-import tempfile
-import re
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 import dendropy

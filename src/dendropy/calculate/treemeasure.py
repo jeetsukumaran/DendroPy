@@ -23,13 +23,18 @@ Statistics, metrics, measurements, and values calculated on (single) trees.
 
 import math
 from dendropy.calculate import phylogeneticdistance
+from dendropy.utility import deprecate
 
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
-## legacy: will soon be deprecated
+
 class PatristicDistanceMatrix(phylogeneticdistance.PhylogeneticDistanceMatrix):
 
     def __init__(self, tree):
+        deprecate.dendropy_deprecation_warning(
+            message="PatristicDistanceMatrix is deprecated since Dendropy 5. "
+            "Use entropy. phylogenetic distance.PhylogeneticDistanceMatrix instead.",
+        )
         phylogeneticdistance.PhylogeneticDistanceMatrix.__init__(self)
         self.compile_from_tree(tree=tree)
 

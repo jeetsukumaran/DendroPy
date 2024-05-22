@@ -25,8 +25,6 @@ trees.
 import collections
 import math
 import copy
-import sys
-from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import bitprocessing
 from dendropy.utility import deprecate
@@ -1378,9 +1376,14 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
         for bipartition in tree.bipartition_encoding:
             split = bipartition.split_bitmask
 
-            ## if edge is stored as an attribute, might be faster to:
-            # edge = bipartition.edge
-            edge = tree.bipartition_edge_map[bipartition]
+            if hasattr(bipartition, "edge"):
+                edge = bipartition.edge
+            else:
+                # @MAM we're just doing a lookup of bipartition, not storing it
+                # so it's ok to override is_mutable here
+                was_mutable, bipartition.is_mutable = bipartition.is_mutable, False
+                edge = tree.bipartition_edge_map.get(bipartition)
+                bipartition.is_mutable = was_mutable
 
             splits.append(split)
             self.split_counts[split] += weight_to_use

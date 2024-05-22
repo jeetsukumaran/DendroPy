@@ -23,13 +23,9 @@ Various data structures.
 
 import collections
 import copy
-import sys
 import csv
-try:
-    from collections.abc import MutableMapping
-except ImportError:
-    # Python 2
-    from collections import MutableMapping
+from dendropy.utility import deprecate
+from collections.abc import MutableMapping
 
 ###############################################################################
 ## OrderedSet
@@ -219,7 +215,7 @@ class OrderedSet(object):
 class NormalizedBitmaskDict(collections.OrderedDict):
     """
     Keys, {K_i}, are longs. ``fill_bitmask`` must be provided before elements can be
-    added removed from dictionary. All keys are normalized such that the
+    added or removed from dictionary. All keys are normalized such that the
     least- significant bit is '0'. That is, if the key's least-significant bit
     is '0', it is added as-is, otherwise it is complemented by XOR'ing it with
     'fill_bitmask'.
@@ -251,7 +247,6 @@ class NormalizedBitmaskDict(collections.OrderedDict):
 
     def __init__(self, other=None, fill_bitmask=None):
         """
-
         Parameters
         ----------
         fill_bitmask : integer
@@ -262,6 +257,9 @@ class NormalizedBitmaskDict(collections.OrderedDict):
             missing taxa 2, 3, and 5, ``fill_bitmask`` would be 0b11101001.
 
         """
+        if not other and not fill_bitmask:
+            deprecate.dendropy_deprecation_warning(message="Deprecated since DendroPy 5: either other or fill_bitmask must be specified.")
+
         collections.OrderedDict.__init__(self)
         self.lowest_relevant_bit = NormalizedBitmaskDict.least_significant_set_bit(fill_bitmask)
         self.fill_bitmask = fill_bitmask

@@ -26,8 +26,6 @@ are defined under the the appropriate model namespace in the ``dendropy.model``
 sub-package.
 """
 
-import dendropy
-
 ###############################################################################
 ## Import tree generation functions
 

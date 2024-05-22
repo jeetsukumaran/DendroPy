@@ -26,8 +26,6 @@ import os
 import sys
 import argparse
 
-import datetime
-import time
 import socket
 try:
     import getpass

@@ -22,13 +22,10 @@ Wrappers for retrieving data from GenBank.
 """
 
 import sys
-import re
-import urllib
 import dendropy
 from dendropy.interop import entrez
 from xml.etree import ElementTree
 from dendropy.utility import container
-from dendropy.utility import error
 
 GENBANK_ANNOTATION_PREFIX = "genbank"
 GENBANK_ANNOTATION_NAMESPACE = "http://www.ncbi.nlm.nih.gov/dtd/INSD_INSDSeq.mod.dtd"

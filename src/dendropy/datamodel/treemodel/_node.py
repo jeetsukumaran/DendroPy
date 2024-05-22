@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from dendropy.utility.textprocessing import StringIO
+from io import StringIO
 from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.datamodel import basemodel
@@ -829,7 +829,7 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         """
         Removes all child nodes.
         """
-        del self._child_nodes[:]  # list.clear() is not in Python 2.7
+        self._child_nodes.clear()
 
     def reversible_remove_child(self, node, suppress_unifurcations=False):
         """

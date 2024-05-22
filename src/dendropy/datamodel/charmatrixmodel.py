@@ -23,9 +23,9 @@ Character and character-sequence data structures.
 
 import warnings
 import copy
+from io import StringIO
 import math
 import collections
-from dendropy.utility.textprocessing import StringIO
 from dendropy.utility import textprocessing
 from dendropy.utility import error
 from dendropy.utility import deprecate
@@ -254,8 +254,6 @@ class CharacterDataSequence(
     def __next__(self):
         for v in self._character_values:
             yield v
-
-    next = __next__ # Python 2 legacy support
 
     def cell_iter(self):
         """

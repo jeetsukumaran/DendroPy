@@ -17,7 +17,6 @@
 ##
 ##############################################################################
 
-import sys
 from dendropy.utility import error
 
 ##############################################################################
@@ -136,28 +135,11 @@ class Tokenizer(object):
             t = self.__next__()
             return t
         except StopIteration:
-            # In Python 3, if you catch an exception and then raise an
-            # exception that is not a subclass of the original exception,
-            # the original exception is not considered to have been
-            # handled.
-            # In Python > 3.3, this can be solved by:
-            #
-            #   raise Tokenizer.UnexpectedEndOfStreamError(
-            #                   message="Unexpected end of stream",
-            #                   line_num=self.current_line_num,
-            #                   col_num=self.current_column_num,
-            #                   stream=self.src) from None
-            #
-            # To accommodate other versions, the following
-            # is required:
-            exc = Tokenizer.UnexpectedEndOfStreamError(
+            raise Tokenizer.UnexpectedEndOfStreamError(
                             message="Unexpected end of stream",
                             line_num=self.current_line_num,
                             col_num=self.current_column_num,
-                            stream=self.src)
-            exc.__context__ = None # Python 3.0, 3.1, 3.2
-            exc.__cause__ = None # Python 3.3, 3.4
-            raise exc
+                            stream=self.src) from None
 
     def clear_captured_comments(self):
         del self.captured_comments[:]
@@ -247,7 +229,6 @@ class Tokenizer(object):
                 else:
                     raise StopIteration
             return self.current_token
-    next = __next__ # Python 2 legacy support
 
     def _skip_to_significant_char(self):
         if self._cur_char == "":

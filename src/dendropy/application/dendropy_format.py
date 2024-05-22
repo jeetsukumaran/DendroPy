@@ -5,11 +5,6 @@ import sys
 import os
 import argparse
 import dendropy
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
-from dendropy.utility import cli
-from dendropy.utility import error
-from dendropy.utility import messaging
 
 usage = """\
 dendropy-format --from [FORMAT] --to [FORMAT] [OPTIONS] <SOURCE-FILE> > DEST-FILE

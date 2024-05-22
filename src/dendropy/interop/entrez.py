@@ -22,13 +22,8 @@ Low-level wrappers around the NCBI E-Utilities. Primarily meant to open
 file-like object handles on responses.
 """
 
-import sys
-if sys.version_info.major < 3:
-    from urllib import urlencode
-    from urllib import urlopen
-else:
-    from urllib.parse import urlencode
-    from urllib.request import urlopen
+from urllib.parse import urlencode
+from urllib.request import urlopen
 from dendropy.utility import textprocessing
 
 ENTREZ_EUTILS_BASE_URL = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils"
