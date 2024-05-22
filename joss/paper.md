@@ -42,8 +42,6 @@ date: 19 May 2024
 bibliography: paper.bib
 ---
 
-<!-- @MAM title could also be "mainstay" or "enduring" instead of "mature" -->
-
 # Summary
 
 Contemporary bioinformatics has seen in profound new visibility into the composition, structure, and history of the natural world around us.
@@ -80,6 +78,7 @@ The library's use cases range across serving as a stand-alone library for phylog
 # Features
 
 Key features of DendroPy include,
+
 - rich object-oriented representations for manipulation of phylogenetic trees and character matrices,
 - efficient, bit-level representation of nodes' leaf bipartitions,
 - loading and saving popular phylogenetic data formats, including NEXUS, Newick, NeXML, Phylip, and FASTA [@maddison1997nexus; @olsen1990newick; @vos2012nexml; @felsenstein1981evolutionary; @lipman1985rapid];
