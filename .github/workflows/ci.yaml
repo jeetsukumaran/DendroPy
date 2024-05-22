@@ -179,8 +179,9 @@ jobs:
     - name: Generate coverage report
       run: |
         python3 -m pytest tests/unittests --cov=tests --cov-report=xml
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v4
       with:
+        token: ae13d715-bae4-4e6d-9dce-f47e7d7c7c01
         flags: unittests # optional
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)

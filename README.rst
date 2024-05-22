@@ -7,11 +7,11 @@
    :target: https://github.com/jeetsukumaran/DendroPy
    :alt: DendroPy wordmark
 
-+--------------------+-+---------------------+-+---------------------+
-| *automated tests:* | | *package version:*  | | *documentation:*    |
-|                    | |                     | |                     |
-| |CI|               | | |PyPI|              | | |Docs|              |
-+--------------------+-+---------------------+-+---------------------+
++--------------------+-+---------------------+-+---------------------+-+-------------------+
+| *automated tests:* | | *package version:*  | | *documentation:*    | | *test coverage:*  |
+|                    | |                     | |                     | |                   |
+| |CI|               | | |PyPI|              | | |Docs|              | | |Coverage|        |
++--------------------+-+---------------------+-+---------------------+-+-------------------+
 
 .. |CI| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml/badge.svg
    :target: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml
@@ -22,7 +22,10 @@
 .. |Docs| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/pages/pages-build-deployment/badge.svg
    :target: https://jeetsukumaran.github.io/DendroPy/
    :alt: Documentation Status
-.. |nbsp| unicode:: 0xA0 
+.. |Coverage| image:: https://codecov.io/gh/jeetsukumaran/DendroPy/graph/badge.svg?token=JwMfFOpBBD
+   :target: https://codecov.io/gh/jeetsukumaran/DendroPy
+   :alt: codecov coverage
+.. |nbsp| unicode:: 0xA0
    :trim:
 
 .. raw:: html
@@ -78,6 +81,13 @@ This includes:
     -   `Descriptions of data formats supported for reading/writing <https://jeetsukumaran.github.io/DendroPy/schemas/index.html>`_ .
 
 and more.
+
+Citing
+======
+
+If you use this library or any portion thereof in published work, please cite it as:
+
+      Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571.
 
 License and Warranty
 ====================

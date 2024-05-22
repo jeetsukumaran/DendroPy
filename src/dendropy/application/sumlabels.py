@@ -18,7 +18,7 @@
 ##############################################################################
 
 """
-Marge labels of splits/branches from different input trees onto corresponding
+Merge labels of splits/branches from different input trees onto corresponding
 splits/branches of a single tree.
 """
 
