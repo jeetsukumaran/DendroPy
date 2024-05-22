@@ -116,6 +116,7 @@ Notable projects using DendroPy include:
 
 - PASTA, which performs multiple sequence alignment [@mirarab2014pasta];
 - Physcraper, which automates curation of gene trees [@sanchezreyes2021physcraper];
+- Propinquity, the supertree pipeline [@redelings2017supertree] of the Open Tree of Life project;
 - Espalier, a utility for constructing maximum agreement forests [@rasmussen2023espalier]; and
 - MetaPhlAn, which extracts information about microbial community composition from metagenomic shotgun sequencing data [@blancomiguez2023extending].
 
