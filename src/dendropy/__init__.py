@@ -106,9 +106,9 @@ from dendropy.legacy import treesum
 import collections
 __project__ = "DendroPy"
 __version__ = "5.0.0"
-__author__ = "Jeet Sukumaran and Mark T. Holder"
+__author__ = "Jeet Sukumaran and Mark T. Holder and Matthew Andres Moreno"
 __copyright__ = "Copyright 2010-2022 Jeet Sukumaran and Mark T. Holder."
-__citation__ = "Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
+__citation__ = "Moreno, M. A., Sukumaran, J., and M. T. Holder. 2024. DendroPy 5: a mature Python library for phylogenetic computing. arXiv preprint arXiv:2405.14120. https://doi.org/10.48550/arXiv.2405.14120"
 PACKAGE_VERSION = __version__ # for backwards compatibility (with sate)
 
 def _get_revision_object():
