@@ -6,6 +6,8 @@ If you use version 5 of this library either in whole or in part in your research
 
     |dendropy_citation|
 
+For BibTex users:
+
 .. code-block:: bibtex
 
       @misc{dendropy5,
