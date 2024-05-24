@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dendropy.datamodel.treemodel._bipartition &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.datamodel.treemodel._bipartition &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.treemodel._bipartition</a></li> 
       </ul>
@@ -219,7 +219,7 @@
 <span class="sd">        bitmask : integer</span>
 <span class="sd">            A bit array representing the membership of taxa, with the</span>
 <span class="sd">            least-significant bit corresponding to the first taxon, the next</span>
-<span class="sd">            least-signficant bit correspodning to the second taxon, and so on,</span>
+<span class="sd">            least-significant bit corresponding to the second taxon, and so on,</span>
 <span class="sd">            till the last taxon corresponding to the most-significant bit.</span>
 <span class="sd">            Taxon membership in one of two arbitrary groups, &#39;0&#39; or &#39;1&#39;, is</span>
 <span class="sd">            indicated by its corresponding bit being unset or set,</span>
@@ -228,7 +228,7 @@
 <span class="sd">            A bit array representing the presence or absence of taxa in the</span>
 <span class="sd">            subtree descending from the child node of the edge of which this</span>
 <span class="sd">            bipartition is associated. The least-significant bit corresponds to</span>
-<span class="sd">            the first taxon, the next least-signficant bit corresponds to the</span>
+<span class="sd">            the first taxon, the next least-significant bit corresponds to the</span>
 <span class="sd">            second taxon, and so on, with the last taxon corresponding to the</span>
 <span class="sd">            most-significant bit.</span>
 <span class="sd">        tree_leafset_bitmask : integer</span>
@@ -240,6 +240,8 @@
 <span class="sd">        is_rooted : bool</span>
 <span class="sd">            Specifies whether or not the tree with which this bipartition is</span>
 <span class="sd">            associated is rooted.</span>
+<span class="sd">        is_mutable : bool</span>
+<span class="sd">            Specifies whether or not the tree is mutable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bitmask&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_leafset_bitmask</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;leafset_bitmask&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bitmask</span><span class="p">)</span>
@@ -842,7 +844,7 @@
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -900,7 +902,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.treemodel._bipartition</a></li> 
       </ul>

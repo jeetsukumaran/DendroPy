@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dendropy.datamodel.treemodel._tree &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.datamodel.treemodel._tree &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.treemodel._tree</a></li> 
       </ul>
@@ -40,7 +40,8 @@
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">terminal</span>
 <span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">error</span>
 <span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">bitprocessing</span>
@@ -1003,15 +1004,6 @@
 <span class="sd">        suppress_unifurcations : bool</span>
 <span class="sd">            If |True|, nodes of outdegree 1 will be deleted. Only will</span>
 <span class="sd">            be done if some nodes are excluded from the cloned tree.</span>
-<span class="sd">        is_apply_filter_to_leaf_nodes : bool</span>
-<span class="sd">            If ``True`` then the above filter will be applied to leaf nodes. If</span>
-<span class="sd">            ``False`` then it will not (and all leaf nodes will be</span>
-<span class="sd">            automatically included, unless excluded by an ancestral node being</span>
-<span class="sd">            filtered out).</span>
-<span class="sd">        is_apply_filter_to_internal_nodes : bool</span>
-<span class="sd">            If ``True`` then the above filter will be applied to internal nodes. If</span>
-<span class="sd">            ``False`` then it will not (internal nodes without children will</span>
-<span class="sd">            still be filtered out).</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1071,15 +1063,6 @@
 <span class="sd">        suppress_unifurcations : bool</span>
 <span class="sd">            If |True|, nodes of outdegree 1 will be deleted. Only will</span>
 <span class="sd">            be done if some nodes are excluded from the cloned tree.</span>
-<span class="sd">        is_apply_filter_to_leaf_nodes : bool</span>
-<span class="sd">            If ``True`` then the above filter will be applied to leaf nodes. If</span>
-<span class="sd">            ``False`` then it will not (and all leaf nodes will be</span>
-<span class="sd">            automatically included, unless excluded by an ancestral node being</span>
-<span class="sd">            filtered out).</span>
-<span class="sd">        is_apply_filter_to_internal_nodes : bool</span>
-<span class="sd">            If ``True`` then the above filter will be applied to internal nodes. If</span>
-<span class="sd">            ``False`` then it will not (internal nodes without children will</span>
-<span class="sd">            still be filtered out).</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1633,6 +1616,13 @@
 <span class="sd">            The most-recent common ancestor of the nodes specified, or |None|</span>
 <span class="sd">            if no such node exists.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_rooted</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Calculating MRCA on an unrooted tree implicitly implicitly &quot;</span>
+                <span class="s2">&quot;treats seed node as root. &quot;</span>
+                <span class="s2">&quot;Set tree.is_rooted = True to silence this warning.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="n">start_node</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_node&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span><span class="p">)</span>
         <span class="n">leafset_bitmask</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="s2">&quot;leafset_bitmask&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
@@ -2604,6 +2594,15 @@
     <span class="k">def</span> <span class="nf">_set_seed_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seed_node</span> <span class="o">=</span> <span class="n">node</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;New seed_node has parent_node. The new seed_node and all &quot;</span>
+                    <span class="s2">&quot;descendants will be spliced out of their current context &quot;</span>
+                    <span class="s2">&quot;into this Tree. If this is not the desired behavior, pass &quot;</span>
+                    <span class="s2">&quot;node.extract_subtree() instead of node. Otherwise, to &quot;</span>
+                    <span class="s2">&quot;suppress this warning set node.parent_node = None before &quot;</span>
+                    <span class="s2">&quot;passing as new seed_node.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_seed_node</span><span class="o">.</span><span class="n">parent_node</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">seed_node</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_seed_node</span><span class="p">,</span> <span class="n">_set_seed_node</span><span class="p">)</span>
@@ -2696,6 +2695,9 @@
                     <span class="n">new_seed_node</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">nsn_ch</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">nsn_ch</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">:</span>
                         <span class="n">new_seed_node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_seed_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># uncouple before splicing</span>
+                <span class="n">new_seed_node</span><span class="o">.</span><span class="n">_parent_node</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span> <span class="o">=</span> <span class="n">new_seed_node</span>
 
         <span class="k">if</span> <span class="n">update_bipartitions</span><span class="p">:</span>
@@ -2966,8 +2968,8 @@
                     <span class="n">nd</span><span class="o">.</span><span class="n">_parent_node</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># assert nd is self.seed_node</span>
+                    <span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_parent_node</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span> <span class="o">=</span> <span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span><span class="o">.</span><span class="n">_parent_node</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">bipartitions_to_delete</span><span class="p">:</span>
             <span class="n">old_encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bipartition_encoding</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="o">=</span> <span class="p">[</span>
@@ -3353,7 +3355,7 @@
 <a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.ladderize">[docs]</a>
     <span class="k">def</span> <span class="nf">ladderize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sorts child nodes in ascending (if ``ascending`` is |False|) or</span>
+<span class="sd">        Sorts child nodes in ascending (if ``ascending`` is |True|) or</span>
 <span class="sd">        descending (if ``ascending`` is |False|) order in terms of the number of</span>
 <span class="sd">        children each child node has.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3924,8 +3926,8 @@
                     <span class="n">parent</span><span class="o">.</span><span class="n">insert_child</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">child_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="n">head_node</span><span class="o">.</span><span class="n">_parent_node</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="n">child_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_parent_node</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span> <span class="o">=</span> <span class="n">child_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span><span class="o">.</span><span class="n">_parent_node</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">num_children</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">tree_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
@@ -4295,7 +4297,7 @@
 <a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.__str__">[docs]</a>
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Dump Newick string.&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_newick_string</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_string</span><span class="p">(</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -4987,7 +4989,7 @@
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -5045,7 +5047,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.datamodel.treemodel._tree</a></li> 
       </ul>

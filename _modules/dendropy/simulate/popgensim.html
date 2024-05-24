@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dendropy.simulate.popgensim &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.simulate.popgensim &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.simulate.popgensim</a></li> 
       </ul>
@@ -59,10 +59,10 @@
 <span class="sd">Population genetic simlations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 
 <span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">GLOBAL_RNG</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">deprecate</span>
 <span class="kn">from</span> <span class="nn">dendropy.interop</span> <span class="kn">import</span> <span class="n">seqgen</span>
 <span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">discrete</span>
 <span class="kn">from</span> <span class="nn">dendropy.model</span> <span class="kn">import</span> <span class="n">coalescent</span>
@@ -106,11 +106,28 @@
                            <span class="n">species_name</span><span class="p">,</span>
                            <span class="n">samples_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                            <span class="n">seq_len</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
-                           <span class="n">use_seq_gen</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                           <span class="n">use_seq_gen</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate sequence data from population and gene trees, creating them if necessary.</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">generate_pop_tree</span><span class="p">(</span><span class="n">species_name</span><span class="o">=</span><span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="n">samples_per_pop</span><span class="p">)</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            ``species_name`` : string identifying species/taxon</span>
+<span class="sd">            ``samples_per_pop`` : number of samples (genes) per population</span>
+<span class="sd">            ``seq_len`` : site length for generated sequences</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dendropy.DataSet: A dataset containing the generated sequences</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_seq_gen</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecate</span><span class="o">.</span><span class="n">dendropy_deprecation_warning</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Argument use_seq_gen is deprecated as of Dendropy 5. &quot;</span>
+                <span class="s2">&quot;Note that in previous versions of Dendropy, it was ignored and had no effect.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_pop_tree</span><span class="p">(</span><span class="n">species_name</span><span class="o">=</span><span class="n">species_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_gene_tree</span><span class="p">(</span><span class="n">species_name</span><span class="o">=</span><span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="n">samples_per_pop</span><span class="p">)</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">DataSet</span><span class="p">()</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">attach_taxon_namespace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_seq_gen</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">sg</span> <span class="o">=</span> <span class="n">seqgen</span><span class="o">.</span><span class="n">SeqGen</span><span class="p">()</span>
             <span class="n">sg</span><span class="o">.</span><span class="n">seqgen_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seqgen_path</span>
@@ -121,8 +138,10 @@
             <span class="n">sg</span><span class="o">.</span><span class="n">char_model</span> <span class="o">=</span> <span class="s1">&#39;HKY&#39;</span>
             <span class="n">sg</span><span class="o">.</span><span class="n">ti_tv</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kappa</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
             <span class="n">sg</span><span class="o">.</span><span class="n">state_freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_freqs</span>
-            <span class="n">sg</span><span class="o">.</span><span class="n">trees</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span><span class="p">]</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">generate_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+                <span class="n">trees</span><span class="o">=</span><span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_tree</span><span class="p">]),</span>
+                <span class="n">dataset</span><span class="o">=</span><span class="n">d</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">char_matrix</span> <span class="o">=</span> <span class="n">discrete</span><span class="o">.</span><span class="n">hky85_chars</span><span class="p">(</span>
                     <span class="n">seq_len</span><span class="o">=</span><span class="n">seq_len</span><span class="p">,</span>
@@ -135,13 +154,27 @@
             <span class="n">d</span><span class="o">.</span><span class="n">add_char_matrix</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span>
 
-    <span class="k">def</span> <span class="nf">generate_pop_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">generate_pop_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            ``species_name`` : string identifying species/taxon</span>
+<span class="sd">            ``samples_per_pop`` : number of samples (genes) per population</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DendroPy tree, with branch lengths in generations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">samples_per_pop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecate</span><span class="o">.</span><span class="n">dendropy_deprecation_warning</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Argument samples_per_pop is deprecated as of Dendropy 5. &quot;</span>
+                <span class="s2">&quot;Note that in previous versions of Dendropy, it was ignored and had no effect.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="n">tree_data</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;sp&#39;</span><span class="p">:</span> <span class="n">species_name</span><span class="p">,</span> <span class="s1">&#39;divt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">div_time_gens</span> <span class="p">}</span>
         <span class="n">desc_lineages</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_desc_pops</span><span class="p">):</span>
             <span class="n">tree_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
             <span class="n">desc_lineages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(sp)s%(id)d</span><span class="s2">:</span><span class="si">%(divt)d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tree_data</span><span class="p">)</span>
-        <span class="n">tree_string</span> <span class="o">=</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_lineages</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;):</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#% (self.num_desc_pops * self.desc_pop_size * 10))</span>
+        <span class="n">tree_string</span> <span class="o">=</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_lineages</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;)</span><span class="si">%d</span><span class="s2">;&quot;</span> <span class="o">%</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#% (self.num_desc_pops * self.desc_pop_size * 10))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get_from_string</span><span class="p">(</span><span class="n">tree_string</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;newick&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span>
 
@@ -154,7 +187,7 @@
 <span class="sd">            DendroPy tree, with branch lengths in generations</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">generate_pop_tree</span><span class="p">(</span><span class="n">species_name</span><span class="p">,</span> <span class="n">samples_per_pop</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate_pop_tree</span><span class="p">(</span><span class="n">species_name</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">leaf</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_tree</span><span class="o">.</span><span class="n">leaf_iter</span><span class="p">()):</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="c1"># ancestral population = num_desc_pops * desc population</span>
@@ -350,7 +383,7 @@
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -408,7 +441,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.simulate.popgensim</a></li> 
       </ul>

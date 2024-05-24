@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>dendropy.datamodel.treemodel: Trees &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.datamodel.treemodel: Trees &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="taxonmodel.html" title="dendropy.datamodel.taxonmodel: Taxonomic Namespace Reference and Management"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.treemodel</span></code>: Trees</a></li> 
       </ul>
@@ -685,13 +685,6 @@ not copied.</p>
 <li><p><strong>taxa</strong> (iterable of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances) – List or some other iterable of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects to include.</p></li>
 <li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
 be done if some nodes are excluded from the cloned tree.</p></li>
-<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
-<code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (and all leaf nodes will be
-automatically included, unless excluded by an ancestral node being
-filtered out).</p></li>
-<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
-<code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (internal nodes without children will
-still be filtered out).</p></li>
 </ul>
 </dd>
 </dl>
@@ -735,13 +728,6 @@ comments, and other attributes are not copied.</p>
 <li><p><strong>labels</strong> (<em>iterable</em><em> of </em><em>str instances</em>) – List or some other iterable of strings to match.</p></li>
 <li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
 be done if some nodes are excluded from the cloned tree.</p></li>
-<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
-<code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (and all leaf nodes will be
-automatically included, unless excluded by an ancestral node being
-filtered out).</p></li>
-<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
-<code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (internal nodes without children will
-still be filtered out).</p></li>
 </ul>
 </dd>
 </dl>
@@ -1357,7 +1343,7 @@ with all bipartitions of this tree.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.ladderize">
 <span class="sig-name descname"><span class="pre">ladderize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#Tree.ladderize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.ladderize" title="Link to this definition">¶</a></dt>
-<dd><p>Sorts child nodes in ascending (if <code class="docutils literal notranslate"><span class="pre">ascending</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) or
+<dd><p>Sorts child nodes in ascending (if <code class="docutils literal notranslate"><span class="pre">ascending</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>) or
 descending (if <code class="docutils literal notranslate"><span class="pre">ascending</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) order in terms of the number of
 children each child node has.</p>
 </dd></dl>
@@ -3533,7 +3519,7 @@ would need to use AND operations. The former strikes us as more intuitive.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bitmask</strong> (<em>integer</em>) – A bit array representing the membership of taxa, with the
 least-significant bit corresponding to the first taxon, the next
-least-signficant bit correspodning to the second taxon, and so on,
+least-significant bit corresponding to the second taxon, and so on,
 till the last taxon corresponding to the most-significant bit.
 Taxon membership in one of two arbitrary groups, ‘0’ or ‘1’, is
 indicated by its corresponding bit being unset or set,
@@ -3541,7 +3527,7 @@ respectively.</p></li>
 <li><p><strong>leafset_bitmask</strong> (<em>integer</em>) – A bit array representing the presence or absence of taxa in the
 subtree descending from the child node of the edge of which this
 bipartition is associated. The least-significant bit corresponds to
-the first taxon, the next least-signficant bit corresponds to the
+the first taxon, the next least-significant bit corresponds to the
 second taxon, and so on, with the last taxon corresponding to the
 most-significant bit.</p></li>
 <li><p><strong>tree_leafset_bitmask</strong> (<em>integer</em>) – The <code class="docutils literal notranslate"><span class="pre">leafset_bitmask</span></code> of the root edge of the tree with which this
@@ -3551,6 +3537,7 @@ incomplete leaf-sets, where the positions corresponding to the
 missing taxa will have the bits unset.</p></li>
 <li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Specifies whether or not the tree with which this bipartition is
 associated is rooted.</p></li>
+<li><p><strong>is_mutable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Specifies whether or not the tree is mutable.</p></li>
 </ul>
 </dd>
 </dl>
@@ -4205,7 +4192,7 @@ coordinates of each node.</p>
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -4269,7 +4256,7 @@ coordinates of each node.</p>
         <li class="right" >
           <a href="taxonmodel.html" title="dendropy.datamodel.taxonmodel: Taxonomic Namespace Reference and Management"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.datamodel.treemodel</span></code>: Trees</a></li> 
       </ul>

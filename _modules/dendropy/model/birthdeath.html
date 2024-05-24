@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dendropy.model.birthdeath &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.model.birthdeath &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.model.birthdeath</a></li> 
       </ul>
@@ -89,10 +89,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">collections</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">combinatorics</span>
 <span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">probability</span>
 <span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">GLOBAL_RNG</span>
@@ -301,7 +298,7 @@
         <span class="n">extinct_tips</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">nd</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">extinct_attr_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">extinct_attr_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">extant_tips</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">is_add_extinct_attr</span><span class="p">:</span>
                         <span class="nb">setattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">extinct_attr_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -740,8 +737,10 @@
         <span class="n">extant_tips</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">extinct_tips</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">nd</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">extinct_attr_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">extinct_attr_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">extant_tips</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span>
                     <span class="c1">#NICOLA: the reason for this will become clear later</span>
                     <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="o">=-</span><span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span>
@@ -900,10 +899,10 @@
                 <span class="c1">#c1.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)</span>
                 <span class="c1">#c2.birth_rate = nd.birth_rate + rng.gauss(0, birth_rate_sd)</span>
                 <span class="c1">#c2.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)</span>
-                <span class="n">c1</span><span class="o">.</span><span class="n">birth_rate</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">birth_rate</span>
-                <span class="n">c1</span><span class="o">.</span><span class="n">death_rate</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">death_rate</span>
-                <span class="n">c2</span><span class="o">.</span><span class="n">birth_rate</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">birth_rate</span>
-                <span class="n">c2</span><span class="o">.</span><span class="n">death_rate</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">death_rate</span>
+                <span class="n">c1</span><span class="o">.</span><span class="n">birth_rate</span> <span class="o">=</span> <span class="n">birth_rate</span>
+                <span class="n">c1</span><span class="o">.</span><span class="n">death_rate</span> <span class="o">=</span> <span class="n">death_rate</span>
+                <span class="n">c2</span><span class="o">.</span><span class="n">birth_rate</span> <span class="o">=</span> <span class="n">birth_rate</span>
+                <span class="n">c2</span><span class="o">.</span><span class="n">death_rate</span> <span class="o">=</span> <span class="n">death_rate</span>
                 <span class="c1">#extant_tips.append(c1)</span>
                 <span class="n">extant_tips</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1897,7 +1896,7 @@
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -1955,7 +1954,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.model.birthdeath</a></li> 
       </ul>

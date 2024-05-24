@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Phylogenetic Distance-Based Operations &#8212; DendroPy 4.6.1 documentation</title>
+    <title>Phylogenetic Distance-Based Operations &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -34,7 +34,7 @@
         <li class="right" >
           <a href="popgenstats.html" title="Population Genetic Summary Statistics"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Phylogenetic Distance-Based Operations</a></li> 
       </ul>
@@ -114,7 +114,15 @@ In many cases, e.g. if you want to compare the data to data from other sources, 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+    <span class="s2">&quot;This example is known to be broken! &quot;</span>
+    <span class="s2">&quot;It will be fixed or removed in the future. &quot;</span>
+    <span class="s2">&quot;See https://github.com/jeetsukumaran/DendroPy/issues/160 for details. &quot;</span>
+    <span class="s2">&quot;Patch contributions are welcome.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">tns</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
 <span class="n">mle_tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -266,9 +274,9 @@ For example, to calculate the MPD of the entire tree and then of some (highly ar
 <p>A more realistic example is where a tree is sampled across multiple communities, with the data read from a tab-delimited source:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># /usr/bin/env python</span>
 
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">import</span> <span class="nn">dendropy</span>
 <span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">container</span>
-<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
 
 <span class="n">phylogeny_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
@@ -362,9 +370,9 @@ The result <code class="docutils literal notranslate"><span class="pre">namedtup
 <p>As an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># /usr/bin/env python</span>
 
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">import</span> <span class="nn">dendropy</span>
 <span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">container</span>
-<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
 <span class="n">phylogeny_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">[&amp;R]((((spA:0.10,spB:0.10):0.67,(((spC:0.08,spD:0.08):0.24,(spE:0.13,spF:0.13):0.19):0.40,(spG:0.12,((spH:0.04,spI:0.04):0.07,spJ:0.12):0.00):0.60):0.05):0.78,((spK:0.05,(spL:0.04,spM:0.04):0.01):0.31,spN:0.37):1.19):1.22,spO:2.79);</span>
@@ -450,9 +458,9 @@ The result <code class="docutils literal notranslate"><span class="pre">namedtup
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># /usr/bin/env python</span>
 
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">import</span> <span class="nn">dendropy</span>
 <span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">container</span>
-<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
 <span class="n">phylogeny_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">[&amp;R]((((spA:0.10,spB:0.10):0.67,(((spC:0.08,spD:0.08):0.24,(spE:0.13,spF:0.13):0.19):0.40,(spG:0.12,((spH:0.04,spI:0.04):0.07,spJ:0.12):0.00):0.60):0.05):0.78,((spK:0.05,(spL:0.04,spM:0.04):0.01):0.31,spN:0.37):1.19):1.22,spO:2.79);</span>
@@ -510,8 +518,8 @@ The result <code class="docutils literal notranslate"><span class="pre">namedtup
 <p>A convenience method is available to read community data from a delimited source, <a class="reference internal" href="../library/phylogeneticdistance.html#dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.assemblage_membership_definitions_from_csv" title="dendropy.calculate.phylogeneticdistance.PhylogeneticDistanceMatrix.assemblage_membership_definitions_from_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">assemblage_membership_definitions_from_csv</span></code></a>, which makes the process somewhat easier:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># /usr/bin/env python</span>
 
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">import</span> <span class="nn">dendropy</span>
-<span class="kn">from</span> <span class="nn">dendropy.utility.textprocessing</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
 <span class="n">phylogeny_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">[&amp;R]((((spA:0.10,spB:0.10):0.67,(((spC:0.08,spD:0.08):0.24,(spE:0.13,spF:0.13):0.19):0.40,(spG:0.12,((spH:0.04,spI:0.04):0.07,spJ:0.12):0.00):0.60):0.05):0.78,((spK:0.05,(spL:0.04,spM:0.04):0.01):0.31,spN:0.37):1.19):1.22,spO:2.79);</span>
@@ -646,7 +654,7 @@ The result <code class="docutils literal notranslate"><span class="pre">namedtup
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -710,7 +718,7 @@ The result <code class="docutils literal notranslate"><span class="pre">namedtup
         <li class="right" >
           <a href="popgenstats.html" title="Population Genetic Summary Statistics"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Phylogenetic Distance-Based Operations</a></li> 
       </ul>

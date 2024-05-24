@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dendropy.model.parsimony &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.model.parsimony &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.model.parsimony</a></li> 
       </ul>
@@ -59,10 +59,8 @@
 <span class="sd">Models, modeling and model-fitting of parsimony.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
-<span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">import</span> <span class="nn">dendropy</span>
 <span class="kn">from</span> <span class="nn">dendropy.utility.error</span> <span class="kn">import</span> <span class="n">TaxonNamespaceIdentityError</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">deprecate</span>
 
 <span class="k">class</span> <span class="nc">_NodeStateSetMap</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -89,11 +87,12 @@
 <div class="viewcode-block" id="fitch_down_pass">
 <a class="viewcode-back" href="../../../library/parsimony.html#dendropy.model.parsimony.fitch_down_pass">[docs]</a>
 <span class="k">def</span> <span class="nf">fitch_down_pass</span><span class="p">(</span>
-        <span class="n">postorder_nodes</span><span class="p">,</span>
+        <span class="n">postorder_node_iter</span><span class="p">,</span>
         <span class="n">state_sets_attr_name</span><span class="o">=</span><span class="s2">&quot;state_sets&quot;</span><span class="p">,</span>
         <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">score_by_character_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the parsimony score given a list of nodes in postorder and</span>
@@ -101,7 +100,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    postorder_nodes : iterable of/over |Node| objects</span>
+<span class="sd">    postorder_node_iter : iterable of/over |Node| objects</span>
 <span class="sd">        An iterable of |Node| objects in in order of post-order</span>
 <span class="sd">        traversal of the tree.</span>
 <span class="sd">    state_sets_attr_name : str</span>
@@ -203,6 +202,16 @@
 <span class="sd">        print(score)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;postorder_nodes&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">deprecate</span><span class="o">.</span><span class="n">dendropy_deprecation_warning</span><span class="p">(</span>
+            <span class="n">preamble</span><span class="o">=</span><span class="s2">&quot;Deprecated since DendroPy 5&quot;</span><span class="p">,</span>
+            <span class="n">old_construct</span><span class="o">=</span><span class="s2">&quot;postorder_nodes&quot;</span><span class="p">,</span>
+            <span class="n">new_construct</span><span class="o">=</span><span class="s2">&quot;postorder_node_iter&quot;</span>
+        <span class="p">)</span>
+        <span class="n">postorder_node_iter</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;postorder_nodes&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized argument(s): </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
     <span class="k">if</span> <span class="n">score_by_character_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">score_by_character_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">taxon_state_sets_map</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">])):</span> <span class="c1"># this is unacceptable!</span>
@@ -215,7 +224,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">get_node_state_sets</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">node</span> <span class="p">:</span> <span class="n">_retrieve_state_sets_from_attr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">state_sets_attr_name</span><span class="p">,</span> <span class="n">taxon_state_sets_map</span><span class="p">)</span>
         <span class="n">set_node_state_sets</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="p">:</span> <span class="n">_store_sets_as_attr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">state_sets_attr_name</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">postorder_nodes</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">postorder_node_iter</span><span class="p">:</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="p">:</span>
             <span class="n">ss</span> <span class="o">=</span> <span class="n">get_node_state_sets</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span>
@@ -257,16 +266,17 @@
 <div class="viewcode-block" id="fitch_up_pass">
 <a class="viewcode-back" href="../../../library/parsimony.html#dendropy.model.parsimony.fitch_up_pass">[docs]</a>
 <span class="k">def</span> <span class="nf">fitch_up_pass</span><span class="p">(</span>
-        <span class="n">preorder_node_list</span><span class="p">,</span>
+        <span class="n">preorder_node_iter</span><span class="p">,</span>
         <span class="n">state_sets_attr_name</span><span class="o">=</span><span class="s2">&quot;state_sets&quot;</span><span class="p">,</span>
-        <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">taxon_state_sets_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finalizes the state set lists associated with each node using the &quot;final</span>
 <span class="sd">    phase&quot; of Fitch&#39;s (1971) unordered parsimony algorithm.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    postorder_nodes : iterable of/over |Node| objects</span>
+<span class="sd">    preorder_node_iter : iterable of/over |Node| objects</span>
 <span class="sd">        An iterable of |Node| objects in in order of post-order</span>
 <span class="sd">        traversal of the tree.</span>
 <span class="sd">    state_sets_attr_name : str</span>
@@ -306,8 +316,18 @@
 <span class="sd">            print(nd.state_sets)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;preorder_nodes&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">deprecate</span><span class="o">.</span><span class="n">dendropy_deprecation_warning</span><span class="p">(</span>
+            <span class="n">preamble</span><span class="o">=</span><span class="s2">&quot;Deprecated since DendroPy 5&quot;</span><span class="p">,</span>
+            <span class="n">old_construct</span><span class="o">=</span><span class="s2">&quot;preorder_nodes&quot;</span><span class="p">,</span>
+            <span class="n">new_construct</span><span class="o">=</span><span class="s2">&quot;preorder_node_iter&quot;</span>
+        <span class="p">)</span>
+        <span class="n">preorder_node_iter</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;preorder_nodes&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized argument(s): </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="n">node_state_sets_map</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">preorder_node_list</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">preorder_node_iter</span><span class="p">:</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">parent_node</span>
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">c</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">p</span><span class="p">):</span>
@@ -508,7 +528,7 @@
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -566,7 +586,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.model.parsimony</a></li> 
       </ul>

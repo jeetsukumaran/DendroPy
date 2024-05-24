@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Taxon Namespaces and Taxon Management &#8212; DendroPy 4.6.1 documentation</title>
+    <title>Taxon Namespaces and Taxon Management &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="converting.html" title="Converting Between Data Formats"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Taxon Namespaces and Taxon Management</a></li> 
       </ul>
@@ -253,7 +253,15 @@ That is, the taxa referenced by “A”, “B”, and “C” in the second read
 </pre></div>
 </div>
 <p>The same obtains for <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> and <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.CharacterMatrix" title="dendropy.datamodel.charmatrixmodel.CharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterMatrix</span></code></a>-derived instances: if the associated <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> references are different, then the associated <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects will be different, even if the labels are the same. This will make comparison or any operation between them impossible:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">dendropy</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+    <span class="s2">&quot;This example is known to be broken! &quot;</span>
+    <span class="s2">&quot;It will be fixed or removed in the future. &quot;</span>
+    <span class="s2">&quot;See https://github.com/jeetsukumaran/DendroPy/issues/160 for details. &quot;</span>
+    <span class="s2">&quot;Patch contributions are welcome.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">tree_str1</span> <span class="o">=</span> <span class="s2">&quot;((A,B),C);&quot;</span>
 
@@ -675,7 +683,7 @@ To control this, you can pass the keyword argument <code class="docutils literal
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -739,7 +747,7 @@ To control this, you can pass the keyword argument <code class="docutils literal
         <li class="right" >
           <a href="converting.html" title="Converting Between Data Formats"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Taxon Namespaces and Taxon Management</a></li> 
       </ul>

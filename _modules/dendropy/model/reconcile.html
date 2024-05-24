@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dendropy.model.reconcile &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.model.reconcile &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../../../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../../../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.model.reconcile</a></li> 
       </ul>
@@ -147,27 +147,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">contained_taxon_namespace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_contained_to_containing_taxon_map</span><span class="p">(</span><span class="n">contained_to_containing_taxon_map</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contained_to_containing_taxon_map</span> <span class="o">=</span> <span class="n">contained_to_containing_taxon_map</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_containing_edge_lengths</span> <span class="o">=</span> <span class="n">fit_containing_edge_lengths</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collapse_empty_edges</span> <span class="o">=</span> <span class="n">collapse_empty_edges</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ultrametricity_precision</span> <span class="o">=</span> <span class="n">ultrametricity_precision</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ignore_root_deep_coalescences</span> <span class="o">=</span> <span class="n">ignore_root_deep_coalescences</span>
         <span class="k">if</span> <span class="n">contained_trees</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_contained_trees</span><span class="p">(</span><span class="n">contained_trees</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span> <span class="o">=</span> <span class="n">contained_trees</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rebuild</span><span class="p">(</span><span class="n">rebuild_taxa</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_contained_taxon_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">taxon_namespace</span>
-
-    <span class="k">def</span> <span class="nf">_get_contained_taxon_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">contained_taxon_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span>
 
-    <span class="n">contained_taxon_namespace</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_contained_taxon_namespace</span><span class="p">)</span>
+    <span class="nd">@contained_taxon_namespace</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">contained_taxon_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">taxon_namespace</span>
 
-    <span class="k">def</span> <span class="nf">_set_contained_to_containing_taxon_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contained_to_containing_taxon_map</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">contained_to_containing_taxon_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span>
+
+    <span class="nd">@contained_to_containing_taxon_map</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">contained_to_containing_taxon_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contained_to_containing_taxon_map</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets mapping of |Taxon| objects of the genes/parasite/etc. to that of</span>
 <span class="sd">        the population/species/host/etc.</span>
@@ -186,12 +191,14 @@
                     <span class="n">range_taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build_edge_taxa_sets</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_get_contained_to_containing_taxon_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">contained_trees</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span>
 
-    <span class="n">contained_to_containing_taxon_map</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_contained_to_containing_taxon_map</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_set_contained_trees</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trees</span><span class="p">):</span>
+    <span class="nd">@contained_trees</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">contained_trees</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trees</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">trees</span><span class="p">,</span> <span class="s1">&#39;taxon_namespace&#39;</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="n">trees</span><span class="o">.</span><span class="n">taxon_namespace</span>
@@ -201,17 +208,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span><span class="o">.</span><span class="n">taxon_namespace</span>
 
-    <span class="k">def</span> <span class="nf">_get_contained_trees</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_contained_taxon_namespace</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_trees</span>
-
-    <span class="n">contained_trees</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_contained_trees</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_get_containing_to_contained_taxa_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">containing_to_contained_taxa_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span><span class="o">.</span><span class="n">reverse</span>
 
-    <span class="n">containing_to_contained_taxa_map</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_containing_to_contained_taxa_map</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ContainingTree.clear">
 <a class="viewcode-back" href="../../../library/reconcile.html#dendropy.model.reconcile.ContainingTree.clear">[docs]</a>
@@ -219,7 +219,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clears all contained trees and mapped edges.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span><span class="o">.</span><span class="n">domain_taxa</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span><span class="p">,</span> <span class="s2">&quot;domain_taxa&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_contained_to_containing_taxon_map</span><span class="o">.</span><span class="n">domain_taxa</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">contained_trees</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TreeList</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_contained_edges</span><span class="p">()</span></div>
 
 
@@ -738,7 +741,7 @@
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -796,7 +799,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dendropy.model.reconcile</a></li> 
       </ul>

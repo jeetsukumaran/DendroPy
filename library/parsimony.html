@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>dendropy.model.parsimony: The Parsimony Model &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.model.parsimony: The Parsimony Model &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="discrete.html" title="dendropy.model.discrete: Discrete Character Evolution"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.parsimony</span></code>: The Parsimony Model</a></li> 
       </ul>
@@ -49,13 +49,13 @@
 <p>Models, modeling and model-fitting of parsimony.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dendropy.model.parsimony.fitch_down_pass">
-<span class="sig-prename descclassname"><span class="pre">dendropy.model.parsimony.</span></span><span class="sig-name descname"><span class="pre">fitch_down_pass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">postorder_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_sets_attr_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'state_sets'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_state_sets_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_by_character_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/parsimony.html#fitch_down_pass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.parsimony.fitch_down_pass" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.parsimony.</span></span><span class="sig-name descname"><span class="pre">fitch_down_pass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">postorder_node_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_sets_attr_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'state_sets'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_state_sets_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_by_character_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/parsimony.html#fitch_down_pass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.parsimony.fitch_down_pass" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the parsimony score given a list of nodes in postorder and
 associated states, using Fitch’s (1971) unordered parsimony algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>postorder_nodes</strong> (iterable of/over <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects) – An iterable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in in order of post-order
+<li><p><strong>postorder_node_iter</strong> (iterable of/over <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects) – An iterable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in in order of post-order
 traversal of the tree.</p></li>
 <li><p><strong>state_sets_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of attribute on <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in which state set lists
 will stored/accessed. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then state sets will not be stored on
@@ -151,13 +151,13 @@ added, “state_sets”, that stores the list of state sets from the analysis:</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dendropy.model.parsimony.fitch_up_pass">
-<span class="sig-prename descclassname"><span class="pre">dendropy.model.parsimony.</span></span><span class="sig-name descname"><span class="pre">fitch_up_pass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preorder_node_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_sets_attr_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'state_sets'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_state_sets_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/parsimony.html#fitch_up_pass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.parsimony.fitch_up_pass" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dendropy.model.parsimony.</span></span><span class="sig-name descname"><span class="pre">fitch_up_pass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preorder_node_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_sets_attr_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'state_sets'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxon_state_sets_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/parsimony.html#fitch_up_pass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.parsimony.fitch_up_pass" title="Link to this definition">¶</a></dt>
 <dd><p>Finalizes the state set lists associated with each node using the “final
 phase” of Fitch’s (1971) unordered parsimony algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>postorder_nodes</strong> (iterable of/over <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects) – An iterable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in in order of post-order
+<li><p><strong>preorder_node_iter</strong> (iterable of/over <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects) – An iterable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in in order of post-order
 traversal of the tree.</p></li>
 <li><p><strong>state_sets_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of attribute on <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in which state set lists
 will stored/accessed. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then state sets will not be stored on
@@ -345,7 +345,7 @@ each time.</p>
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -409,7 +409,7 @@ each time.</p>
         <li class="right" >
           <a href="discrete.html" title="dendropy.model.discrete: Discrete Character Evolution"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.parsimony</span></code>: The Parsimony Model</a></li> 
       </ul>

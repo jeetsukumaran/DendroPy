@@ -5,13 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>dendropy.model.coalescent: The Coalescent &#8212; DendroPy 4.6.1 documentation</title>
+    <title>dendropy.model.coalescent: The Coalescent &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -33,7 +34,7 @@
         <li class="right" >
           <a href="birthdeath.html" title="dendropy.model.birthdeath: The Birth-Death and Related Processes"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Library Reference</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.coalescent</span></code>: The Coalescent</a></li> 
       </ul>
@@ -213,7 +214,7 @@ Wright-Fisher population of <code class="docutils literal notranslate"><span cla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_genes</strong> (<em>integer</em>) – The number of genes in the sample.</p></li>
+<li><p><strong>n_genes</strong> (<em>integer</em>) – The number of genes in the sample. Must be greater than or equal to n_to_coalesce.</p></li>
 <li><p><strong>pop_size</strong> (<em>integer</em>) – The effective <em>haploid</em> population size; i.e., number of genes in the
 population: 2 * N in a diploid population of N individuals, or N in a
 haploid population of N individuals.</p></li>
@@ -287,19 +288,18 @@ time for coalescent for the given tree</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dendropy.model.coalescent.log_probability_of_coalescent_frames">
 <span class="sig-prename descclassname"><span class="pre">dendropy.model.coalescent.</span></span><span class="sig-name descname"><span class="pre">log_probability_of_coalescent_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coalescent_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">haploid_pop_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/coalescent.html#log_probability_of_coalescent_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.model.coalescent.log_probability_of_coalescent_frames" title="Link to this definition">¶</a></dt>
-<dd><p>Under the classical neutral coalescent citep{Kingman1982,
-Kingman1982b}, the waiting times between coalescent events in a
-sample of $k$ alleles segregating in a  population of (haploid) size
-$N_e$ is distributed exponentially with a rate parameter of
-:math`frac{{k choose 2}}{N_e}`:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">math</span><span class="p">::</span>
-
-    \<span class="n">Pr</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">=</span>  \<span class="n">frac</span><span class="p">{{</span><span class="n">k</span> \<span class="n">choose</span> <span class="mi">2</span><span class="p">}}{</span><span class="n">N_e</span><span class="p">}</span> \<span class="n">e</span><span class="p">{</span><span class="o">-</span>  \<span class="n">frac</span><span class="p">{{</span><span class="n">k</span> \<span class="n">choose</span> <span class="mi">2</span><span class="p">}}{</span><span class="n">N_e</span><span class="p">}</span> <span class="n">T</span><span class="p">},</span>
-</pre></div>
-</div>
-<p>where $T$ is the length of  (chronological) time in which there are
-$k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
-$k-1$ alleles).</p>
+<dd><p>Under the classical neutral coalescent <span class="math notranslate nohighlight">\(\citep{Kingman1982,
+Kingman1982b}\)</span>, the waiting times between coalescent events in a
+sample of <span class="math notranslate nohighlight">\(k\)</span> alleles segregating in a  population of (haploid) size
+<span class="math notranslate nohighlight">\(N_e\)</span> is distributed exponentially with a rate parameter of
+<span class="math notranslate nohighlight">\(\frac{{k \choose 2}}{N_e}\)</span>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\Pr(T) =  \frac{{k \choose 2}}{N_e} e^{-  \frac{{k \choose 2}}{N_e} T},\]</div>
+</div></blockquote>
+<p>where <span class="math notranslate nohighlight">\(T\)</span> is the length of  (chronological) time in which there are
+<span class="math notranslate nohighlight">\(k\)</span> alleles in the sample (i.e., for <span class="math notranslate nohighlight">\(k\)</span> alleles to coalesce into
+<span class="math notranslate nohighlight">\(k-1\)</span> alleles).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -389,7 +389,7 @@ Wright-Fisher population of <code class="docutils literal notranslate"><span cla
 <code class="docutils literal notranslate"><span class="pre">n-genes</span></code> lineages coalesce in a population of <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> genes.</p>
 <p>Given the number of gene lineages in a sample, <code class="docutils literal notranslate"><span class="pre">n_genes</span></code>, and a
 population size, <code class="docutils literal notranslate"><span class="pre">pop_size</span></code>, this function returns a random number from
-an exponential distribution with rate $choose(<code class="docutils literal notranslate"><span class="pre">pop_size</span></code>, 2)$.
+an exponential distribution with rate <span class="math notranslate nohighlight">\(\choose(``pop_size`\)</span>, 2)`.
 <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> is the effective <em>haploid</em> population size; i.e., number of gene
 in the population: 2 * N in a diploid population of N individuals,
 or N in a haploid population of N individuals. If <code class="docutils literal notranslate"><span class="pre">pop_size</span></code> is 1 or 0 or
@@ -397,13 +397,13 @@ None, then time is in haploid population units; i.e. where 1 unit of time
 equals 2N generations for a diploid population of size N, or N generations
 for a haploid population of size N. Otherwise time is in generations.</p>
 <p>The coalescence time, or the waiting time for the coalescence, of two
-gene lineages evolving in a population with haploid size $N$ is an
-exponentially-distributed random variable with rate of $N$ an
-expectation of $frac{1}{N}$).
+gene lineages evolving in a population with haploid size <span class="math notranslate nohighlight">\(N\)</span> is an
+exponentially-distributed random variable with rate of <span class="math notranslate nohighlight">\(N\)</span> an
+expectation of <span class="math notranslate nohighlight">\(\frac{1}{N}\)</span>).
 The waiting time for coalescence of <em>any</em> two gene lineages in a sample of
-$n$ gene lineages evolving in a population with haploid size $N$ is an
-exponentially-distributed random variable with rate of $choose{N, 2}$ and
-an expectation of $frac{1}{choose{N, 2}}$.</p>
+<span class="math notranslate nohighlight">\(n\)</span> gene lineages evolving in a population with haploid size <span class="math notranslate nohighlight">\(N\)</span> is an
+exponentially-distributed random variable with rate of <span class="math notranslate nohighlight">\(\choose{N, 2} and
+an expectation of :math:\)</span>frac{1}{choose{N, 2}}`.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -512,7 +512,7 @@ population of <code class="docutils literal notranslate"><span class="pre">pop_s
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -576,7 +576,7 @@ population of <code class="docutils literal notranslate"><span class="pre">pop_s
         <li class="right" >
           <a href="birthdeath.html" title="dendropy.model.birthdeath: The Birth-Death and Related Processes"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Library Reference</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">dendropy.model.coalescent</span></code>: The Coalescent</a></li> 
       </ul>

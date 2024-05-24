@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>SumTrees: Phylogenetic Tree Summarization and Annotation &#8212; DendroPy 4.6.1 documentation</title>
+    <title>SumTrees: Phylogenetic Tree Summarization and Annotation &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="index.html" title="Programs and Applications"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Programs and Applications</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">SumTrees: Phylogenetic Tree Summarization and Annotation</a></li> 
       </ul>
@@ -64,9 +64,9 @@ Using multiple cores will, of course, speed up processing of your files.</p>
 </section>
 <section id="where-to-find-the-package">
 <h2>Where to Find the Package<a class="headerlink" href="#where-to-find-the-package" title="Link to this heading">¶</a></h2>
-<p>SumTrees is distributed and installed as part of the <a class="reference external" href="http://www.dendropy.org/">DendroPy</a> phylogenetic computing library, which has its homepage here:</p>
+<p>SumTrees is distributed and installed as part of the <a class="reference external" href="https://jeetsukumaran.github.io/DendroPy/">DendroPy</a> phylogenetic computing library, which has its homepage here:</p>
 <blockquote>
-<div><p><a class="reference external" href="http://www.dendropy.org/">http://www.dendropy.org/</a></p>
+<div><p><a href="#id3"><span class="problematic" id="id4">|dendropy_homepage_url|</span></a></p>
 </div></blockquote>
 <p>with the main download page here:</p>
 <blockquote>
@@ -84,11 +84,11 @@ Note: the “<code class="docutils literal notranslate"><span class="pre">sudo</
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install --user -U dendropy
 </pre></div>
 </div>
-<p>These, and other ways of obtaining and installing DendroPy (e.g., by downloading the <a class="reference external" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">DendroPy source code archive</a>, or by cloning the <a class="reference external" href="http://github.com/jeetsukumaran/DendroPy">DendroPy Git repository</a>), are discussed in detail in the “<a class="reference internal" href="../downloading.html"><span class="doc">Downloading and Installing DendroPy</span></a>” section.</p>
+<p>These, and other ways of obtaining and installing DendroPy (e.g., by downloading the <a class="reference external" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">DendroPy source code archive</a>, or by cloning the <a class="reference external" href="http://github.com/jeetsukumaran/DendroPy">DendroPy Git repository</a>), are discussed in detail in the “<a class="reference internal" href="../downloading.html"><span class="doc">Downloading and Installing DendroPy</span></a>” section.</p>
 </section>
 <section id="checking-the-installation">
 <h2>Checking the Installation<a class="headerlink" href="#checking-the-installation" title="Link to this heading">¶</a></h2>
-<p>If the installation was successful, you should be able to type “<code class="docutils literal notranslate"><span class="pre">sumtrees.py</span></code>” in the terminal window and see something like the following (with possibly a different date or version number):</p>
+<p>If the installation was successful, you should be able to type “<code class="docutils literal notranslate"><span class="pre">sumtrees</span></code>” in the terminal window and see something like the following (with possibly a different date or version number):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/==========================================================================</span>\
 <span class="o">|</span>                                 <span class="n">SumTrees</span>                                 <span class="o">|</span>
 <span class="o">|</span>                     <span class="n">Phylogenetic</span> <span class="n">Tree</span> <span class="n">Summarization</span>                      <span class="o">|</span>
@@ -118,7 +118,7 @@ Note: the “<code class="docutils literal notranslate"><span class="pre">sudo</
 <span class="o">|</span> <span class="mf">4.0.0</span><span class="o">.</span><span class="n">dev</span> <span class="p">(</span><span class="n">DendroPy4</span><span class="o">-</span><span class="n">feea2b0</span><span class="p">,</span> <span class="mi">2015</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">02</span> <span class="mi">20</span><span class="p">:</span><span class="mi">13</span><span class="p">:</span><span class="mi">49</span><span class="p">)</span><span class="o">.</span>                      <span class="o">|</span>
 \<span class="o">==========================================================================/</span>
 
-<span class="n">usage</span><span class="p">:</span> <span class="n">sumtrees</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">FORMAT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">BURNIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">rooted</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">unrooted</span><span class="p">]</span>
+<span class="n">usage</span><span class="p">:</span> <span class="n">sumtrees</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">FORMAT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">BURNIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">rooted</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">unrooted</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">weighted</span><span class="o">-</span><span class="n">trees</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">preserve</span><span class="o">-</span><span class="n">underscores</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">taxon</span><span class="o">-</span><span class="n">name</span><span class="o">-</span><span class="n">file</span> <span class="n">FILEPATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SUMMARY</span><span class="o">-</span><span class="n">TYPE</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="c1">#.##] [--allow-unknown-target-tree-taxa]</span>
@@ -136,8 +136,8 @@ Note: the “<code class="docutils literal notranslate"><span class="pre">sudo</
                 <span class="p">[</span><span class="o">--</span><span class="n">usage</span><span class="o">-</span><span class="n">examples</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">describe</span><span class="p">]</span>
                 <span class="p">[</span><span class="n">TREE</span><span class="o">-</span><span class="n">FILEPATH</span> <span class="p">[</span><span class="n">TREE</span><span class="o">-</span><span class="n">FILEPATH</span> <span class="o">...</span><span class="p">]]</span>
 
-<span class="n">Type</span> <span class="s1">&#39;sumtrees.py --help&#39;</span> <span class="k">for</span> <span class="n">details</span> <span class="n">on</span> <span class="n">usage</span><span class="o">.</span>
-<span class="n">Type</span> <span class="s1">&#39;sumtrees.py --usage-examples&#39;</span> <span class="k">for</span> <span class="n">examples</span> <span class="n">of</span> <span class="n">usage</span><span class="o">.</span>
+<span class="n">Type</span> <span class="s1">&#39;sumtrees --help&#39;</span> <span class="k">for</span> <span class="n">details</span> <span class="n">on</span> <span class="n">usage</span><span class="o">.</span>
+<span class="n">Type</span> <span class="s1">&#39;sumtrees --usage-examples&#39;</span> <span class="k">for</span> <span class="n">examples</span> <span class="n">of</span> <span class="n">usage</span><span class="o">.</span>
 </pre></div>
 </div>
 <p>You can now delete the original downloaded archive and unpacked directory if you want.</p>
@@ -145,12 +145,12 @@ Note: the “<code class="docutils literal notranslate"><span class="pre">sudo</
 <section id="how-to-use-the-program">
 <h2>How to Use the Program<a class="headerlink" href="#how-to-use-the-program" title="Link to this heading">¶</a></h2>
 <p>SumTrees is typically invoked by providing it a list of one or more tree files to be summarized:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py [OPTIONS] &lt;TREEFILE&gt; [&lt;TREEFILE&gt; [&lt;TREEFILE&gt; ...]]]
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees [OPTIONS] &lt;TREEFILE&gt; [&lt;TREEFILE&gt; [&lt;TREEFILE&gt; ...]]]
 </pre></div>
 </div>
 <p>Common options include specification of a target topology onto which to map the support (”<code class="docutils literal notranslate"><span class="pre">-t</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--target</span></code>”), a summary tree to use (e.g., “<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">mcct</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--summary-target=mcct</span></code>” an output file (”<code class="docutils literal notranslate"><span class="pre">-o</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--output</span></code>”), and a burn-in value (”<code class="docutils literal notranslate"><span class="pre">-b</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--burnin</span></code>”).</p>
 <p>Full help on program usage and options is given by using the “<code class="docutils literal notranslate"><span class="pre">--help</span></code>” option:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --help
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --help
 </pre></div>
 </div>
 </section>
@@ -159,37 +159,37 @@ Note: the “<code class="docutils literal notranslate"><span class="pre">sudo</
 <section id="summarization-of-posterior-probabilities-of-clades-with-a-consensus-tree">
 <h3>Summarization of Posterior Probabilities of Clades with a Consensus Tree<a class="headerlink" href="#summarization-of-posterior-probabilities-of-clades-with-a-consensus-tree" title="Link to this heading">¶</a></h3>
 <p>Summarize a set of tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths being the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to “<code class="docutils literal notranslate"><span class="pre">result.tre</span></code>”:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --min-clade-freq=0.95 --burnin=200 --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -f0.95 -b200 -o result.tre treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --min-clade-freq=0.95 --burnin=200 --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -f0.95 -b200 -o result.tre treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 </section>
 <section id="summarization-of-posterior-probabilities-of-clades-with-a-maximum-clade-credibility-tree-mcct">
 <h3>Summarization of Posterior Probabilities of Clades with a Maximum Clade Credibility Tree (MCCT)<a class="headerlink" href="#summarization-of-posterior-probabilities-of-clades-with-a-maximum-clade-credibility-tree-mcct" title="Link to this heading">¶</a></h3>
 <p>Summarize a set of tree files using a tree in the input set that maximizes the product of clade support, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to “<code class="docutils literal notranslate"><span class="pre">result.tre</span></code>”:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --summary-target=mcct --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -s mcct -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --summary-target=mcct --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -s mcct -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 </section>
 <section id="non-parametric-bootstrap-support-of-a-model-tree">
 <h3>Non-parametric Bootstrap Support of a Model Tree<a class="headerlink" href="#non-parametric-bootstrap-support-of-a-model-tree" title="Link to this heading">¶</a></h3>
 <p>Calculate support for nodes on a specific tree, “<code class="docutils literal notranslate"><span class="pre">best.tre</span></code>” as given by a set of tree files, with support reported as percentages rounded to integers, and saving the result to “<code class="docutils literal notranslate"><span class="pre">result.tre</span></code>”:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 </section>
 <section id="set-node-ages-of-target-or-summary-tree-s-to-mean-median-node-age-of-input-trees">
 <h3>Set Node Ages of Target or Summary Tree(s) to Mean/Median Node Age of Input Trees<a class="headerlink" href="#set-node-ages-of-target-or-summary-tree-s-to-mean-median-node-age-of-input-trees" title="Link to this heading">¶</a></h3>
 <p>Summarize a set of ultrametric tree files using a 95% majority-rule consensus tree, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths adjusted so the ages of internal nodes are the mean across all trees, dropping the first 200 trees in each file as a burn-in:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --min-clade-freq=0.95 --burnin=200 --edges=mean-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -f0.95 -b200 -o result.tre -l -e mean-age treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --min-clade-freq=0.95 --burnin=200 --edges=mean-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -f0.95 -b200 -o result.tre -l -e mean-age treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 <p>To use the median age instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --min-clade-freq=0.95 --burnin=200 --edges=median-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -f0.95 -b200 -o result.tre -e median-age treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --min-clade-freq=0.95 --burnin=200 --edges=median-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -f0.95 -b200 -o result.tre -e median-age treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 </section>
@@ -198,16 +198,16 @@ $ sumtrees.py -f0.95 -b200 -o result.tre -e median-age treefile1.tre treefile2.t
 <p>Running in parallel mode will analyze each input source in its own independent process, with multiple processes running in parallel.
 Multiprocessing analysis is invoked by adding the “<code class="docutils literal notranslate"><span class="pre">-m</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--multiprocessing</span></code>”  flag to the SumTrees command, and passing in the maximum number of processes to run in parallel.
 For example, if your machine has two cores, and you want to run the previous analyses using both of them, you would specify that SumTrees run in parallel mode with two processes by adding “<code class="docutils literal notranslate"><span class="pre">-m2</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--multiprocessing=2</span></code>” to the SumTrees command invocation:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --multiprocessing=2 --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -m2 -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py --multiprocessing=2 --min-clade-freq=0.95 --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -m2 -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --multiprocessing=2 --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -m2 -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees --multiprocessing=2 --min-clade-freq=0.95 --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -m2 -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 <p>You can specify as many processes as you want, up to the total number of tree support files passed as input sources.
 If you want to use <em>all</em> the available cores on your machine, you can use the “<code class="docutils literal notranslate"><span class="pre">-M</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--maximum-multiprocessing</span></code>” flag:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --maximum-multiprocessing --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -M -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --maximum-multiprocessing --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -M -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 <p>If you specify fewer processes than input sources, then the files will be cycled through the processes.</p>
@@ -216,28 +216,28 @@ $ sumtrees.py -M -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre tr
 <section id="primers-and-examples">
 <h2>Primers and Examples<a class="headerlink" href="#primers-and-examples" title="Link to this heading">¶</a></h2>
 <p>At its most basic, you will need to supply SumTrees with the path to one or more tree files in Newick or NEXUS format that you want to summarize:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py phylo.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees phylo.tre
 </pre></div>
 </div>
 <p>As no target tree was provided and no summary tree type was specified, SumTrees will, by default construct ad 50% majority-rule clade consensus tree of all the trees found in the file “<code class="docutils literal notranslate"><span class="pre">phylo.tre</span></code>” as  the summarization target.
 The internal node labels of the resulting consensus tree will, by default, indicate the proportion of trees in “<code class="docutils literal notranslate"><span class="pre">phylo.tre</span></code>” in which that clade was found, while the branch lengths of the resulting consensus tree being set to the mean of the branch lengths of that clade across all the trees in “<code class="docutils literal notranslate"><span class="pre">phylo.tre</span></code>”.</p>
 <p>If you have split searches across multiple runs (across, for example, multiple computers, so as to speed up the search time), such that you have multiple tree files (”<code class="docutils literal notranslate"><span class="pre">phylo.run1.tre</span></code>”, “<code class="docutils literal notranslate"><span class="pre">phylo.run2.tre</span></code>”, “<code class="docutils literal notranslate"><span class="pre">phylo.run3.tre</span></code>”, …), you can instruct SumTrees to consider all these files together when summarizing the support by simply listing them one after another separated by spaces:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py phylo.run1.tre phylo.run2.tre phylo.run3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees phylo.run1.tre phylo.run2.tre phylo.run3.tre
 </pre></div>
 </div>
 <p>As before, the above command will construct a 50% majority-rule consensus tree with clade supported indicated by internal node labels and branch lengths being the mean across all trees, but this time it will use all the trees found across all the files listed: “<code class="docutils literal notranslate"><span class="pre">phylo.run1.tre</span></code>”, “<code class="docutils literal notranslate"><span class="pre">phylo.run2.tre</span></code>”, and “<code class="docutils literal notranslate"><span class="pre">phylo.run3.tre</span></code>”.</p>
 <p>You will notice that the final resulting tree is displayed to the terminal and not saved anywhere.
 It will probably be more useful if we can save it to a file for visualization for further analysis.
 This can be done in one of two ways, either by redirecting the screen output to a file, using the standard (at least on UNIX and UNIX-like systems) redirection operator, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py phylo.tre &gt; phylo.consensus.sumtrees
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees phylo.tre &gt; phylo.consensus.sumtrees
 </pre></div>
 </div>
 <p>or by using the or “<code class="docutils literal notranslate"><span class="pre">--output-tree-filepath</span></code>” option:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --output-tree-filepath=phylo.consensus.sumtrees phylo.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --output-tree-filepath=phylo.consensus.sumtrees phylo.tre
 </pre></div>
 </div>
 <p>If the files are in different directories, or you are not in the same directory as the files, you should use the full directory path specification:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --output-tree-filepath=/Users/myself/MyProjects/phylo1/final/phylo.consensus.sumtrees /Users/myself/MyProjects/phylo1/phylo.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --output-tree-filepath=/Users/myself/MyProjects/phylo1/final/phylo.consensus.sumtrees /Users/myself/MyProjects/phylo1/phylo.tre
 </pre></div>
 </div>
 <p>More extended options specify things like: where to save the output (by default it goes to the screen), the topology or tree to which to map the support (user-supplied or consensus tree), the output format (NEXUS by default, but it can also be Newick), whether support is indicated in terms of proportions or percentages etc.
@@ -245,8 +245,8 @@ All of these options are specified on the command line when invoking the program
 Many of the options have two alternate forms, a long form (a word or phrase preceded by two dashes, e.g., “<code class="docutils literal notranslate"><span class="pre">--option</span></code>”) and a short form (a single letter preceded by a single dash, “<code class="docutils literal notranslate"><span class="pre">-o</span></code>”).
 The long form of the options needs an equals sign before setting the paramater (e.g., “<code class="docutils literal notranslate"><span class="pre">--option=1</span></code>”), while the short one does not (e.g., “<code class="docutils literal notranslate"><span class="pre">-o1</span></code>” or “<code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">1</span></code>”).
 Most of the options have default values that will be used if not explicitly set when the program is invoked.
-The order that the options are given does <em>not</em> matter, i.e., “<code class="docutils literal notranslate"><span class="pre">sumtrees.py</span> <span class="pre">--option1=something</span> <span class="pre">--option2=something</span></code>” is the same as “<code class="docutils literal notranslate"><span class="pre">sumtrees.py</span> <span class="pre">--option2=something</span> <span class="pre">--option1=something</span></code>”.
-As mentioned above, full details on these options, their long and short forms, as well as their default values will be given by invoking the program with the “<code class="docutils literal notranslate"><span class="pre">--help</span></code>” or “<code class="docutils literal notranslate"><span class="pre">-h</span></code>” option: “<code class="docutils literal notranslate"><span class="pre">sumtrees.py</span> <span class="pre">--help</span></code>”.</p>
+The order that the options are given does <em>not</em> matter, i.e., “<code class="docutils literal notranslate"><span class="pre">sumtrees</span> <span class="pre">--option1=something</span> <span class="pre">--option2=something</span></code>” is the same as “<code class="docutils literal notranslate"><span class="pre">sumtrees</span> <span class="pre">--option2=something</span> <span class="pre">--option1=something</span></code>”.
+As mentioned above, full details on these options, their long and short forms, as well as their default values will be given by invoking the program with the “<code class="docutils literal notranslate"><span class="pre">--help</span></code>” or “<code class="docutils literal notranslate"><span class="pre">-h</span></code>” option: “<code class="docutils literal notranslate"><span class="pre">sumtrees</span> <span class="pre">--help</span></code>”.</p>
 </section>
 <section id="specifying-and-customization-of-the-summarization-target">
 <h2>Specifying and Customization of the Summarization Target<a class="headerlink" href="#specifying-and-customization-of-the-summarization-target" title="Link to this heading">¶</a></h2>
@@ -277,11 +277,11 @@ This option takes one of three values as an argument:</p>
 <p>For example, say you have completed a 1000-replicate non-parametric analysis of your dataset using a program such as GARLI or RAxML.
 You want to construct a 70% majority-rule consensus tree of the replicates, with support indicated as percentages on the node labels.
 If the bootstrap replicates are in the file “<code class="docutils literal notranslate"><span class="pre">phylo-boots.tre</span></code>”, you would then enter the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --summary-target=consensus --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --summary-target=consensus --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
 </pre></div>
 </div>
 <p>Or, using the short option syntax:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py -s consensus -f0.7 -p -d0 phylo-boots.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees -s consensus -f0.7 -p -d0 phylo-boots.tre
 </pre></div>
 </div>
 <p>Here, the “<code class="docutils literal notranslate"><span class="pre">--min-clade-freq=0.7</span></code>” or “<code class="docutils literal notranslate"><span class="pre">-f0.7</span></code>” option lowers the minimum threshold for clade inclusion to 70%.
@@ -292,27 +292,27 @@ Note that even if you instruct SumTrees to report the support in terms of percen
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>As noted, if no target topology is specified (either using the “<code class="docutils literal notranslate"><span class="pre">--summary-target</span></code>”/”<code class="docutils literal notranslate"><span class="pre">-s</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--target-tree-filepath</span></code>”/”<code class="docutils literal notranslate"><span class="pre">-t</span></code>” options), then SumTrees by default will construct and use a majority-rule consensus topology as a target, and hence the explicit specification of this as a target is not needed. Thus, the following will produce exactly the same results as above:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
-$ sumtrees.py -f0.7 -p -d0 phylo-boots.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+$ sumtrees -f0.7 -p -d0 phylo-boots.tre
 </pre></div>
 </div>
 </div>
 <p>Again, if we want to actually save the results to the file, we should use the “<code class="docutils literal notranslate"><span class="pre">--output-tree-filepath</span></code>” option:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --output-tree-filepath=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
-$ sumtrees.py -o phylo-mle-support.sumtrees -f0.7 --p --d0 phylo-boots.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --output-tree-filepath=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+$ sumtrees -o phylo-mle-support.sumtrees -f0.7 --p --d0 phylo-boots.tre
 </pre></div>
 </div>
 </section>
 <section id="maximum-clade-credibility-topology">
 <h4>Maximum Clade Credibility Topology<a class="headerlink" href="#maximum-clade-credibility-topology" title="Link to this heading">¶</a></h4>
 <p>The Maximum Clade Credibility Topology, or MCCT, is the topology that maximizes the <em>product</em> of the split support. You can use this as the target topology by specifying “<code class="docutils literal notranslate"><span class="pre">--summary-target=mcct</span></code>” or “<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">mcct</span></code>”:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --summary-target=mcct phylo-boots.tre
-$ sumtrees.py -s mcct phylo-boots.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --summary-target=mcct phylo-boots.tre
+$ sumtrees -s mcct phylo-boots.tre
 </pre></div>
 </div>
 <p>As might be expected, in can be combined with other options. For example, to discard the first 200 trees from each of the input sources and write the results to a file, “<code class="docutils literal notranslate"><span class="pre">results.tre</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --summary-target=mcct --burnin=200 --output-tree-filepath=results.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -s mcct -b 200 -o results.tre treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --summary-target=mcct --burnin=200 --output-tree-filepath=results.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -s mcct -b 200 -o results.tre treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 </section>
@@ -321,17 +321,17 @@ $ sumtrees.py -s mcct -b 200 -o results.tre treefile1.tre treefile2.tre treefile
 <h3>Specifying a Custom Topology or Set of Topologies<a class="headerlink" href="#specifying-a-custom-topology-or-set-of-topologies" title="Link to this heading">¶</a></h3>
 <p>Say you also have a maximum likelihood estimate of the phylogeny, and want to annotate the nodes of the maximum likelihood tree with the proportion of trees out of the bootstrap replicates in which the node is found.
 Then, assuming your maximum likelihood tree is in the file, “<code class="docutils literal notranslate"><span class="pre">phylo-mle.tre</span></code>”, and the bootstrap tree file is “<code class="docutils literal notranslate"><span class="pre">phylo-boots.tre</span></code>”, you would use the “<code class="docutils literal notranslate"><span class="pre">--target-tree-filepath</span></code>” options, as in the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --target-tree-filepath=phylo-mle.tre phylo-boots.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --target-tree-filepath=phylo-mle.tre phylo-boots.tre
 </pre></div>
 </div>
 <p>Here, “<code class="docutils literal notranslate"><span class="pre">--target-tree-filepath</span></code>” specifies the target topology onto which the support will be mapped, while the remaining (unprefixed) argument specifies the tree file that is the source of the support.
 An equivalent form of the same command, using the short option syntax is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py -t phylo-mle.tre phylo-boots.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees -t phylo-mle.tre phylo-boots.tre
 </pre></div>
 </div>
 <p>If you want the support expressed in percentages instead of proportions, and the final tree saved to a file, you would enter:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --output phylo-mle-support.sumtrees --target-tree-filepath phylo-mle.tre --proportions --decimals=0 phylo-boots.tre
-$ sumtrees.py -o phylo-mle-support.sumtrees -t phylo-mle.tre -p -d0 phylo-boots.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --output phylo-mle-support.sumtrees --target-tree-filepath phylo-mle.tre --proportions --decimals=0 phylo-boots.tre
+$ sumtrees -o phylo-mle-support.sumtrees -t phylo-mle.tre -p -d0 phylo-boots.tre
 </pre></div>
 </div>
 </section>
@@ -339,12 +339,12 @@ $ sumtrees.py -o phylo-mle-support.sumtrees -t phylo-mle.tre -p -d0 phylo-boots.
 <h3>Collapsing Clades/Edges/Splits Below a Minimum Support Frequency Threshold<a class="headerlink" href="#collapsing-clades-edges-splits-below-a-minimum-support-frequency-threshold" title="Link to this heading">¶</a></h3>
 <p>The “<code class="docutils literal notranslate"><span class="pre">-f</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--min-clade-freq</span></code>” flag sets the threshold below which clades will be collapsed.
 This applies to all summary targets: user-specified target topologies as well consensus trees, MCCT trees, etc.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --min-clade-freq=0.75 --percentages --decimals=0 phylo-boots.tre
-$ sumtrees.py -f0.75 -p -d0 phylo-boots.tre
-$ sumtrees.py --min-clade-freq=0.95 --summary-target=mcct phylo-boots.tre
-$ sumtrees.py -f0.95 -s mcct phylo-boots.tre
-$ sumtrees.py --min-clade-freq=0.75 --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-$ sumtrees.py -f0.75 -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --min-clade-freq=0.75 --percentages --decimals=0 phylo-boots.tre
+$ sumtrees -f0.75 -p -d0 phylo-boots.tre
+$ sumtrees --min-clade-freq=0.95 --summary-target=mcct phylo-boots.tre
+$ sumtrees -f0.95 -s mcct phylo-boots.tre
+$ sumtrees --min-clade-freq=0.75 --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+$ sumtrees -f0.75 -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
 </pre></div>
 </div>
 <p>Note that the minimum support frequency threshold is specified as proportion scaled from 0 to 1, even if the percentages are requested as the support units.</p>
@@ -368,13 +368,13 @@ In all cases, these defaults can be overridden by using the “<code class="docu
 </ul>
 </div></blockquote>
 <p>So, for example, to construct a consensus tree of a post-burnin set of ultrametric trees, with the node ages set to the <em>mean</em> instead of the median node age:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --set-edges=mean-age --summarize-node-ages --burnin=200 beast1.trees beast2.trees beast3.trees
-$ sumtrees.py --e mean-age --summarize-node-ages --b 200 beast1.trees beast2.trees beast3.trees
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --set-edges=mean-age --summarize-node-ages --burnin=200 beast1.trees beast2.trees beast3.trees
+$ sumtrees --e mean-age --summarize-node-ages --b 200 beast1.trees beast2.trees beast3.trees
 </pre></div>
 </div>
 <p>Or to set the edges of a user-specifed tree to the median edge length of the input trees:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --set-edges=median-length --target=mle.tre boots1.tre boots2.tre
-$ sumtrees.py --e median-length -t mle.tre boots1.tre boots2.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --set-edges=median-length --target=mle.tre boots1.tre boots2.tre
+$ sumtrees --e median-length -t mle.tre boots1.tre boots2.tre
 </pre></div>
 </div>
 </section>
@@ -383,14 +383,14 @@ $ sumtrees.py --e median-length -t mle.tre boots1.tre boots2.tre
 <section id="forcing-trees-to-be-treated-as-rooted">
 <h3>Forcing Trees to be Treated as Rooted<a class="headerlink" href="#forcing-trees-to-be-treated-as-rooted" title="Link to this heading">¶</a></h3>
 <p>SumTrees treats all trees as unrooted unless specified otherwise. You can force SumTrees to treat all trees as rooted by passing it the “<code class="docutils literal notranslate"><span class="pre">--force-rooted</span></code>” flag:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --force-rooted phylo.trees
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --force-rooted phylo.trees
 </pre></div>
 </div>
 </section>
 <section id="summarizing-node-ages">
 <h3>Summarizing Node Ages<a class="headerlink" href="#summarizing-node-ages" title="Link to this heading">¶</a></h3>
 <p>If the trees are rooted <strong>and</strong> ultrametric, the “<code class="docutils literal notranslate"><span class="pre">--summarize-node-ages</span></code>” flag will result in SumTrees summarizing node age information as well:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --summarize-node-ages phylo.trees
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --summarize-node-ages phylo.trees
 </pre></div>
 </div>
 <p>This will calculate and report statistics such as the mean, standard deviation, ranges, high posterior density intervals, etc. of the node ages.</p>
@@ -398,8 +398,8 @@ $ sumtrees.py --e median-length -t mle.tre boots1.tre boots2.tre
 <section id="setting-the-node-ages-of-the-summary-trees">
 <h3>Setting the Node Ages of the Summary Trees<a class="headerlink" href="#setting-the-node-ages-of-the-summary-trees" title="Link to this heading">¶</a></h3>
 <p>If the tree is rooted and ultrametric, instead of summarizing edge lengths to be the mean of the edge lengths across the input set, you probably want to set the edge lengths of the summary tree so the node ages correspond to the mean or median of the node ages of the input set:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --set-edges=mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
-$ sumtrees.py --e mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --set-edges=mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
+$ sumtrees --e mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
 </pre></div>
 </div>
 </section>
@@ -417,9 +417,9 @@ $ sumtrees.py --e mean-age --summarize-node-ages beast1.trees beast2.trees beast
 </pre></div>
 </div>
 <p>For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
-$ sumtrees.py --root-target-at-midpoint -s mcct trees1.tre trees2.tre
-$ sumtrees.py --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
+$ sumtrees --root-target-at-midpoint -s mcct trees1.tre trees2.tre
+$ sumtrees --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
 </pre></div>
 </div>
 </section>
@@ -458,7 +458,7 @@ Any taxon not listed in the tip ages file will get assigned an age of 0.0 by def
 </pre></div>
 </div>
 <p>then the following is the invocation to summarize the trees and their node ages:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees \
  --tip-ages data/x1.ages.tsv
  --summarize-node-ages \
  data/x1-1.tre
@@ -473,7 +473,7 @@ Any taxon not listed in the tip ages file will get assigned an age of 0.0 by def
 </pre></div>
 </div>
 <p>then the invocation is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees \
  --tip-ages data/x1.ages.csv
  --tip-ages-format=csv \
  --summarize-node-ages \
@@ -491,29 +491,29 @@ Any taxon not listed in the tip ages file will get assigned an age of 0.0 by def
 In parallel mode, each input source will be handled in a separate process, resulting in a speed-up linearly proportional to the total number of processes running in parallel.
 At its most basic, running in parallel mode involves nothing more than adding the “<code class="docutils literal notranslate"><span class="pre">-m</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--multiprocessing</span></code> option to the SumTrees invocation, and passing in the number of parallel processes to run.
 So, for example, if you have four tree files that you want to summarize, and you want to run these using two processes in parallel:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --multiprocessing=2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-$ sumtrees.py -m 2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --multiprocessing=2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees -m 2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 </pre></div>
 </div>
 <p>Or, to run in four processes simultaneously:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --multiprocessing=4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-$ sumtrees.py -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --multiprocessing=4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 </pre></div>
 </div>
 <p>If you want to use all the available cores on the current machine, use the “<code class="docutils literal notranslate"><span class="pre">-M</span></code>” or “<code class="docutils literal notranslate"><span class="pre">--maximum-multiprocessing</span></code>” flag:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --maximum-multiprocessing phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-$ sumtrees.py -M phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --maximum-multiprocessing phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees -M phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 </pre></div>
 </div>
 <p>Other options as described above, can, of course be added as needed:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --multiprocessing=4 --burnin=200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-$ sumtrees.py -m 4 -b 200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --multiprocessing=4 --burnin=200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees -m 4 -b 200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-$ sumtrees.py --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-$ sumtrees.py -M -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees -M -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-$ sumtrees.py --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 --output-tree-filepath=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-$ sumtrees.py -M -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 --output-tree-filepath=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees -M -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 </pre></div>
 </div>
 </section>
@@ -526,7 +526,7 @@ If you have 40 tree source or support files, then you can run from 2 up to 40 pr
 When running SumTrees in parallel mode, you can specify <em>any</em> number of parallel <em>processes</em>, up to the number of support files, even if the number of processes greatly exceeds the number <em>processors</em> available.
 For example, you might have an octo-core machine available, which means that you have 8 processors available.
 If your analysis has 40 independent support files, you can invoke SumTrees with 40 parallel processes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --multiprocessing=40 -o result.tre t1.tre ... t40.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --multiprocessing=40 -o result.tre t1.tre ... t40.tre
 </pre></div>
 </div>
 <p>SumTrees will indeed launch 40 parallel processes to process the files, and it will seem like 40 processes are being executed in parallel.
@@ -549,7 +549,7 @@ However, in all cases, all you really need to do is to set up an appropriate par
 <span class="c1">#$ -cwd</span>
 <span class="c1">#$ -V</span>
 <span class="c1">#$ -pe mpi 4</span>
-<span class="n">sumtrees</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">m4</span> <span class="o">-</span><span class="n">o</span> <span class="n">result</span><span class="o">.</span><span class="n">con</span><span class="o">.</span><span class="n">tre</span> <span class="o">-</span><span class="n">burnin</span> <span class="mi">100</span> <span class="n">mcmc1</span><span class="o">.</span><span class="n">tre</span> <span class="n">mcmc2</span><span class="o">.</span><span class="n">tre</span> <span class="n">mcmc3</span><span class="o">.</span><span class="n">tre</span> <span class="n">mcmc4</span><span class="o">.</span><span class="n">tre</span>
+<span class="n">sumtrees</span> <span class="o">-</span><span class="n">m4</span> <span class="o">-</span><span class="n">o</span> <span class="n">result</span><span class="o">.</span><span class="n">con</span><span class="o">.</span><span class="n">tre</span> <span class="o">-</span><span class="n">burnin</span> <span class="mi">100</span> <span class="n">mcmc1</span><span class="o">.</span><span class="n">tre</span> <span class="n">mcmc2</span><span class="o">.</span><span class="n">tre</span> <span class="n">mcmc3</span><span class="o">.</span><span class="n">tre</span> <span class="n">mcmc4</span><span class="o">.</span><span class="n">tre</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -559,7 +559,7 @@ However, in all cases, all you really need to do is to set up an appropriate par
 <div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span># /bin/sh
 #PBS -l nodes=2:ncpus=2
 cd $PBS_O_WORKDIR
-sumtrees.py -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
+sumtrees -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
 </pre></div>
 </div>
 </div></blockquote>
@@ -575,19 +575,19 @@ You just need to check with your cluster administrators or documentation to make
 <blockquote>
 <div><ul>
 <li><p>Run SumTrees in parallel mode (see “<a class="reference internal" href="#running-in-parallel-mode">Running in Parallel Mode</a>” or “<a class="reference internal" href="#parallelizing-sumtrees">Parallelizing SumTrees</a>”):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 </pre></div>
 </div>
 </li>
 <li><p>Reduce the tree-processing logging frequency.
 By default, SumTrees will report back every 500th tree in a tree file, just to let you know where it is and to give you a sense of how long it will take. You can use the “<code class="docutils literal notranslate"><span class="pre">-g</span></code>”  or “<code class="docutils literal notranslate"><span class="pre">--log-frequency</span></code>” flag to control this behavior. If you have very large files, you may be content to have SumTrees report back every 5000th or even every 10000th tree instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --log-frequency=10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-$ sumtrees.py -g10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --log-frequency=10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees -g10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 </pre></div>
 </div>
 <p>If you are content to let SumTrees run without reporting its progress <em>within</em> each file (SumTrees will still report back whenever it begins or ends working on a file), then you can switch off tree processing logging altogether by specifying a logging frequency of 0:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees.py --log-frequency=0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-$ sumtrees.py -g0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sumtrees --log-frequency=0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+$ sumtrees -g0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 </pre></div>
 </div>
 </li>
@@ -598,13 +598,13 @@ $ sumtrees.py -g0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
 <section id="prerequisites">
 <h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h3>
-<p><a class="reference external" href="http://www.dendropy.org/">DendroPy</a> is a <a class="reference external" href="http://www.python.org/">Python</a> library.
+<p><a class="reference external" href="https://jeetsukumaran.github.io/DendroPy/">DendroPy</a> is a <a class="reference external" href="http://www.python.org/">Python</a> library.
 It requires and presupposes not only the existence of a <a class="reference external" href="http://www.python.org/">Python</a> installation on your system, but also that this Python installation is available on the system path.</p>
 <p>The biggest problem faced by most users is not so much not having <a class="reference external" href="http://www.python.org/">Python</a> installed, but not having the correct version of Python installed. You can check which version of Python you have running by typing:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -V
 </pre></div>
 </div>
-<p>SumTrees, and the <a class="reference external" href="http://www.dendropy.org/">DendroPy</a> library that it is part of, works out-of-the-box with any 2.x Python version 2.4 or greater.</p>
+<p>SumTrees, and the <a class="reference external" href="https://jeetsukumaran.github.io/DendroPy/">DendroPy</a> library that it is part of, works out-of-the-box with any 2.x Python version 2.4 or greater.</p>
 <p>SumTrees will not work with versions of <a class="reference external" href="http://www.python.org/">Python</a> prior to 2.4, such as <a class="reference external" href="http://www.python.org/">Python</a> 2.3. It can probably be made to work pretty easily, and if you have strong enough motiviation to use Python 2.3, it might be worth the effort for you.
 It is not for me.</p>
 <p>SumTrees (and DendroPy) is currently not compatible with Python 3.</p>
@@ -636,16 +636,16 @@ help them greatly in getting Python up and running on the system path.</p>
 </section>
 <section id="manual-installation">
 <h2>Manual Installation<a class="headerlink" href="#manual-installation" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference external" href="http://www.dendropy.org/">DendroPy</a> library is actually quite straightforward to install manually, especially if you have any familiarity with Python and how Python files are organized.
+<p>The <a class="reference external" href="https://jeetsukumaran.github.io/DendroPy/">DendroPy</a> library is actually quite straightforward to install manually, especially if you have any familiarity with Python and how Python files are organized.
 There are a couple of different things you could do:</p>
 <ul class="simple">
-<li><p>Add the current location of the “<code class="docutils literal notranslate"><span class="pre">dendropy</span></code>” subdirectory to your Python path environmental variable, “<code class="docutils literal notranslate"><span class="pre">$PYTHONPATH</span></code>”, and place the file “<code class="docutils literal notranslate"><span class="pre">programs/sumtrees.py</span></code>” on your system path.</p></li>
-<li><p>Copy (or symlink) the “<code class="docutils literal notranslate"><span class="pre">dendropy</span></code>” directory to the “<code class="docutils literal notranslate"><span class="pre">site-packages</span></code>” directory of your Python installation, and place the file “<code class="docutils literal notranslate"><span class="pre">programs/sumtrees.py</span></code>” on your system path.</p></li>
+<li><p>Add the current location of the “<code class="docutils literal notranslate"><span class="pre">dendropy</span></code>” subdirectory to your Python path environmental variable, “<code class="docutils literal notranslate"><span class="pre">$PYTHONPATH</span></code>”, and place the file “<code class="docutils literal notranslate"><span class="pre">programs/sumtrees</span></code>” on your system path.</p></li>
+<li><p>Copy (or symlink) the “<code class="docutils literal notranslate"><span class="pre">dendropy</span></code>” directory to the “<code class="docutils literal notranslate"><span class="pre">site-packages</span></code>” directory of your Python installation, and place the file “<code class="docutils literal notranslate"><span class="pre">programs/sumtrees</span></code>” on your system path.</p></li>
 </ul>
 </section>
 <section id="repository-access">
 <h2>Repository Access<a class="headerlink" href="#repository-access" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference external" href="http://www.dendropy.org/">DendroPy</a> public-access <a class="reference external" href="http://git-scm.com/">Git</a> repository can be cloned from:</p>
+<p>The <a class="reference external" href="https://jeetsukumaran.github.io/DendroPy/">DendroPy</a> public-access <a class="reference external" href="http://git-scm.com/">Git</a> repository can be cloned from:</p>
 <blockquote>
 <div><p><a class="reference external" href="http://github.com/jeetsukumaran/DendroPy">http://github.com/jeetsukumaran/DendroPy</a></p>
 </div></blockquote>
@@ -660,9 +660,9 @@ Please feel free to contact me if you have any other questions, suggestions or c
 <h2>How to Cite this Program<a class="headerlink" href="#how-to-cite-this-program" title="Link to this heading">¶</a></h2>
 <p>If you use this program in your analysis, please cite it as:</p>
 <blockquote>
-<div><p>Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. <em>Bioinformatics</em> 26: 1569-1571.</p>
+<div><p>Moreno, M. A., Sukumaran, J., and M. T. Holder. 2024. DendroPy 5: a mature Python library for phylogenetic computing. arXiv preprint arXiv:2405.14120. https://doi.org/10.48550/arXiv.2405.14120</p>
 </div></blockquote>
-<p>In the text of your paper, if you want to look like you know what you are doing, you should probably also mention explicitly that you specifically used the SumTrees program of the <a class="reference external" href="http://www.dendropy.org/">DendroPy</a> package, as well as the particular version numbers of SumTrees and <a class="reference external" href="http://www.dendropy.org/">DendroPy</a> that you used.</p>
+<p>In the text of your paper, if you want to look like you know what you are doing, you should probably also mention explicitly that you specifically used the SumTrees program of the <a class="reference external" href="https://jeetsukumaran.github.io/DendroPy/">DendroPy</a> package, as well as the particular version numbers of SumTrees and <a class="reference external" href="https://jeetsukumaran.github.io/DendroPy/">DendroPy</a> that you used.</p>
 </section>
 <section id="copyright-license-and-warranty">
 <h2>Copyright, License and Warranty<a class="headerlink" href="#copyright-license-and-warranty" title="Link to this heading">¶</a></h2>
@@ -746,7 +746,7 @@ to track provenance.</p>
 </section>
 <section id="acknowledgments">
 <h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading">¶</a></h2>
-<p>Portions of <a class="reference external" href="http://www.dendropy.org/">DendroPy</a> were developed under <a class="reference external" href="http://www.phylo.org">CIPRES</a>, a multi-site collaboration funded by the <a class="reference external" href="http://www.nsf.gov/">NSF</a> Information Technology Research (ITR) program grant entitled “<a class="reference external" href="http://www.phylo.org/about/acknowledgements">BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics</a>” and <a class="reference external" href="http://www.nsf.gov/">NSF</a> ATOL grant 0732920 to Mark Holder.</p>
+<p>Portions of <a class="reference external" href="https://jeetsukumaran.github.io/DendroPy/">DendroPy</a> were developed under <a class="reference external" href="http://www.phylo.org">CIPRES</a>, a multi-site collaboration funded by the <a class="reference external" href="http://www.nsf.gov/">NSF</a> Information Technology Research (ITR) program grant entitled “<a class="reference external" href="http://www.phylo.org/about/acknowledgements">BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics</a>” and <a class="reference external" href="http://www.nsf.gov/">NSF</a> ATOL grant 0732920 to Mark Holder.</p>
 </section>
 </section>
 
@@ -874,7 +874,7 @@ to track provenance.</p>
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -938,7 +938,7 @@ to track provenance.</p>
         <li class="right" >
           <a href="index.html" title="Programs and Applications"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Programs and Applications</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">SumTrees: Phylogenetic Tree Summarization and Annotation</a></li> 
       </ul>

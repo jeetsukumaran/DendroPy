@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Trees &#8212; DendroPy 4.6.1 documentation</title>
+    <title>Trees &#8212; DendroPy 5.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=68f2c66a"></script>
+    <script src="../_static/documentation_options.js?v=ce74c6a2"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="taxa_partitions.html" title="Partitions of Taxon Sets"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">The DendroPy Primer</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Trees</a></li> 
       </ul>
@@ -255,14 +255,22 @@ This filter function should take a <a class="reference internal" href="../librar
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="ch">#! /usr/bin/env python</span>
 <span class="linenos"> 2</span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">dendropy</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="n">mle</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-<span class="linenos"> 7</span>    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;pythonidae.mle.nex&#39;</span><span class="p">,</span>
-<span class="linenos"> 8</span>    <span class="n">schema</span><span class="o">=</span><span class="s1">&#39;nexus&#39;</span><span class="p">)</span>
-<span class="linenos"> 9</span><span class="n">multifurcating</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">False</span>
-<span class="linenos">10</span><span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">mle</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">(</span><span class="n">multifurcating</span><span class="p">):</span>
-<span class="linenos">11</span>    <span class="nb">print</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="linenos"> 8</span>    <span class="s2">&quot;This example is known to be broken! &quot;</span>
+<span class="linenos"> 9</span>    <span class="s2">&quot;It will be fixed or removed in the future. &quot;</span>
+<span class="linenos">10</span>    <span class="s2">&quot;See https://github.com/jeetsukumaran/DendroPy/issues/160 for details. &quot;</span>
+<span class="linenos">11</span>    <span class="s2">&quot;Patch contributions are welcome.&quot;</span><span class="p">,</span>
+<span class="linenos">12</span><span class="p">)</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="n">mle</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+<span class="linenos">15</span>    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;pythonidae.mle.nex&#39;</span><span class="p">,</span>
+<span class="linenos">16</span>    <span class="n">schema</span><span class="o">=</span><span class="s1">&#39;nexus&#39;</span><span class="p">)</span>
+<span class="linenos">17</span><span class="n">multifurcating</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">False</span>
+<span class="linenos">18</span><span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">mle</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">(</span><span class="n">multifurcating</span><span class="p">):</span>
+<span class="linenos">19</span>    <span class="nb">print</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -317,14 +325,22 @@ The following example shows how you might iterate over all edges with lengths le
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="ch">#! /usr/bin/env python</span>
 <span class="linenos"> 2</span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">dendropy</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="n">mle</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-<span class="linenos"> 7</span>    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;pythonidae.mle.nex&#39;</span><span class="p">,</span>
-<span class="linenos"> 8</span>    <span class="n">schema</span><span class="o">=</span><span class="s1">&#39;nexus&#39;</span><span class="p">)</span>
-<span class="linenos"> 9</span><span class="n">short</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">edge</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="k">else</span> <span class="kc">False</span>
-<span class="linenos">10</span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">mle</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">(</span><span class="n">short</span><span class="p">):</span>
-<span class="linenos">11</span>    <span class="nb">print</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<span class="linenos"> 8</span>    <span class="s2">&quot;This example is known to be broken! &quot;</span>
+<span class="linenos"> 9</span>    <span class="s2">&quot;It will be fixed or removed in the future. &quot;</span>
+<span class="linenos">10</span>    <span class="s2">&quot;See https://github.com/jeetsukumaran/DendroPy/issues/160 for details. &quot;</span>
+<span class="linenos">11</span>    <span class="s2">&quot;Patch contributions are welcome.&quot;</span><span class="p">,</span>
+<span class="linenos">12</span><span class="p">)</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="n">mle</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+<span class="linenos">15</span>    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;pythonidae.mle.nex&#39;</span><span class="p">,</span>
+<span class="linenos">16</span>    <span class="n">schema</span><span class="o">=</span><span class="s1">&#39;nexus&#39;</span><span class="p">)</span>
+<span class="linenos">17</span><span class="n">short</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">edge</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="k">else</span> <span class="kc">False</span>
+<span class="linenos">18</span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">mle</span><span class="o">.</span><span class="n">postorder_edge_iter</span><span class="p">(</span><span class="n">short</span><span class="p">):</span>
+<span class="linenos">19</span>    <span class="nb">print</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -593,7 +609,7 @@ If the original <a class="reference internal" href="../library/treemodel.html#de
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-4.6.1.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.0.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -657,7 +673,7 @@ If the original <a class="reference internal" href="../library/treemodel.html#de
         <li class="right" >
           <a href="taxa_partitions.html" title="Partitions of Taxon Sets"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 4.6.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >The DendroPy Primer</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Trees</a></li> 
       </ul>
