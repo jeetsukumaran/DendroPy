@@ -89,6 +89,8 @@ If you use any portion of DendroPy v5 in your research, please cite it as:
 
       Moreno, M. A., Sukumaran, J., and M. T. Holder. 2024. DendroPy 5: a mature Python library for phylogenetic computing. arXiv preprint arXiv:2405.14120. https://doi.org/10.48550/arXiv.2405.14120
 
+For BibTex users:
+
 .. code-block:: bibtex
 
       @misc{dendropy5,
