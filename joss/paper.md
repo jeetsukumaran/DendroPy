@@ -19,12 +19,12 @@ authors:
   - name: Matthew Andres Moreno
     orcid: 0000-0003-4726-4479
     affiliation: "1, 2, 3"
-  - name: Jeet Sukumaran
-    orcid: 0000-0002-9222-9608
-    affiliation: "4"
   - name: Mark T. Holder
     orcid: 0000-0001-5575-0536
-    affiliation: "5, 6"
+    affiliation: "4, 5"
+  - name: Jeet Sukumaran
+    orcid: 0000-0002-9222-9608
+    affiliation: "6"
 affiliations:
   - name: Department of Ecology and Evolutionary Biology, University of Michigan, Ann Arbor, MI, USA
     index: 1
@@ -32,11 +32,11 @@ affiliations:
     index: 2
   - name: Michigan Institute for Data Science, University of Michigan, Ann Arbor, MI, USA
     index: 3
-  - name: Department of Biology, San Diego State University, San Diego, CA, USA
-    index: 4
   - name: Department of Ecology and Evolutionary Biology, University of Kansas, Lawrence, KS, USA
-    index: 5
+    index: 4
   - name: Biodiversity Institute, University of Kansas, Lawrence, KS, USA
+    index: 5
+  - name: Department of Biology, San Diego State University, San Diego, CA, USA
     index: 6
 date: 19 May 2024
 bibliography: paper.bib
