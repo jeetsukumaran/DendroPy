@@ -470,17 +470,25 @@ def format_item_annotations_as_comments(
     body = separator.join(parts)
     return prefix + body + suffix
 
-def escape_nexus_token(label, preserve_spaces=False, quote_underscores=True):
+def escape_nexus_token(
+    label,
+    preserve_spaces=False,
+    quote_underscores=True,
+    protect_regex=r'''[()[\]{}\\\/,;:=*'"`+\-<>\0\t\n]''',
+):
     """
     Properly protects a NEXUS token.
+
+    Kwarg protect_regex allows less eager quoting when working with non-Nexus
+    Newick strings.
     """
     if label is None:
         return ""
     if not preserve_spaces \
             and "_" not in label \
-            and not re.search(r'''[()[\]{}\\\/,;:=*'"`+\-<>\0\t\n]''', label):
+            and not re.search(protect_regex, label):
         label = label.replace(' ', '_').replace('\t', '_')
-    elif re.search(r'''[()[\]{}\\\/,;:=*'"`+-<>\0\t\n\r ]''', label) \
+    elif re.search(protect_regex, label) \
         or quote_underscores and "_" in label:
         s = label.split("'")
         if len(s) == 1:

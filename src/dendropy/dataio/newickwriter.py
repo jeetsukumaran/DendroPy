@@ -378,7 +378,8 @@ class NewickWriter(ioservice.DataWriter):
         if tag:
             tag = nexusprocessing.escape_nexus_token(tag,
                     preserve_spaces=self.preserve_spaces,
-                    quote_underscores=not self.unquoted_underscores)
+                    quote_underscores=not self.unquoted_underscores,
+                    protect_regex=r'''[()[\],;:'"\0\t\n]''')
             return tag
         else:
             return ""
