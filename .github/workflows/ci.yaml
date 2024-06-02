@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update -y
-          apt-get install -y libssl-dev
+          apt-get install -y libssl-dev build-essential
           apt-get install -y libpython2.7 libgfortran4  # required by paup
           python -m pip install --upgrade pip
       - name: Install paup
