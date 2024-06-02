@@ -489,7 +489,8 @@ def escape_nexus_token(
             and not re.search(protect_regex, label):
         label = label.replace(' ', '_').replace('\t', '_')
     elif re.search(protect_regex, label) \
-        or quote_underscores and "_" in label:
+        or " " in label \
+        or (quote_underscores and "_" in label):
         s = label.split("'")
         if len(s) == 1:
             return "'" + label + "'"
