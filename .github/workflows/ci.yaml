@@ -25,9 +25,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install libssl-dev
-          sudo apt-get install libpython2.7 libgfortran4  # required by paup
+          apt-get update
+          apt-get install libssl-dev
+          apt-get install libpython2.7 libgfortran4  # required by paup
           python -m pip install --upgrade pip
       - name: Install paup
         run: |
@@ -35,7 +35,7 @@ jobs:
           wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
           gunzip ${temp_dir}/paup4a169_ubuntu64.gz
           chmod +x ${temp_dir}/paup4a169_ubuntu64
-          sudo mv ${temp_dir}/paup4a169_ubuntu64 /usr/local/bin/paup
+          mv ${temp_dir}/paup4a169_ubuntu64 /usr/local/bin/paup
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
       - name: Install dendropy
         run: |
