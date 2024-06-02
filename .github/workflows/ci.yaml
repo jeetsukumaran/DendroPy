@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo apt-get install libpython2.7  # required by paup
+          sudo apt-get install libpython2.7 libgfortran  # required by paup
           python -m pip install --upgrade pip
       - name: Install paup
         run: |
@@ -87,7 +87,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install python2 libpython2.7  # required by paup
+          sudo apt-get install python2 libpython2.7 libgfortran  # required by paup
           python -m pip install --upgrade pip
           if [ -f .github/workflows/requirements.txt ]; then pip install -r .github/workflows/requirements.txt; fi
       - name: Install paup
@@ -127,7 +127,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install python2 libpython2.7  # required by paup
+          sudo apt-get install python2 libpython2.7 libgfortran  # required by paup
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m pip install .
@@ -165,7 +165,7 @@ jobs:
         python-version: 3.8
     - name: Install paup
       run: |
-        sudo apt-get install libpython2.7  # required by paup
+        sudo apt-get install libpython2.7 libgfortran  # required by paup
         temp_dir=$(mktemp -d)
         wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
         gunzip ${temp_dir}/paup4a169_ubuntu64.gz
