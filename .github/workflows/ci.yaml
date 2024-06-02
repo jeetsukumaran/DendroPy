@@ -5,6 +5,8 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   examples:
     runs-on: ubuntu-20.04
+    container:
+      image: ubuntu:18.04
     strategy:
       fail-fast: False
       matrix:
@@ -23,7 +25,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo apt-get install libpython2.7 libgfortran5  # required by paup
+          sudo apt-get install libpython2.7 libgfortran4  # required by paup
           python -m pip install --upgrade pip
       - name: Install paup
         run: |
