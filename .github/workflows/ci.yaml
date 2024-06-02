@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install aptitude
-          sudo aptitude install gcc-7 g++-7 gfortran-7
+          sudo aptitude install -y gcc-7 g++-7 gfortran-7
           sudo apt-get install libpython2.7  # required by paup
           python -m pip install --upgrade pip
       - name: Install paup
