@@ -23,15 +23,17 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          sudo apt-get install aptitude
+          sudo aptitude install -y gcc-7 g++-7 gfortran-7
           sudo apt-get install libpython2.7  # required by paup
           python -m pip install --upgrade pip
       - name: Install paup
         run: |
           temp_dir=$(mktemp -d)
-          wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a168_ubuntu64.gz
-          gunzip ${temp_dir}/paup4a168_ubuntu64.gz
-          chmod +x ${temp_dir}/paup4a168_ubuntu64
-          sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
+          wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
+          gunzip ${temp_dir}/paup4a169_ubuntu64.gz
+          chmod +x ${temp_dir}/paup4a169_ubuntu64
+          sudo mv ${temp_dir}/paup4a169_ubuntu64 /usr/local/bin/paup
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
       - name: Install dendropy
         run: |
@@ -86,17 +88,18 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install python2 libpython2.7  # required by paup
+          sudo apt-get install aptitude
+          sudo aptitude install -y gcc-7 g++-7 gfortran-7
+          sudo apt-get install libpython2.7  # required by paup
           python -m pip install --upgrade pip
           if [ -f .github/workflows/requirements.txt ]; then pip install -r .github/workflows/requirements.txt; fi
       - name: Install paup
         run: |
           temp_dir=$(mktemp -d)
-          wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a168_ubuntu64.gz
-          gunzip ${temp_dir}/paup4a168_ubuntu64.gz
-          chmod +x ${temp_dir}/paup4a168_ubuntu64
-          sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
+          wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
+          gunzip ${temp_dir}/paup4a169_ubuntu64.gz
+          chmod +x ${temp_dir}/paup4a169_ubuntu64
+          sudo mv ${temp_dir}/paup4a169_ubuntu64 /usr/local/bin/paup
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
       - name: Unit tests with setup.py
         run: |
@@ -126,8 +129,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install python2 libpython2.7  # required by paup
+          sudo apt-get install aptitude
+          sudo aptitude install -y gcc-7 g++-7 gfortran-7
+          sudo apt-get install libpython2.7  # required by paup
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m pip install .
@@ -163,14 +167,17 @@ jobs:
       uses: actions/setup-python@master
       with:
         python-version: 3.8
-    - name: Install paup
+    - name: Install dependencies
       run: |
+        sudo apt-get install aptitude
+        sudo aptitude install -y gcc-7 g++-7 gfortran-7
         sudo apt-get install libpython2.7  # required by paup
+        python -m pip install --upgrade pip
         temp_dir=$(mktemp -d)
-        wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a168_ubuntu64.gz
-        gunzip ${temp_dir}/paup4a168_ubuntu64.gz
-        chmod +x ${temp_dir}/paup4a168_ubuntu64
-        sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
+        wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
+        gunzip ${temp_dir}/paup4a169_ubuntu64.gz
+        chmod +x ${temp_dir}/paup4a169_ubuntu64
+        sudo mv ${temp_dir}/paup4a169_ubuntu64 /usr/local/bin/paup
         echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
     - name: Install coverage dependencies
       run: |

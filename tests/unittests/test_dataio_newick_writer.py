@@ -143,6 +143,12 @@ class NewickTreeWriterDefaultTest(
             # is_coerce_metadata_values_to_string=True,
             # is_distinct_nodes_and_edges_representation=False)
 
+    def test_quoting_eagerness(self):
+        # regression test for #200
+        nw_str = "(A:0.36827875,B:0.186986942,(C:0.156890492,D:0.175861009)1.000:0.163375071);"
+        tree = dendropy.Tree.get(data=nw_str,schema="newick")
+        self.assertEqual(nw_str, tree.as_string("newick").strip())
+
 class NewickTreeWriterGeneralOptionsTests(
         compare_and_validate.ValidateWriteable,
         dendropytest.ExtendedTestCase):
