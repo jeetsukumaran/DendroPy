@@ -3119,7 +3119,7 @@ class Tree(
         def dorder(node):  # -> int
             if default_order:
                 try:
-                    return order.index(node.taxon.label)
+                    return order[node.taxon.label]
                 except ValueError:
                     return len(order)
             else:
