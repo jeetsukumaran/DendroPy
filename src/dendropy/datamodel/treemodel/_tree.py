@@ -3109,13 +3109,18 @@ class Tree(
         """
 
         if default_order:
-            order = tuple(sorted(leaf.taxon.label for leaf in self.leaf_node_iter()))
+            order = {
+                name: index
+                for index, name in enumerate(
+                    sorted(leaf.taxon.label for leaf in self.leaf_node_iter())
+                )
+            }
 
         def dorder(node) -> int:
             if default_order:
                 try:
                     return order.index(node.taxon.label)
-                except:
+                except ValueError:
                     return len(order)
             else:
                 return 0
