@@ -3107,15 +3107,6 @@ class Tree(
         If ``default_order`` is |True| then leaf nodes get sorted by taxon
         labels when they are in polytomies.
         """
-
-        if default_order:
-            order = {
-                name: index
-                for index, name in enumerate(
-                    sorted(leaf.taxon.label for leaf in self.leaf_node_iter())
-                )
-            }
-
         node_desc_counts = {}
         for nd in self.postorder_node_iter():
             if len(nd._child_nodes) == 0:
@@ -3129,7 +3120,11 @@ class Tree(
                 nd._child_nodes.sort(
                     key=lambda n: (
                         node_desc_counts[n],
-                        order.get(n.taxon.label, len(order)) if default_order else 0
+                        (
+                            n.taxon.label
+                            if default_order and hasattr(n, "taxon") and hasattr(n.taxon, "label")
+                            else 0
+                        )
                     ),
                     reverse=not ascending,
                 )
