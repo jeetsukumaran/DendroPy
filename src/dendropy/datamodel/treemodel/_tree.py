@@ -3116,15 +3116,6 @@ class Tree(
                 )
             }
 
-        def dorder(node):  # -> int
-            if default_order:
-                try:
-                    return order[node.taxon.label]
-                except ValueError:
-                    return len(order)
-            else:
-                return 0
-
         node_desc_counts = {}
         for nd in self.postorder_node_iter():
             if len(nd._child_nodes) == 0:
@@ -3136,7 +3127,10 @@ class Tree(
                 total += len(nd._child_nodes)
                 node_desc_counts[nd] = total
                 nd._child_nodes.sort(
-                    key=lambda n: (node_desc_counts[n], dorder(n)),
+                    key=lambda n: (
+                        node_desc_counts[n],
+                        order.get(n.taxon.label, len(order)) if default_order else 0
+                    ),
                     reverse=not ascending,
                 )
 
