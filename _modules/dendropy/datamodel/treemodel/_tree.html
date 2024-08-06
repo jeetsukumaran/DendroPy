@@ -2798,9 +2798,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes an internal edge, ``edge``, adds a new node to it, and then roots</span>
 <span class="sd">        the tree on the new node.</span>
-<span class="sd">        ``length1`` and ``length2`` will be assigned to the new (sub-)edge leading</span>
-<span class="sd">        to the old parent of the original edge, while ``length2`` will be</span>
-<span class="sd">        assigned to the old child of the original edge.</span>
+<span class="sd">        ``length1`` will be assigned to the new (sub-)edge leading</span>
+<span class="sd">        to the original parent of the original edge.</span>
+<span class="sd">        ``length2`` will be assigned to the new (sub-)edge leading to the original</span>
+<span class="sd">        child of the original edge.</span>
 <span class="sd">        If ``update_bipartitions`` is True, then the edges&#39; ``bipartition`` and the tree&#39;s</span>
 <span class="sd">        ``bipartition_encoding`` attributes will be updated.</span>
 <span class="sd">        If the *old* root of the tree had an outdegree of 2, then after this</span>
