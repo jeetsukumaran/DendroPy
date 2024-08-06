@@ -1346,6 +1346,8 @@ with all bipartitions of this tree.</p>
 <dd><p>Sorts child nodes in ascending (if <code class="docutils literal notranslate"><span class="pre">ascending</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>) or
 descending (if <code class="docutils literal notranslate"><span class="pre">ascending</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) order in terms of the number of
 children each child node has.</p>
+<p>Ladderize sort is stable. To control order between nodes with
+same child count, call <code class="docutils literal notranslate"><span class="pre">reorder</span></code> prior to ladderization.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2029,6 +2031,15 @@ use when migrating complex data to a new namespace.</p></li>
 <dd><p>DEPRECATED: Use <a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.migrate_taxon_namespace" title="dendropy.datamodel.treemodel.Tree.migrate_taxon_namespace"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">migrate_taxon_namespace()</span></code></a> instead.
 Rebuilds <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> from scratch, or assigns <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects from
 given <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> based on label values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.reorder">
+<span class="sig-name descname"><span class="pre">reorder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ascending=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key=&lt;function</span> <span class="pre">Tree.&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#Tree.reorder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.reorder" title="Link to this definition">¶</a></dt>
+<dd><p>Reorder the children of each node in the tree, by default in ascending
+order by Taxon with missing taxa treated as labeled as empty string.
+Does not alter tree topology.</p>
+<p>Specify <code class="docutils literal notranslate"><span class="pre">key</span></code> to sort by a different attribute or function of nodes.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3999,6 +4010,7 @@ coordinates of each node.</p>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.reconstruct_taxon_namespace"><code class="docutils literal notranslate"><span class="pre">Tree.reconstruct_taxon_namespace</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.reindex_subcomponent_taxa"><code class="docutils literal notranslate"><span class="pre">Tree.reindex_subcomponent_taxa</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.reindex_taxa"><code class="docutils literal notranslate"><span class="pre">Tree.reindex_taxa</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.reorder"><code class="docutils literal notranslate"><span class="pre">Tree.reorder</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.reroot_at_edge"><code class="docutils literal notranslate"><span class="pre">Tree.reroot_at_edge</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.reroot_at_midpoint"><code class="docutils literal notranslate"><span class="pre">Tree.reroot_at_midpoint</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.reroot_at_node"><code class="docutils literal notranslate"><span class="pre">Tree.reroot_at_node</span></code></a></li>
