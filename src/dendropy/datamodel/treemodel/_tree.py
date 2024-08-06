@@ -3099,13 +3099,14 @@ class Tree(
         assert len(current_to_shuffled_taxon_map) == len(current_node_taxon_map)
         return current_to_shuffled_taxon_map
 
-    def ladderize(self, ascending=True, default_order=False):
+    def ladderize(self, ascending=True):
         """
         Sorts child nodes in ascending (if ``ascending`` is |True|) or
         descending (if ``ascending`` is |False|) order in terms of the number of
         children each child node has.
-        If ``default_order`` is |True| then leaf nodes get sorted by taxon
-        labels when they are in polytomies.
+
+        Ladderize sort is stable. To control order between nodes with
+        same child count, call ``reorder`` prior to ladderization.
         """
         node_desc_counts = {}
         for nd in self.postorder_node_iter():
@@ -3118,16 +3119,24 @@ class Tree(
                 total += len(nd._child_nodes)
                 node_desc_counts[nd] = total
                 nd._child_nodes.sort(
-                    key=lambda n: (
-                        node_desc_counts[n],
-                        (
-                            n.taxon.label
-                            if default_order and hasattr(n, "taxon") and hasattr(n.taxon, "label")
-                            else 0
-                        )
-                    ),
+                    key=node_desc_counts.__getitem__,
                     reverse=not ascending,
                 )
+
+    def reorder(
+        self,
+        ascending=True,
+        key=lambda nd: getattr(getattr(nd, "taxon", None), "label", ""),
+    ):
+        """
+        Reorder the children of each node in the tree, by default in ascending
+        order by Taxon with missing taxa treated as labeled as empty string.
+        Does not alter tree topology.
+
+        Specify ``key`` to sort by a different attribute or function of nodes.
+        """
+        for nd in self.preorder_node_iter():
+            nd._child_nodes.sort(key=key, reverse=not ascending)
 
     def truncate_from_root(self, distance_from_root):
         self.calc_node_root_distances()

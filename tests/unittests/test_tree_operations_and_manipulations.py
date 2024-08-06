@@ -263,6 +263,30 @@ class TestTreeLadderization(unittest.TestCase):
         self.assertEqual(self.clean_newick_str(tree.as_string("newick")),
                self.clean_newick_str("[&R] (((((D,E),C),B),A),((G,H),F));"))
 
+class TestTreeReorder(unittest.TestCase):
+
+    def setUp(self):
+        self.tree_str = "[&R] ((F,(G,H,I)A));"
+
+    def clean_newick_str(self, s):
+        """
+        Strips out everything but the core tree statement characters from a
+        NEWICK string.
+        """
+        return re.sub(r'[^()A-H,]', '', s)
+
+    def testReorderLeft(self):
+        tree = dendropy.Tree.get_from_string(self.tree_str, "newick")
+        tree.reorder(ascending=True)
+        self.assertEqual(self.clean_newick_str(tree.as_string("newick")),
+        self.clean_newick_str("[&R] (((G,H,I)A,F));"))
+
+    def testReorderRight(self):
+        tree = dendropy.Tree.get_from_string(self.tree_str, "newick")
+        tree.reorder(ascending=False)
+        self.assertEqual(self.clean_newick_str(tree.as_string("newick")),
+        self.clean_newick_str("[&R] ((F,(I,H,G)A));"))
+
 class TreeMidpointRootingTest(ExtendedTestCase):
 
     def testMidpointRooting(self):
