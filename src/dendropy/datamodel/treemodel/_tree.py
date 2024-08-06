@@ -2588,9 +2588,10 @@ class Tree(
         """
         Takes an internal edge, ``edge``, adds a new node to it, and then roots
         the tree on the new node.
-        ``length1`` and ``length2`` will be assigned to the new (sub-)edge leading
-        to the old parent of the original edge, while ``length2`` will be
-        assigned to the old child of the original edge.
+        ``length1`` will be assigned to the new (sub-)edge leading
+        to the original parent of the original edge.
+        ``length2`` will be assigned to the new (sub-)edge leading to the original
+        child of the original edge.
         If ``update_bipartitions`` is True, then the edges' ``bipartition`` and the tree's
         ``bipartition_encoding`` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
