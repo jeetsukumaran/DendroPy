@@ -262,6 +262,7 @@ jobs:
       - name: Build documentation
         run: make -C docs html
       - name: Deploy docs
+        if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs/build/html # The folder the action should deploy.
