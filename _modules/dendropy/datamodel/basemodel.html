@@ -623,13 +623,12 @@
 
 <span class="sd">        ::</span>
 
-<span class="sd">                d.write(path=&quot;path/to/file.dat&quot;,</span>
-<span class="sd">                        schema=&quot;nexus&quot;,</span>
-<span class="sd">                        preserve_underscores=True)</span>
-<span class="sd">                f = open(&quot;path/to/file.dat&quot;)</span>
-<span class="sd">                d.write(file=f,</span>
-<span class="sd">                        schema=&quot;nexus&quot;,</span>
-<span class="sd">                        preserve_underscores=True)</span>
+<span class="sd">                # Using a file path:</span>
+<span class="sd">                d.write(path=&quot;path/to/file.dat&quot;, schema=&quot;nexus&quot;)</span>
+
+<span class="sd">                # Using an open file:</span>
+<span class="sd">                with open(&quot;path/to/file.dat&quot;, &quot;w&quot;) as f:</span>
+<span class="sd">                    d.write(file=f, schema=&quot;nexus&quot;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Serializable</span><span class="o">.</span><span class="n">_write_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
