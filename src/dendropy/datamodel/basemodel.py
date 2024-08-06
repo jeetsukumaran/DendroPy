@@ -576,13 +576,12 @@ class Serializable(object):
 
         ::
 
-                d.write(path="path/to/file.dat",
-                        schema="nexus",
-                        preserve_underscores=True)
-                f = open("path/to/file.dat")
-                d.write(file=f,
-                        schema="nexus",
-                        preserve_underscores=True)
+                # Using a file path:
+                d.write(path="path/to/file.dat", schema="nexus")
+
+                # Using an open file:
+                with open("path/to/file.dat", "w") as f:
+                    d.write(file=f, schema="nexus")
 
         """
         return Serializable._write_to(self, **kwargs)
