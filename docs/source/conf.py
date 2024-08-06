@@ -294,7 +294,7 @@ rst_prolog += """\
 """ % (version, version)
 
 rst_prolog += """\
-.. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. *Bioinformatics* 26: 1569-1571.
+.. |dendropy_citation| replace:: Moreno, M. A., Sukumaran, J., and M. T. Holder. 2024. DendroPy 5: a mature Python library for phylogenetic computing. arXiv preprint arXiv:2405.14120. https://doi.org/10.48550/arXiv.2405.14120
 .. |dendropy_copyright| replace:: Copyright {copyright}. All rights reserved.
 .. |
 """.format(copyright=copyright)

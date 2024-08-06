@@ -21,13 +21,7 @@
 Wrappers for interacting with GBIF.
 """
 
-import sys
-if sys.version_info.major < 3:
-    from urllib import urlencode
-    from urllib import urlopen
-else:
-    from urllib.parse import urlencode
-    from urllib.request import urlopen
+from urllib.request import urlopen
 from dendropy.datamodel import basemodel
 from dendropy.dataio import xmlprocessing
 

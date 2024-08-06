@@ -21,7 +21,6 @@
 Wrapper around calls to MUSCLE
 """
 
-import dendropy
 import subprocess
 from dendropy.utility import processio
 

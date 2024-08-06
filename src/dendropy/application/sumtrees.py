@@ -26,7 +26,6 @@ set of trees onto a target tree.
 
 import os
 import sys
-import re
 import getpass
 import argparse
 import collections
@@ -37,24 +36,16 @@ import math
 import csv
 import json
 
-try:
-    # Python 3
-    import queue
-except ImportError:
-    # Python 2.7
-    import Queue as queue
+import queue
 import multiprocessing
 
 import dendropy
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import cli
 from dendropy.utility import constants
 from dendropy.utility import deprecate
 from dendropy.utility import error
 from dendropy.utility import messaging
 from dendropy.utility import timeprocessing
-from dendropy.utility import bitprocessing
 from dendropy.utility import textprocessing
 
 ##############################################################################

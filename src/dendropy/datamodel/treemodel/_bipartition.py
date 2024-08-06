@@ -173,7 +173,7 @@ class Bipartition(object):
         bitmask : integer
             A bit array representing the membership of taxa, with the
             least-significant bit corresponding to the first taxon, the next
-            least-signficant bit correspodning to the second taxon, and so on,
+            least-significant bit corresponding to the second taxon, and so on,
             till the last taxon corresponding to the most-significant bit.
             Taxon membership in one of two arbitrary groups, '0' or '1', is
             indicated by its corresponding bit being unset or set,
@@ -182,7 +182,7 @@ class Bipartition(object):
             A bit array representing the presence or absence of taxa in the
             subtree descending from the child node of the edge of which this
             bipartition is associated. The least-significant bit corresponds to
-            the first taxon, the next least-signficant bit corresponds to the
+            the first taxon, the next least-significant bit corresponds to the
             second taxon, and so on, with the last taxon corresponding to the
             most-significant bit.
         tree_leafset_bitmask : integer
@@ -194,6 +194,8 @@ class Bipartition(object):
         is_rooted : bool
             Specifies whether or not the tree with which this bipartition is
             associated is rooted.
+        is_mutable : bool
+            Specifies whether or not the tree is mutable.
         """
         self._split_bitmask = kwargs.get("bitmask", 0)
         self._leafset_bitmask = kwargs.get("leafset_bitmask", self._split_bitmask)

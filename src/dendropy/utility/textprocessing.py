@@ -22,18 +22,8 @@ Various text-manipulating and formatting utilities.
 """
 
 import re
-import sys
-import time
-import itertools
 import locale
 import codecs
-
-###############################################################################
-## Cross-version compatibility
-try:
-    from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
-except ImportError:
-    from io import StringIO # Python 3
 
 ###############################################################################
 ## Unicode/String Conversions
@@ -55,13 +45,8 @@ def bytes_to_text(s):
     to a text string.
 
     In Python 3, this is from type ``bytes`` to ``str``.
-    In Python 2, this is, confusingly, from type ``str`` to ``unicode``.
-
     """
-    s = codecs.decode(s, ENCODING)
-    if sys.hexversion < 0x03000000:
-        s = codecs.encode(s, "utf-8")
-    return s
+    return codecs.decode(s, ENCODING)
 
 def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
     if sep not in prefixed_name:
@@ -73,13 +58,8 @@ def parse_curie_standard_qualified_name(prefixed_name, sep=":"):
     # Mark T. Holder
     # https://github.com/mtholder/peyotl
     # https://github.com/mtholder/peyotl/blob/c3a544211edc669e664bae28095d52cecfa004f3/peyotl/utility/str_util.py#L5-L25
-if sys.version_info.major == 2:
-    import __builtin__ as builtins  # extra verbosity to mollify linter
-    def is_str_type(x):
-        return isinstance(x, builtins.basestring)
-else:
-    def is_str_type(x):
-        return isinstance(x, str)
+def is_str_type(x):
+    return isinstance(x, str)
 
 ###############################################################################
 ##

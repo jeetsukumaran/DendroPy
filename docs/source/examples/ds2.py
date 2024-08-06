@@ -1,4 +1,13 @@
+import warnings
 import dendropy
+
+warnings.warn(
+    "This example is known to be broken! "
+    "It will be fixed or removed in the future. "
+    "See https://github.com/jeetsukumaran/DendroPy/issues/160 for details. "
+    "Patch contributions are welcome.",
+)
+
 
 ds1 = dendropy.DataSet()
 taxon_namespace = dendropy.TaxonNamespace()

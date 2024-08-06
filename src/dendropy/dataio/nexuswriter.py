@@ -26,7 +26,6 @@ import warnings
 import collections
 from dendropy.utility import textprocessing
 from dendropy.dataio import ioservice
-from dendropy.dataio import newick
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import newickwriter
 

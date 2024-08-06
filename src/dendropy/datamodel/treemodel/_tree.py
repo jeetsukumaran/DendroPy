@@ -3,7 +3,7 @@
 
 import copy
 import warnings
-from dendropy.utility.textprocessing import StringIO
+from io import StringIO
 from dendropy.utility import terminal
 from dendropy.utility import error
 from dendropy.utility import bitprocessing
@@ -941,15 +941,6 @@ class Tree(
         suppress_unifurcations : bool
             If |True|, nodes of outdegree 1 will be deleted. Only will
             be done if some nodes are excluded from the cloned tree.
-        is_apply_filter_to_leaf_nodes : bool
-            If ``True`` then the above filter will be applied to leaf nodes. If
-            ``False`` then it will not (and all leaf nodes will be
-            automatically included, unless excluded by an ancestral node being
-            filtered out).
-        is_apply_filter_to_internal_nodes : bool
-            If ``True`` then the above filter will be applied to internal nodes. If
-            ``False`` then it will not (internal nodes without children will
-            still be filtered out).
 
         Examples
         --------
@@ -1006,15 +997,6 @@ class Tree(
         suppress_unifurcations : bool
             If |True|, nodes of outdegree 1 will be deleted. Only will
             be done if some nodes are excluded from the cloned tree.
-        is_apply_filter_to_leaf_nodes : bool
-            If ``True`` then the above filter will be applied to leaf nodes. If
-            ``False`` then it will not (and all leaf nodes will be
-            automatically included, unless excluded by an ancestral node being
-            filtered out).
-        is_apply_filter_to_internal_nodes : bool
-            If ``True`` then the above filter will be applied to internal nodes. If
-            ``False`` then it will not (internal nodes without children will
-            still be filtered out).
 
         Examples
         --------
@@ -1523,6 +1505,13 @@ class Tree(
             The most-recent common ancestor of the nodes specified, or |None|
             if no such node exists.
         """
+        if not self.is_rooted:
+            warnings.warn(
+                "Calculating MRCA on an unrooted tree implicitly implicitly "
+                "treats seed node as root. "
+                "Set tree.is_rooted = True to silence this warning.",
+            )
+
         start_node = kwargs.get("start_node", self.seed_node)
         leafset_bitmask = None
         if "leafset_bitmask" in kwargs:
@@ -3111,7 +3100,7 @@ class Tree(
 
     def ladderize(self, ascending=True):
         """
-        Sorts child nodes in ascending (if ``ascending`` is |False|) or
+        Sorts child nodes in ascending (if ``ascending`` is |True|) or
         descending (if ``ascending`` is |False|) order in terms of the number of
         children each child node has.
         """
@@ -3954,7 +3943,7 @@ class Tree(
 
     def __str__(self):
         "Dump Newick string."
-        return "%s" % self._as_newick_string()
+        return self.as_string("newick").strip()
 
     def __repr__(self):
         return "<{} object at {}>".format(self.__class__.__name__, hex(id(self)))

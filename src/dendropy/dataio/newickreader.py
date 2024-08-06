@@ -21,12 +21,10 @@
 Parsing of NEWICK-format tree from a stream.
 """
 
+from io import StringIO
 import itertools as it
-import re
-import warnings
 from dendropy.utility import error
 from dendropy.utility import deprecate
-from dendropy.utility.textprocessing import StringIO
 from dendropy.dataio import tokenizer
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
@@ -174,7 +172,7 @@ class NewickReader(ioservice.DataReader):
             will *not* be instantantiated as strings.
         suppress_leaf_node_taxa : boolean, default: |False|
             If |False|, leaf (external) node labels will be instantantiated
-            into |Taxon| objects. If |True|, leaff (external) node
+            into |Taxon| objects. If |True|, leaf (external) node
             labels will *not* be instantantiated as strings.
         is_parse_jplace_tokens : boolean: |False|
             If |True|, then accept edge numbering according to the jplace

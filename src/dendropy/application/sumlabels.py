@@ -18,7 +18,7 @@
 ##############################################################################
 
 """
-Marge labels of splits/branches from different input trees onto corresponding
+Merge labels of splits/branches from different input trees onto corresponding
 splits/branches of a single tree.
 """
 
@@ -26,8 +26,6 @@ import os
 import sys
 import argparse
 
-import datetime
-import time
 import socket
 try:
     import getpass

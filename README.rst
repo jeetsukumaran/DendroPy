@@ -7,11 +7,11 @@
    :target: https://github.com/jeetsukumaran/DendroPy
    :alt: DendroPy wordmark
 
-+--------------------+-+---------------------+-+---------------------+
-| *automated tests:* | | *package version:*  | | *documentation:*    |
-|                    | |                     | |                     |
-| |CI|               | | |PyPI|              | | |Docs|              |
-+--------------------+-+---------------------+-+---------------------+
++--------------------+-+---------------------+-+---------------------+-+-------------------+
+| *automated tests:* | | *package version:*  | | *documentation:*    | | *test coverage:*  |
+|                    | |                     | |                     | |                   |
+| |CI|               | | |PyPI|              | | |Docs|              | | |Coverage|        |
++--------------------+-+---------------------+-+---------------------+-+-------------------+
 
 .. |CI| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml/badge.svg
    :target: https://github.com/jeetsukumaran/DendroPy/actions/workflows/ci.yaml
@@ -22,6 +22,9 @@
 .. |Docs| image:: https://github.com/jeetsukumaran/DendroPy/actions/workflows/pages/pages-build-deployment/badge.svg
    :target: https://jeetsukumaran.github.io/DendroPy/
    :alt: Documentation Status
+.. |Coverage| image:: https://codecov.io/gh/jeetsukumaran/DendroPy/graph/badge.svg?token=JwMfFOpBBD
+   :target: https://codecov.io/gh/jeetsukumaran/DendroPy
+   :alt: codecov coverage
 .. |nbsp| unicode:: 0xA0
    :trim:
 
@@ -78,6 +81,34 @@ This includes:
     -   `Descriptions of data formats supported for reading/writing <https://jeetsukumaran.github.io/DendroPy/schemas/index.html>`_ .
 
 and more.
+
+Citing
+======
+
+If you use any portion of DendroPy v5 in your research, please cite it as:
+
+      Moreno, M. A., Sukumaran, J., and M. T. Holder. 2024. DendroPy 5: a mature Python library for phylogenetic computing. arXiv preprint arXiv:2405.14120. https://doi.org/10.48550/arXiv.2405.14120
+
+For BibTex users:
+
+.. code-block:: bibtex
+
+      @misc{dendropy5,
+         title = {DendroPy 5: a mature Python library for phylogenetic computing},
+         author = {Moreno,  Matthew Andres and Sukumaran,  Jeet and Holder,  Mark T.},
+         year = {2024},
+         keywords = {Populations and Evolution (q-bio.PE),  FOS: Biological sciences,  FOS: Biological sciences},
+         publisher = {arXiv},
+         doi = {10.48550/ARXIV.2405.14120},
+         url = {https://arxiv.org/abs/2405.14120},
+         copyright = {arXiv.org perpetual, non-exclusive license}
+      }
+
+Earlier DendroPy versions can be cited as:
+
+      Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571. https://doi.org/10.1093/bioinformatics/btq228
+
+Consider also leaving a `star on GitHub <https://github.com/jeetsukumaran/DendroPy/stargazers>`_!
 
 License and Warranty
 ====================

@@ -21,8 +21,8 @@
 XML-parsing abstraction layer.
 """
 
+from io import StringIO
 from xml.etree import ElementTree
-from dendropy.utility.textprocessing import StringIO
 
 class XmlNamespaces(object):
 

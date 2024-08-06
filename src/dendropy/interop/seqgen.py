@@ -29,9 +29,6 @@ import random
 import os
 import sys
 
-from optparse import OptionGroup
-from optparse import OptionParser
-
 import dendropy
 from dendropy.utility.messaging import get_logger
 from dendropy.utility import processio

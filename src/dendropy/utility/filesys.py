@@ -26,7 +26,7 @@ import time
 import os
 import sys
 import re
-from threading import Event, Thread, Lock
+from threading import Thread, Lock
 
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
