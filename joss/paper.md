@@ -30,7 +30,7 @@ affiliations:
     index: 1
   - name: Center for the Study of Complex Systems, University of Michigan, Ann Arbor, MI, USA
     index: 2
-  - name: Michigan Institute for Data Science, University of Michigan, Ann Arbor, MI, USA
+  - name: Michigan Institute for Data and AI in Society, University of Michigan, Ann Arbor, MI, USA
     index: 3
   - name: Department of Ecology and Evolutionary Biology, University of Kansas, Lawrence, KS, USA
     index: 4
@@ -133,7 +133,7 @@ As of May 2024, Google Scholar counts 1,654 works referencing DendroPy [@sukumar
 Thank you to University of Michigan Undergraduate Research Opportunity Program participant Connor Yang for his contributions in increasing test coverage, and to our open-source community for bug reports, feature suggestions, and patch contributions over the years.
 This research is based upon work supported by:
 
-- the Eric and Wendy Schmidt AI in Science Postdoctoral Fellowship, a Schmidt Futures program (author MAM) 
+- the Eric and Wendy Schmidt AI in Science Postdoctoral Fellowship, a Schmidt Sciences program (author MAM) 
 - the National Science Foundation grant NSF-DEB 1937725 "COLLABORATIVE RESEARCH: Phylogenomics, spatial phylogenetics and conservation prioritization in trapdoor spiders (and kin) of the California Floristic Province" (author JS)
 - the National Science Foundation grant NSF-DEB 1457776 "Collaborative Research Developing novel methods for estimating coevolutionary processes
 using tapeworms and their shark and ray hosts" (author MH)
