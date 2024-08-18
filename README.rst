@@ -61,7 +61,7 @@ The current version of DendroPy requires Python 3:
 
 You can install DendroPy by running::
 
-    $ sudo pip install dendropy
+    $ python -m pip install dendropy
 
 More information is available here:
 

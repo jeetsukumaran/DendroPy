@@ -39,7 +39,7 @@ Once downloaded, it can be installed by running:
 
     $ tar -xvzf DendroPy-|version|.tar.gz
     $ cd DendroPy-|version|
-    $ sudo python3 setup.py install
+    $ python3 setup.py install
 
 Installing the Latest Development Version
 =========================================
