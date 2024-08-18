@@ -37,14 +37,14 @@ with the main download page here:
 How to Install the Package
 ==========================
 
-DendroPy is fully easy-installable and can be installed using |pip|_::
+DendroPy is fully easy installable and can be installed using |pip|_::
 
-    $ sudo pip install -U dendropy
+    $ python -m pip install dendropy
 
 If you do not have |pip|_ installed, you should *definitely* `install it <https://pip.pypa.io/en/latest/installing.html>`_ !
-Note: the "``sudo``" command should only be used if installing system-wide on a machine on which you have administrative privileges. Otherwise, you would use the "``--user``" flag for a local user install::
+You may wish to use the "``--user``" flag for a local user install::
 
-    $ pip install --user -U dendropy
+    $ python3 -m pip install --user dendropy
 
 These, and other ways of obtaining and installing DendroPy (e.g., by downloading the |dendropy_source_archive|_, or by cloning the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_), are discussed in detail in the ":doc:`/downloading`" section.
 
