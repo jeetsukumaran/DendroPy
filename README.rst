@@ -57,11 +57,15 @@ DendroPy is also hosted in the official Python repository:
 Requirements and Installation
 =============================
 
-The current version of DendroPy requires Python 3:
+The current version of DendroPy requires Python 3.
 
 You can install DendroPy by running::
 
-    $ sudo pip install dendropy
+    $ python -m pip install dendropy
+
+For Conda users, DendroPy can be installed from the `conda-forge <https://conda-forge.org/>`_ channel::
+
+    $ conda install -c conda-forge dendropy
 
 More information is available here:
 
@@ -79,6 +83,7 @@ This includes:
     -   `A comprehensive "getting started" primer <https://jeetsukumaran.github.io/DendroPy/primer/index.html>`_ .
     -   `API documentation <https://jeetsukumaran.github.io/DendroPy/library/index.html>`_ .
     -   `Descriptions of data formats supported for reading/writing <https://jeetsukumaran.github.io/DendroPy/schemas/index.html>`_ .
+    -   Guidance for `reporting issues <https://jeetsukumaran.github.io/DendroPy/index.html#bug-reports-and-other-issues>`_, `submitting feature requests <https://jeetsukumaran.github.io/DendroPy/index.html#feature-requests>`_, and `contributing to DendroPy <https://jeetsukumaran.github.io/DendroPy/developer.html>`_.
 
 and more.
 
