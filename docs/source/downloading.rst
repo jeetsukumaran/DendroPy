@@ -26,6 +26,12 @@ DendroPy is also "easy_installable" directly from the `Python Package Index <htt
 
     $ python3 -m pip install -U dendropy
 
+Installing via Conda
+====================
+
+    $ conda install pip
+    $ pip install dendropy
+
 Source Download and Installation
 ================================
 

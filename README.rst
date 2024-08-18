@@ -63,6 +63,10 @@ You can install DendroPy by running::
 
     $ python -m pip install dendropy
 
+For Conda users, DendroPy can be installed from the `conda-forge <https://conda-forge.org/>`_ channel::
+
+    $ conda install -c conda-forge dendropy
+
 More information is available here:
 
     https://jeetsukumaran.github.io/DendroPy/downloading.html
