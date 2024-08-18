@@ -85,6 +85,8 @@ Key features of DendroPy include,
 - simulation of phylogenetic trees under a range of models, including coalescent models, birth-death models, and population genetics simulations of gene trees; and
 - application scripts for performing data conversion, collating taxon labels from multiple trees, and tree posterior distribution summarization.
 
+Significant improvements have been made since DendroPy's original release [@sukumaran2010dendropy], including performance enhancements in saving and loading trees, support for distance-based tree construction, and addition of new phylogeny statistics and speciation models.
+
 # Maintenance
 
 A major focus of DendroPy's version 5 release has been in establishing a trajectory for sustainable long-term maintenance.
