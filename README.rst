@@ -79,6 +79,7 @@ This includes:
     -   `A comprehensive "getting started" primer <https://jeetsukumaran.github.io/DendroPy/primer/index.html>`_ .
     -   `API documentation <https://jeetsukumaran.github.io/DendroPy/library/index.html>`_ .
     -   `Descriptions of data formats supported for reading/writing <https://jeetsukumaran.github.io/DendroPy/schemas/index.html>`_ .
+    -   Guidance for `reporting issues <https://jeetsukumaran.github.io/DendroPy/index.html#bug-reports-and-other-issues>`_, `submitting feature requests <https://jeetsukumaran.github.io/DendroPy/index.html#feature-requests>`_, and `contributing to DendroPy <https://jeetsukumaran.github.io/DendroPy/developer.html>`_.
 
 and more.
 
