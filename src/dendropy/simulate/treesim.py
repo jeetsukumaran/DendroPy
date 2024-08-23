@@ -30,6 +30,7 @@ sub-package.
 ## Import tree generation functions
 
 import dendropy
+import random
 from dendropy.model.birthdeath import birth_death_tree
 from dendropy.model.birthdeath import discrete_birth_death_tree
 from dendropy.model.birthdeath import uniform_pure_birth_tree
@@ -38,6 +39,8 @@ from dendropy.model.coalescent import pure_kingman_tree
 from dendropy.model.coalescent import mean_kingman_tree
 from dendropy.model.coalescent import constrained_kingman_tree
 from dendropy.model.treeshape import star_tree
+from dendropy.simulate import treesim
+from dendropy.calculate import treemeasure
 
 ## Required for Sphix auto-documentation of this module
 __all__ = [
@@ -53,22 +56,23 @@ __all__ = [
 
 # helps each common functional interface implementation wrap call to wrapped
 # library implementation
-def _normalize_args_and_kwargs(kwargs, model_args_and_defaults):
-    args = []
-    model_arg_values = {}
-    for model_arg_name, default in model_args_and_defaults:
-        value = kwargs.pop(model_arg_name, default)
-        model_arg_values[model_arg_name] = value
-        args.append(value)
-    return args, kwargs, model_arg_values
-def _setup_shared_context(rng, kwargs):
-    context = {}
-    context["rng"] = rng
-    if "taxon_namespace" in kwargs:
-        context["taxon_namespace"] = kwargs["taxon_namespace"]
-    else:
-        context["taxon_namespace"] = dendropy.TaxonNamespace()
-    return context
+# def _normalize_args_and_kwargs(kwargs, model_args_and_defaults):
+#     args = []
+#     model_arg_values = {}
+#     for model_arg_name, default in model_args_and_defaults:
+#         value = kwargs.pop(model_arg_name, default)
+#         model_arg_values[model_arg_name] = value
+#         args.append(value)
+#     return args, kwargs, model_arg_values
+
+# def _setup_shared_context(rng, kwargs):
+#     context = {}
+#     context["rng"] = rng
+#     if "taxon_namespace" in kwargs:
+#         context["taxon_namespace"] = kwargs["taxon_namespace"]
+#     else:
+#         context["taxon_namespace"] = dendropy.TaxonNamespace()
+#     return context
 
 def iter_birthdeath_trees(
     rng,
@@ -77,7 +81,9 @@ def iter_birthdeath_trees(
 ):
     return_value = []
     for rep_idx in range(n_replicates):
-        model_kwargs = model_kwargs_fn(rep_idx)
+        if rng is None:
+            rng = random.Random()
+        model_kwargs = model_kwargs_fn(rep_idx, rng)
         tree = birth_death_tree(**model_kwargs)
         yield tree
 
@@ -116,16 +122,26 @@ def mapped_birthdeath_trees(
             result = treesim.mapped_birthdeath_trees(
                 treemeasure.coalescence_ages,
                 rng=rng,
-                model_kwargs_fn=lambda rep_idx: {
+                model_kwargs_fn=lambda rep_idx, rrng: {
                     "birth_rate": 1.0,
                     "death_rate": 0.0,
-                    "num_extant_tips": rng.randint(min_leaves, max_leaves),
+                    "num_extant_tips": rrng.randint(min_leaves, max_leaves),
                 },
                 n_replicates=n_replicates,
             )
-            print(result)
+            return result
 
-        run(1000)
+        print(run(1000))
 
     """
     return [*map_birthdeath_trees(fn, rng, model_kwargs_fn, n_replicates)]
+
+def birthdeath_coalescence_ages(rng, model_kwargs_fn, n_replicates):
+    result = treesim.mapped_birthdeath_trees(
+        treemeasure.coalescence_ages,
+        rng=rng,
+        model_kwargs_fn=model_kwargs_fn,
+        n_replicates=n_replicates,
+    )
+    return result
+
