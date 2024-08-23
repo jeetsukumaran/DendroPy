@@ -50,7 +50,10 @@ __all__ = [
     "star_tree",
     ]
 
-def _normalize_kwargs(kwargs, model_args_and_defaults):
+
+# helps each common functional interface implementation wrap call to wrapped
+# library implementation
+def _normalize_args_and_kwargs(kwargs, model_args_and_defaults):
     args = []
     model_arg_values = {}
     for model_arg_name, default in model_args_and_defaults:
@@ -58,6 +61,14 @@ def _normalize_kwargs(kwargs, model_args_and_defaults):
         model_arg_values[model_arg_name] = value
         args.append(value)
     return args, kwargs, model_arg_values
+def _setup_shared_context(rng, kwargs):
+    context = {}
+    context["rng"] = rng
+    if "taxon_namespace" in kwargs:
+        context["taxon_namespace"] = kwargs["taxon_namespace"]
+    else:
+        context["taxon_namespace"] = dendropy.TaxonNamespace()
+    return context
 
 
 def iter_birthdeath_trees(
@@ -65,7 +76,7 @@ def iter_birthdeath_trees(
     model_kwargs,
     n_replicates,
 ):
-    args, kwargs, model_arg_values = _normalize_kwargs(
+    args, kwargs, model_arg_values = _normalize_args_and_kwargs(
                 model_kwargs,
                 (
                     ("birth_rate", 1.0),
@@ -73,8 +84,7 @@ def iter_birthdeath_trees(
                     ("birth_rate_sd", 0.0),
                     ("death_rate_sd", 0.0),
                 ))
-    kwargs["rng"] = rng
-    kwargs["taxon_namespace"] = dendropy.TaxonNamespace()
+    kwargs |= _setup_shared_context(rng, kwargs,)
     return_value = []
     for rep_idx in range(n_replicates):
         tree = birth_death_tree(*args, **kwargs)
