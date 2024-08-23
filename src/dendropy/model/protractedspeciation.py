@@ -314,6 +314,55 @@ def maximum_probability_duration_of_speciation(
     x = 1.0/D * math.log((D-phi)/(D+phi))
     return max(0, x)
 
+class ProtractedSpeciationTreeGenerator(object):
+
+    SPECIES_LABEL_FORMAT_TEMPLATE = "S{species_id}"
+    LINEAGE_LABEL_FORMAT_TEMPLATE = "S{species_id}.L{lineage_id}"
+
+    @staticmethod
+    def decompose_species_lineage_label(label):
+        parts = label.split(".")
+        return parts[0], parts[1]
+
+    def __init__(self,
+    ):
+        self.speciation_initiation_from_orthospecies_rate = kwargs.pop("splitting_rate", 0.01)
+        self.speciation_initiation_from_incipient_species_rate = self.speciation_initiation_from_orthospecies_rate
+        self.speciation_completion_rate = kwargs.pop("speciation_completion_rate", 0.01)
+        self.orthospecies_extinction_rate = kwargs.pop("extinction_rate", 0.0)
+        self.incipient_species_extinction_rate = self.orthospecies_extinction_rate
+        self.max_time = kwargs.pop("max_time", None)
+        self.num_extant_lineages = kwargs.pop("num_extant_lineages", None)
+        self.min_extant_lineages = kwargs.pop("min_extant_lineages", None)
+        self.max_extant_lineages = kwargs.pop("max_extant_lineages", None)
+        self.num_extant_orthospecies = kwargs.pop("num_extant_orthospecies", None)
+        self.min_extant_orthospecies = kwargs.pop("min_extant_orthospecies", None)
+        self.max_extant_orthospecies = kwargs.pop("max_extant_orthospecies", None)
+        self.rng = kwargs.pop("rng", random.Random())
+        self.psm = ProtractedSpeciationProcess(
+            speciation_initiation_from_orthospecies_rate=self.speciation_initiation_from_orthospecies_rate,
+            speciation_initiation_from_incipient_species_rate=self.speciation_initiation_from_incipient_species_rate,
+            speciation_completion_rate=self.speciation_completion_rate,
+            orthospecies_extinction_rate=self.orthospecies_extinction_rate,
+            incipient_species_extinction_rate=self.incipient_species_extinction_rate,
+            species_label_format_template=ProtractedSpeciationTreeGenerator.SPECIES_LABEL_FORMAT_TEMPLATE,
+            lineage_label_format_template=ProtractedSpeciationTreeGenerator.LINEAGE_LABEL_FORMAT_TEMPLATE,
+            rng=self.rng,
+            )
+
+    def generate_sample(self,):
+        # make sure that the tree we generate has enough species
+        lineage_tree, orthospecies_tree = self.psm.generate_sample(
+                max_time=self.max_time,
+                num_extant_lineages=self.num_extant_lineages,
+                min_extant_lineages=self.min_extant_lineages,
+                max_extant_lineages=self.max_extant_lineages,
+                num_extant_orthospecies=self.num_extant_orthospecies,
+                min_extant_orthospecies=self.min_extant_orthospecies,
+                max_extant_orthospecies=self.max_extant_orthospecies,
+                )
+        return lineage_tree, orthospecies_tree
+
 class ProtractedSpeciationProcess(object):
 
     class _Lineage(object):
