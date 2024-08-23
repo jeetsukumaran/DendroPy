@@ -68,6 +68,12 @@ terminal node.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.coalescence_ages">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">coalescence_ages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#coalescence_ages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.coalescence_ages" title="Link to this definition">¶</a></dt>
+<dd><p>Returns vector of splits indexed in backward time.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dendropy.calculate.treemeasure.colless_tree_imbalance">
 <span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">colless_tree_imbalance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#colless_tree_imbalance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.colless_tree_imbalance" title="Link to this definition">¶</a></dt>
 <dd><p>Returns Colless’ tree imbalance or I statistic: the sum of differences
@@ -99,6 +105,24 @@ Arrangements) model</p>
 </li>
 </ul>
 </div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.divergence_times">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">divergence_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#divergence_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.divergence_times" title="Link to this definition">¶</a></dt>
+<dd><p>Returns vector of splits indexed in forward time.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.node_ages">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">node_ages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_internal_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#node_ages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.node_ages" title="Link to this definition">¶</a></dt>
+<dd><p>Returns vector of branching events indexed in backward time.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dendropy.calculate.treemeasure.node_depths">
+<span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treemeasure.</span></span><span class="sig-name descname"><span class="pre">node_depths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_internal_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treemeasure.html#node_depths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treemeasure.node_depths" title="Link to this definition">¶</a></dt>
+<dd><p>Returns vector of branching events indexed in forward time.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -198,7 +222,11 @@ internal branches.</p>
 <li><a class="reference internal" href="#dendropy.calculate.treemeasure.B1"><code class="docutils literal notranslate"><span class="pre">B1</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.calculate.treemeasure.N_bar"><code class="docutils literal notranslate"><span class="pre">N_bar</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.calculate.treemeasure.PatristicDistanceMatrix"><code class="docutils literal notranslate"><span class="pre">PatristicDistanceMatrix</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.coalescence_ages"><code class="docutils literal notranslate"><span class="pre">coalescence_ages</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.calculate.treemeasure.colless_tree_imbalance"><code class="docutils literal notranslate"><span class="pre">colless_tree_imbalance</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.divergence_times"><code class="docutils literal notranslate"><span class="pre">divergence_times</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.node_ages"><code class="docutils literal notranslate"><span class="pre">node_ages</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.calculate.treemeasure.node_depths"><code class="docutils literal notranslate"><span class="pre">node_depths</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.calculate.treemeasure.patristic_distance"><code class="docutils literal notranslate"><span class="pre">patristic_distance</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.calculate.treemeasure.pybus_harvey_gamma"><code class="docutils literal notranslate"><span class="pre">pybus_harvey_gamma</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.calculate.treemeasure.sackin_index"><code class="docutils literal notranslate"><span class="pre">sackin_index</span></code></a></li>

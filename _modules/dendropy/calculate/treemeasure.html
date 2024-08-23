@@ -315,6 +315,41 @@
     <span class="k">return</span> <span class="n">internal</span><span class="o">/</span><span class="p">(</span><span class="n">external</span> <span class="o">+</span> <span class="n">internal</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="node_ages">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.node_ages">[docs]</a>
+<span class="k">def</span> <span class="nf">node_ages</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">is_internal_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns vector of branching events indexed in backward time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">age</span> <span class="k">for</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">resolve_node_ages</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_internal_only</span><span class="p">)</span> <span class="ow">or</span> <span class="n">node</span><span class="o">.</span><span class="n">is_internal</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="node_depths">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.node_depths">[docs]</a>
+<span class="k">def</span> <span class="nf">node_depths</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">is_internal_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns vector of branching events indexed in forward time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">age</span> <span class="k">for</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">resolve_node_depths</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_internal_only</span><span class="p">)</span> <span class="ow">or</span> <span class="n">node</span><span class="o">.</span><span class="n">is_internal</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="coalescence_ages">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.coalescence_ages">[docs]</a>
+<span class="k">def</span> <span class="nf">coalescence_ages</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns vector of splits indexed in backward time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_ages</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">is_internal_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="divergence_times">
+<a class="viewcode-back" href="../../../library/treemeasure.html#dendropy.calculate.treemeasure.divergence_times">[docs]</a>
+<span class="k">def</span> <span class="nf">divergence_times</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns vector of splits indexed in forward time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">divergence_times</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">is_internal_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
 </pre></div>
 
             <div class="clearer"></div>
