@@ -29,6 +29,7 @@ sub-package.
 ###############################################################################
 ## Import tree generation functions
 
+import dendropy
 from dendropy.model.birthdeath import birth_death_tree
 from dendropy.model.birthdeath import discrete_birth_death_tree
 from dendropy.model.birthdeath import uniform_pure_birth_tree
@@ -47,4 +48,36 @@ __all__ = [
     "mean_kingman_tree",
     "constrained_kingman_tree",
     "star_tree",
+    "birthdeath_trees_iter",
     ]
+
+def _normalize_kwargs(kwargs, model_args_and_defaults):
+    args = []
+    model_arg_values = {}
+    for model_arg_name, default in model_args_and_defaults:
+        value = kwargs.pop(model_arg_name, default)
+        model_arg_values[model_arg_name] = value
+        args.append(value)
+    return args, kwargs, model_arg_values
+
+
+def birthdeath_trees_iter(
+    rng,
+    model_kwargs,
+    n_replicates,
+):
+    args, kwargs, model_arg_values = _normalize_kwargs(
+                model_kwargs,
+                (
+                    ("birth_rate", 1.0),
+                    ("death_rate", 1.0),
+                    ("birth_rate_sd", 0.0),
+                    ("death_rate_sd", 0.0),
+                ))
+    kwargs["rng"] = rng
+    kwargs["taxon_namespace"] = dendropy.TaxonNamespace()
+    return_value = []
+    for rep_idx in range(n_replicates):
+        tree = birth_death_tree(*args, **kwargs)
+        yield tree
+
