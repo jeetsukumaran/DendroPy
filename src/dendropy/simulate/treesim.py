@@ -48,7 +48,6 @@ __all__ = [
     "mean_kingman_tree",
     "constrained_kingman_tree",
     "star_tree",
-    "birthdeath_trees_iter",
     ]
 
 def _normalize_kwargs(kwargs, model_args_and_defaults):
@@ -61,7 +60,7 @@ def _normalize_kwargs(kwargs, model_args_and_defaults):
     return args, kwargs, model_arg_values
 
 
-def birthdeath_trees_iter(
+def iter_birthdeath_trees(
     rng,
     model_kwargs,
     n_replicates,
@@ -80,4 +79,25 @@ def birthdeath_trees_iter(
     for rep_idx in range(n_replicates):
         tree = birth_death_tree(*args, **kwargs)
         yield tree
+
+def map_birthdeath_trees(
+    fn,
+    rng,
+    model_kwargs,
+    n_replicates,
+):
+    for tree in iter_birthdeath_trees(
+        rng=rng,
+        model_kwargs=model_kwargs,
+        n_replicates=n_replicates,
+    ):
+        yield fn(tree)
+
+def mapped_birthdeath_trees(
+    fn,
+    rng,
+    model_kwargs,
+    n_replicates,
+):
+    return [*map_birthdeath_trees(fn, rng, model_kwargs, n_replicates)]
 
