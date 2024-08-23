@@ -70,26 +70,6 @@ def _setup_shared_context(rng, kwargs):
         context["taxon_namespace"] = dendropy.TaxonNamespace()
     return context
 
-
-# def iter_birthdeath_trees(
-#     rng,
-#     model_kwargs,
-#     n_replicates,
-# ):
-#     args, kwargs, model_arg_values = _normalize_args_and_kwargs(
-#                 model_kwargs,
-#                 (
-#                     ("birth_rate", 1.0),
-#                     ("death_rate", 1.0),
-#                     ("birth_rate_sd", 0.0),
-#                     ("death_rate_sd", 0.0),
-#                 ))
-#     kwargs |= _setup_shared_context(rng, kwargs,)
-#     return_value = []
-#     for rep_idx in range(n_replicates):
-#         tree = birth_death_tree(*args, **kwargs)
-#         yield tree
-
 def iter_birthdeath_trees(
     rng,
     model_kwargs_fn,
@@ -98,31 +78,8 @@ def iter_birthdeath_trees(
     return_value = []
     for rep_idx in range(n_replicates):
         model_kwargs = model_kwargs_fn(rep_idx)
-        # args, kwargs, model_arg_values = _normalize_args_and_kwargs(
-        #     model_kwargs,
-        #     (
-        #         ("birth_rate", 1.0),
-        #         ("death_rate", 1.0),
-        #         ("birth_rate_sd", 0.0),
-        #         ("death_rate_sd", 0.0),
-        #         ))
-        # kwargs |= _setup_shared_context(rng, kwargs,)
-        # tree = birth_death_tree(*args, **kwargs)
         tree = birth_death_tree(**model_kwargs)
         yield tree
-
-# def map_birthdeath_trees(
-#     fn,
-#     rng,
-#     model_kwargs,
-#     n_replicates,
-# ):
-#     for tree in iter_birthdeath_trees(
-#         rng=rng,
-#         model_kwargs=model_kwargs,
-#         n_replicates=n_replicates,
-#     ):
-#         yield fn(tree)
 
 def map_birthdeath_trees(
     fn,
@@ -137,19 +94,38 @@ def map_birthdeath_trees(
     ):
         yield fn(tree)
 
-# def mapped_birthdeath_trees(
-#     fn,
-#     rng,
-#     model_kwargs,
-#     n_replicates,
-# ):
-#     return [*map_birthdeath_trees(fn, rng, model_kwargs, n_replicates)]
-
-
 def mapped_birthdeath_trees(
     fn,
     rng,
     model_kwargs_fn,
     n_replicates,
 ):
+    """
+    Usage::
+
+        #! /usr/bin/env python
+        # -*- coding: utf-8 -*-
+
+        import random
+        from dendropy.simulate import treesim
+        from dendropy.calculate import treemeasure
+
+        def run(n_replicates, min_leaves=10, max_leaves=1000, ):
+            rng = random.Random()
+            n_replicates = 10
+            result = treesim.mapped_birthdeath_trees(
+                treemeasure.coalescence_ages,
+                rng=rng,
+                model_kwargs_fn=lambda rep_idx: {
+                    "birth_rate": 1.0,
+                    "death_rate": 0.0,
+                    "num_extant_tips": rng.randint(min_leaves, max_leaves),
+                },
+                n_replicates=n_replicates,
+            )
+            print(result)
+
+        run(1000)
+
+    """
     return [*map_birthdeath_trees(fn, rng, model_kwargs_fn, n_replicates)]
