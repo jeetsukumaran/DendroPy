@@ -107,7 +107,7 @@ def mapped_birthdeath_trees(
     n_replicates,
 ):
     """
-    Usage::
+    Usage:
 
         #! /usr/bin/env python
         # -*- coding: utf-8 -*-
@@ -137,11 +137,25 @@ def mapped_birthdeath_trees(
     return [*map_birthdeath_trees(fn, rng, model_kwargs_fn, n_replicates)]
 
 def birthdeath_coalescence_ages(rng, model_kwargs_fn, n_replicates):
-    result = treesim.mapped_birthdeath_trees(
+    """
+    Usage:
+
+        def run(n_replicates):
+            print(treesim.birthdeath_coalescence_ages(None, lambda rep_idx, rng: {
+                "birth_rate": 1.0,
+                "death_rate": 0.0,
+                "num_extant_tips": rng.randint(10, 100),
+                # "gsa_ntax": 5000,
+                }, n_replicates))
+
+        run(100)
+    """
+    result = mapped_birthdeath_trees(
         treemeasure.coalescence_ages,
         rng=rng,
         model_kwargs_fn=model_kwargs_fn,
         n_replicates=n_replicates,
     )
     return result
+
 
