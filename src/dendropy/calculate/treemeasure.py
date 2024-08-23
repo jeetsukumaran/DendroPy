@@ -253,3 +253,26 @@ def treeness(tree):
             internal += nd.edge.length
     return internal/(external + internal)
 
+def node_ages(tree, is_internal_only=False):
+    """
+    Returns vector of branching events indexed in backward time.
+    """
+    return sorted(age for (node, age) in tree.resolve_node_ages().items() if (not is_internal_only) or node.is_internal())
+
+def node_depths(tree, is_internal_only=False):
+    """
+    Returns vector of branching events indexed in forward time.
+    """
+    return sorted(age for (node, age) in tree.resolve_node_depths().items() if (not is_internal_only) or node.is_internal())
+
+def coalescence_ages(tree):
+    """
+    Returns vector of splits indexed in backward time.
+    """
+    return node_ages(tree, is_internal_only=True)
+
+def divergence_times(tree):
+    """
+    Returns vector of splits indexed in forward time.
+    """
+    return divergence_times(tree, is_internal_only=True)
