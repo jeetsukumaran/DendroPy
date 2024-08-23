@@ -71,44 +71,85 @@ def _setup_shared_context(rng, kwargs):
     return context
 
 
+# def iter_birthdeath_trees(
+#     rng,
+#     model_kwargs,
+#     n_replicates,
+# ):
+#     args, kwargs, model_arg_values = _normalize_args_and_kwargs(
+#                 model_kwargs,
+#                 (
+#                     ("birth_rate", 1.0),
+#                     ("death_rate", 1.0),
+#                     ("birth_rate_sd", 0.0),
+#                     ("death_rate_sd", 0.0),
+#                 ))
+#     kwargs |= _setup_shared_context(rng, kwargs,)
+#     return_value = []
+#     for rep_idx in range(n_replicates):
+#         tree = birth_death_tree(*args, **kwargs)
+#         yield tree
+
 def iter_birthdeath_trees(
     rng,
-    model_kwargs,
+    model_kwargs_fn,
     n_replicates,
 ):
-    args, kwargs, model_arg_values = _normalize_args_and_kwargs(
-                model_kwargs,
-                (
-                    ("birth_rate", 1.0),
-                    ("death_rate", 1.0),
-                    ("birth_rate_sd", 0.0),
-                    ("death_rate_sd", 0.0),
-                ))
-    kwargs |= _setup_shared_context(rng, kwargs,)
     return_value = []
     for rep_idx in range(n_replicates):
-        tree = birth_death_tree(*args, **kwargs)
+        model_kwargs = model_kwargs_fn(rep_idx)
+        # args, kwargs, model_arg_values = _normalize_args_and_kwargs(
+        #     model_kwargs,
+        #     (
+        #         ("birth_rate", 1.0),
+        #         ("death_rate", 1.0),
+        #         ("birth_rate_sd", 0.0),
+        #         ("death_rate_sd", 0.0),
+        #         ))
+        # kwargs |= _setup_shared_context(rng, kwargs,)
+        # tree = birth_death_tree(*args, **kwargs)
+        tree = birth_death_tree(**model_kwargs)
         yield tree
+
+# def map_birthdeath_trees(
+#     fn,
+#     rng,
+#     model_kwargs,
+#     n_replicates,
+# ):
+#     for tree in iter_birthdeath_trees(
+#         rng=rng,
+#         model_kwargs=model_kwargs,
+#         n_replicates=n_replicates,
+#     ):
+#         yield fn(tree)
 
 def map_birthdeath_trees(
     fn,
     rng,
-    model_kwargs,
+    model_kwargs_fn,
     n_replicates,
 ):
     for tree in iter_birthdeath_trees(
         rng=rng,
-        model_kwargs=model_kwargs,
+        model_kwargs_fn=model_kwargs_fn,
         n_replicates=n_replicates,
     ):
         yield fn(tree)
 
+# def mapped_birthdeath_trees(
+#     fn,
+#     rng,
+#     model_kwargs,
+#     n_replicates,
+# ):
+#     return [*map_birthdeath_trees(fn, rng, model_kwargs, n_replicates)]
+
+
 def mapped_birthdeath_trees(
     fn,
     rng,
-    model_kwargs,
+    model_kwargs_fn,
     n_replicates,
 ):
-    return [*map_birthdeath_trees(fn, rng, model_kwargs, n_replicates)]
-
-
+    return [*map_birthdeath_trees(fn, rng, model_kwargs_fn, n_replicates)]
