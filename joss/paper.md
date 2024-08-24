@@ -108,7 +108,6 @@ In addition, we have established comprehensive continuous integration (CI) infra
 
 Other behind-the-scenes activity in preparing this release includes repair of library components flagged by the new tooling, triage of user bug reports, applying issue tags to manage open tracker items, establishing a code of conduct, and creating issue templates to increase the quality of future bug reports and feature requests.
 Altogether, these improvements serve as a foundation for future work maintaining and extending DendroPy in a manner that is reliable, stable, and responsive to user needs.
-We look forward to this next chapter.
 
 # Impact
 
