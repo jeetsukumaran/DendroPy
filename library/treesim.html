@@ -327,6 +327,25 @@ sampled.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dendropy.simulate.treesim.rand_trees">
+<span class="sig-prename descclassname"><span class="pre">dendropy.simulate.treesim.</span></span><span class="sig-name descname"><span class="pre">rand_trees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_replicates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/simulate/treesim.html#rand_trees"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.simulate.treesim.rand_trees" title="Link to this definition">¶</a></dt>
+<dd><p>The model parameters may be specified as:
+-   A single dict or map, in which case it will be repeated</p>
+<blockquote>
+<div><p>through the replicates,</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>A function, in which case it will be called for each replicate
+with two positional arguments: the 0-based replicate index and
+the random numberg generator object to use; the function should
+return a dict or mapping of keyword-value pairs for the model
+simulation call.</p></li>
+<li><p>An iterable of dicts or maps, for <em>each</em> of which
+<code class="xref any docutils literal notranslate"><span class="pre">n_replicates</span></code> simulations will be generated, in order.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dendropy.simulate.treesim.star_tree">
 <span class="sig-prename descclassname"><span class="pre">dendropy.simulate.treesim.</span></span><span class="sig-name descname"><span class="pre">star_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxon_namespace</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/model/treeshape.html#star_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.simulate.treesim.star_tree" title="Link to this definition">¶</a></dt>
 <dd><p>Builds and returns a star tree from the given taxa block.</p>
@@ -363,6 +382,7 @@ sampled.</p></li>
 <li><a class="reference internal" href="#dendropy.simulate.treesim.discrete_birth_death_tree"><code class="docutils literal notranslate"><span class="pre">discrete_birth_death_tree</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.simulate.treesim.mean_kingman_tree"><code class="docutils literal notranslate"><span class="pre">mean_kingman_tree</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.simulate.treesim.pure_kingman_tree"><code class="docutils literal notranslate"><span class="pre">pure_kingman_tree</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.simulate.treesim.rand_trees"><code class="docutils literal notranslate"><span class="pre">rand_trees</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.simulate.treesim.star_tree"><code class="docutils literal notranslate"><span class="pre">star_tree</span></code></a></li>
 </ul>
 </li>
