@@ -44,9 +44,9 @@ bibliography: paper.bib
 
 # Summary
 
-Contemporary bioinformatics has seen in profound new visibility into the composition, structure, and history of the natural world around us.
+Modern bioinformatics has unlocked remarkable insight into the composition, structure, and history of the natural world around us.
 Arguably, the central pillar of bioinformatics is phylogenetics --- the study of hereditary relatedness among organisms.
-Insight from phylogenetic analysis has touched nearly every corner of biology.
+Insights from phylogenetic analysis have touched nearly every corner of biology.
 Examples range across natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology [@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference; @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023; @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward; @lenski2003evolutionary], application-oriented evolutionary algorithms [@lalejini2024phylogeny; @hernandez2022can; @shahbandegan2022untangling], and beyond.
 
 High-throughput genetic and phenotypic data has realized groundbreaking results, in large part, through conjunction with open-source software used to process and analyze it.
@@ -68,7 +68,7 @@ The broader software landscape largely divides into the following major categori
     - *TreeSwift* and *SuchTree*, which provide lightweight, high-performance tree representations [@moshiri2020treeswift; @neches2018suchtree], and
     - *hstrat* and *Phylotrack*, which specialize in collecting phylogenies from agent-based evolutionary simulation [@dolson2024phylotrack; @moreno2022hstrat];
 3. Python phylogenetics libraries with genome/gene-centric data models and operations (e.g., *PyCogent*/*Cogent3*, *BioPython*, etc.) [@knight2007pycogent; @cock2009biopython]; and
-4. numerous R phylogenetics packages, which are often highly specialized but generally interoperate via `ape.phylo` data structures [@paradis2019ape].
+4. Numerous R phylogenetics packages, which are often highly specialized but generally interoperate via `ape.phylo` data structures [@paradis2019ape].
 
 DendroPy falls largely within the second camp above.
 It is notable in providing a broad portfolio of evolutionary models, but also fields population genetics and sequence evolution utilities.
@@ -77,10 +77,10 @@ The library's use cases range across serving as a stand-alone library for phylog
 
 # Features
 
-Key features of DendroPy include,
+Key features of DendroPy are:
 
-- rich object-oriented representations for manipulation of phylogenetic trees and character matrices,
-- efficient, bit-level representation of nodes' leaf bipartitions,
+- rich object-oriented representations for manipulation of phylogenetic trees and character matrices;
+- efficient, bit-level representation of nodes' leaf bipartitions;
 - loading and saving popular phylogenetic data formats, including NEXUS, Newick, NeXML, Phylip, and FASTA [@maddison1997nexus; @olsen1990newick; @vos2012nexml; @felsenstein1981evolutionary; @lipman1985rapid];
 - simulation of phylogenetic trees under a range of models, including coalescent models, birth-death models, and population genetics simulations of gene trees; and
 - application scripts for performing data conversion, collating taxon labels from multiple trees, and tree posterior distribution summarization.
@@ -89,7 +89,7 @@ Significant improvements have been made since DendroPy's original release [@suku
 
 # Maintenance
 
-A major focus of DendroPy's version 5 release has been in establishing a trajectory for sustainable long-term maintenance.
+The primary focus of DendroPy's version 5 release is support for sustainable long-term maintenance.
 Our intention is that effort reducing maintenance burden will translate into a regular release schedule (incorporating timely patches for reported issues), development of new features, and incorporation of user contributions.
 
 The version 5 release reflects substantial investment in adopting modern software development best practices.
@@ -97,18 +97,17 @@ In version 5, DendroPy has officially dropped support for Python 2.7, as well as
 Focusing support on Python 3.6 and higher simplifies cross-environment testing and allows future development to leverage new language features.
 In addition, we have established comprehensive continuous integration (CI) infrastructure via GitHub Actions, comprising
 
-- code linting with [Ruff](https://pypi.org/project/ruff/)
-- deploying up-to-date documentation via GitHub pages,[^1]
-- unit tests, largely organized within the `unittest` framework,
-- new smoke tests using [pytest](https://pypi.org/project/pytest/),
-- code coverage reporting via the Codecov service, and
+- code linting with [Ruff](https://pypi.org/project/ruff/);
+- deploying up-to-date documentation via GitHub pages;[^1]
+- unit tests, largely organized within the `unittest` framework;
+- new smoke tests using [pytest](https://pypi.org/project/pytest/);
+- code coverage reporting via the Codecov service; and
 - automatic deployment of tagged versions to PyPI.
 
 [^1]: Documentation is hosted at [https://jeetsukumaran.github.io/DendroPy](https://jeetsukumaran.github.io/DendroPy).
 
-Other behind-the-scenes activities in preparing this release included repair of library components flagged by the new tooling, triage of user bug reports, applying issue tags to manage open tracker items, establishing a code of conduct, and creating issue templates to increase the quality of future bug reports and feature requests.
+Other behind-the-scenes activity in preparing this release includes repair of library components flagged by the new tooling, triage of user bug reports, applying issue tags to manage open tracker items, establishing a code of conduct, and creating issue templates to increase the quality of future bug reports and feature requests.
 Altogether, these improvements serve as a foundation for future work maintaining and extending DendroPy in a manner that is reliable, stable, and responsive to user needs.
-We look forward to this next chapter.
 
 # Impact
 
@@ -133,10 +132,10 @@ As of May 2024, Google Scholar counts 1,654 works referencing DendroPy [@sukumar
 Thank you to University of Michigan Undergraduate Research Opportunity Program participant Connor Yang for his contributions in increasing test coverage, and to our open-source community for bug reports, feature suggestions, and patch contributions over the years.
 This research is based upon work supported by:
 
-- the Eric and Wendy Schmidt AI in Science Postdoctoral Fellowship, a Schmidt Sciences program (author MAM) 
-- the National Science Foundation grant NSF-DEB 1937725 "COLLABORATIVE RESEARCH: Phylogenomics, spatial phylogenetics and conservation prioritization in trapdoor spiders (and kin) of the California Floristic Province" (author JS)
+- the Eric and Wendy Schmidt AI in Science Postdoctoral Fellowship, a Schmidt Sciences program (author MAM);
+- the National Science Foundation grant NSF-DEB 1937725 "COLLABORATIVE RESEARCH: Phylogenomics, spatial phylogenetics and conservation prioritization in trapdoor spiders (and kin) of the California Floristic Province" (author JS); and
 - the National Science Foundation grant NSF-DEB 1457776 "Collaborative Research Developing novel methods for estimating coevolutionary processes
-using tapeworms and their shark and ray hosts" (author MH)
+using tapeworms and their shark and ray hosts" (author MH).
 
 # References
 
