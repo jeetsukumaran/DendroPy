@@ -52,6 +52,7 @@ __all__ = [
     "mean_kingman_tree",
     "constrained_kingman_tree",
     "star_tree",
+    "rand_trees",
     ]
 
 
@@ -87,16 +88,28 @@ __all__ = [
 #    def run(n_replicates):
 #        print(treesim.birthdeath_coalescence_ages(None, fixed_params, n_replicates))
 #        print(treesim.birthdeath_coalescence_ages(None, kwargs_generator_fn, n_replicates))
-#        print( treesim.birthdeath_coalescence_ages(None, fixed_params_list_data, n_replicates))
+#        print(treesim.birthdeath_coalescence_ages(None, fixed_params_list_data, n_replicates))
 #
 #    run(10)
 
-def iter_birthdeath_trees(
+def rand_trees(
     rng,
+    model_fn,
     model_kwargs,
     n_replicates,
 ):
-    return_value = []
+    """
+    The model parameters may be specified as:
+    -   A single dict or map, in which case it will be repeated
+        through the replicates,
+    -   A function, in which case it will be called for each replicate
+        with two positional arguments: the 0-based replicate index and
+        the random numberg generator object to use; the function should
+        return a dict or mapping of keyword-value pairs for the model
+        simulation call.
+    -   An iterable of dicts or maps, for *each* of which
+        `n_replicates` simulations will be generated, in order.
+    """
     for rep_idx in range(n_replicates):
         if rng is None:
             rng = random.Random()
@@ -112,78 +125,21 @@ def iter_birthdeath_trees(
             continue
         else:
             model_kwargs_data = {}
-        tree = birth_death_tree(**model_kwargs_data)
+        tree = model_fn(**model_kwargs_data)
         yield tree
 
-def map_birthdeath_trees(
-    fn,
-    rng,
-    model_kwargs,
-    n_replicates,
-):
-    for tree in iter_birthdeath_trees(
-        rng=rng,
-        model_kwargs=model_kwargs,
-        n_replicates=n_replicates,
-    ):
-        yield fn(tree)
-
-def mapped_birthdeath_trees(
-    fn,
-    rng,
-    model_kwargs,
-    n_replicates,
-):
-    """
-    Usage:
-
-        #! /usr/bin/env python
-        # -*- coding: utf-8 -*-
-
-        import random
-        from dendropy.simulate import treesim
-        from dendropy.calculate import treemeasure
-
-        def run(n_replicates, min_leaves=10, max_leaves=1000, ):
-            rng = random.Random()
-            n_replicates = 10
-            result = treesim.mapped_birthdeath_trees(
+def coalescence_ages(rng, model_fn, model_kwargs, n_replicates):
+    result = [*map(
                 treemeasure.coalescence_ages,
-                rng=rng,
-                model_kwargs=lambda rep_idx, rrng: {
-                    "birth_rate": 1.0,
-                    "death_rate": 0.0,
-                    "num_extant_tips": rrng.randint(min_leaves, max_leaves),
-                },
-                n_replicates=n_replicates,
-            )
-            return result
-
-        print(run(1000))
-
-    """
-    return [*map_birthdeath_trees(fn, rng, model_kwargs, n_replicates)]
+                rand_trees(rng, model_fn, model_kwargs, n_replicates,),
+                )]
+    return result
 
 def birthdeath_coalescence_ages(rng, model_kwargs, n_replicates):
-    """
-    Usage:
-
-        def run(n_replicates):
-            print(treesim.birthdeath_coalescence_ages(None, lambda rep_idx, rng: {
-                "birth_rate": 1.0,
-                "death_rate": 0.0,
-                "num_extant_tips": rng.randint(10, 100),
-                # "gsa_ntax": 5000,
-                }, n_replicates))
-
-        run(100)
-    """
-    result = mapped_birthdeath_trees(
-        treemeasure.coalescence_ages,
-        rng=rng,
-        model_kwargs=model_kwargs,
-        n_replicates=n_replicates,
-    )
+    result = [*map(
+                treemeasure.coalescence_ages,
+                rand_trees(rng, birth_death_tree, model_kwargs, n_replicates,),
+                )]
     return result
 
 
