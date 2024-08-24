@@ -77,7 +77,7 @@ The library's use cases range across serving as a stand-alone library for phylog
 
 # Features
 
-Key features of DendroPy include,
+Key features of DendroPy are:
 
 - rich object-oriented representations for manipulation of phylogenetic trees and character matrices;
 - efficient, bit-level representation of nodes' leaf bipartitions;
@@ -106,7 +106,7 @@ In addition, we have established comprehensive continuous integration (CI) infra
 
 [^1]: Documentation is hosted at [https://jeetsukumaran.github.io/DendroPy](https://jeetsukumaran.github.io/DendroPy).
 
-Other behind-the-scenes activities in preparing this release included repair of library components flagged by the new tooling, triage of user bug reports, applying issue tags to manage open tracker items, establishing a code of conduct, and creating issue templates to increase the quality of future bug reports and feature requests.
+Other behind-the-scenes activity in preparing this release includes repair of library components flagged by the new tooling, triage of user bug reports, applying issue tags to manage open tracker items, establishing a code of conduct, and creating issue templates to increase the quality of future bug reports and feature requests.
 Altogether, these improvements serve as a foundation for future work maintaining and extending DendroPy in a manner that is reliable, stable, and responsive to user needs.
 We look forward to this next chapter.
 
