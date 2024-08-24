@@ -113,10 +113,10 @@ def rand_trees(
     for rep_idx in range(n_replicates):
         if rng is None:
             rng = random.Random()
-        if callable(model_kwargs):
-            model_kwargs_data = model_kwargs(rep_idx, rng)
-        elif isinstance(model_kwargs, collections.abc.Mapping):
+        if isinstance(model_kwargs, collections.abc.Mapping):
             model_kwargs_data = model_kwargs
+        elif callable(model_kwargs):
+            model_kwargs_data = model_kwargs(rep_idx, rng)
         elif not isinstance(model_kwargs, str):
             # raise ValueError(f"Assuming `model_kwargs` as iterable of keyword maps: expecting same number of model keyword maps ({len(model_kwargs)}) as number of replicates ({n_replicates})")
             for model_kwargs_data in model_kwargs:
