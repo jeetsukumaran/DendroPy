@@ -44,7 +44,7 @@ bibliography: paper.bib
 
 # Summary
 
-Modern bioinformatics provides remarkable insights the composition, structure, and history of the natural world around us.
+Modern bioinformatics has unlocked remarkable insight into the composition, structure, and history of the natural world around us.
 Arguably, the central pillar of bioinformatics is phylogenetics --- the study of hereditary relatedness among organisms.
 Insights from phylogenetic analysis have touched nearly every corner of biology.
 Examples range across natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology [@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference; @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023; @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward; @lenski2003evolutionary], application-oriented evolutionary algorithms [@lalejini2024phylogeny; @hernandez2022can; @shahbandegan2022untangling], and beyond.
