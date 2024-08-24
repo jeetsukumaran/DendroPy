@@ -89,7 +89,7 @@ Significant improvements have been made since DendroPy's original release [@suku
 
 # Maintenance
 
-A major focus of DendroPy's version 5 release has been in establishing a trajectory for sustainable long-term maintenance.
+The primary focus of DendroPy's version 5 release is support for sustainable long-term maintenance.
 Our intention is that effort reducing maintenance burden will translate into a regular release schedule (incorporating timely patches for reported issues), development of new features, and incorporation of user contributions.
 
 The version 5 release reflects substantial investment in adopting modern software development best practices.
