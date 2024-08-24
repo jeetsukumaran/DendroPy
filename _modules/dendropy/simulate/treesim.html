@@ -153,10 +153,10 @@
     <span class="k">for</span> <span class="n">rep_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_replicates</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">):</span>
-            <span class="n">model_kwargs_data</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="p">(</span><span class="n">rep_idx</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
             <span class="n">model_kwargs_data</span> <span class="o">=</span> <span class="n">model_kwargs</span>
+        <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">):</span>
+            <span class="n">model_kwargs_data</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="p">(</span><span class="n">rep_idx</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># raise ValueError(f&quot;Assuming `model_kwargs` as iterable of keyword maps: expecting same number of model keyword maps ({len(model_kwargs)}) as number of replicates ({n_replicates})&quot;)</span>
             <span class="k">for</span> <span class="n">model_kwargs_data</span> <span class="ow">in</span> <span class="n">model_kwargs</span><span class="p">:</span>
