@@ -97,11 +97,11 @@ In version 5, DendroPy has officially dropped support for Python 2.7, as well as
 Focusing support on Python 3.6 and higher simplifies cross-environment testing and allows future development to leverage new language features.
 In addition, we have established comprehensive continuous integration (CI) infrastructure via GitHub Actions, comprising
 
-- code linting with [Ruff](https://pypi.org/project/ruff/),
-- deploying up-to-date documentation via GitHub pages,[^1]
-- unit tests, largely organized within the `unittest` framework,
-- new smoke tests using [pytest](https://pypi.org/project/pytest/),
-- code coverage reporting via the Codecov service, and
+- code linting with [Ruff](https://pypi.org/project/ruff/);
+- deploying up-to-date documentation via GitHub pages;[^1]
+- unit tests, largely organized within the `unittest` framework;
+- new smoke tests using [pytest](https://pypi.org/project/pytest/);
+- code coverage reporting via the Codecov service; and
 - automatic deployment of tagged versions to PyPI.
 
 [^1]: Documentation is hosted at [https://jeetsukumaran.github.io/DendroPy](https://jeetsukumaran.github.io/DendroPy).
