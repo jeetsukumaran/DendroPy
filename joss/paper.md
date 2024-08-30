@@ -47,7 +47,7 @@ bibliography: paper.bib
 Modern bioinformatics has unlocked remarkable insight into the composition, structure, and history of the natural world around us.
 Arguably, the central pillar of bioinformatics is phylogenetics --- the study of hereditary relatedness among organisms.
 Insights from phylogenetic analysis have touched nearly every corner of biology.
-Examples range across natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology [@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference; @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023; @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm,@moreno2023toward; @lenski2003evolutionary], application-oriented evolutionary algorithms [@lalejini2024phylogeny; @hernandez2022can; @shahbandegan2022untangling], and beyond.
+Examples range across natural history [@title2024macroevolutionary], population genetics and phylogeography [@knowles2002phylogeography], conservation biology [@faithConservationEvaluationPhylogenetic1992], public health [@giardina2017inference; @voznica2022deep], medicine [@lewinsohnStatedependentEvolutionaryModels2023; @kim2006discovery], *in vivo* and *in silico* experimental evolution [@rozen2005longterm; @moreno2023toward; @lenski2003evolutionary], application-oriented evolutionary algorithms [@lalejini2024phylogeny; @hernandez2022can; @shahbandegan2022untangling], and beyond.
 
 High-throughput genetic and phenotypic data has realized groundbreaking results, in large part, through conjunction with open-source software used to process and analyze it.
 Indeed, the preceding decades have ushered in a flourishing ecosystem of bioinformatics software applications and libraries.
@@ -89,8 +89,9 @@ Significant improvements have been made since DendroPy's original release [@suku
 
 # Maintenance
 
-The primary focus of DendroPy's version 5 release is support for sustainable long-term maintenance.
-Our intention is that effort reducing maintenance burden will translate into a regular release schedule (incorporating timely patches for reported issues), development of new features, and incorporation of user contributions.
+The primary focus of DenroPy's version 5 release is to support sustainable long-term maintenance.
+We have substantially reduced the developer effort needed for ongoing releases through automation of software tests, documentation updates, and deployment to PyPI.
+We hope this will result in a regular release schedule with timely patches for reported issues and more rapid incorporation of user contributions.
 
 The version 5 release reflects substantial investment in adopting modern software development best practices.
 In version 5, DendroPy has officially dropped support for Python 2.7, as well as Python 3.X versions that have reached end-of-life.
