@@ -89,8 +89,9 @@ Significant improvements have been made since DendroPy's original release [@suku
 
 # Maintenance
 
-The primary focus of DenroPy's version 5 release is to support sustainable long-term maintenance by reducing the effort needed for new releases.
-We hope this will result in a regular release schedule (incorporating timely patches for reported issues), development of new features, and incorporation of user contributions.
+The primary focus of DenroPy's version 5 release is to support sustainable long-term maintenance.
+We have substantially reduced the developer effort needed for ongoing releases through automation of software tests, documentation updates, and deployment to PyPI.
+We hope this will result in a regular release schedule with timely patches for reported issues and more rapid incorporation of user contributions.
 
 The version 5 release reflects substantial investment in adopting modern software development best practices.
 In version 5, DendroPy has officially dropped support for Python 2.7, as well as Python 3.X versions that have reached end-of-life.
