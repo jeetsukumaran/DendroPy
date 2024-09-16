@@ -26,17 +26,17 @@ authors:
     orcid: 0000-0002-9222-9608
     affiliation: "6"
 affiliations:
-  - name: Department of Ecology and Evolutionary Biology, University of Michigan, Ann Arbor, MI, USA
+  - name: Department of Ecology and Evolutionary Biology, University of Michigan, Ann Arbor, MI, United States of America
     index: 1
-  - name: Center for the Study of Complex Systems, University of Michigan, Ann Arbor, MI, USA
+  - name: Center for the Study of Complex Systems, University of Michigan, Ann Arbor, MI, United States of America
     index: 2
-  - name: Michigan Institute for Data and AI in Society, University of Michigan, Ann Arbor, MI, USA
+  - name: Michigan Institute for Data and AI in Society, University of Michigan, Ann Arbor, MI, United States of America
     index: 3
-  - name: Department of Ecology and Evolutionary Biology, University of Kansas, Lawrence, KS, USA
+  - name: Department of Ecology and Evolutionary Biology, University of Kansas, Lawrence, KS, United States of America
     index: 4
-  - name: Biodiversity Institute, University of Kansas, Lawrence, KS, USA
+  - name: Biodiversity Institute, University of Kansas, Lawrence, KS, United States of America
     index: 5
-  - name: Department of Biology, San Diego State University, San Diego, CA, USA
+  - name: Department of Biology, San Diego State University, San Diego, CA, United States of America
     index: 6
 date: 19 May 2024
 bibliography: paper.bib
