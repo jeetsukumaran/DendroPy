@@ -1,9 +1,7 @@
 1.  If you use this work or any portion thereof in published work
     please cite it as:
 
-        Moreno, M. A., Sukumaran, J., and M. T. Holder. 2024.
-        DendroPy 5: a mature Python library for phylogenetic computing.
-        arXiv preprint arXiv:2405.14120. https://doi.org/10.48550/arXiv.2405.14120
+        Moreno, M. A., Holder, M. T., & Sukumaran, J. (2024). DendroPy 5: a mature Python library for phylogenetic computing. Journal of Open Source Software, 9(101), 6943, https://doi.org/10.21105/joss.06943
 
 2.  All DendroPy documentation, (non-logo) images and other media, as
     provided online or otherwise distributed, can be used in accordance with the
