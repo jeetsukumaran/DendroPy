@@ -10,16 +10,18 @@ For BibTex users:
 
 .. code-block:: bibtex
 
-      @misc{dendropy5,
-         title = {DendroPy 5: a mature Python library for phylogenetic computing},
-         author = {Moreno,  Matthew Andres and Sukumaran,  Jeet and Holder,  Mark T.},
-         year = {2024},
-         keywords = {Populations and Evolution (q-bio.PE),  FOS: Biological sciences,  FOS: Biological sciences},
-         publisher = {arXiv},
-         doi = {10.48550/ARXIV.2405.14120},
-         url = {https://arxiv.org/abs/2405.14120},
-         copyright = {arXiv.org perpetual, non-exclusive license}
-      }
+  @misc{dendropy5,
+    doi = {10.21105/joss.06943},
+    url = {https://doi.org/10.21105/joss.06943},
+    year = {2024},
+  publisher = {The Open Journal},
+    volume = {9},
+    number = {101},
+    pages = {6943},
+    author = {Matthew Andres Moreno and Mark T. Holder and Jeet Sukumaran},
+    title = {DendroPy 5: a mature Python library for phylogenetic computing},
+    journal = {Journal of Open Source Software}
+  }
 
 Note that, in the interests of scientific reproducibility, in addition to noting the primary citation for DendroPy as given above in the reference section, you should note in the text of your publications (e.g., in the "Methods" section, or, at the very least, in the "Supplemental Materials" section) the specific version of DendroPy that you used (e.g., "DendroPy version 4.0.0, revision 78e6a63"). You can get useful information about your DendroPy installation by typing "``python -m dendropy``".
 

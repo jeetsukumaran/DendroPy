@@ -92,22 +92,24 @@ Citing
 
 If you use any portion of DendroPy v5 in your research, please cite it as:
 
-      Moreno, M. A., Sukumaran, J., and M. T. Holder. 2024. DendroPy 5: a mature Python library for phylogenetic computing. arXiv preprint arXiv:2405.14120. https://doi.org/10.48550/arXiv.2405.14120
+      Moreno, M. A., Holder, M. T., & Sukumaran, J. (2024). DendroPy 5: a mature Python library for phylogenetic computing. Journal of Open Source Software, 9(101), 6943, https://doi.org/10.21105/joss.06943
 
 For BibTex users:
 
 .. code-block:: bibtex
 
-      @misc{dendropy5,
-         title = {DendroPy 5: a mature Python library for phylogenetic computing},
-         author = {Moreno,  Matthew Andres and Sukumaran,  Jeet and Holder,  Mark T.},
-         year = {2024},
-         keywords = {Populations and Evolution (q-bio.PE),  FOS: Biological sciences,  FOS: Biological sciences},
-         publisher = {arXiv},
-         doi = {10.48550/ARXIV.2405.14120},
-         url = {https://arxiv.org/abs/2405.14120},
-         copyright = {arXiv.org perpetual, non-exclusive license}
-      }
+  @misc{dendropy5,
+    doi = {10.21105/joss.06943},
+    url = {https://doi.org/10.21105/joss.06943},
+    year = {2024},
+  publisher = {The Open Journal},
+    volume = {9},
+    number = {101},
+    pages = {6943},
+    author = {Matthew Andres Moreno and Mark T. Holder and Jeet Sukumaran},
+    title = {DendroPy 5: a mature Python library for phylogenetic computing},
+    journal = {Journal of Open Source Software}
+  }
 
 Earlier DendroPy versions can be cited as:
 

@@ -1,0 +1,39 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Moreno
+  given-names: Matthew Andres
+  orcid: "https://orcid.org/0000-0003-4726-4479"
+- family-names: Holder
+  given-names: Mark T.
+  orcid: "https://orcid.org/0000-0001-5575-0536"
+- family-names: Sukumaran
+  given-names: Jeet
+  orcid: "https://orcid.org/0000-0002-9222-9608"
+doi: 10.5281/zenodo.13340136
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Moreno
+    given-names: Matthew Andres
+    orcid: "https://orcid.org/0000-0003-4726-4479"
+  - family-names: Holder
+    given-names: Mark T.
+    orcid: "https://orcid.org/0000-0001-5575-0536"
+  - family-names: Sukumaran
+    given-names: Jeet
+    orcid: "https://orcid.org/0000-0002-9222-9608"
+  date-published: 2024-09-23
+  doi: 10.21105/joss.06943
+  issn: 2475-9066
+  issue: 101
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 6943
+  title: "DendroPy 5: a mature Python library for phylogenetic
+    computing"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.06943"
+  volume: 9
+title: "DendroPy 5: a mature Python library for phylogenetic computing"
