@@ -146,7 +146,7 @@ independent deep-copy.</p>
 <p>If what is needed is a true deep-copy of the data of a particular
 <a class="reference internal" href="#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object, including copies of the member
 <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances, then this can be achieved using
-<a class="reference external" href="https://docs.python.org/3/library/copy.html#copy.deepcopy" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">copy.deepcopy</span></code></a>.</p>
+<a class="reference external" href="https://docs.python.org/3/library/copy.html#copy.deepcopy" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">copy.deepcopy</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tns1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;taxa1&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tns2</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tns1</span><span class="p">)</span>
@@ -201,7 +201,7 @@ to add <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon"
 collection.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e. <code class="xref py py-attr docutils literal notranslate"><span class="pre">TaxonNamespace.is_mutable</span></code> is
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e. <code class="xref py py-attr docutils literal notranslate"><span class="pre">TaxonNamespace.is_mutable</span></code> is
     <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
 </dd>
 </dl>
@@ -222,7 +222,7 @@ mutable, then TypeError is raised.</p>
 collection.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e.
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e.
     <code class="xref py py-attr docutils literal notranslate"><span class="pre">TaxonNamespace.is_mutable</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
 </dd>
 </dl>
@@ -315,7 +315,7 @@ operational taxonomic unit names represented by <a class="reference internal" hr
 instances. This can be over-ridden by specifying
 <code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
 (forcing case-insensitivity).</p></li>
-<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the entire namespace will be searched and <em>all</em>
+<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the entire namespace will be searched and <em>all</em>
 <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with the matching labels will be remove. If
 <code class="docutils literal notranslate"><span class="pre">True</span></code> then only the first <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with a matching
 label will be removed (i.e., the entire namespace is not searched).
@@ -375,7 +375,7 @@ operational taxonomic unit names represented by <a class="reference internal" hr
 instances. This can be over-ridden by specifying
 <code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
 (forcing case-insensitivity).</p></li>
-<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then for <em>each</em> label in <code class="docutils literal notranslate"><span class="pre">labels</span></code>, the entire namespace
+<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then for <em>each</em> label in <code class="docutils literal notranslate"><span class="pre">labels</span></code>, the entire namespace
 will be searched and <em>all</em> <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with the matches
 will be added to the lest. If <code class="docutils literal notranslate"><span class="pre">True</span></code> then, for each label in
 <code class="docutils literal notranslate"><span class="pre">labels</span></code>, only the first <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with a matching
@@ -520,7 +520,7 @@ be created, added to this namespace collection, and returned.</p>
 <dd class="field-even"><p><strong>taxa</strong> (<code class="docutils literal notranslate"><span class="pre">collections.Iterable</span></code> [<a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>]) – A list of <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects created and added.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e.
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If this namespace is immutable (i.e.
     <code class="xref py py-attr docutils literal notranslate"><span class="pre">TaxonNamespace.is_mutable</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p>
 </dd>
 </dl>
@@ -550,7 +550,7 @@ label.</p>
 <dd class="field-odd"><p><strong>taxon</strong> (a <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object) – The <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object to be removed.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">taxon</span></code> is not in the collection of this namespace.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">taxon</span></code> is not in the collection of this namespace.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -571,7 +571,7 @@ operational taxonomic unit names represented by <a class="reference internal" hr
 instances. This can be over-ridden by specifying
 <code class="docutils literal notranslate"><span class="pre">is_case_sensitive</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> (forcing case-sensitivity) or <code class="docutils literal notranslate"><span class="pre">False</span></code>
 (forcing case-insensitivity).</p></li>
-<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the entire namespace will be searched and <em>all</em>
+<li><p><strong>first_match_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the entire namespace will be searched and <em>all</em>
 <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects with the matching labels will be remove. If
 <code class="docutils literal notranslate"><span class="pre">True</span></code> then only the first <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object with a matching
 label will be removed (i.e., the entire namespace is not searched).
@@ -580,7 +580,7 @@ be preferred if there are no redundant or duplicate labels.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#LookupError" title="(in Python v3.12)"><strong>LookupError</strong></a> – If no <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects are found with matching label(s).</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#LookupError" title="(in Python v3.13)"><strong>LookupError</strong></a> – If no <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects are found with matching label(s).</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -624,7 +624,7 @@ instances. This can be over-ridden by specifying
 matching <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If no <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object is currently in the collection with a label
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If no <a class="reference internal" href="#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object is currently in the collection with a label
     matching the input <code class="docutils literal notranslate"><span class="pre">label</span></code> and the <code class="docutils literal notranslate"><span class="pre">is_mutable</span></code> attribute of self
     is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
@@ -885,7 +885,7 @@ t3 = copy.deepcopy(t1)</p>
 with <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.12)"><em>set</em></a><em>(</em><em>)</em>) – Set to populate. If not specified, a new one will be created.</p>
+<dd class="field-odd"><p><strong>taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><em>set</em></a><em>(</em><em>)</em>) – Set to populate. If not specified, a new one will be created.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>taxa</strong> (<em>set[|Taxon|]</em>) – Set of taxa associated with <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
@@ -1181,7 +1181,7 @@ will be created.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2009-2024, Jeet Sukumaran and Mark T. Holder.
+    &#169; Copyright 2009-2025, Jeet Sukumaran and Mark T. Holder.
     </div>
   </body>
 </html>
