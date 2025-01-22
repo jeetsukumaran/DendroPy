@@ -191,11 +191,19 @@ jobs:
       uses: actions/setup-python@master
       with:
         python-version: 3.8
+    - name: Refresh Package Sources
+      run: |
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" > /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list'
+          sudo apt-get update -y
     - name: Install dependencies
       run: |
         sudo apt-get install aptitude
         sudo aptitude install -y gcc-7 g++-7 gfortran-7
-        sudo apt-get install libpython2.7  # required by paup
+        sudo apt-get install -y libpython2.7  # required by paup
         python -m pip install --upgrade pip
         temp_dir=$(mktemp -d)
         wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
