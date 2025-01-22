@@ -109,41 +109,35 @@ parsed by the underlying reader and thus have to be valid numerical values.</p>
         <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To load data from a numpy matrix,</p>
-<blockquote>
-<div><p>from io import StringIO
-import dendropy
-import numpy as np
-import pandas as pd
-data = np.array([</p>
-<blockquote>
-<div><p>[0,7,8,11,13,16,13,17],
-[7,0,5,8,10,13,10,14],
-[8,5,0,5,7,10,7,11],
-[11,8,5,0,8,11,8,12],
-[13,10,7,8,0,5,6,10],
-[16,13,10,11,5,0,9,13],
-[13,10,7,8,6,9,0,8],
-[17,14,11,12,10,13,8,0],</p>
-</div></blockquote>
-<p>])
-taxon_names = [“a”, “b”, “c”, “d”, “e”, “f”, “g”, “h”]
-df = pd.DataFrame(</p>
-<blockquote>
-<div><p>data=data,
-columns=taxon_names,
-index=taxon_names,</p>
-</div></blockquote>
-<p>)
-buffer = StringIO()
-df.to_csv(buffer, index_label=””)
-buffer.seek(0)
-pdm1 = dendropy.PhylogeneticDistanceMatrix.from_csv(</p>
-<blockquote>
-<div><p>src=buffer,
-delimiter=”,”)</p>
-</div></blockquote>
-</div></blockquote>
+<p>To load data from a numpy matrix:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">dendropy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">17</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">14</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">13</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">13</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">13</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">17</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+<span class="p">])</span>
+<span class="n">taxon_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">taxon_names</span><span class="p">,</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">taxon_names</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">index_label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pdm1</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">PhylogeneticDistanceMatrix</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">buffer</span><span class="p">,</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>In the above examples, the taxon namespace into which the data was read was a new one, created by default.
 In many cases, e.g. if you want to compare the data to data from other sources, you will want to ensure that the <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> is shared. You do this by passing in a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> instance using the <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code> argument:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#! /usr/bin/env python</span>
