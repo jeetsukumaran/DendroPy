@@ -21,11 +21,19 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Refresh Package Sources
+        run: |
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" > /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal
+          sudo apt-get update -y
       - name: Install dependencies
         run: |
           sudo apt-get install aptitude
           sudo aptitude install -y gcc-7 g++-7 gfortran-7
-          sudo apt-get install libpython2.7  # required by paup
+          sudo apt-get install -y libpython2.7  # required by paup
           python -m pip install --upgrade pip
       - name: Install paup
         run: |
@@ -86,11 +94,19 @@ jobs:
         continue-on-error: true
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Refresh Package Sources
+        run: |
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" > /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal
+          sudo apt-get update -y
       - name: Install dependencies
         run: |
           sudo apt-get install aptitude
           sudo aptitude install -y gcc-7 g++-7 gfortran-7
-          sudo apt-get install libpython2.7  # required by paup
+          sudo apt-get install -y libpython2.7  # required by paup
           python -m pip install --upgrade pip
           if [ -f .github/workflows/requirements.txt ]; then pip install -r .github/workflows/requirements.txt; fi
       - name: Install paup
@@ -127,6 +143,14 @@ jobs:
         continue-on-error: true
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Refresh Package Sources
+        run: |
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" > /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal
+          sudo apt-get update -y
       - name: Install dependencies
         run: |
           sudo apt-get install aptitude
