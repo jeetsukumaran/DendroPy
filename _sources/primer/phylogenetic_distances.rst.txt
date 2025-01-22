@@ -63,7 +63,7 @@ If tabs were used as a delimiter instead, then ``delimiter="\t"`` would be speci
             src=open("data.tsv"),
             delimiter="\t")
 
-To load data from a numpy matrix::
+To load data from a NumPy array::
 
     from io import StringIO
     import dendropy
