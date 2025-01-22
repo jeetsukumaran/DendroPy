@@ -27,7 +27,7 @@ jobs:
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
-          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list'
           sudo apt-get update -y
       - name: Install dependencies
         run: |
@@ -100,7 +100,7 @@ jobs:
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
-          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list'
           sudo apt-get update -y
       - name: Install dependencies
         run: |
@@ -149,7 +149,7 @@ jobs:
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
           sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
-          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list'
           sudo apt-get update -y
       - name: Install dependencies
         run: |
