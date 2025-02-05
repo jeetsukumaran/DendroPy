@@ -18,7 +18,7 @@ Reading
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.fastareader.FastaReader.__init__
+.. automethod:: dendropy.dataio.fastareader.FastaReader.__init__
 
 Supported Methods
 -----------------
@@ -85,7 +85,7 @@ Writing
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.fastawriter.FastaWriter.__init__
+.. automethod:: dendropy.dataio.fastawriter.FastaWriter.__init__
 
 Supported Methods
 -----------------

@@ -17,7 +17,7 @@ Reading
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.nexusreader.NexusReader.__init__
+.. automethod:: dendropy.dataio.nexusreader.NexusReader.__init__
 
 Supported Methods
 -----------------
@@ -102,7 +102,7 @@ Writing
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.nexuswriter.NexusWriter.__init__
+.. automethod:: dendropy.dataio.nexuswriter.NexusWriter.__init__
 
 Supported Methods
 -----------------

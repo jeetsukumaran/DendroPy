@@ -15,7 +15,7 @@ Reading
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.phylipreader.PhylipReader.__init__
+.. automethod:: dendropy.dataio.phylipreader.PhylipReader.__init__
 
 Supported Methods
 -----------------
@@ -83,7 +83,7 @@ Writing
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.phylipwriter.PhylipWriter.__init__
+.. automethod:: dendropy.dataio.phylipwriter.PhylipWriter.__init__
 
 Supported Methods
 -----------------

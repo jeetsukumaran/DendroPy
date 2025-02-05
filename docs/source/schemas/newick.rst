@@ -21,7 +21,7 @@ Reading
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.newickreader.NewickReader.__init__
+.. automethod:: dendropy.dataio.newickreader.NewickReader.__init__
 
 Supported Methods
 -----------------
@@ -70,7 +70,7 @@ Writing
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.newickwriter.NewickWriter.__init__
+.. automethod:: dendropy.dataio.newickwriter.NewickWriter.__init__
 
 Supported Methods
 -----------------

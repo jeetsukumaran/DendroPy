@@ -17,7 +17,7 @@ Reading
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.nexmlreader.NexmlReader.__init__
+.. automethod:: dendropy.dataio.nexmlreader.NexmlReader.__init__
 
 Supported Methods
 -----------------
@@ -103,7 +103,7 @@ Writing
 Schema-Specific Keyword Arguments
 ---------------------------------
 
-.. autokeywordargumentsonly:: dendropy.dataio.nexmlwriter.NexmlWriter.__init__
+.. automethod:: dendropy.dataio.nexmlwriter.NexmlWriter.__init__
 
 Supported Methods
 -----------------
