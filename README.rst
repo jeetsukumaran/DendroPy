@@ -2,8 +2,7 @@
 
    <div align="center">
 
-.. image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
-   :align: right
+.. |logo| image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
    :target: https://github.com/jeetsukumaran/DendroPy
    :alt: DendroPy wordmark
 
