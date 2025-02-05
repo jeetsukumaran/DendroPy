@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.dataio.phylipwriter &#8212; DendroPy 5.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=f98c4cc8"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.dataio.phylipwriter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.dataio.phylipwriter</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of PHYLIP-format data writer.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">ioservice</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">textprocessing</span>
+
+<span class="n">STRICT_MODE_MAX_LABEL_LENGTH</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="k">class</span> <span class="nc">PhylipWriter</span><span class="p">(</span><span class="n">ioservice</span><span class="o">.</span><span class="n">DataWriter</span><span class="p">):</span>
+    <span class="s2">&quot;Implements the DataWriter interface for writing PHYLIP files.&quot;</span>
+
+<div class="viewcode-block" id="PhylipWriter.__init__">
+<a class="viewcode-back" href="../../../schemas/phylip.html#dendropy.dataio.phylipwriter.PhylipWriter.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+
+<span class="sd">        strict : bool</span>
+<span class="sd">            If |True|, use &#39;strict&#39; format, i.e., taxon labels given in</span>
+<span class="sd">            first 10 characters, followed by sequence starting at character 11.</span>
+<span class="sd">            Default is |False|: use &#39;relaxed&#39; format, with arbitrary-length</span>
+<span class="sd">            taxon labels separated from sequences by two or more spaces.</span>
+<span class="sd">        spaces_to_underscores : bool</span>
+<span class="sd">            If |True|, all spaces will be converted to underscores. Default is</span>
+<span class="sd">            |False|: spaces will be preserved.</span>
+<span class="sd">        taxon_label_fn: function object</span>
+<span class="sd">            If specified, then this function will be called everytime taxon</span>
+<span class="sd">            label is required. It will be passed a |Taxon| object as an</span>
+<span class="sd">            argument and should represent the string or string-like object that</span>
+<span class="sd">            should serve as the label.</span>
+<span class="sd">        force_unique_taxon_labels : bool</span>
+<span class="sd">            If |True|, then taxon labels will be modified to avoid duplicate</span>
+<span class="sd">            labels. Default is |False|: taxon labels will not be modified.</span>
+<span class="sd">        suppress_missing_taxa : bool</span>
+<span class="sd">            If |True|, then taxa with zero characters will not be printed</span>
+<span class="sd">            Default is |False|: all taxa will be printed</span>
+<span class="sd">        ignore_unrecognized_keyword_arguments : boolean, default: |False|</span>
+<span class="sd">            If |True|, then unsupported or unrecognized keyword arguments will</span>
+<span class="sd">            not result in an error. Default is |False|: unsupported keyword</span>
+<span class="sd">            arguments will result in an error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ioservice</span><span class="o">.</span><span class="n">DataWriter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;strict&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spaces_to_underscores</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;spaces_to_underscores&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_unique_taxon_labels</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;force_unique_taxon_labels&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_missing_taxa</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_missing_taxa&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">taxon_label_fn</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;taxon_label_fn&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_label_fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">taxon_label_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">taxon</span><span class="p">:</span> <span class="n">taxon</span><span class="o">.</span><span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_for_unused_keyword_arguments</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">stream</span><span class="p">,</span>
+            <span class="n">taxon_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">tree_lists</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">char_matrices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">global_annotations_target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">char_matrix</span> <span class="ow">in</span> <span class="n">char_matrices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_char_matrix</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_char_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">):</span>
+        <span class="s2">&quot;Writes dataset to a full PHYLIP document.&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strict</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">force_unique_taxon_labels</span><span class="p">:</span>
+            <span class="n">taxon_label_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_taxon_label_map</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">strict</span><span class="p">:</span>
+                <span class="n">spacer</span> <span class="o">=</span> <span class="s2">&quot;  &quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">spacer</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">taxon_label_map</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_label_fn</span><span class="p">(</span><span class="n">taxon</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spaces_to_underscores</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+                <span class="n">taxon_label_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+            <span class="n">spacer</span> <span class="o">=</span> <span class="s2">&quot;  &quot;</span>
+        <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">))</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">taxon_label_map</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+        <span class="n">n_seqs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">)</span>
+        <span class="n">n_sites</span> <span class="o">=</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">max_sequence_size</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n_seqs</span><span class="p">,</span> <span class="n">n_sites</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">taxon_label_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="p">:</span>
+                <span class="n">seq_vec</span> <span class="o">=</span> <span class="n">char_matrix</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span><span class="o">.</span><span class="n">symbols_as_string</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seq_vec</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq_vec</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_missing_taxa</span><span class="p">):</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">label</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">maxlen</span><span class="p">),</span> <span class="n">spacer</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">seq_vec</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">get_taxon_label_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+        <span class="n">taxon_label_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strict</span><span class="p">:</span>
+            <span class="n">max_label_len</span> <span class="o">=</span> <span class="n">STRICT_MODE_MAX_LABEL_LENGTH</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_label_len</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">taxon_namespace</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_label_fn</span><span class="p">(</span><span class="n">taxon</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spaces_to_underscores</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strict</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="p">[:</span><span class="n">max_label_len</span><span class="p">]</span>
+            <span class="n">taxon_label_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="n">taxon_label_map</span> <span class="o">=</span> <span class="n">textprocessing</span><span class="o">.</span><span class="n">unique_taxon_label_map</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">,</span> <span class="n">taxon_label_map</span><span class="p">,</span> <span class="n">max_label_len</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">taxon_label_map</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">taxon_label_map</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">STRICT_MODE_MAX_LABEL_LENGTH</span><span class="p">:</span>
+                    <span class="n">taxon_label_map</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">STRICT_MODE_MAX_LABEL_LENGTH</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">taxon_label_map</span>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.3.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.dataio.phylipwriter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2025, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

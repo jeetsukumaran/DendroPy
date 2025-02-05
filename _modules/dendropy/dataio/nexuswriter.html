@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.dataio.nexuswriter &#8212; DendroPy 5.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=f98c4cc8"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.dataio.nexuswriter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.dataio.nexuswriter</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Writing data in NEXUS format to an output stream.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">textprocessing</span>
+<span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">ioservice</span>
+<span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">nexusprocessing</span>
+<span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">newickwriter</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## NexusWriter</span>
+
+<span class="k">class</span> <span class="nc">NexusWriter</span><span class="p">(</span><span class="n">ioservice</span><span class="o">.</span><span class="n">DataWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formatter for NEXUS data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NexusWriter.__init__">
+<a class="viewcode-back" href="../../../schemas/nexus.html#dendropy.dataio.nexuswriter.NexusWriter.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        simple : boolean, default: |False|</span>
+<span class="sd">            If |True|, write in simple NEXUS format, i.e. in a single &quot;DATA&quot;</span>
+<span class="sd">            block, instead of separate &quot;TAXA&quot; and &quot;CHARACTER&quot; blocks.</span>
+<span class="sd">        suppress_taxa_blocks: boolean, default: |False|</span>
+<span class="sd">            If |True|, do not write a &quot;TAXA&quot; block. Note that this may make the</span>
+<span class="sd">            file impossible to parse if there are multiple taxon namespaces in</span>
+<span class="sd">            the data.</span>
+<span class="sd">        suppress_unreferenced_taxon_namespaces: boolean, default: |False|</span>
+<span class="sd">            If |True|, then when writing |DataSet| objects, any</span>
+<span class="sd">            |TaxonNamespace| object in the DataSet&#39;s ``taxon_namespaces``</span>
+<span class="sd">            collection will *not* be written as a &quot;TAXA&quot; block if it is not</span>
+<span class="sd">            referenced by any character matrix (``char_matrices``) or tree list</span>
+<span class="sd">            (``tree_lists``).</span>
+<span class="sd">        suppress_block_titles : bool or |None|</span>
+<span class="sd">            If |True| then &#39;TITLE&#39; element to blocks will not be written. Note</span>
+<span class="sd">            that this may make the file impossible to parse if there are</span>
+<span class="sd">            multiple taxon namespaces in the data. If |False|, then the</span>
+<span class="sd">            &#39;TITLE&#39; element will always be written. Default is |None|: the</span>
+<span class="sd">            &#39;TITLE&#39; element will only be written if needed because there is</span>
+<span class="sd">            more than on taxon namespace in the data.</span>
+<span class="sd">        file_comments: iterable [``str``]</span>
+<span class="sd">            List of lines of text to be added as comments to the file.</span>
+<span class="sd">        preamble_blocks: iterable [``str``]</span>
+<span class="sd">            List of strings to be written before data (e.g., PAUP blocks</span>
+<span class="sd">            suppressing warnings etc.).</span>
+<span class="sd">        supplemental_blocks: iterable [``str``]</span>
+<span class="sd">            List of strings to be written after data (e.g., PAUP blocks,</span>
+<span class="sd">            MrBayes blocks etc.).</span>
+<span class="sd">        allow_multiline_comments : bool</span>
+<span class="sd">            If |False| then comments will be merged into a single string before</span>
+<span class="sd">            being written. Default is |True|: each comment element will be</span>
+<span class="sd">            written on its own line.</span>
+<span class="sd">        continuous_character_state_value_format_fn : function object</span>
+<span class="sd">            When writing |ContinuousCharacterMatrix| data: a function that</span>
+<span class="sd">            takes a continuous character value and returns the string</span>
+<span class="sd">            representation of it.</span>
+<span class="sd">        discrete_character_state_value_format_fn : function object</span>
+<span class="sd">            When writing discrete character data (e.g., a</span>
+<span class="sd">            |StandardCharacterMatrix|): a function that takes a</span>
+<span class="sd">            standard character state value (i.e., a |StateIdentity| instance)</span>
+<span class="sd">            and returns the string representation of it.</span>
+<span class="sd">        suppress_leaf_taxon_labels : boolean, default: |False|</span>
+<span class="sd">            If |True|, then taxon labels will not be rendered for leaves.</span>
+<span class="sd">            Default is |False|: render leaf taxon labels. See notes below for</span>
+<span class="sd">            details.</span>
+<span class="sd">        suppress_leaf_node_labels : boolean, default: |True|</span>
+<span class="sd">            If |False|, then node labels (if available) will be printed for</span>
+<span class="sd">            leaves. Defaults to |True|: do not render leaf node labels. See</span>
+<span class="sd">            notes below for details.</span>
+<span class="sd">        suppress_internal_taxon_labels : boolean, default: |False|</span>
+<span class="sd">            If |True|, then taxon labels will not be printed for internal</span>
+<span class="sd">            nodes. Default is |False|: print taxon labels for internal nodes.</span>
+<span class="sd">            See notes below for details.</span>
+<span class="sd">        suppress_internal_node_labels : boolean, default: |False|</span>
+<span class="sd">            If |True|, then node labels will not be printed for internal nodes.</span>
+<span class="sd">            Default is |False|: print node labels for internal nodes. See notes</span>
+<span class="sd">            below for details.</span>
+<span class="sd">        suppress_rooting : boolean, default: |False|</span>
+<span class="sd">            If |True|, will not write rooting token (&#39;[&amp;R]&#39; or &#39;[&amp;U]&#39;).</span>
+<span class="sd">            Default is |False|: rooting token will be written.</span>
+<span class="sd">        suppress_edge_lengths : boolean, default: |False|</span>
+<span class="sd">            If |True|, will not write edge lengths. Default is |False|: edge</span>
+<span class="sd">            lengths will be written.</span>
+<span class="sd">        unquoted_underscores : boolean, default: |False|</span>
+<span class="sd">            If |True|, labels with underscores will not be quoted, which will</span>
+<span class="sd">            mean that they will be interpreted as spaces if read again (&quot;soft&quot;</span>
+<span class="sd">            underscores).  If |False|, then labels with underscores</span>
+<span class="sd">            will be quoted, resulting in &quot;hard&quot; underscores.  Default is</span>
+<span class="sd">            |False|.</span>
+<span class="sd">        preserve_spaces : boolean, default: |False|</span>
+<span class="sd">            If |True|, spaces will not be replaced with underscores in labels</span>
+<span class="sd">            (which means any labels containing spaces will have to be quoted).</span>
+<span class="sd">            Default is |False|: spaces will be converted to underscores.</span>
+<span class="sd">            False.</span>
+<span class="sd">        store_tree_weights : boolean, default: |False|</span>
+<span class="sd">            If |True|, tree weights are written. Default is |False|: tree</span>
+<span class="sd">            weights will not be written.</span>
+<span class="sd">        translate_tree_taxa : boolean or dict or |None|, default: |None|.</span>
+<span class="sd">            If |False| or |None|, then a &quot;TRANSLATE&quot; statement will not be</span>
+<span class="sd">            used, and tree statements will contain the full taxon labels. If</span>
+<span class="sd">            not |False| or |None|, a &quot;TRANSLATE&quot; statement will be written and</span>
+<span class="sd">            referenced in tree statements (instead of using the taxon labels).</span>
+<span class="sd">            If |True|, then a default translate statement will be used, with</span>
+<span class="sd">            tokens given by the taxon indexes. If a dictionary is given, then</span>
+<span class="sd">            the keys should be |Taxon| objects and the values should be the</span>
+<span class="sd">            token (strings).</span>
+<span class="sd">        suppress_annotations : boolean, default: |False|</span>
+<span class="sd">            If |True|, metadata annotations will be ignored.</span>
+<span class="sd">            Defaults to |False|: metadata annotations will be written.</span>
+<span class="sd">        annotations_as_nhx : boolean, default: |False|</span>
+<span class="sd">            If |True|, and if ``suppress_annotations`` is |False|, will write</span>
+<span class="sd">            annotations as NHX statements. Default is |False|: annotations</span>
+<span class="sd">            will not be written as NHX statements.</span>
+<span class="sd">        suppress_item_comments : boolean, default: |False|</span>
+<span class="sd">            If |True|: comments will be ignored. Default is |False|: any</span>
+<span class="sd">            additional comments associated with trees, nodes, edges, etc. will</span>
+<span class="sd">            be written.</span>
+<span class="sd">        node_label_element_separator : string, default: &#39; &#39;</span>
+<span class="sd">            If both ``suppress_leaf_taxon_labels`` and</span>
+<span class="sd">            ``suppress_leaf_node_labels`` are |False|, then this will be the</span>
+<span class="sd">            string used to join them. Defaults to &#39; &#39; (space).</span>
+<span class="sd">        node_label_compose_fn : function object or |None|, default: |None|</span>
+<span class="sd">            If not |None|, should be a function that takes a |Node|</span>
+<span class="sd">            object as an argument and returns the string to be used to</span>
+<span class="sd">            represent the node in the tree statement. The return value from</span>
+<span class="sd">            this function is used unconditionally to print a node</span>
+<span class="sd">            representation in a tree statement, by-passing the default</span>
+<span class="sd">            labelling function, ignoring ``suppress_leaf_taxon_labels``,</span>
+<span class="sd">            ``suppress_leaf_node_labels=True``, ``suppress_internal_taxon_labels``,</span>
+<span class="sd">            ``suppress_internal_node_labels``, etc. Defaults to |None|.</span>
+<span class="sd">        edge_label_compose_fn : function object or |None|, default: |None|</span>
+<span class="sd">            If not |None|, should be a function that takes an Edge object as</span>
+<span class="sd">            an argument, and returns the string to be used to represent the</span>
+<span class="sd">            edge length in the tree statement.</span>
+<span class="sd">        real_value_format_specifier : string, default: &#39;&#39;</span>
+<span class="sd">            Format specification for real/float values. Will be applied to edge</span>
+<span class="sd">            lengths (if ``edge_label_compose_fn`` is not given) as well as</span>
+<span class="sd">            annotations. The format specifier should be given in Python&#39;s</span>
+<span class="sd">            string format specification mini-language. E.g. &quot;.8f&quot;, &quot;.4E&quot;,</span>
+<span class="sd">            &quot;8.4f&quot;.</span>
+<span class="sd">        exclude_from_taxa_blocks : set (or other iterable) of |Taxon| instances</span>
+<span class="sd">            If specified, any |Taxon| object in this set will be excluded from</span>
+<span class="sd">            all TAXA blocks, *even* if they are referenced in the data.</span>
+<span class="sd">        ignore_unrecognized_keyword_arguments : boolean, default: |False|</span>
+<span class="sd">            If |True|, then unsupported or unrecognized keyword arguments will</span>
+<span class="sd">            not result in an error. Default is |False|: unsupported keyword</span>
+<span class="sd">            arguments will result in an error.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># base</span>
+        <span class="n">ioservice</span><span class="o">.</span><span class="n">DataWriter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Following are NEXUS specific (i.e., not used by NEWICK formatters),</span>
+        <span class="c1"># and need to be removed so as not to cause problems with our keyword</span>
+        <span class="c1"># validation scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simple</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_taxa_blocks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_taxa_blocks&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_block_titles</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_block_titles&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_comments</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;file_comments&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_comments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file_comments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preamble_blocks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;preamble_blocks&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preamble_blocks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preamble_blocks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">supplemental_blocks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;supplemental_blocks&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">supplemental_blocks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">supplemental_blocks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_multiline_comments</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;allow_multiline_comments&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_unreferenced_taxon_namespaces</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_unreferenced_taxon_namespaces&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continuous_character_state_value_format_fn</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;continuous_character_state_value_format_fn&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_continuous_character_value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_character_state_value_format_fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_character_state_value_format_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_continuous_character_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discrete_character_state_value_format_fn</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;discrete_character_state_value_format_fn&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_discrete_character_value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discrete_character_state_value_format_fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">discrete_character_state_value_format_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_discrete_character_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">translate_tree_taxa</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;translate_tree_taxa&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_from_taxa_blocks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exclude_from_taxa_blocks&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># The following are used by NewickWriter in addition to NexusWriter, so</span>
+        <span class="c1"># they are extracted/set here and then forwarded on ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unquoted_underscores</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;unquoted_underscores&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preserve_spaces</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;preserve_spaces&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotations_as_nhx</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;annotations_as_nhx&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">real_value_format_specifier</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;real_value_format_specifier&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># As above, but the NEXUS format default is different from the NEWICK</span>
+        <span class="c1"># default, so this rather convoluted approach</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_annotations</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_annotations&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;suppress_annotations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_annotations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_item_comments</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_item_comments&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;suppress_item_comments&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_item_comments</span>
+
+        <span class="c1"># The newick writer to which tree-writing will be delegated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_newick_writer</span> <span class="o">=</span> <span class="n">newickwriter</span><span class="o">.</span><span class="n">NewickWriter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Book-keeping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespaces_to_write</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_block_title_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title_block_map</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">stream</span><span class="p">,</span>
+            <span class="n">taxon_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">tree_lists</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">char_matrices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">global_annotations_target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># Header</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;#NEXUS</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># File/Document-level annotations and comments</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_comments</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_comments</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_comments</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">global_annotations_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_annotations</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">global_annotations_target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_comments</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">global_annotations_target</span><span class="p">)</span>
+
+        <span class="c1"># Other blocks</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preamble_blocks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preamble_blocks</span><span class="p">:</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Taxon namespace discovery</span>
+        <span class="n">candidate_taxon_namespaces</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># should this be False?</span>
+            <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">taxon_namespaces</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_unreferenced_taxon_namespaces</span><span class="p">:</span>
+                <span class="c1"># preload to preserve order</span>
+                <span class="k">for</span> <span class="n">tns</span> <span class="ow">in</span> <span class="n">taxon_namespaces</span><span class="p">:</span>
+                    <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="n">tns</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">tns</span> <span class="ow">in</span> <span class="n">taxon_namespaces</span><span class="p">:</span>
+                    <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="n">tns</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">data_collection</span> <span class="ow">in</span> <span class="p">(</span><span class="n">tree_lists</span><span class="p">,</span> <span class="n">char_matrices</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">data_collection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data_collection</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">i</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span><span class="p">:</span>
+                        <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespaces_to_write</span> <span class="o">=</span> <span class="p">[</span><span class="n">tns</span> <span class="k">for</span> <span class="n">tns</span> <span class="ow">in</span> <span class="n">candidate_taxon_namespaces</span> <span class="k">if</span> <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="n">tns</span><span class="p">]]</span>
+
+        <span class="c1">#  Write out taxon namespaces</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">simple</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_taxa_blocks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_block_titles</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespaces_to_write</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Multiple taxon namespaces will be written, but block titles are suppressed: data file may not be interpretable&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">tns</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespaces_to_write</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_taxa_block</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">tns</span><span class="p">)</span>
+
+        <span class="c1"># Write out character matrices</span>
+        <span class="k">if</span> <span class="n">char_matrices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">char_matrix</span> <span class="ow">in</span> <span class="n">char_matrices</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span>
+                        <span class="ow">or</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_write_char_block</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="o">=</span><span class="n">char_matrix</span><span class="p">)</span>
+
+        <span class="c1"># Write out tree lists</span>
+        <span class="k">if</span> <span class="n">tree_lists</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tree_list</span> <span class="ow">in</span> <span class="n">tree_lists</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span>
+                        <span class="ow">or</span> <span class="n">tree_list</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_write_trees_block</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
+                            <span class="n">tree_list</span><span class="o">=</span><span class="n">tree_list</span><span class="p">)</span>
+
+        <span class="c1"># Write out remaining</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">supplemental_blocks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supplemental_blocks</span><span class="p">:</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_taxa_to_include</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_from_taxa_blocks</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">taxon_namespace</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_from_taxa_blocks</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_write_taxa_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;BEGIN TAXA;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_block_title</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_annotations</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_comments</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="n">taxon_to_include</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_taxa_to_include</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    DIMENSIONS NTAX=</span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">taxon_to_include</span><span class="p">)))</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    TAXLABELS</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">taxon_to_include</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;        </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">escape_nexus_token</span><span class="p">(</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">preserve_spaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_spaces</span><span class="p">,</span> <span class="n">quote_underscores</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unquoted_underscores</span><span class="p">),</span>
+                <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_annotations</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">taxon</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_comments</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">taxon</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;  ;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;END;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_and_write_translate_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_tree_taxa</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_newick_writer</span><span class="o">.</span><span class="n">taxon_token_map</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_tree_taxa</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">taxon_idx</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">):</span>
+                <span class="n">m</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">accession_index</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># m[t] = str(taxon_idx)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_newick_writer</span><span class="o">.</span><span class="n">taxon_token_map</span> <span class="o">=</span> <span class="n">m</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_newick_writer</span><span class="o">.</span><span class="n">taxon_token_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate_tree_taxa</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;        Translate</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">statement</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">taxon_namespace</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">escape_nexus_token</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">),</span>
+                    <span class="n">preserve_spaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_spaces</span><span class="p">,</span>
+                    <span class="n">quote_underscores</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unquoted_underscores</span><span class="p">)</span>
+            <span class="n">statement</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;             </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_newick_writer</span><span class="o">.</span><span class="n">taxon_token_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">],</span> <span class="n">label</span><span class="p">))</span>
+        <span class="n">statement</span> <span class="o">=</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">             ;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_write_trees_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">tree_list</span><span class="p">):</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;BEGIN TREES;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_block_title</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">tree_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_annotations</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">tree_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_comments</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">tree_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_link_to_taxa_block</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">tree_list</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_and_write_translate_block</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">tree_list</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tree_idx</span><span class="p">,</span> <span class="n">tree</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tree_list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+                <span class="n">tree_name</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">label</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tree_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tree_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">tree_name</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">escape_nexus_token</span><span class="p">(</span>
+                    <span class="n">tree_name</span><span class="p">,</span>
+                    <span class="n">preserve_spaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_spaces</span><span class="p">,</span>
+                    <span class="n">quote_underscores</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unquoted_underscores</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    TREE </span><span class="si">{}</span><span class="s2"> = &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tree_name</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_newick_writer</span><span class="o">.</span><span class="n">_write_tree</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;END;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_char_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">):</span>
+        <span class="n">taxon_label_map</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="p">:</span>
+            <span class="n">taxon_label_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">escape_nexus_token</span><span class="p">(</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">preserve_spaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_spaces</span><span class="p">,</span> <span class="n">quote_underscores</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unquoted_underscores</span><span class="p">)</span>
+        <span class="n">nchar</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simple</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;BEGIN DATA;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># note that this will only list the number of taxa for</span>
+            <span class="c1"># which sequences are available</span>
+            <span class="n">ntaxstr</span> <span class="o">=</span> <span class="s2">&quot; NTAX=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">taxon_label_map</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;BEGIN CHARACTERS;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">ntaxstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_block_title</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_annotations</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_item_comments</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_link_to_taxa_block</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    DIMENSIONS</span><span class="si">{}</span><span class="s2"> NCHAR=</span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ntaxstr</span><span class="p">,</span> <span class="n">nchar</span><span class="p">))</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    FORMAT </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compose_format_terms</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">)))</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    MATRIX</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;continuous&quot;</span><span class="p">:</span>
+            <span class="n">state_value_writer</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_character_state_value_format_fn</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">state_value_writer</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discrete_character_state_value_format_fn</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="n">max_label_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">taxon_label_map</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;        {taxon_label:</span><span class="si">{field_len}</span><span class="s2">}    &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">taxon_label</span><span class="o">=</span><span class="n">taxon_label_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">],</span>
+                <span class="n">field_len</span><span class="o">=</span><span class="n">max_label_len</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="p">[</span><span class="n">taxon</span><span class="p">]:</span>
+                <span class="n">state_value_writer</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    ;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;END;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_character_subsets</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_compose_format_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">):</span>
+        <span class="nb">format</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;dna&quot;</span><span class="p">:</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DATATYPE=DNA&quot;</span><span class="p">)</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;GAP=- MISSING=? MATCHCHAR=.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;rna&quot;</span><span class="p">:</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DATATYPE=RNA&quot;</span><span class="p">)</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;GAP=- MISSING=? MATCHCHAR=.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;nucleotide&quot;</span><span class="p">:</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DATATYPE=NUCLEOTIDE&quot;</span><span class="p">)</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;GAP=- MISSING=? MATCHCHAR=.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;protein&quot;</span><span class="p">:</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DATATYPE=PROTEIN&quot;</span><span class="p">)</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;GAP=- MISSING=? MATCHCHAR=.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;continuous&quot;</span><span class="p">:</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DATATYPE=CONTINUOUS ITEMS=(STATES)&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DATATYPE=STANDARD&quot;</span><span class="p">)</span>
+            <span class="n">fundamental_symbols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">state_alphabet</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">state_alphabets</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">state_alphabet</span><span class="o">.</span><span class="n">fundamental_state_iter</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">fundamental_symbols</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">symbol</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Could not match character state to symbol: &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="n">s</span><span class="p">)</span>
+            <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SYMBOLS=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fundamental_symbols</span><span class="p">))</span>
+            <span class="n">equates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">state_alphabet</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">state_alphabets</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">state_alphabet</span><span class="o">.</span><span class="n">ambiguous_state_iter</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">:</span>
+                        <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;MISSING=?&quot;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                        <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;GAP=-&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">equates</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">={</span><span class="si">%s</span><span class="s2">}&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">fundamental_symbols</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">state_alphabet</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">state_alphabets</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">state_alphabet</span><span class="o">.</span><span class="n">polymorphic_state_iter</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">equates</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">=(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">fundamental_symbols</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">equates</span><span class="p">:</span>
+                <span class="nb">format</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;EQUATE=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">equates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">comments</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_multiline_comments</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">textprocessing</span><span class="o">.</span><span class="n">is_str_type</span><span class="p">(</span><span class="n">comments</span><span class="p">):</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comments</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">comments</span><span class="p">])</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comments</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">textprocessing</span><span class="o">.</span><span class="n">is_str_type</span><span class="p">(</span><span class="n">comments</span><span class="p">):</span>
+                <span class="n">comments</span> <span class="o">=</span> <span class="n">comments</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\r</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># comments = re.split(r&#39;[\r\n]+&#39;, comments)</span>
+                <span class="n">comments</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\r\n]+&#39;</span><span class="p">,</span> <span class="n">comments</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">comments</span><span class="p">:</span>
+                <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_write_item_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_item_comments</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">comments</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_comments</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">comments</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_item_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_annotations</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">annotations</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">format_item_annotations_as_comments</span><span class="p">(</span><span class="n">item</span><span class="p">,</span>
+                    <span class="n">nhx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations_as_nhx</span><span class="p">,</span>
+                    <span class="n">real_value_format_specifier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">real_value_format_specifier</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_write_block_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link_blocks</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_title</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    TITLE </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_write_link_to_taxa_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link_blocks</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="n">link_title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_title</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">link_title</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    LINK TAXA = </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">link_title</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_block_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+        <span class="c1"># if self.is_write_block_titles is False then no block titles;</span>
+        <span class="c1"># if only one taxon set, or attached taxon set mode, unless self.is_write_block_titles</span>
+        <span class="c1"># is explicitly True, then again, we do not write block titles</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link_blocks</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">block</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_title_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_title_map</span><span class="p">[</span><span class="n">block</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">block</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">block</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">label</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">original_title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">escape_nexus_token</span><span class="p">(</span>
+                <span class="n">original_title</span><span class="p">,</span>
+                <span class="n">preserve_spaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_spaces</span><span class="p">,</span>
+                <span class="n">quote_underscores</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unquoted_underscores</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">title</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_title_block_map</span><span class="p">:</span>
+            <span class="n">raw_title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">original_title</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">escape_nexus_token</span><span class="p">(</span>
+                    <span class="n">raw_title</span><span class="p">,</span>
+                    <span class="n">preserve_spaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_spaces</span><span class="p">,</span>
+                    <span class="n">quote_underscores</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unquoted_underscores</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title_block_map</span><span class="p">[</span><span class="n">title</span><span class="p">]</span> <span class="o">=</span> <span class="n">block</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_block_title_map</span><span class="p">[</span><span class="n">block</span><span class="p">]</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">return</span> <span class="n">title</span>
+
+    <span class="k">def</span> <span class="nf">_link_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If only one taxon set in dataset, or in attached taxon set mode, then</span>
+<span class="sd">        unless the &#39;block_titles&#39; directive has been explicitly set to True</span>
+<span class="sd">        by the user, block titles and links will not be written.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_block_titles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespaces_to_write</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_block_titles</span>
+
+    <span class="k">def</span> <span class="nf">_format_continuous_character_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_format_discrete_character_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_character_subsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">,</span> <span class="s2">&quot;character_subsets&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">character_subsets</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;BEGIN SETS;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">char_set</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">character_subsets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">escape_nexus_token</span><span class="p">(</span><span class="n">char_set</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                    <span class="n">preserve_spaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_spaces</span><span class="p">,</span>
+                    <span class="n">quote_underscores</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unquoted_underscores</span><span class="p">)</span>
+            <span class="n">ranges</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">group_ranges</span><span class="p">(</span><span class="n">char_set</span><span class="o">.</span><span class="n">character_indices</span><span class="p">)</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;    charset </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">pos</span><span class="p">))</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;END;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.3.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.dataio.nexuswriter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2025, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

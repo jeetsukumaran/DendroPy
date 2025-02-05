@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.dataio.nexmlwriter &#8212; DendroPy 5.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=f98c4cc8"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.dataio.nexmlwriter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.dataio.nexmlwriter</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">##</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Serialization of NeXML-formatted data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">ioservice</span>
+
+<span class="c1">############################################################################</span>
+<span class="c1">## Local Module Methods</span>
+
+<span class="k">def</span> <span class="nf">_safe_unicode</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; return the unicode representation of obj &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+        <span class="c1"># obj is byte string</span>
+        <span class="n">ascii_text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;string_escape&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ascii_text</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_safe_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; return the byte string representation of obj &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeEncodeError</span><span class="p">:</span>
+        <span class="c1"># obj is unicode</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;unicode_escape&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_protect_attr</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="c1">#     return cgi.escape(x)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_safe_str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">_to_nexml_indent_items</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Renders list of items into a string of lines in which each line is</span>
+<span class="sd">    indented appropriately.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">))</span> \
+                     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">_to_nexml_chartype</span><span class="p">(</span><span class="n">chartype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns nexml characters element attribute corresponding to given</span>
+<span class="sd">    chartype.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c1">#     if chartype == dendropy.DNA_CHARTYPE:</span>
+<span class="c1">#         return &quot;nex:DnaSeqs&quot;</span>
+<span class="c1">#     if chartype == dendropy.RNA_CHARTYPE:</span>
+<span class="c1">#         return &quot;nex:RnaSeqs&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+<span class="k">def</span> <span class="nf">_to_nexml_tree_length_type</span><span class="p">(</span><span class="n">length_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns attribute string for nexml tree type depending on whether</span>
+<span class="sd">    ``length_type`` is an int or a float.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">length_type</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;nex:IntTree&quot;</span>
+    <span class="k">elif</span> <span class="n">length_type</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;nex:FloatTree&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unrecognized value class </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">length_type</span><span class="p">)</span>
+
+<span class="c1">############################################################################</span>
+<span class="c1">## NexmlWriter</span>
+
+<span class="k">class</span> <span class="nc">NexmlWriter</span><span class="p">(</span><span class="n">ioservice</span><span class="o">.</span><span class="n">DataWriter</span><span class="p">):</span>
+    <span class="s2">&quot;Implements the DataWriter interface for handling NEXML files.&quot;</span>
+
+<div class="viewcode-block" id="NexmlWriter.__init__">
+<a class="viewcode-back" href="../../../schemas/nexml.html#dendropy.dataio.nexmlwriter.NexmlWriter.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+
+<span class="sd">        markup_as_sequences : boolean</span>
+<span class="sd">            If |True|, then character data will be marked up as sequences</span>
+<span class="sd">            instead of individual cells. Defaults to |False|.</span>
+<span class="sd">        suppress_unreferenced_taxon_namespaces: boolean, default: |False|</span>
+<span class="sd">            If |True|, then when writing |DataSet| objects, any</span>
+<span class="sd">            |TaxonNamespace| object in the DataSet&#39;s ``taxon_namespaces``</span>
+<span class="sd">            collection will *not* be written as a &quot;TAXA&quot; block if it is not</span>
+<span class="sd">            referenced by any character matrix (``char_matrices``) or tree list</span>
+<span class="sd">            (``tree_lists``).</span>
+<span class="sd">        ignore_unrecognized_keyword_arguments : boolean, default: |False|</span>
+<span class="sd">            If |True|, then unsupported or unrecognized keyword arguments will</span>
+<span class="sd">            not result in an error. Default is |False|: unsupported keyword</span>
+<span class="sd">            arguments will result in an error.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># base</span>
+        <span class="n">ioservice</span><span class="o">.</span><span class="n">DataWriter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># customization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markup_as_sequences</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;markup_as_sequences&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_unreferenced_taxon_namespaces</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_unreferenced_taxon_namespaces&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_for_unused_keyword_arguments</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># book-keeping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_uri_tuples</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespaces_to_write</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespace_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_object_xml_id</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_alphabet_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_id_map</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">stream</span><span class="p">,</span>
+            <span class="n">taxon_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">tree_lists</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">char_matrices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">global_annotations_target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># reset book-keeping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespaces_to_write</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespace_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_alphabet_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Destination:</span>
+        <span class="c1"># Writing to buffer instead of directly to output</span>
+        <span class="c1"># stream so that all namespaces referenced in metadata</span>
+        <span class="c1"># can be written</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+
+        <span class="c1"># comments and metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">global_annotations_target</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Taxon namespace discovery</span>
+        <span class="n">candidate_taxon_namespaces</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">taxon_namespaces</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_unreferenced_taxon_namespaces</span><span class="p">:</span>
+                <span class="c1"># preload to preserve order</span>
+                <span class="k">for</span> <span class="n">tns</span> <span class="ow">in</span> <span class="n">taxon_namespaces</span><span class="p">:</span>
+                    <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="n">tns</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">tns</span> <span class="ow">in</span> <span class="n">taxon_namespaces</span><span class="p">:</span>
+                    <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="n">tns</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">data_collection</span> <span class="ow">in</span> <span class="p">(</span><span class="n">tree_lists</span><span class="p">,</span> <span class="n">char_matrices</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">data_collection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data_collection</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">i</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached_taxon_namespace</span><span class="p">:</span>
+                        <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespaces_to_write</span> <span class="o">=</span> <span class="p">[</span><span class="n">tns</span> <span class="k">for</span> <span class="n">tns</span> <span class="ow">in</span> <span class="n">candidate_taxon_namespaces</span> <span class="k">if</span> <span class="n">candidate_taxon_namespaces</span><span class="p">[</span><span class="n">tns</span><span class="p">]]</span>
+
+        <span class="k">for</span> <span class="n">tns</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespaces_to_write</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_taxon_namespace</span><span class="p">(</span><span class="n">tns</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">char_matrices</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">char_matrix</span> <span class="ow">in</span> <span class="n">char_matrices</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_char_matrix</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">=</span><span class="n">char_matrix</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">body</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tree_lists</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tree_list</span> <span class="ow">in</span> <span class="n">tree_lists</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_tree_list</span><span class="p">(</span><span class="n">tree_list</span><span class="o">=</span><span class="n">tree_list</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">body</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_to_nexml_open</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_to_nexml_close</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_taxon_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespace_id_map</span><span class="p">[</span><span class="n">taxon_namespace</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;otus&#39;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespace_id_map</span><span class="p">[</span><span class="n">taxon_namespace</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;label=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">taxon_namespace</span><span class="p">:</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;otu&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_id_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">taxon</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_id_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;label=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">taxon</span><span class="o">.</span><span class="n">has_annotations</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">taxon</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">taxon</span><span class="o">.</span><span class="n">comments</span><span class="p">):</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+                <span class="c1"># self.write_extensions(taxon, dest, indent_level=indent_level+2)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">taxon</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/otu&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2"> /&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&lt;/otus&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_tree_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree_list</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;trees&#39;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">tree_list</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">tree_list</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;label=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="n">tree_list</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;otus=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespace_id_map</span><span class="p">[</span><span class="n">tree_list</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">])</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">tree_list</span><span class="o">.</span><span class="n">has_annotations</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">tree_list</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tree_list</span><span class="o">.</span><span class="n">comments</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">tree_list</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span>
+                    <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="n">tree_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_tree</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&lt;/trees&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_compose_state_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">state_alphabet</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">,</span> <span class="n">member_state</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="s2">&quot;Writes out state definition.&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_id_map</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state_id_map</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">member_state</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;member state=&quot;</span><span class="si">%s</span><span class="s1">&quot;/&gt;&#39;</span>
+                                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_id_map</span><span class="p">[</span><span class="n">state</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="n">state</span><span class="o">.</span><span class="n">state_denomination</span> <span class="o">==</span> <span class="n">state_alphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;state id=&quot;</span><span class="si">%s</span><span class="s1">&quot; symbol=&quot;</span><span class="si">%s</span><span class="s1">&quot; /&gt;&#39;</span>
+                                <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_id_map</span><span class="p">[</span><span class="n">state</span><span class="p">],</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">state_denomination</span> <span class="o">==</span> <span class="n">state_alphabet</span><span class="o">.</span><span class="n">AMBIGUOUS_STATE</span><span class="p">:</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;uncertain_state_set&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;polymorphic_state_set&quot;</span>
+
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;</span><span class="si">%s</span><span class="s1"> id=&quot;</span><span class="si">%s</span><span class="s1">&quot; symbol=&quot;</span><span class="si">%s</span><span class="s1">&quot;&gt;&#39;</span>
+                            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_id_map</span><span class="p">[</span><span class="n">state</span><span class="p">],</span> <span class="n">state</span><span class="o">.</span><span class="n">symbol</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">member_states</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compose_state_definition</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="n">state_alphabet</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">member_state</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&lt;/</span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">),</span> <span class="n">tag</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">parts</span>
+
+    <span class="k">def</span> <span class="nf">_write_char_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;characters&#39;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;label=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;otus=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_namespace_id_map</span><span class="p">[</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;dna&quot;</span><span class="p">:</span>
+            <span class="n">xsi_datatype</span> <span class="o">=</span> <span class="s1">&#39;nex:Dna&#39;</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;rna&quot;</span><span class="p">:</span>
+            <span class="n">xsi_datatype</span> <span class="o">=</span> <span class="s1">&#39;nex:Rna&#39;</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;protein&quot;</span><span class="p">:</span>
+            <span class="n">xsi_datatype</span> <span class="o">=</span> <span class="s1">&#39;nex:Protein&#39;</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;restriction&quot;</span><span class="p">:</span>
+            <span class="n">xsi_datatype</span> <span class="o">=</span> <span class="s1">&#39;nex:Restriction&#39;</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;standard&quot;</span><span class="p">:</span>
+            <span class="n">xsi_datatype</span> <span class="o">=</span> <span class="s1">&#39;nex:Standard&#39;</span>
+        <span class="k">elif</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;continuous&quot;</span><span class="p">:</span>
+            <span class="n">xsi_datatype</span> <span class="o">=</span> <span class="s1">&#39;nex:Continuous&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unrecognized character block data type.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">markup_as_sequences</span><span class="p">:</span>
+            <span class="n">xsi_markup</span> <span class="o">=</span> <span class="s1">&#39;Seqs&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xsi_markup</span> <span class="o">=</span> <span class="s1">&#39;Cells&#39;</span>
+        <span class="n">xsi_type</span> <span class="o">=</span> <span class="n">xsi_datatype</span> <span class="o">+</span> <span class="n">xsi_markup</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;xsi:type=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">xsi_type</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">has_annotations</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">comments</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">cell_char_type_id_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_format_section</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&lt;matrix&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+
+        <span class="c1"># with new data model,  char_matrix == taxon_seq_map!</span>
+        <span class="c1"># if char_matrix.taxon_seq_map.has_annotations:</span>
+        <span class="c1">#     self._write_annotations_and_comments(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)</span>
+
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="p">:</span>
+            <span class="n">char_vector</span> <span class="o">=</span> <span class="n">char_matrix</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span>
+            <span class="c1"># for col_idx, (char_value, cell_char_type, cell_annotations) in enumerate(char_vector):</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="o">*</span><span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;row&#39;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">char_vector</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">taxon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;otu=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_id_map</span><span class="p">[</span><span class="n">taxon</span><span class="p">])</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">char_vector</span><span class="o">.</span><span class="n">has_annotations</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">char_vector</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">char_vector</span><span class="o">.</span><span class="n">comments</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">char_vector</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">markup_as_sequences</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;dna&quot;</span><span class="p">,</span> <span class="s2">&quot;rna&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;restriction&quot;</span><span class="p">,</span> <span class="s2">&quot;aa&quot;</span><span class="p">,</span> <span class="s2">&quot;amino-acid&quot;</span><span class="p">):</span>
+                    <span class="n">separator</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># standard or continuous</span>
+                    <span class="n">separator</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+                <span class="n">print_count</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&lt;seq&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">3</span><span class="p">)))</span>
+                <span class="k">for</span> <span class="n">cidx</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">char_vector</span><span class="p">):</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Character </span><span class="si">%d</span><span class="s2"> in char_vector &#39;</span><span class="si">%s</span><span class="s2">&#39; does not have a symbol defined for its character state:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cidx</span><span class="p">,</span> <span class="n">char_vector</span><span class="o">.</span><span class="n">default_oid</span><span class="p">)</span> \
+                                    <span class="o">+</span> <span class="s2">&quot; this matrix cannot be written in sequence format (set &#39;markup_as_sequences&#39; to False)&#39;&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">print_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">4</span><span class="p">)))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+                    <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">print_count</span> <span class="o">==</span> <span class="mi">58</span><span class="p">:</span>
+                        <span class="n">print_count</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">print_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&lt;/seq&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">3</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">col_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">char_value</span><span class="p">,</span> <span class="n">cell_char_type</span><span class="p">,</span> <span class="n">cell_annotations</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">char_vector</span><span class="o">.</span><span class="n">cell_iter</span><span class="p">()):</span>
+                    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;cell&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="o">*</span><span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">3</span><span class="p">)))</span>
+                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;char=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">cell_char_type_id_map</span><span class="p">[</span> <span class="p">(</span><span class="n">taxon</span><span class="p">,</span> <span class="n">col_idx</span><span class="p">)</span> <span class="p">])</span>
+                    <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;continuous&quot;</span><span class="p">:</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">char_value</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_id_map</span><span class="p">[</span><span class="n">char_value</span><span class="p">]</span>
+                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;state=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">cell_annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotation_set</span><span class="p">(</span><span class="n">cell_annotations</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">4</span><span class="p">)</span>
+                        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;/cell&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="o">*</span><span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">3</span><span class="p">)))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;/&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&lt;/row&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&lt;/matrix&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&lt;/characters&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a single DendroPy Tree object as a NEXML nex:tree</span>
+<span class="sd">        element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;tree&#39;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">tree</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tree</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;label=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s1">&#39;length_type&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tree</span><span class="o">.</span><span class="n">length_type</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;xsi:type=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">_to_nexml_tree_length_type</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">length_type</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;xsi:type=&quot;nex:FloatTree&quot;&#39;</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;</span><span class="si">%s</span><span class="s1">&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                   <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">,</span> <span class="n">parts</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">has_annotations</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tree</span><span class="o">.</span><span class="n">comments</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span>
+                    <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">preorder_node_iter</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_node</span><span class="p">(</span>
+                    <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                    <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span>
+                    <span class="n">is_root</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">is_rooted</span> <span class="ow">and</span> <span class="n">node</span> <span class="ow">is</span> <span class="n">tree</span><span class="o">.</span><span class="n">seed_node</span><span class="p">,</span>
+                    <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">preorder_edge_iter</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_edge</span><span class="p">(</span>
+                    <span class="n">edge</span><span class="o">=</span><span class="n">edge</span><span class="p">,</span>
+                    <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span>
+                    <span class="n">is_root</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">is_rooted</span> <span class="ow">and</span> <span class="n">node</span> <span class="ow">is</span> <span class="n">tree</span><span class="o">.</span><span class="n">seed_node</span><span class="p">,</span>
+                    <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;/tree&gt;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_write_to_nexml_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="s2">&quot;Writes the opening tag for a nexml element.&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;&#39;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;nex:nexml&#39;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">version=&quot;0.9&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="n">ensured_namespaces</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;http://www.nexml.org/2009&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;xsi&quot;</span><span class="p">,</span> <span class="s2">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="s2">&quot;http://www.w3.org/XML/1998/namespace&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;nex&quot;</span><span class="p">,</span> <span class="s2">&quot;http://www.nexml.org/2009&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;xsd&quot;</span><span class="p">,</span> <span class="s2">&quot;http://www.w3.org/2001/XMLSchema#&quot;</span><span class="p">],</span>
+            <span class="c1"># [&quot;dendropy&quot;, &quot;http://pypi.org/project/DendroPy/&quot;],</span>
+                <span class="p">]</span>
+        <span class="c1"># parts.append(&#39;%sxmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#39; \</span>
+        <span class="c1">#              % (self.indent * (indent_level+1)))</span>
+        <span class="c1"># parts.append(&#39;%sxmlns:xml=&quot;http://www.w3.org/XML/1998/namespace&quot;&#39; \</span>
+        <span class="c1">#              % (self.indent * (indent_level+1)))</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">xsi:schemaLocation=&quot;http://www.nexml.org/2009 ../xsd/nexml.xsd&quot;&#39;</span>
+                     <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="c1"># parts.append(&#39;%sxmlns=&quot;http://www.nexml.org/2009&quot;&#39;</span>
+        <span class="c1">#              % (self.indent * (indent_level+1)))</span>
+        <span class="c1"># parts.append(&#39;%sxmlns:nex=&quot;http://www.nexml.org/2009&quot;&#39;</span>
+        <span class="c1">#              % (self.indent * (indent_level+1)))</span>
+        <span class="n">seen_prefixes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix_uri_tuples</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">seen_prefixes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">seen_prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">!=</span> <span class="n">uri</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Prefix &#39;</span><span class="si">%s</span><span class="s2">&#39; mapped to multiple namespaces: &#39;</span><span class="si">%s</span><span class="s2">&#39;, &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">prefix</span><span class="p">,</span>
+                        <span class="n">uri</span><span class="p">,</span>
+                        <span class="n">seen_prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="p">]))</span>
+            <span class="n">seen_prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span>
+            <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">prefix</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">xmlns</span><span class="si">%s</span><span class="s1">=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span> <span class="ow">in</span> <span class="n">ensured_namespaces</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">seen_prefixes</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">prefix</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">xmlns</span><span class="si">%s</span><span class="s1">=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span><span class="p">))</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_write_to_nexml_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="s2">&quot;Closing tag for a nexml element.&quot;</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;/nex:nexml&gt;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="o">*</span><span class="n">indent_level</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_write_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">is_root</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="s2">&quot;Writes out a NEXML node element.&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;node&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;label=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;taxon&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">taxon</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;otu=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_id_map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">taxon</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">is_root</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;root=&quot;true&quot;&#39;</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">),</span> <span class="n">parts</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">has_annotations</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">comments</span><span class="p">):</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;/node&gt;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; /&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">is_root</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="s2">&quot;Writes out a NEXML edge element.&quot;</span>
+        <span class="k">if</span> <span class="n">edge</span> <span class="ow">and</span> <span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="p">:</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;edge&quot;</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tag</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># EDGE-ON-ROOT:</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;rootedge&quot;</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tag</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">edge</span><span class="p">))</span>
+            <span class="c1"># programmatically more efficent to do this in above</span>
+            <span class="c1"># block, but want to maintain this tag order ...</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">tail_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;source=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">tail_node</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">head_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;target=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">head_node</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;length=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">edge</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">edge</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;label=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+
+            <span class="c1"># only write if we have more than just the &#39;edge&#39; and &#39;/&#39; bit</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">),</span> <span class="n">parts</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">has_annotations</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">edge</span><span class="o">.</span><span class="n">comments</span><span class="p">):</span>
+                    <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations_and_comments</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;/</span><span class="si">%s</span><span class="s1">&gt;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">),</span> <span class="n">tag</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; /&gt;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_annotations_and_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotations</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_comments</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commented</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">commented</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">commented</span><span class="o">.</span><span class="n">comments</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">newline</span><span class="p">:</span>
+                <span class="n">post</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">post</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">commented</span><span class="o">.</span><span class="n">comments</span><span class="p">:</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;!-- </span><span class="si">%s</span><span class="s1"> --&gt;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">),</span>
+                    <span class="n">comment</span><span class="p">,</span> <span class="n">post</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_write_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotated</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="s2">&quot;Writes out annotations for an Annotable object.&quot;</span>
+        <span class="c1"># import sys</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">annotated</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_annotation_set</span><span class="p">(</span><span class="n">annotated</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_annotation_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotation_set</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">annote</span> <span class="ow">in</span> <span class="n">annotation_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">annote</span><span class="o">.</span><span class="n">is_hidden</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compose_annotation_xml</span><span class="p">(</span><span class="n">annote</span><span class="p">,</span>
+                    <span class="n">indent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">,</span>
+                    <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="p">,</span>
+                    <span class="n">prefix_uri_tuples</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefix_uri_tuples</span><span class="p">))</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_compose_char_type_xml_for_continuous_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">,</span> <span class="n">char_type_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">char_type_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">char_type_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="nb">object</span><span class="p">())</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;char id=&quot;</span><span class="si">%s</span><span class="s1">&quot; /&gt;&#39;</span>
+            <span class="o">%</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="o">*</span><span class="p">(</span><span class="n">indent_level</span><span class="p">)),</span> <span class="n">char_type_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">char_type_id</span><span class="p">,</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">_compose_char_type_xml_for_state_alphabet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_alphabet</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">,</span> <span class="n">char_type_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">state_alphabet</span><span class="p">:</span>
+            <span class="n">char_type_state</span> <span class="o">=</span> <span class="s1">&#39; states=&quot;</span><span class="si">%s</span><span class="s1">&quot; &#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_alphabet_id_map</span><span class="p">[</span><span class="n">state_alphabet</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">char_type_state</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+        <span class="k">if</span> <span class="n">char_type_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">char_type_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="nb">object</span><span class="p">())</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;char id=&quot;</span><span class="si">%s</span><span class="s1">&quot;</span><span class="si">%s</span><span class="s1">/&gt;&#39;</span>
+            <span class="o">%</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="o">*</span><span class="p">(</span><span class="n">indent_level</span><span class="p">)),</span> <span class="n">char_type_id</span><span class="p">,</span> <span class="n">char_type_state</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">char_type_id</span><span class="p">,</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">_compose_char_type_xml_for_character_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character_type</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">):</span>
+        <span class="n">state_alphabet</span> <span class="o">=</span> <span class="n">character_type</span><span class="o">.</span><span class="n">state_alphabet</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_char_type_xml_for_state_alphabet</span><span class="p">(</span>
+                <span class="n">state_alphabet</span><span class="p">,</span>
+                <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="p">,</span>
+                <span class="n">char_type_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">character_type</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_state_alphabet_for_char_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">):</span>
+        <span class="n">sa</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">default_state_alphabet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sa</span> <span class="o">=</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">default_state_alphabet</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">state_alphabets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">sa</span> <span class="o">=</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">state_alphabets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">state_alphabets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Multiple state alphabets defined for this matrix with no default specified&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">char_matrix</span><span class="o">.</span><span class="n">state_alphabets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No state alphabets defined for this matrix&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sa</span>
+
+    <span class="k">def</span> <span class="nf">_write_format_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char_matrix</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">indent_level</span><span class="p">):</span>
+        <span class="n">format_section_parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">,</span> <span class="s2">&quot;state_alphabets&quot;</span><span class="p">):</span> <span class="c1">#isinstance(char_matrix, dendropy.StandardCharacterMatrix):</span>
+            <span class="k">for</span> <span class="n">state_alphabet</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">state_alphabets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_state_alphabet_id_map</span><span class="p">[</span><span class="n">state_alphabet</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">state_alphabet</span><span class="p">)</span>
+                <span class="n">format_section_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;states id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&gt;&#39;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_alphabet_id_map</span><span class="p">[</span><span class="n">state_alphabet</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">state_alphabet</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">state_denomination</span> <span class="o">==</span> <span class="n">state_alphabet</span><span class="o">.</span><span class="n">FUNDAMENTAL_STATE</span><span class="p">:</span>
+                        <span class="n">format_section_parts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compose_state_definition</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">state_alphabet</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">+</span><span class="mi">3</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">state_alphabet</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">state_denomination</span> <span class="o">==</span> <span class="n">state_alphabet</span><span class="o">.</span><span class="n">POLYMORPHIC_STATE</span><span class="p">:</span>
+                        <span class="n">format_section_parts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compose_state_definition</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">state_alphabet</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">+</span><span class="mi">3</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">state_alphabet</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">state_denomination</span> <span class="o">==</span> <span class="n">state_alphabet</span><span class="o">.</span><span class="n">AMBIGUOUS_STATE</span><span class="p">:</span>
+                        <span class="n">format_section_parts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compose_state_definition</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">state_alphabet</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">+</span><span class="mi">3</span><span class="p">))</span>
+                <span class="n">format_section_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&lt;/states&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">*</span> <span class="p">(</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="n">cell_char_type_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">char_type_ids_written</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">char_matrix</span><span class="p">:</span>
+            <span class="n">char_vector</span> <span class="o">=</span> <span class="n">char_matrix</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">col_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">char_value</span><span class="p">,</span> <span class="n">cell_char_type</span><span class="p">,</span> <span class="n">cell_annotations</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">char_vector</span><span class="o">.</span><span class="n">cell_iter</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">cell_char_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">char_matrix</span><span class="o">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;continuous&quot;</span><span class="p">:</span>
+                        <span class="n">char_type_id</span><span class="p">,</span> <span class="n">char_type_xml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_char_type_xml_for_continuous_type</span><span class="p">(</span><span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">sa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_state_alphabet_for_char_matrix</span><span class="p">(</span><span class="n">char_matrix</span><span class="p">)</span>
+                        <span class="k">assert</span> <span class="n">sa</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="n">char_type_id</span><span class="p">,</span> <span class="n">char_type_xml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_char_type_xml_for_state_alphabet</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">char_type_id</span><span class="p">,</span> <span class="n">char_type_xml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_char_type_xml_for_character_type</span><span class="p">(</span><span class="n">cell_char_type</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">char_type_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">char_type_ids_written</span><span class="p">:</span>
+                    <span class="n">format_section_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">char_type_xml</span><span class="p">)</span>
+                    <span class="n">char_type_ids_written</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">char_type_id</span><span class="p">)</span>
+                <span class="n">cell_char_type_id_map</span><span class="p">[</span> <span class="p">(</span><span class="n">taxon</span><span class="p">,</span> <span class="n">col_idx</span><span class="p">)</span> <span class="p">]</span> <span class="o">=</span> <span class="n">char_type_id</span>
+        <span class="k">if</span> <span class="n">format_section_parts</span><span class="p">:</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&lt;format&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="o">*</span><span class="p">(</span><span class="n">indent_level</span><span class="p">)))</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">format_section_parts</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&lt;/format&gt;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="o">*</span><span class="p">(</span><span class="n">indent_level</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">cell_char_type_id_map</span>
+
+    <span class="k">def</span> <span class="nf">_get_nexml_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_xml_id</span><span class="p">[</span><span class="n">o</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="s2">&quot;d</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_object_xml_id</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_object_xml_id</span><span class="p">[</span><span class="n">o</span><span class="p">]</span> <span class="o">=</span> <span class="n">oid</span>
+            <span class="k">return</span> <span class="n">oid</span>
+
+    <span class="k">def</span> <span class="nf">_compose_annotation_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">annote</span><span class="p">,</span>
+            <span class="n">indent</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">indent_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">prefix_uri_tuples</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&lt;meta&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">)]</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">annote</span><span class="o">.</span><span class="n">value</span>
+        <span class="c1"># if value is not None:</span>
+        <span class="c1">#     value = _protect_attr(value)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     value = None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_protect_attr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">annote</span><span class="o">.</span><span class="n">prefixed_name</span>
+        <span class="c1"># assert &quot;:&quot; in key</span>
+        <span class="k">if</span> <span class="n">annote</span><span class="o">.</span><span class="n">annotate_as_reference</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;xsi:type=&quot;nex:ResourceMeta&quot;&#39;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;rel=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;href=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;xsi:type=&quot;nex:LiteralMeta&quot;&#39;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;property=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;content=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;content=&quot;&quot;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">annote</span><span class="o">.</span><span class="n">datatype_hint</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;datatype=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span><span class="o">%</span> <span class="n">annote</span><span class="o">.</span><span class="n">datatype_hint</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;id=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_nexml_id</span><span class="p">(</span><span class="n">annote</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">prefix_uri_tuples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prefix_uri_tuples</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">annote</span><span class="o">.</span><span class="n">name_prefix</span><span class="p">,</span> <span class="n">annote</span><span class="o">.</span><span class="n">namespace</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">annote</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">annote</span><span class="o">.</span><span class="n">annotations</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_annotation_xml</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">indent_level</span><span class="o">=</span><span class="n">indent_level</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">prefix_uri_tuples</span><span class="o">=</span><span class="n">prefix_uri_tuples</span><span class="p">))</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&lt;/meta&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">indent</span> <span class="o">*</span> <span class="n">indent_level</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;/&gt;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.3.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.dataio.nexmlwriter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2025, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

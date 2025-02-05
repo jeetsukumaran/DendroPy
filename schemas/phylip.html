@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>PHYLIP &#8212; DendroPy 5.0.2 documentation</title>
+    <title>PHYLIP &#8212; DendroPy 5.0.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=5df4c8d1"></script>
+    <script src="../_static/documentation_options.js?v=f98c4cc8"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="nexus.html" title="NEXUS"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">PHYLIP</a></li> 
       </ul>
@@ -98,6 +98,41 @@
 <h2>Reading<a class="headerlink" href="#reading" title="Link to this heading">¶</a></h2>
 <section id="schema-specific-keyword-arguments">
 <h3>Schema-Specific Keyword Arguments<a class="headerlink" href="#schema-specific-keyword-arguments" title="Link to this heading">¶</a></h3>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.dataio.phylipreader.PhylipReader.__init__">
+<span class="sig-prename descclassname"><span class="pre">PhylipReader.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/dataio/phylipreader.html#PhylipReader.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.dataio.phylipreader.PhylipReader.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – When reading into a <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> object, the type of data must be
+specified: “dna”, “rna”, “protein”, “restriction”, “infinite”,
+“standard”, or “continuous”.</p></li>
+<li><p><strong>default_state_alphabet</strong> (<a class="reference internal" href="../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet" title="dendropy.datamodel.charstatemodel.StateAlphabet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateAlphabet</span></code></a> instance) – A <a class="reference internal" href="../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateAlphabet" title="dendropy.datamodel.charstatemodel.StateAlphabet"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateAlphabet</span></code></a> object to be used to manage the alphabet of the
+characters (<a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardCharacterMatrix</span></code></a> <strong>only</strong>).</p></li>
+<li><p><strong>strict</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then data is given in ‘strict’ format, where first 10
+characters are the taxon label and remaining characters are the sequence.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: relaxed format, where taxon labels are of
+arbitrary length and separation of sequences are is by one or more (if
+<code class="docutils literal notranslate"><span class="pre">multispace_delimiter</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) or two or more (if
+<code class="docutils literal notranslate"><span class="pre">multispace_delimiter</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>) spaces.</p></li>
+<li><p><strong>interleaved</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then data is in interleaved format.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: data is non-interleaved.</p></li>
+<li><p><strong>multispace_delimiter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (and <code class="docutils literal notranslate"><span class="pre">strict</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>), then at least two spaces are
+required to delimit taxon label and associated sequence. Default is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>: one or more spaces delimit taxon label and associated
+sequence.</p></li>
+<li><p><strong>underscore_to_spaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then underscores in taxon labels are converted to
+spaces. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: underscores are not converted.</p></li>
+<li><p><strong>ignore_invalid_chars</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then any invalid characters in sequences will be ignored.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: invalid characters result in errors.</p></li>
+<li><p><strong>ignore_unrecognized_keyword_arguments</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then unsupported or unrecognized keyword arguments will
+not result in an error. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: unsupported keyword
+arguments will result in an error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="supported-methods">
 <h3>Supported Methods<a class="headerlink" href="#supported-methods" title="Link to this heading">¶</a></h3>
@@ -370,6 +405,34 @@ keyword argument.</p>
 <h2>Writing<a class="headerlink" href="#writing" title="Link to this heading">¶</a></h2>
 <section id="schema-specific-keyword-arguments-writing-phylip">
 <span id="id1"></span><h3>Schema-Specific Keyword Arguments<a class="headerlink" href="#schema-specific-keyword-arguments-writing-phylip" title="Link to this heading">¶</a></h3>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.dataio.phylipwriter.PhylipWriter.__init__">
+<span class="sig-prename descclassname"><span class="pre">PhylipWriter.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/dataio/phylipwriter.html#PhylipWriter.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.dataio.phylipwriter.PhylipWriter.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>strict</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, use ‘strict’ format, i.e., taxon labels given in
+first 10 characters, followed by sequence starting at character 11.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: use ‘relaxed’ format, with arbitrary-length
+taxon labels separated from sequences by two or more spaces.</p></li>
+<li><p><strong>spaces_to_underscores</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, all spaces will be converted to underscores. Default is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>: spaces will be preserved.</p></li>
+<li><p><strong>taxon_label_fn</strong> (<em>function object</em>) – If specified, then this function will be called everytime taxon
+label is required. It will be passed a <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object as an
+argument and should represent the string or string-like object that
+should serve as the label.</p></li>
+<li><p><strong>force_unique_taxon_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then taxon labels will be modified to avoid duplicate
+labels. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: taxon labels will not be modified.</p></li>
+<li><p><strong>suppress_missing_taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then taxa with zero characters will not be printed
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: all taxa will be printed</p></li>
+<li><p><strong>ignore_unrecognized_keyword_arguments</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then unsupported or unrecognized keyword arguments will
+not result in an error. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: unsupported keyword
+arguments will result in an error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="id2">
 <h3>Supported Methods<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
@@ -612,7 +675,10 @@ keyword argument.</p>
 <li><a class="reference internal" href="#">PHYLIP</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#reading">Reading</a><ul>
-<li><a class="reference internal" href="#schema-specific-keyword-arguments">Schema-Specific Keyword Arguments</a></li>
+<li><a class="reference internal" href="#schema-specific-keyword-arguments">Schema-Specific Keyword Arguments</a><ul>
+<li><a class="reference internal" href="#dendropy.dataio.phylipreader.PhylipReader.__init__"><code class="docutils literal notranslate"><span class="pre">PhylipReader.__init__</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#supported-methods">Supported Methods</a><ul>
 <li><a class="reference internal" href="#dnacharactermatrix-get"><code class="docutils literal notranslate"><span class="pre">DnaCharacterMatrix.get</span></code></a></li>
 <li><a class="reference internal" href="#rnacharactermatrix-get"><code class="docutils literal notranslate"><span class="pre">RnaCharacterMatrix.get</span></code></a></li>
@@ -627,7 +693,10 @@ keyword argument.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#writing">Writing</a><ul>
-<li><a class="reference internal" href="#schema-specific-keyword-arguments-writing-phylip">Schema-Specific Keyword Arguments</a></li>
+<li><a class="reference internal" href="#schema-specific-keyword-arguments-writing-phylip">Schema-Specific Keyword Arguments</a><ul>
+<li><a class="reference internal" href="#dendropy.dataio.phylipwriter.PhylipWriter.__init__"><code class="docutils literal notranslate"><span class="pre">PhylipWriter.__init__</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#id2">Supported Methods</a><ul>
 <li><a class="reference internal" href="#dnacharactermatrix-write"><code class="docutils literal notranslate"><span class="pre">DnaCharacterMatrix.write</span></code></a></li>
 <li><a class="reference internal" href="#dnacharactermatrix-as-string"><code class="docutils literal notranslate"><span class="pre">DnaCharacterMatrix.as_string</span></code></a></li>
@@ -697,7 +766,7 @@ keyword argument.</p>
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.2.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.3.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -761,7 +830,7 @@ keyword argument.</p>
         <li class="right" >
           <a href="nexus.html" title="NEXUS"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">PHYLIP</a></li> 
       </ul>

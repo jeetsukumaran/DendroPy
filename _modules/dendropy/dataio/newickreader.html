@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dendropy.dataio.newickreader &#8212; DendroPy 5.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/rtd.css?v=cedc6a2f" />
+    
+    <script src="../../../_static/documentation_options.js?v=f98c4cc8"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.dataio.newickreader</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dendropy.dataio.newickreader</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">##  DendroPy Phylogenetic Computing Library.</span>
+<span class="c1">##</span>
+<span class="c1">##  Copyright 2010-2015 Jeet Sukumaran and Mark T. Holder.</span>
+<span class="c1">##  All rights reserved.</span>
+<span class="c1">##</span>
+<span class="c1">##  See &quot;LICENSE.rst&quot; for terms and conditions of usage.</span>
+<span class="c1">##</span>
+<span class="c1">##  If you use this work or any portion thereof in published work,</span>
+<span class="c1">##  please cite it as:</span>
+<span class="c1">##</span>
+<span class="c1">##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library</span>
+<span class="c1">##     for phylogenetic computing. Bioinformatics 26: 1569-1571.</span>
+<span class="c1">#</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Parsing of NEWICK-format tree from a stream.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">error</span>
+<span class="kn">from</span> <span class="nn">dendropy.utility</span> <span class="kn">import</span> <span class="n">deprecate</span>
+<span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">tokenizer</span>
+<span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">nexusprocessing</span>
+<span class="kn">from</span> <span class="nn">dendropy.dataio</span> <span class="kn">import</span> <span class="n">ioservice</span>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">## NewickReader</span>
+
+<span class="k">class</span> <span class="nc">NewickReader</span><span class="p">(</span><span class="n">ioservice</span><span class="o">.</span><span class="n">DataReader</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parser for NEWICK-formatted data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_default_rooting_directive</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_default_tree_weight</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">class</span> <span class="nc">NewickReaderError</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">DataParseError</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span>
+                <span class="n">line_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">col_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">error</span><span class="o">.</span><span class="n">DataParseError</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+                    <span class="n">line_num</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                    <span class="n">col_num</span><span class="o">=</span><span class="n">col_num</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">NewickReaderInvalidTokenError</span><span class="p">(</span><span class="n">NewickReaderError</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">message</span><span class="p">,</span>
+                <span class="n">line_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">col_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderError</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+                    <span class="n">line_num</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                    <span class="n">col_num</span><span class="o">=</span><span class="n">col_num</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">NewickReaderMalformedStatementError</span><span class="p">(</span><span class="n">NewickReaderError</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">message</span><span class="p">,</span>
+                <span class="n">line_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">col_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderError</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+                    <span class="n">line_num</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                    <span class="n">col_num</span><span class="o">=</span><span class="n">col_num</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">NewickReaderIncompleteTreeStatementError</span><span class="p">(</span><span class="n">NewickReaderMalformedStatementError</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">message</span><span class="p">,</span>
+                <span class="n">line_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">col_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderMalformedStatementError</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+                    <span class="n">line_num</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                    <span class="n">col_num</span><span class="o">=</span><span class="n">col_num</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">NewickReaderInvalidValueError</span><span class="p">(</span><span class="n">NewickReaderError</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">message</span><span class="p">,</span>
+                <span class="n">line_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">col_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderError</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+                    <span class="n">line_num</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                    <span class="n">col_num</span><span class="o">=</span><span class="n">col_num</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">NewickReaderDuplicateTaxonError</span><span class="p">(</span><span class="n">NewickReaderError</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">message</span><span class="p">,</span>
+                <span class="n">line_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">col_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">detailed</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Multiple occurrences of the same taxa on trees are not&quot;</span>
+            <span class="s2">&quot; supported: trees with duplicate node labels can only be&quot;</span>
+            <span class="s2">&quot; processed if the labels are not parsed as operational taxonomic&quot;</span>
+            <span class="s2">&quot; unit concepts but instead as simply node labels by specifying&quot;</span>
+            <span class="s2">&quot; &#39;suppress_internal_node_taxa=True, suppress_leaf_node_taxa=True&#39;.&quot;</span>
+            <span class="s2">&quot; Duplicate taxon labels: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderError</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">detailed</span><span class="p">,</span>
+                    <span class="n">line_num</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                    <span class="n">col_num</span><span class="o">=</span><span class="n">col_num</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NewickReader.__init__">
+<a class="viewcode-back" href="../../../schemas/newick.html#dendropy.dataio.newickreader.NewickReader.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        rooting : string, {[&#39;default-unrooted&#39;], &#39;default-rooted&#39;, &#39;force-unrooted&#39;, &#39;force-rooted&#39;}</span>
+<span class="sd">            Specifies how trees in the data source should be intepreted with</span>
+<span class="sd">            respect to their rooting:</span>
+
+<span class="sd">                &#39;default-unrooted&#39; [default]:</span>
+<span class="sd">                    All trees are interpreted as unrooted unless a &#39;[&amp;R]&#39;</span>
+<span class="sd">                    comment token explicitly specifies them as rooted.</span>
+<span class="sd">                &#39;default-rooted&#39;</span>
+<span class="sd">                    All trees are interpreted as rooted unless a &#39;[&amp;U]&#39;</span>
+<span class="sd">                    comment token explicitly specifies them as unrooted.</span>
+<span class="sd">                &#39;force-unrooted&#39;</span>
+<span class="sd">                    All trees are unconditionally interpreted as unrooted.</span>
+<span class="sd">                &#39;force-rooted&#39;</span>
+<span class="sd">                    All trees are unconditionally interpreted as rooted.</span>
+
+<span class="sd">        edge_length_type : type, default: ``float``</span>
+<span class="sd">            Specifies the type of the edge lengths (``int`` or ``float``). Tokens</span>
+<span class="sd">            interpreted as branch lengths will be cast to this type.</span>
+<span class="sd">            Defaults to ``float``.</span>
+<span class="sd">        suppress_edge_lengths : boolean, default: |False|</span>
+<span class="sd">            If |True|, edge length values will not be processed. If |False|,</span>
+<span class="sd">            edge length values will be processed.</span>
+<span class="sd">        extract_comment_metadata : boolean, default: |True|</span>
+<span class="sd">            If |True| (default), any comments that begin with &#39;&amp;&#39; or &#39;&amp;&amp;&#39; will</span>
+<span class="sd">            be parsed and stored as part of the annotation set of the</span>
+<span class="sd">            corresponding object (accessible through the ``annotations``</span>
+<span class="sd">            attribute of the object). This requires that the comment</span>
+<span class="sd">            contents conform to a particular format (NHX or BEAST: &#39;field =</span>
+<span class="sd">            value&#39;). If |False|, then the comments will not be parsed,</span>
+<span class="sd">            but will be instead stored directly as elements of the ``comments``</span>
+<span class="sd">            list attribute of the associated object.</span>
+<span class="sd">        store_tree_weights : boolean, default: |False|</span>
+<span class="sd">            If |True|, process the tree weight (e.g. &quot;[&amp;W 1/2]&quot;) comment</span>
+<span class="sd">            associated with each tree, if any. Defaults to |False|.</span>
+<span class="sd">        finish_node_fn : function object, default: |None|</span>
+<span class="sd">            If specified, this function will be applied to each node after</span>
+<span class="sd">            it has been constructed.</span>
+<span class="sd">        case_sensitive_taxon_labels : boolean, default: |False|</span>
+<span class="sd">            If |True|, then taxon labels are case sensitive (e.g., &quot;P.regius&quot;</span>
+<span class="sd">            and &quot;P.REGIUS&quot; wil be treated as different operation taxonomic</span>
+<span class="sd">            unit concepts). Otherwise, taxon label intepretation will be made</span>
+<span class="sd">            without regard for case.</span>
+<span class="sd">        preserve_underscores : boolean, default: |False|</span>
+<span class="sd">            If |True|, unquoted underscores in labels will *not* converted to</span>
+<span class="sd">            spaces. Defaults to |False|: all underscores not protected by</span>
+<span class="sd">            quotes will be converted to spaces.</span>
+<span class="sd">        suppress_internal_node_taxa : boolean, default: |True|</span>
+<span class="sd">            If |False|, internal node labels will be instantantiated into</span>
+<span class="sd">            |Taxon| objects. If |True|, internal node labels</span>
+<span class="sd">            will *not* be instantantiated as strings.</span>
+<span class="sd">        suppress_leaf_node_taxa : boolean, default: |False|</span>
+<span class="sd">            If |False|, leaf (external) node labels will be instantantiated</span>
+<span class="sd">            into |Taxon| objects. If |True|, leaf (external) node</span>
+<span class="sd">            labels will *not* be instantantiated as strings.</span>
+<span class="sd">        is_parse_jplace_tokens : boolean: |False|</span>
+<span class="sd">            If |True|, then accept edge numbering according to the jplace</span>
+<span class="sd">            format, as described in Matsen et. al. PLoS One, 2012</span>
+<span class="sd">            http://dx.doi.org/10.1371/journal.pone.0031009. An instance variable</span>
+<span class="sd">            edge_index is added to the returned tree, and an edge_number is</span>
+<span class="sd">            added to each edge. If False [default], encountering edge labels</span>
+<span class="sd">            raises a NewickReaderMalformedStatementError.</span>
+<span class="sd">        is_assign_internal_labels_to_edges : boolean, default: |None|</span>
+<span class="sd">            If |True|, internal node labels will be assigned as edge labels.</span>
+<span class="sd">        terminating_semicolon_required : boolean, default: |True|</span>
+<span class="sd">            If |True| [default], then a tree statement that does not end in a</span>
+<span class="sd">            semi-colon is an error. If |False|, then no error will be raised.</span>
+<span class="sd">        ignore_unrecognized_keyword_arguments : boolean, default: |False|</span>
+<span class="sd">            If |True|, then unsupported or unrecognized keyword arguments will</span>
+<span class="sd">            not result in an error. Default is |False|: unsupported keyword</span>
+<span class="sd">            arguments will result in an error.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># base</span>
+        <span class="n">ioservice</span><span class="o">.</span><span class="n">DataReader</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">## (TEMPORARY and UGLY!!!!) Special handling for legacy signature</span>
+        <span class="k">if</span> <span class="s2">&quot;as_unrooted&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s2">&quot;as_rooted&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s2">&quot;default_as_rooted&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s2">&quot;default_as_unrooted&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">collections</span>
+            <span class="n">legacy_kw</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;as_unrooted&quot;</span><span class="p">,</span> <span class="s2">&quot;as_rooted&quot;</span><span class="p">,</span> <span class="s2">&quot;default_as_rooted&quot;</span><span class="p">,</span> <span class="s2">&quot;default_as_unrooted&quot;</span><span class="p">)</span>
+            <span class="n">legacy_kw_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">legacy_kw</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;rooting&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot specify &#39;rooting&#39; keyword argument in conjunction with any of the (legacy) keyword arguments (</span><span class="si">{}</span><span class="s2">). Use &#39;rooting&#39; alone.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">legacy_kw_str</span><span class="p">))</span>
+            <span class="n">specs</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">legacy_kw</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">specs</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot specify more than one of {{ </span><span class="si">{}</span><span class="s2"> }} at the same time&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">legacy_kw_str</span><span class="p">))</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">specs</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">kw</span> <span class="o">==</span> <span class="s2">&quot;as_unrooted&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]:</span>
+                    <span class="n">corrected</span> <span class="o">=</span> <span class="s2">&quot;force-unrooted&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">corrected</span> <span class="o">=</span> <span class="s2">&quot;force-rooted&quot;</span>
+            <span class="k">elif</span> <span class="n">kw</span> <span class="o">==</span> <span class="s2">&quot;as_rooted&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]:</span>
+                    <span class="n">corrected</span> <span class="o">=</span> <span class="s2">&quot;force-rooted&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">corrected</span> <span class="o">=</span> <span class="s2">&quot;force-unrooted&quot;</span>
+            <span class="k">elif</span> <span class="n">kw</span> <span class="o">==</span> <span class="s2">&quot;default_as_unrooted&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]:</span>
+                    <span class="n">corrected</span> <span class="o">=</span> <span class="s2">&quot;default-unrooted&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">corrected</span> <span class="o">=</span> <span class="s2">&quot;default-rooted&quot;</span>
+            <span class="k">elif</span> <span class="n">kw</span> <span class="o">==</span> <span class="s2">&quot;default_as_rooted&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]:</span>
+                    <span class="n">corrected</span> <span class="o">=</span> <span class="s2">&quot;default-rooted&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">corrected</span> <span class="o">=</span> <span class="s2">&quot;default-unrooted&quot;</span>
+            <span class="n">deprecate</span><span class="o">.</span><span class="n">dendropy_deprecation_warning</span><span class="p">(</span>
+                    <span class="n">preamble</span><span class="o">=</span><span class="s2">&quot;Deprecated since DendroPy 4:&quot;</span><span class="p">,</span>
+                    <span class="n">old_construct</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]),</span>
+                    <span class="n">new_construct</span><span class="o">=</span><span class="s2">&quot;rooting=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">corrected</span><span class="p">),</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;rooting&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">corrected</span>
+        <span class="k">if</span> <span class="s2">&quot;allow_duplicate_taxon_labels&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;allow_duplicate_taxon_labels&#39; is no longer&quot;</span>
+                <span class="s2">&quot; supported: trees with duplicate node labels can only be&quot;</span>
+                <span class="s2">&quot; processed if the labels are not parsed as operational taxonomic&quot;</span>
+                <span class="s2">&quot; unit concepts but instead as simply node labels by specifying&quot;</span>
+                <span class="s2">&quot; &#39;suppress_internal_node_taxa=True, suppress_leaf_node_taxa=True&#39;.&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># self.rooting = kwargs.pop(&quot;rooting&quot;, &quot;default-unrooted&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rooting</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;rooting&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_default_rooting_directive</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_length_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;edge_length_type&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_edge_lengths</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_edge_lengths&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;extract_comment_metadata&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_tree_weights</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;store_tree_weights&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_tree_weight</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;default_tree_weight&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_default_tree_weight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finish_node_fn</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;finish_node_fn&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive_taxon_labels</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;case_sensitive_taxon_labels&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preserve_unquoted_underscores</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;preserve_underscores&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_internal_node_taxa</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_internal_node_taxa&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_leaf_node_taxa</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_external_node_taxa&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="c1"># legacy (will be deprecated)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_leaf_node_taxa</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;suppress_leaf_node_taxa&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_leaf_node_taxa</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_parse_jplace_tokens</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;is_parse_jplace_tokens&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_assign_internal_labels_to_edges</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;is_assign_internal_labels_to_edges&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_assign_internal_labels_to_edges</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_internal_node_taxa</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Conflicting options: cannot simultaneously assign internal labels to edges and to internal taxa&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminating_semicolon_required</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;terminating_semicolon_required&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_for_unused_keyword_arguments</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># per-tree book-keeping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_statement_complete</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seen_taxa</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span> <span class="nf">tree_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">stream</span><span class="p">,</span>
+            <span class="n">taxon_symbol_mapper</span><span class="p">,</span>
+            <span class="n">tree_factory</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterator that yields trees in NEWICK-formatted source.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        stream : file or file-like object</span>
+<span class="sd">            A file or file-like object opened for reading.</span>
+<span class="sd">        taxon_namespace : |TaxonNamespace|</span>
+<span class="sd">            Operational taxonomic unit namespace to use for taxon management.</span>
+<span class="sd">        tree_factory : function object</span>
+<span class="sd">            A function that returns a new |Tree| object when called</span>
+<span class="sd">            without arguments.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        iter : :py`collections.Iterator` [|Tree|]</span>
+<span class="sd">            An iterator yielding |Tree| objects constructed based on</span>
+<span class="sd">            data in ``stream``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nexus_tokenizer</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">NexusTokenizer</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span>
+                <span class="n">preserve_unquoted_underscores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preserve_unquoted_underscores</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tree_statement</span><span class="p">(</span>
+                    <span class="n">nexus_tokenizer</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="p">,</span>
+                    <span class="n">tree_factory</span><span class="o">=</span><span class="n">tree_factory</span><span class="p">,</span>
+                    <span class="n">taxon_symbol_map_fn</span><span class="o">=</span><span class="n">taxon_symbol_mapper</span><span class="o">.</span><span class="n">require_taxon_for_symbol</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">tree</span>
+            <span class="k">if</span> <span class="n">tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># raise StopIteration</span>
+                <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">stream</span><span class="p">,</span>
+            <span class="n">taxon_namespace_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">tree_list_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">char_matrix_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">state_alphabet_factory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">global_annotations_target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">taxon_namespace</span> <span class="o">=</span> <span class="n">taxon_namespace_factory</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">tree_list</span> <span class="o">=</span> <span class="n">tree_list_factory</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxon_namespace</span><span class="p">)</span>
+        <span class="n">taxon_symbol_mapper</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">NexusTaxonSymbolMapper</span><span class="p">(</span>
+                <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxon_namespace</span><span class="p">,</span>
+                <span class="n">enable_lookup_by_taxon_number</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">case_sensitive</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive_taxon_labels</span><span class="p">)</span>
+        <span class="n">tree_factory</span> <span class="o">=</span> <span class="n">tree_list</span><span class="o">.</span><span class="n">new_tree</span>
+        <span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_iter</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
+                <span class="n">taxon_symbol_mapper</span><span class="o">=</span><span class="n">taxon_symbol_mapper</span><span class="p">,</span>
+                <span class="n">tree_factory</span><span class="o">=</span><span class="n">tree_factory</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Product</span><span class="p">(</span>
+                <span class="n">taxon_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">tree_lists</span><span class="o">=</span><span class="p">[</span><span class="n">tree_list</span><span class="p">],</span>
+                <span class="n">char_matrices</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">product</span>
+
+    <span class="k">def</span> <span class="nf">_get_rooting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get rooting interpretation configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span>
+    <span class="k">def</span> <span class="nf">_set_rooting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set rooting interpretation configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;force-unrooted&quot;</span><span class="p">,</span> <span class="s2">&quot;force-rooted&quot;</span><span class="p">,</span> <span class="s2">&quot;default-unrooted&quot;</span><span class="p">,</span> <span class="s2">&quot;default-rooted&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unrecognized rooting directive: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="n">rooting</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_rooting</span><span class="p">,</span> <span class="n">_set_rooting</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_tree_statement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">nexus_tokenizer</span><span class="p">,</span>
+            <span class="n">tree_factory</span><span class="p">,</span>
+            <span class="n">taxon_symbol_map_fn</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses a single tree statement from a token stream and constructs a</span>
+<span class="sd">        corresponding Tree object. Expects that the first non-comment and</span>
+<span class="sd">        non-semi-colon token to be found, including the current token, to be</span>
+<span class="sd">        the parenthesis that opens the tree statement. When complete, the</span>
+<span class="sd">        current token will be the token immediately following the semi-colon,</span>
+<span class="sd">        if any.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_token</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span>
+        <span class="n">tree_comments</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">pull_captured_comments</span><span class="p">()</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;;&quot;</span> <span class="ow">or</span> <span class="n">current_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">is_eof</span><span class="p">():</span>
+            <span class="n">current_token</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+            <span class="n">tree_comments</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">pull_captured_comments</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">is_eof</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">current_token</span> <span class="o">!=</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+            <span class="c1"># allow for possibility of single node tree, e.g.: T0:10;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># raise NewickReader.NewickReaderInvalidTokenError(</span>
+            <span class="c1">#         message=&quot;Expecting &#39;{}&#39; but found &#39;{}&#39;&quot;.format(&quot;(&quot;, current_token),</span>
+            <span class="c1">#         line_num=nexus_tokenizer.token_line_num,</span>
+            <span class="c1">#         col_num=nexus_tokenizer.token_column_num,</span>
+            <span class="c1">#         stream=nexus_tokenizer.src)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">tree_factory</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_tree_comments</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">tree_comments</span><span class="p">,</span> <span class="n">nexus_tokenizer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_statement_complete</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seen_taxa</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tree_node_description</span><span class="p">(</span>
+                <span class="n">nexus_tokenizer</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="p">,</span>
+                <span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+                <span class="n">current_node</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">seed_node</span><span class="p">,</span>
+                <span class="n">taxon_symbol_map_fn</span><span class="o">=</span><span class="n">taxon_symbol_map_fn</span><span class="p">,</span>
+                <span class="n">is_internal_node</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">current_token</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_statement_complete</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderIncompleteTreeStatementError</span><span class="p">(</span>
+                    <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Incomplete or improperly-terminated tree statement (last character read was &#39;</span><span class="si">{}</span><span class="s2">&#39; instead of a semi-colon &#39;;&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span><span class="p">),</span>
+                    <span class="n">line_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_line_num</span><span class="p">,</span>
+                    <span class="n">col_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_column_num</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seen_taxa</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_statement_complete</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;;&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">is_eof</span><span class="p">():</span>
+            <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">clear_captured_comments</span><span class="p">()</span>
+            <span class="n">current_token</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">next_token</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">tree</span>
+
+    <span class="k">def</span> <span class="nf">_process_tree_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">tree_comments</span><span class="p">,</span> <span class="n">nexus_tokenizer</span><span class="p">):</span>
+        <span class="c1"># NOTE: this also unconditionally sets the tree rootedness and</span>
+        <span class="c1"># weighting if no comment indicating these are found; for this to work</span>
+        <span class="c1"># in the current implementation, this method must be called once and</span>
+        <span class="c1"># exactly once per tree.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tree_comments</span><span class="p">:</span>
+            <span class="n">tree</span><span class="o">.</span><span class="n">is_rooted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tree_rooting_state</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_tree_weights</span><span class="p">:</span>
+                <span class="n">tree</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_tree_weight</span>
+            <span class="k">return</span>
+        <span class="n">rooting_token_found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">weighting_token_found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">tree_comments</span><span class="p">:</span>
+            <span class="n">stripped_comment</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">stripped_comment</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;&amp;u&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;U&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;r&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;R&quot;</span><span class="p">]:</span>
+                <span class="n">tree</span><span class="o">.</span><span class="n">is_rooted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tree_rooting_state</span><span class="p">(</span><span class="n">stripped_comment</span><span class="p">)</span>
+                <span class="n">rooting_token_found</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">store_tree_weights</span>
+                    <span class="ow">and</span> <span class="p">(</span><span class="n">stripped_comment</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&amp;W &quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">stripped_comment</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&amp;w &quot;</span><span class="p">))</span>
+                    <span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">weight_expression</span> <span class="o">=</span> <span class="n">stripped_comment</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">weight_expression</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span>
+                    <span class="n">we_parts</span> <span class="o">=</span> <span class="n">weight_expression</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">we_parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span>
+                        <span class="c1"># raise NewickReader.NewickReaderInvalidValueError(</span>
+                        <span class="c1">#         message=&quot;Invalid tree weight expression: &#39;{}&#39;&quot;.format(weight_expression),</span>
+                        <span class="c1">#         line_num=nexus_tokenizer.token_line_num,</span>
+                        <span class="c1">#         col_num=nexus_tokenizer.token_column_num,</span>
+                        <span class="c1">#         stream=nexus_tokenizer.src)</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">we_parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">we_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">we_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">tree</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">x</span><span class="o">/</span><span class="n">y</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tree</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">we_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">weighting_token_found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">exc</span> <span class="o">=</span> <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderInvalidValueError</span><span class="p">(</span>
+                            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid tree weight expression: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stripped_comment</span><span class="p">),</span>
+                            <span class="n">line_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_line_num</span><span class="p">,</span>
+                            <span class="n">col_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_column_num</span><span class="p">,</span>
+                            <span class="n">stream</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+                    <span class="n">exc</span><span class="o">.</span><span class="n">__context__</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Python 3.0, 3.1, 3.2</span>
+                    <span class="n">exc</span><span class="o">.</span><span class="n">__cause__</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Python 3.3, 3.4</span>
+                    <span class="k">raise</span> <span class="n">exc</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span> <span class="ow">and</span> <span class="n">comment</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">):</span>
+                <span class="n">annotations</span> <span class="o">=</span> <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">parse_comment_metadata_to_annotations</span><span class="p">(</span>
+                    <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">annotations</span><span class="p">:</span>
+                    <span class="n">tree</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tree</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tree</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rooting_token_found</span><span class="p">:</span>
+            <span class="n">tree</span><span class="o">.</span><span class="n">is_rooted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tree_rooting_state</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_tree_weights</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">weighting_token_found</span><span class="p">:</span>
+            <span class="n">tree</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_tree_weight</span>
+
+    <span class="k">def</span> <span class="nf">_parse_tree_rooting_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rooting_comment</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns rooting state for tree with given rooting comment token, taking</span>
+<span class="sd">        into account ``rooting`` configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span> <span class="o">==</span> <span class="s2">&quot;force-unrooted&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span> <span class="o">==</span> <span class="s2">&quot;force-rooted&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">rooting_comment</span> <span class="o">==</span> <span class="s2">&quot;&amp;R&quot;</span> <span class="ow">or</span> <span class="n">rooting_comment</span> <span class="o">==</span> <span class="s2">&quot;&amp;r&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">rooting_comment</span> <span class="o">==</span> <span class="s2">&quot;&amp;U&quot;</span> <span class="ow">or</span> <span class="n">rooting_comment</span> <span class="o">==</span> <span class="s2">&quot;&amp;u&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span> <span class="o">==</span> <span class="s2">&quot;default-rooted&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span> <span class="o">==</span> <span class="s2">&quot;default-unrooted&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unrecognized rooting directive: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rooting</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_parse_tree_node_description</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">nexus_tokenizer</span><span class="p">,</span>
+            <span class="n">tree</span><span class="p">,</span>
+            <span class="n">current_node</span><span class="p">,</span>
+            <span class="n">taxon_symbol_map_fn</span><span class="p">,</span>
+            <span class="n">is_internal_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assuming that the iterator is currently sitting on a parenthesis that</span>
+<span class="sd">        opens a node with children or the label of a leaf node, this will</span>
+<span class="sd">        populate the node ``node`` appropriately (label, edge length, comments,</span>
+<span class="sd">        metadata etc.) and recursively parse and add the node&#39;s</span>
+<span class="sd">        children. When complete, the token will be the token immediately</span>
+<span class="sd">        following the end of the node or tree statement if this is the root</span>
+<span class="sd">        node, i.e. the token *following* the closing parenthesis of the node or</span>
+<span class="sd">        the semi-colon terminating a tree statement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_node_comments</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">pull_captured_comments</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+            <span class="c1"># self._parenthesis_nesting_level += 1 # handled by calling code</span>
+            <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+            <span class="n">node_created</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;,&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">node_created</span><span class="p">:</span> <span class="c1">#184</span>
+                        <span class="c1"># no node has been created yet: &#39;,&#39; designates a</span>
+                        <span class="c1"># preceding blank node</span>
+                        <span class="n">new_node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node_factory</span><span class="p">()</span>
+                        <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">process_comments_for_item</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">new_node</span><span class="p">,</span>
+                                <span class="n">item_comments</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">pull_captured_comments</span><span class="p">(),</span>
+                                <span class="n">extract_comment_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_node</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+                        <span class="n">current_node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+                        <span class="c1">## node_created = True # do not flag node as created to allow for an extra node to be created in the event of (..,)</span>
+                    <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+                    <span class="k">while</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;,&quot;</span><span class="p">:</span> <span class="c1">#192</span>
+                        <span class="c1"># another blank node</span>
+                        <span class="n">new_node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node_factory</span><span class="p">()</span>
+                        <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">process_comments_for_item</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">new_node</span><span class="p">,</span>
+                                <span class="n">item_comments</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">pull_captured_comments</span><span class="p">(),</span>
+                                <span class="n">extract_comment_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_node</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+                        <span class="n">current_node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+                        <span class="c1"># node_created = True; # do not flag node as created: extra node needed in the event of (..,)</span>
+                        <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">node_created</span> <span class="ow">and</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span> <span class="c1">#200</span>
+                        <span class="c1"># end of node</span>
+                        <span class="n">new_node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node_factory</span><span class="p">();</span>
+                        <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">process_comments_for_item</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">new_node</span><span class="p">,</span>
+                                <span class="n">item_comments</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">pull_captured_comments</span><span class="p">(),</span>
+                                <span class="n">extract_comment_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_node</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+                        <span class="n">current_node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+                        <span class="n">node_created</span> <span class="o">=</span> <span class="kc">True</span><span class="p">;</span>
+                <span class="k">elif</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span> <span class="c1">#206</span>
+                    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># handle terminating unnamed unifurcation</span>
+                        <span class="c1"># see https://github.com/jeetsukumaran/DendroPy/issues/76</span>
+                        <span class="n">new_node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node_factory</span><span class="p">()</span>
+                        <span class="n">is_new_internal_node</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_node</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+                        <span class="n">current_node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+                    <span class="c1"># end of child nodes</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span> <span class="c1">#210</span>
+                    <span class="c1"># assume child nodes: a leaf node (if a label) or</span>
+                    <span class="c1"># internal (if a parenthesis)</span>
+                    <span class="k">if</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">is_new_internal_node</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">is_new_internal_node</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">new_node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node_factory</span><span class="p">();</span>
+                    <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">process_comments_for_item</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">new_node</span><span class="p">,</span>
+                            <span class="n">item_comments</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">pull_captured_comments</span><span class="p">(),</span>
+                            <span class="n">extract_comment_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tree_node_description</span><span class="p">(</span>
+                            <span class="n">nexus_tokenizer</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="p">,</span>
+                            <span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+                            <span class="n">current_node</span><span class="o">=</span><span class="n">new_node</span><span class="p">,</span>
+                            <span class="n">taxon_symbol_map_fn</span><span class="o">=</span><span class="n">taxon_symbol_map_fn</span><span class="p">,</span>
+                            <span class="n">is_internal_node</span><span class="o">=</span><span class="n">is_new_internal_node</span><span class="p">,</span>
+                            <span class="p">)</span>
+                    <span class="n">current_node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">new_node</span><span class="p">);</span>
+                    <span class="n">node_created</span> <span class="o">=</span> <span class="kc">True</span><span class="p">;</span>
+        <span class="n">label_parsed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_statement_complete</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">is_internal_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Initial call using ``seed_node`` does not set ``is_internal_node`` to</span>
+            <span class="c1"># |True| or |False|, explicitly, but rather |None|. If this is the</span>
+            <span class="c1"># case, the rest of the tree has be constructed, and we simply look</span>
+            <span class="c1"># at whether there are children or not to determine if it is an</span>
+            <span class="c1"># internal node. This approach allows for a single-tip tree.</span>
+            <span class="k">if</span> <span class="n">current_node</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">:</span>
+                <span class="n">is_internal_node</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">current_node_comments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_node_comments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">cc</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">pull_captured_comments</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">cc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">current_node_comments</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;:&quot;</span><span class="p">:</span> <span class="c1">#246</span>
+                <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_edge_lengths</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">edge_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_length_type</span><span class="p">(</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderMalformedStatementError</span><span class="p">(</span>
+                                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid edge length: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span><span class="p">),</span>
+                                <span class="n">line_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_line_num</span><span class="p">,</span>
+                                <span class="n">col_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_column_num</span><span class="p">,</span>
+                                <span class="n">stream</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+                    <span class="n">current_node</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">edge_length</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+                <span class="k">except</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">Tokenizer</span><span class="o">.</span><span class="n">UnexpectedEndOfStreamError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminating_semicolon_required</span><span class="p">:</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;. (Perhaps the terminating semicolon for the tree statement is missing? If so, add a semicolon to the tree statement or specify &#39;terminating_semicolon_required=False&#39; to allow for missing semicolons)&quot;</span>
+                        <span class="k">raise</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">Tokenizer</span><span class="o">.</span><span class="n">UnexpectedEndOfStreamError</span><span class="p">(</span>
+                                <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+                                <span class="n">line_num</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">line_num</span><span class="p">,</span>
+                                <span class="n">col_num</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">col_num</span><span class="p">,</span>
+                                <span class="n">stream</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_statement_complete</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+
+            <span class="k">elif</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span> <span class="c1">#253</span>
+                <span class="c1"># closing of parent token</span>
+                <span class="c1"># self._parenthesis_nesting_level -= 1 # handled by calling code</span>
+                <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">process_comments_for_item</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">current_node</span><span class="p">,</span>
+                        <span class="n">item_comments</span><span class="o">=</span><span class="n">current_node_comments</span><span class="p">,</span>
+                        <span class="n">extract_comment_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_finish_node</span><span class="p">(</span><span class="n">current_node</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">current_node</span>
+            <span class="k">elif</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;;&quot;</span><span class="p">:</span> <span class="c1">#256</span>
+                <span class="c1"># end of tree statement</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tree_statement_complete</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">next_token</span><span class="p">()</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;,&quot;</span><span class="p">:</span> <span class="c1">#260</span>
+                <span class="c1"># end of this node</span>
+                <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">process_comments_for_item</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">current_node</span><span class="p">,</span>
+                            <span class="n">item_comments</span><span class="o">=</span><span class="n">current_node_comments</span><span class="p">,</span>
+                            <span class="n">extract_comment_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_finish_node</span><span class="p">(</span><span class="n">current_node</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">current_node</span>
+            <span class="k">elif</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span> <span class="c1">#263</span>
+                <span class="c1"># start of another node or tree without finishing this</span>
+                <span class="c1"># node</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">raise</span> <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderMalformedStatementError</span><span class="p">(</span>
+                        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Malformed tree statement&quot;</span><span class="p">,</span>
+                        <span class="n">line_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_line_num</span><span class="p">,</span>
+                        <span class="n">col_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_column_num</span><span class="p">,</span>
+                        <span class="n">stream</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_parse_jplace_tokens</span> <span class="ow">and</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span> <span class="o">==</span> <span class="s1">&#39;{&#39;</span><span class="p">:</span>
+                <span class="c1"># Edge number from .jplace format</span>
+                <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+                <span class="n">edge_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span><span class="p">)</span>
+                <span class="n">edge</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">edge</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">edge_number</span> <span class="o">=</span> <span class="n">edge_number</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tree</span><span class="o">.</span><span class="n">edge_index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">edge_number</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">tree</span><span class="o">.</span><span class="n">edge_index</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">tree</span><span class="o">.</span><span class="n">edge_index</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">edge_number</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+                <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span> <span class="c1"># for closing &#39;}&#39;</span>
+                <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span> <span class="c1">#267</span>
+                <span class="c1"># label</span>
+                <span class="k">if</span> <span class="n">label_parsed</span><span class="p">:</span> <span class="c1">#269</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Expecting &#39;:&#39;&quot;</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_parse_jplace_tokens</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;, &#39;{&#39;&quot;</span>
+                    <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;, &#39;)&#39;, &#39;,&#39; or &#39;;&#39; after reading label but found &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderMalformedStatementError</span><span class="p">(</span>
+                            <span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span>
+                            <span class="n">line_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_line_num</span><span class="p">,</span>
+                            <span class="n">col_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_column_num</span><span class="p">,</span>
+                            <span class="n">stream</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Label</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">current_token</span>
+                    <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="n">is_internal_node</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_internal_node_taxa</span><span class="p">)</span>
+                            <span class="ow">or</span> <span class="p">((</span><span class="ow">not</span> <span class="n">is_internal_node</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_leaf_node_taxa</span><span class="p">)</span> <span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_assign_internal_labels_to_edges</span><span class="p">:</span>
+                            <span class="n">current_node</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">current_node</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">node_taxon</span> <span class="o">=</span> <span class="n">taxon_symbol_map_fn</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">node_taxon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seen_taxa</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderDuplicateTaxonError</span><span class="p">(</span>
+                                    <span class="n">message</span><span class="o">=</span><span class="n">node_taxon</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                                    <span class="n">line_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_line_num</span><span class="p">,</span>
+                                    <span class="n">col_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_column_num</span><span class="p">,</span>
+                                    <span class="n">stream</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_seen_taxa</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_taxon</span><span class="p">)</span>
+                        <span class="n">current_node</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">node_taxon</span>
+                    <span class="n">label_parsed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">;</span>
+                    <span class="c1"># nexus_tokenizer.require_next_token()</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">require_next_token</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">Tokenizer</span><span class="o">.</span><span class="n">UnexpectedEndOfStreamError</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminating_semicolon_required</span><span class="p">:</span>
+                            <span class="k">raise</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">break</span>
+        <span class="c1">## if we are here, we have reached the end of the tree</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NewickReader</span><span class="o">.</span><span class="n">NewickReaderMalformedStatementError</span><span class="p">(</span>
+                    <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Unbalanced parentheses at tree statement termination: balance index = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parenthesis_nesting_level</span><span class="p">),</span>
+                    <span class="n">line_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_line_num</span><span class="p">,</span>
+                    <span class="n">col_num</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">token_column_num</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="n">nexus_tokenizer</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+        <span class="n">nexusprocessing</span><span class="o">.</span><span class="n">process_comments_for_item</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">current_node</span><span class="p">,</span>
+                <span class="n">item_comments</span><span class="o">=</span><span class="n">current_node_comments</span><span class="p">,</span>
+                <span class="n">extract_comment_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_comment_metadata</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finish_node</span><span class="p">(</span><span class="n">current_node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">current_node</span>
+
+    <span class="k">def</span> <span class="nf">_finish_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finish_node_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finish_node_fn</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div style="text-align: center; padding-top: 20px; padding-bottom: 5px; width: 100%;">
+    <a href="../../../index.html"><img src="../../../_static/dendropy_logo.png" /></a>
+</div><div style="clear:both; width: 100%; height:1px;"></div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div><div style="clear:both; width: 100%; height:1px;"></div>
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            <li><a href="../../../primer/downloading.html">Downloading and Installing DendroPy</a></li>
+            <li><a href="../../../primer/index.html">The DendroPy Primer</a></li>
+            <li><a href="../../../library/index.html">Library API Reference</a></li>
+            <li>
+                <a href="../../../schemas/index.html">Schemas</a>
+                <ul>
+                    <li><a href="../../../schemas/fasta.html">FASTA</a></li>
+                    <li><a href="../../../schemas/newick.html">Newick</a></li>
+                    <li><a href="../../../schemas/nexml.html">NeXML</a></li>
+                    <li><a href="../../../schemas/nexus.html">Nexus</a></li>
+                    <li><a href="../../../schemas/phylip.html">PHYLIP</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../../../programs/index.html">Programs</a>
+                <ul>
+                    <li><a href="../../../programs/sumtrees.html">SumTrees</a></li>
+                </ul>
+            </li>
+            <li><a href="../../../glossary.html">Glossary and Terminological Reference</a></li>
+            <li><a href="../../../developer.html">Developer Guide</a></li>
+            <li><a href="../../../planning.html">Ongoing Development</a></li>
+            <li><a href="../../../changes.html">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.3.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot; DendroPy Users&quot; </a>group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-users?hl=en">&quot;dendropy-users&quot;</a> group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/google-groups-logo1.png" height="20px" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-size: 90%; margin-top: 3px; clear: both;">Join the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; DendroPy Announcements&quot; </a>group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%; clear: both; padding-top: 5px; padding-bottom: 10px;">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the <a href="http://groups.google.com/group/dendropy-announce?hl=en">&quot; dendropy-announce&quot; </a>group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Development -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative; padding-bottom: 15px; margin-bottom:5px;">
+        <h3><span style="text-align: left"><a href="https://github.com/jeetsukumaran/DendroPy/">Development</a></span><a href="https://github.com/jeetsukumaran/DendroPy/"><span style="position: absolute; right: 0; top: 10px "><img src="../../../_static/Octocat.png" height="30px" alt="GitHub" /></span></a></h3>
+        <div style="margin-top: 15px;">
+            <!-- <a href="https://github.com/jeetsukumaran/DendroPy/issues">Issues</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/subscription">Watch</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/fork">Fork</a> &bull; <a href="https://github.com/jeetsukumaran/DendroPy/stargazers">Star</a> &bull; <a href="https://github.com/jeetsukumaran/">Follow</a> -->
+            <ul>
+                <li>                <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/issues"><code>Issues</code></a></span> <span style="font-style: italic; font-size:80%;"> - Report bugs or request features</span></li>
+                <li>     <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/subscription"><code>&nbsp;Watch</code></a></span> <span style="font-style: italic; font-size:80%;"> - Follow development activity</span></li>
+                <li>        <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/fork"><code>&nbsp;&nbsp;Fork</code></a></span> <span style="font-style: italic; font-size:80%;"> - Contribute and collaborate</span></li>
+                <li>  <span style="font-weight: bold;"><a href="https://github.com/jeetsukumaran/DendroPy/stargazers"><code>&nbsp;&nbsp;Star</code></a></span> <span style="font-style: italic; font-size:80%;"> - Throw some glitter, add some glamour</span></li>
+        </div>
+    </div>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dendropy.dataio.newickreader</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2009-2025, Jeet Sukumaran and Mark T. Holder.
+    </div>
+  </body>
+</html>

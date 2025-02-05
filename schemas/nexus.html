@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>NEXUS &#8212; DendroPy 5.0.2 documentation</title>
+    <title>NEXUS &#8212; DendroPy 5.0.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=5df4c8d1"></script>
+    <script src="../_static/documentation_options.js?v=f98c4cc8"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="nexml.html" title="NeXML"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">NEXUS</a></li> 
       </ul>
@@ -106,6 +106,95 @@
 <h2>Reading<a class="headerlink" href="#reading" title="Link to this heading">¶</a></h2>
 <section id="schema-specific-keyword-arguments">
 <span id="schema-specific-keyword-arguments-reading-nexus"></span><h3>Schema-Specific Keyword Arguments<a class="headerlink" href="#schema-specific-keyword-arguments" title="Link to this heading">¶</a></h3>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.dataio.nexusreader.NexusReader.__init__">
+<span class="sig-prename descclassname"><span class="pre">NexusReader.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/dataio/nexusreader.html#NexusReader.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.dataio.nexusreader.NexusReader.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rooting</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a><em>, </em><em>{</em><em>[</em><em>'default-unrooted'</em><em>]</em><em>, </em><em>'default-rooted'</em><em>, </em><em>'force-unrooted'</em><em>, </em><em>'force-rooted'}</em>) – <p>Specifies how trees in the data source should be intepreted with
+respect to their rooting:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>’default-unrooted’ [default]:</dt><dd><p>All trees are interpreted as unrooted unless a ‘[&amp;R]’
+comment token explicitly specifies them as rooted.</p>
+</dd>
+<dt>’default-rooted’</dt><dd><p>All trees are interpreted as rooted unless a ‘[&amp;U]’
+comment token explicitly specifies them as unrooted.</p>
+</dd>
+<dt>’force-unrooted’</dt><dd><p>All trees are unconditionally interpreted as unrooted.</p>
+</dd>
+<dt>’force-rooted’</dt><dd><p>All trees are unconditionally interpreted as rooted.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p></li>
+<li><p><strong>edge_length_type</strong> (type, default: <code class="docutils literal notranslate"><span class="pre">float</span></code>) – Specifies the type of the edge lengths (<code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">float</span></code>). Tokens
+interpreted as branch lengths will be cast to this type.
+Defaults to <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></li>
+<li><p><strong>suppress_edge_lengths</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, edge length values will not be processed. If <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+edge length values will be processed.</p></li>
+<li><p><strong>extract_comment_metadata</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">True</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), any comments that begin with ‘&amp;’ or ‘&amp;&amp;’ will
+be parsed and stored as part of the annotation set of the
+corresponding object (accessible through the <code class="docutils literal notranslate"><span class="pre">annotations</span></code>
+attribute of the object). This requires that the comment
+contents conform to a particular format (NHX or BEAST: ‘field =
+value’). If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the comments will not be parsed,
+but will be instead stored directly as elements of the <code class="docutils literal notranslate"><span class="pre">comments</span></code>
+list attribute of the associated object.</p></li>
+<li><p><strong>store_tree_weights</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, process the tree weight (e.g. “[&amp;W 1/2]”) comment
+associated with each tree, if any. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>encode_splits</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, split hash bitmasks will be calculated and attached to
+the edges.</p></li>
+<li><p><strong>finish_node_fn</strong> (function object, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – If specified, this function will be applied to each node after
+it has been constructed.</p></li>
+<li><p><strong>case_sensitive_taxon_labels</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then taxon labels are case sensitive (e.g., “P.regius”
+and “P.REGIUS” wil be treated as different operation taxonomic
+unit concepts). Otherwise, taxon label intepretation will be made
+without regard for case.</p></li>
+<li><p><strong>preserve_underscores</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, unquoted underscores in labels will <em>not</em> converted to
+spaces. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: all underscores not protected by
+quotes will be converted to spaces.</p></li>
+<li><p><strong>suppress_internal_node_taxa</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">True</span></code>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, internal node labels will be instantantiated into
+<a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, internal node labels
+will <em>not</em> be instantantiated as strings.</p></li>
+<li><p><strong>suppress_leaf_node_taxa</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, leaf (external) node labels will be instantantiated
+into <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, leaff (external) node
+labels will <em>not</em> be instantantiated as strings.</p></li>
+<li><p><strong>terminating_semicolon_required</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">True</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> [default], then a tree statement that does not end in a
+semi-colon is an error. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then no error will be raised.</p></li>
+<li><p><strong>unconstrained_taxa_accumulation_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then no error is raised even if the number of taxon
+names defined exceeds the number of declared taxa (as specified by
+‘NTAX’). Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>automatically_substitute_missing_taxa_blocks</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then, if a taxon namespace is linked to by title but is
+not given in the data file, then, if one and exactly one other
+taxon namespace has been given in the data file, this taxon
+namespace will be used; if there are multiple taxon namespaces,
+then if <code class="docutils literal notranslate"><span class="pre">automatically_create_missing_taxa_blocks</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> a
+new taxon namespace will be created, otherwise an error is raised.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: if a taxon namespace is linked to by title but
+is not given in the data file, then an error is raised.</p></li>
+<li><p><strong>automatically_create_missing_taxa_blocks</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then taxon namespaces linked to by title but not given in
+the data file will be automatically created. If <code class="docutils literal notranslate"><span class="pre">False</span></code> taxon
+namespaces linked to by title but not given in the data file will
+result in error.</p></li>
+<li><p><strong>exclude_chars</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then character data will not be read. Defaults to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>: character data will be read.</p></li>
+<li><p><strong>exclude_trees</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then tree data will not be read. Defaults to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>: tree data will be read.</p></li>
+<li><p><strong>store_ignored_blocks</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then ignored NEXUS blocks will be stored under the annotation
+(NOT attribute!) <code class="docutils literal notranslate"><span class="pre">ignored_nexus_blocks''.</span>
+<span class="pre">To</span> <span class="pre">dereference,</span> <span class="pre">for</span> <span class="pre">e.g.:</span> <span class="pre">``dataset.annotations[&quot;ignored_nexus_blocks&quot;]</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: non-character and tree blocks will not be read.</p></li>
+<li><p><strong>attached_taxon_namespace</strong> (<a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>) – Unify all operational taxonomic unit definitions in this namespace.</p></li>
+<li><p><strong>ignore_unrecognized_keyword_arguments</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then unsupported or unrecognized keyword arguments will
+not result in an error. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: unsupported keyword
+arguments will result in an error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="supported-methods">
 <h3>Supported Methods<a class="headerlink" href="#supported-methods" title="Link to this heading">¶</a></h3>
@@ -383,6 +472,115 @@
 <h2>Writing<a class="headerlink" href="#writing" title="Link to this heading">¶</a></h2>
 <section id="schema-specific-keyword-arguments-writing-nexus">
 <span id="id1"></span><h3>Schema-Specific Keyword Arguments<a class="headerlink" href="#schema-specific-keyword-arguments-writing-nexus" title="Link to this heading">¶</a></h3>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.dataio.nexuswriter.NexusWriter.__init__">
+<span class="sig-prename descclassname"><span class="pre">NexusWriter.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/dataio/nexuswriter.html#NexusWriter.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.dataio.nexuswriter.NexusWriter.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simple</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, write in simple NEXUS format, i.e. in a single “DATA”
+block, instead of separate “TAXA” and “CHARACTER” blocks.</p></li>
+<li><p><strong>suppress_taxa_blocks</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, do not write a “TAXA” block. Note that this may make the
+file impossible to parse if there are multiple taxon namespaces in
+the data.</p></li>
+<li><p><strong>suppress_unreferenced_taxon_namespaces</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then when writing <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> objects, any
+<a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object in the DataSet’s <code class="docutils literal notranslate"><span class="pre">taxon_namespaces</span></code>
+collection will <em>not</em> be written as a “TAXA” block if it is not
+referenced by any character matrix (<code class="docutils literal notranslate"><span class="pre">char_matrices</span></code>) or tree list
+(<code class="docutils literal notranslate"><span class="pre">tree_lists</span></code>).</p></li>
+<li><p><strong>suppress_block_titles</strong> (bool or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then ‘TITLE’ element to blocks will not be written. Note
+that this may make the file impossible to parse if there are
+multiple taxon namespaces in the data. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the
+‘TITLE’ element will always be written. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>: the
+‘TITLE’ element will only be written if needed because there is
+more than on taxon namespace in the data.</p></li>
+<li><p><strong>file_comments</strong> (iterable [<code class="docutils literal notranslate"><span class="pre">str</span></code>]) – List of lines of text to be added as comments to the file.</p></li>
+<li><p><strong>preamble_blocks</strong> (iterable [<code class="docutils literal notranslate"><span class="pre">str</span></code>]) – List of strings to be written before data (e.g., PAUP blocks
+suppressing warnings etc.).</p></li>
+<li><p><strong>supplemental_blocks</strong> (iterable [<code class="docutils literal notranslate"><span class="pre">str</span></code>]) – List of strings to be written after data (e.g., PAUP blocks,
+MrBayes blocks etc.).</p></li>
+<li><p><strong>allow_multiline_comments</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> then comments will be merged into a single string before
+being written. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>: each comment element will be
+written on its own line.</p></li>
+<li><p><strong>continuous_character_state_value_format_fn</strong> (<em>function object</em>) – When writing <a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.ContinuousCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuousCharacterMatrix</span></code></a> data: a function that
+takes a continuous character value and returns the string
+representation of it.</p></li>
+<li><p><strong>discrete_character_state_value_format_fn</strong> (<em>function object</em>) – When writing discrete character data (e.g., a
+<a class="reference internal" href="../library/charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.StandardCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardCharacterMatrix</span></code></a>): a function that takes a
+standard character state value (i.e., a <a class="reference internal" href="../library/charstatemodel.html#dendropy.datamodel.charstatemodel.StateIdentity" title="dendropy.datamodel.charstatemodel.StateIdentity"><code class="xref py py-class docutils literal notranslate"><span class="pre">StateIdentity</span></code></a> instance)
+and returns the string representation of it.</p></li>
+<li><p><strong>suppress_leaf_taxon_labels</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then taxon labels will not be rendered for leaves.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: render leaf taxon labels. See notes below for
+details.</p></li>
+<li><p><strong>suppress_leaf_node_labels</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">True</span></code>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then node labels (if available) will be printed for
+leaves. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>: do not render leaf node labels. See
+notes below for details.</p></li>
+<li><p><strong>suppress_internal_taxon_labels</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then taxon labels will not be printed for internal
+nodes. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: print taxon labels for internal nodes.
+See notes below for details.</p></li>
+<li><p><strong>suppress_internal_node_labels</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then node labels will not be printed for internal nodes.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: print node labels for internal nodes. See notes
+below for details.</p></li>
+<li><p><strong>suppress_rooting</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, will not write rooting token (‘[&amp;R]’ or ‘[&amp;U]’).
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: rooting token will be written.</p></li>
+<li><p><strong>suppress_edge_lengths</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, will not write edge lengths. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: edge
+lengths will be written.</p></li>
+<li><p><strong>unquoted_underscores</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, labels with underscores will not be quoted, which will
+mean that they will be interpreted as spaces if read again (“soft”
+underscores).  If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then labels with underscores
+will be quoted, resulting in “hard” underscores.  Default is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>preserve_spaces</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, spaces will not be replaced with underscores in labels
+(which means any labels containing spaces will have to be quoted).
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: spaces will be converted to underscores.
+False.</p></li>
+<li><p><strong>store_tree_weights</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, tree weights are written. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: tree
+weights will not be written.</p></li>
+<li><p><strong>translate_tree_taxa</strong> (boolean or dict or <code class="docutils literal notranslate"><span class="pre">None</span></code>, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, then a “TRANSLATE” statement will not be
+used, and tree statements will contain the full taxon labels. If
+not <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, a “TRANSLATE” statement will be written and
+referenced in tree statements (instead of using the taxon labels).
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then a default translate statement will be used, with
+tokens given by the taxon indexes. If a dictionary is given, then
+the keys should be <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects and the values should be the
+token (strings).</p></li>
+<li><p><strong>suppress_annotations</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, metadata annotations will be ignored.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata annotations will be written.</p></li>
+<li><p><strong>annotations_as_nhx</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, and if <code class="docutils literal notranslate"><span class="pre">suppress_annotations</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, will write
+annotations as NHX statements. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: annotations
+will not be written as NHX statements.</p></li>
+<li><p><strong>suppress_item_comments</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>: comments will be ignored. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: any
+additional comments associated with trees, nodes, edges, etc. will
+be written.</p></li>
+<li><p><strong>node_label_element_separator</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a><em>, </em><em>default: ' '</em>) – If both <code class="docutils literal notranslate"><span class="pre">suppress_leaf_taxon_labels</span></code> and
+<code class="docutils literal notranslate"><span class="pre">suppress_leaf_node_labels</span></code> are <code class="docutils literal notranslate"><span class="pre">False</span></code>, then this will be the
+string used to join them. Defaults to ‘ ‘ (space).</p></li>
+<li><p><strong>node_label_compose_fn</strong> (function object or <code class="docutils literal notranslate"><span class="pre">None</span></code>, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, should be a function that takes a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>
+object as an argument and returns the string to be used to
+represent the node in the tree statement. The return value from
+this function is used unconditionally to print a node
+representation in a tree statement, by-passing the default
+labelling function, ignoring <code class="docutils literal notranslate"><span class="pre">suppress_leaf_taxon_labels</span></code>,
+<code class="docutils literal notranslate"><span class="pre">suppress_leaf_node_labels=True</span></code>, <code class="docutils literal notranslate"><span class="pre">suppress_internal_taxon_labels</span></code>,
+<code class="docutils literal notranslate"><span class="pre">suppress_internal_node_labels</span></code>, etc. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>edge_label_compose_fn</strong> (function object or <code class="docutils literal notranslate"><span class="pre">None</span></code>, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, should be a function that takes an Edge object as
+an argument, and returns the string to be used to represent the
+edge length in the tree statement.</p></li>
+<li><p><strong>real_value_format_specifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a><em>, </em><em>default: ''</em>) – Format specification for real/float values. Will be applied to edge
+lengths (if <code class="docutils literal notranslate"><span class="pre">edge_label_compose_fn</span></code> is not given) as well as
+annotations. The format specifier should be given in Python’s
+string format specification mini-language. E.g. “.8f”, “.4E”,
+“8.4f”.</p></li>
+<li><p><strong>exclude_from_taxa_blocks</strong> (set (or other iterable) of <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances) – If specified, any <a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> object in this set will be excluded from
+all TAXA blocks, <em>even</em> if they are referenced in the data.</p></li>
+<li><p><strong>ignore_unrecognized_keyword_arguments</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then unsupported or unrecognized keyword arguments will
+not result in an error. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: unsupported keyword
+arguments will result in an error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="id2">
 <h3>Supported Methods<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
@@ -948,7 +1146,10 @@
 <li><a class="reference internal" href="#">NEXUS</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#reading">Reading</a><ul>
-<li><a class="reference internal" href="#schema-specific-keyword-arguments">Schema-Specific Keyword Arguments</a></li>
+<li><a class="reference internal" href="#schema-specific-keyword-arguments">Schema-Specific Keyword Arguments</a><ul>
+<li><a class="reference internal" href="#dendropy.dataio.nexusreader.NexusReader.__init__"><code class="docutils literal notranslate"><span class="pre">NexusReader.__init__</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#supported-methods">Supported Methods</a><ul>
 <li><a class="reference internal" href="#tree-get"><code class="docutils literal notranslate"><span class="pre">Tree.get</span></code></a></li>
 <li><a class="reference internal" href="#treelist-get"><code class="docutils literal notranslate"><span class="pre">TreeList.get</span></code></a></li>
@@ -967,7 +1168,10 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#writing">Writing</a><ul>
-<li><a class="reference internal" href="#schema-specific-keyword-arguments-writing-nexus">Schema-Specific Keyword Arguments</a></li>
+<li><a class="reference internal" href="#schema-specific-keyword-arguments-writing-nexus">Schema-Specific Keyword Arguments</a><ul>
+<li><a class="reference internal" href="#dendropy.dataio.nexuswriter.NexusWriter.__init__"><code class="docutils literal notranslate"><span class="pre">NexusWriter.__init__</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#id2">Supported Methods</a><ul>
 <li><a class="reference internal" href="#tree-write"><code class="docutils literal notranslate"><span class="pre">Tree.write</span></code></a></li>
 <li><a class="reference internal" href="#tree-as-string"><code class="docutils literal notranslate"><span class="pre">Tree.as_string</span></code></a></li>
@@ -1041,7 +1245,7 @@
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.2.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.3.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -1105,7 +1309,7 @@
         <li class="right" >
           <a href="nexml.html" title="NeXML"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">NEXUS</a></li> 
       </ul>

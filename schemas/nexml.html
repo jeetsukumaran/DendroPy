@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>NeXML &#8212; DendroPy 5.0.2 documentation</title>
+    <title>NeXML &#8212; DendroPy 5.0.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/rtd.css?v=cedc6a2f" />
     
-    <script src="../_static/documentation_options.js?v=5df4c8d1"></script>
+    <script src="../_static/documentation_options.js?v=f98c4cc8"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="newick.html" title="Newick"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">NeXML</a></li> 
       </ul>
@@ -106,6 +106,23 @@
 <h2>Reading<a class="headerlink" href="#reading" title="Link to this heading">¶</a></h2>
 <section id="schema-specific-keyword-arguments">
 <span id="schema-specific-keyword-arguments-reading-nexml"></span><h3>Schema-Specific Keyword Arguments<a class="headerlink" href="#schema-specific-keyword-arguments" title="Link to this heading">¶</a></h3>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.dataio.nexmlreader.NexmlReader.__init__">
+<span class="sig-prename descclassname"><span class="pre">NexmlReader.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/dataio/nexmlreader.html#NexmlReader.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.dataio.nexmlreader.NexmlReader.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>default_namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Default namespace to use for elements.</p></li>
+<li><p><strong>case_sensitive_taxon_labels</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then case is respected when matching taxon names.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: case is ignored.</p></li>
+<li><p><strong>ignore_unrecognized_keyword_arguments</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then unsupported or unrecognized keyword arguments will
+not result in an error. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: unsupported keyword
+arguments will result in an error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="supported-methods">
 <h3>Supported Methods<a class="headerlink" href="#supported-methods" title="Link to this heading">¶</a></h3>
@@ -316,6 +333,27 @@
 <h2>Writing<a class="headerlink" href="#writing" title="Link to this heading">¶</a></h2>
 <section id="schema-specific-keyword-arguments-writing-nexml">
 <span id="id1"></span><h3>Schema-Specific Keyword Arguments<a class="headerlink" href="#schema-specific-keyword-arguments-writing-nexml" title="Link to this heading">¶</a></h3>
+<dl class="py method">
+<dt class="sig sig-object py" id="dendropy.dataio.nexmlwriter.NexmlWriter.__init__">
+<span class="sig-prename descclassname"><span class="pre">NexmlWriter.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/dataio/nexmlwriter.html#NexmlWriter.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.dataio.nexmlwriter.NexmlWriter.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>markup_as_sequences</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then character data will be marked up as sequences
+instead of individual cells. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>suppress_unreferenced_taxon_namespaces</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then when writing <a class="reference internal" href="../library/datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> objects, any
+<a class="reference internal" href="../library/taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> object in the DataSet’s <code class="docutils literal notranslate"><span class="pre">taxon_namespaces</span></code>
+collection will <em>not</em> be written as a “TAXA” block if it is not
+referenced by any character matrix (<code class="docutils literal notranslate"><span class="pre">char_matrices</span></code>) or tree list
+(<code class="docutils literal notranslate"><span class="pre">tree_lists</span></code>).</p></li>
+<li><p><strong>ignore_unrecognized_keyword_arguments</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then unsupported or unrecognized keyword arguments will
+not result in an error. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>: unsupported keyword
+arguments will result in an error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="id2">
 <h3>Supported Methods<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
@@ -601,7 +639,10 @@
 <li><a class="reference internal" href="#">NeXML</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#reading">Reading</a><ul>
-<li><a class="reference internal" href="#schema-specific-keyword-arguments">Schema-Specific Keyword Arguments</a></li>
+<li><a class="reference internal" href="#schema-specific-keyword-arguments">Schema-Specific Keyword Arguments</a><ul>
+<li><a class="reference internal" href="#dendropy.dataio.nexmlreader.NexmlReader.__init__"><code class="docutils literal notranslate"><span class="pre">NexmlReader.__init__</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#supported-methods">Supported Methods</a><ul>
 <li><a class="reference internal" href="#tree-get"><code class="docutils literal notranslate"><span class="pre">Tree.get</span></code></a></li>
 <li><a class="reference internal" href="#treelist-get"><code class="docutils literal notranslate"><span class="pre">TreeList.get</span></code></a></li>
@@ -620,7 +661,10 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#writing">Writing</a><ul>
-<li><a class="reference internal" href="#schema-specific-keyword-arguments-writing-nexml">Schema-Specific Keyword Arguments</a></li>
+<li><a class="reference internal" href="#schema-specific-keyword-arguments-writing-nexml">Schema-Specific Keyword Arguments</a><ul>
+<li><a class="reference internal" href="#dendropy.dataio.nexmlwriter.NexmlWriter.__init__"><code class="docutils literal notranslate"><span class="pre">NexmlWriter.__init__</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#id2">Supported Methods</a><ul>
 <li><a class="reference internal" href="#tree-write"><code class="docutils literal notranslate"><span class="pre">Tree.write</span></code></a></li>
 <li><a class="reference internal" href="#tree-as-string"><code class="docutils literal notranslate"><span class="pre">Tree.as_string</span></code></a></li>
@@ -694,7 +738,7 @@
         <h3>Obtaining</h3>
         <ul>
             <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
-            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.2.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-5.0.3.tar.gz">Download the Source Code Archive</a></li>
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
@@ -758,7 +802,7 @@
         <li class="right" >
           <a href="newick.html" title="Newick"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">DendroPy 5.0.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >DendroPy Schemas: Phylogenetic and Evolutionary Biology Data Formats</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">NeXML</a></li> 
       </ul>
