@@ -1707,6 +1707,17 @@ with <code class="docutils literal notranslate"><span class="pre">self</span></c
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.polytomize_root">
+<span class="sig-name descname"><span class="pre">polytomize_root</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">set_as_unrooted_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#Tree.polytomize_root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.polytomize_root" title="Link to this definition">¶</a></dt>
+<dd><p>Works recursively to set root as a degree-3 node.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">self</span></code> has two children and at least one of them is an internal
+node, then it will be converted to an out-degree three node (with the
+edge length added as needed).</p>
+<p>Similar to <a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.collapse_basal_bifurcation" title="dendropy.datamodel.treemodel.Tree.collapse_basal_bifurcation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.collapse_basal_bifurcation</span></code></a>, but works
+recursively to set root as a degree-3 node.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.postorder_edge_iter">
 <span class="sig-name descname"><span class="pre">postorder_edge_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#Tree.postorder_edge_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.postorder_edge_iter" title="Link to this definition">¶</a></dt>
 <dd><p>Post-order iterator over edges of tree.</p>
@@ -3989,6 +4000,7 @@ coordinates of each node.</p>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.num_lineages_at"><code class="docutils literal notranslate"><span class="pre">Tree.num_lineages_at</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.phylogenetic_distance_matrix"><code class="docutils literal notranslate"><span class="pre">Tree.phylogenetic_distance_matrix</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.poll_taxa"><code class="docutils literal notranslate"><span class="pre">Tree.poll_taxa</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.polytomize_root"><code class="docutils literal notranslate"><span class="pre">Tree.polytomize_root</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.postorder_edge_iter"><code class="docutils literal notranslate"><span class="pre">Tree.postorder_edge_iter</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.postorder_internal_edge_iter"><code class="docutils literal notranslate"><span class="pre">Tree.postorder_internal_edge_iter</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.postorder_internal_node_iter"><code class="docutils literal notranslate"><span class="pre">Tree.postorder_internal_node_iter</span></code></a></li>

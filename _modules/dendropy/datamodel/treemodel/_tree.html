@@ -2559,6 +2559,24 @@
 
     <span class="n">is_unrooted</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_is_unrooted</span><span class="p">,</span> <span class="n">_set_is_unrooted</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Tree.polytomize_root">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.polytomize_root">[docs]</a>
+    <span class="k">def</span> <span class="nf">polytomize_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_as_unrooted_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Works recursively to set root as a degree-3 node.</span>
+
+<span class="sd">        If ``self`` has two children and at least one of them is an internal</span>
+<span class="sd">        node, then it will be converted to an out-degree three node (with the</span>
+<span class="sd">        edge length added as needed).</span>
+
+<span class="sd">        Similar to :meth:`Tree.collapse_basal_bifurcation()`, but works</span>
+<span class="sd">        recursively to set root as a degree-3 node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span><span class="o">.</span><span class="n">_convert_node_to_root_polytomy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">set_as_unrooted_tree</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_rooted</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
 <div class="viewcode-block" id="Tree.collapse_basal_bifurcation">
 <a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.collapse_basal_bifurcation">[docs]</a>
     <span class="k">def</span> <span class="nf">collapse_basal_bifurcation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_as_unrooted_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
