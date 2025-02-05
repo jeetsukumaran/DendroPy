@@ -21,10 +21,10 @@
 Population genetic simlations.
 """
 
-import random
 import copy
 
 from dendropy.utility import GLOBAL_RNG
+from dendropy.utility import deprecate
 from dendropy.interop import seqgen
 from dendropy.model import discrete
 from dendropy.model import coalescent
@@ -68,11 +68,28 @@ class FragmentedPopulations(object):
                            species_name,
                            samples_per_pop=10,
                            seq_len=2000,
-                           use_seq_gen=True):
+                           use_seq_gen=None):
+        """
+        Generate sequence data from population and gene trees, creating them if necessary.
 
-        self.generate_pop_tree(species_name=species_name, samples_per_pop=samples_per_pop)
+        Parameters:
+            ``species_name`` : string identifying species/taxon
+            ``samples_per_pop`` : number of samples (genes) per population
+            ``seq_len`` : site length for generated sequences
+
+        Returns:
+            dendropy.DataSet: A dataset containing the generated sequences
+        """
+        if use_seq_gen is not None:
+            deprecate.dendropy_deprecation_warning(
+                message="Argument use_seq_gen is deprecated as of Dendropy 5. "
+                "Note that in previous versions of Dendropy, it was ignored and had no effect.",
+            )
+
+        self.generate_pop_tree(species_name=species_name)
         self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
-        d = dendropy.DataSet(self.mutation_tree.taxon_namespace)
+        d = dendropy.DataSet()
+        d.attach_taxon_namespace(self.mutation_tree.taxon_namespace)
         if self.use_seq_gen is True:
             sg = seqgen.SeqGen()
             sg.seqgen_path = self.seqgen_path
@@ -83,8 +100,10 @@ class FragmentedPopulations(object):
             sg.char_model = 'HKY'
             sg.ti_tv = float(self.kappa) / 2
             sg.state_freqs = self.base_freqs
-            sg.trees = [self.mutation_tree]
-            d = sg.generate_dataset(dataset=d)
+            d = sg.generate(
+                trees=dendropy.TreeList([self.mutation_tree]),
+                dataset=d,
+            )
         else:
             char_matrix = discrete.hky85_chars(
                     seq_len=seq_len,
@@ -97,13 +116,27 @@ class FragmentedPopulations(object):
             d.add_char_matrix(char_matrix)
         return d
 
-    def generate_pop_tree(self, species_name, samples_per_pop=10):
+    def generate_pop_tree(self, species_name, samples_per_pop=None):
+        """
+        Parameters:
+            ``species_name`` : string identifying species/taxon
+            ``samples_per_pop`` : number of samples (genes) per population
+
+        Returns:
+            DendroPy tree, with branch lengths in generations
+        """
+        if samples_per_pop is not None:
+            deprecate.dendropy_deprecation_warning(
+                message="Argument samples_per_pop is deprecated as of Dendropy 5. "
+                "Note that in previous versions of Dendropy, it was ignored and had no effect.",
+            )
+
         tree_data = { 'sp': species_name, 'divt': self.div_time_gens }
         desc_lineages = []
         for i in range(self.num_desc_pops):
             tree_data['id'] = i+1
             desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
-        tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % 0) #% (self.num_desc_pops * self.desc_pop_size * 10))
+        tree_string = "(" + (",".join(desc_lineages)) + (")%d;" % 0) #% (self.num_desc_pops * self.desc_pop_size * 10))
         self.pop_tree = dendropy.Tree.get_from_string(tree_string, schema="newick")
         return self.pop_tree
 
@@ -116,7 +149,7 @@ class FragmentedPopulations(object):
             DendroPy tree, with branch lengths in generations
         """
         if self.pop_tree is None:
-            self.generate_pop_tree(species_name, samples_per_pop=10)
+            self.generate_pop_tree(species_name)
         for idx, leaf in enumerate(self.pop_tree.leaf_iter()):
             if idx == 1:
                 # ancestral population = num_desc_pops * desc population

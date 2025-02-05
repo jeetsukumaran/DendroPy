@@ -21,34 +21,19 @@
 Various bitwise utilities.
 """
 
-import sys
-
-if sys.hexversion >= 0x03010000:
-    def bit_length(n):
-        """
-        Return the number of bits necessary to represent an integer in binary,
-        excluding the sign and leading zeros. Also can be used to determine the
-        index of the highest set bit, or the width of the bitstring
-        representing the integer.
-        """
-        try:
-            return n.bit_length()
-        except AttributeError:  # if n is None
-            return 0
-else:
-    def bit_length(n):
-        """
-        Return the number of bits necessary to represent an integer in binary,
-        excluding the sign and leading zeros. Also can be used to determine the
-        index of the highest set bit, or the width of the bitstring
-        representing the integer.
-        """
-        try:
-            s = bin(n)          # binary representation:  bin(-37) --> '-0b100101'
-            s = s.lstrip('-0b') # remove leading zeros and minus sign
-            return len(s)       # len('100101') --> 6
-        except TypeError:  # if n is None
-            return 0
+def bit_length(n):
+    """
+    Return the number of bits necessary to represent an integer in binary,
+    excluding the sign and leading zeros. Also can be used to determine the
+    index of the highest set bit, or the width of the bitstring
+    representing the integer.
+    """
+    try:
+        s = bin(n)          # binary representation:  bin(-37) --> '-0b100101'
+        s = s.lstrip('-0b') # remove leading zeros and minus sign
+        return len(s)       # len('100101') --> 6
+    except TypeError:  # if n is None
+        return 0
 
 def int_as_bitstring(n, length=None, symbol0=None, symbol1=None, reverse=False):
     if length is None:

@@ -76,13 +76,10 @@ be related through correct interpretation of their taxon labels.
 """
 
 
-import warnings
-import collections
 import copy
-from dendropy.utility.textprocessing import StringIO
+from io import StringIO
 from dendropy.datamodel import basemodel
 from dendropy.utility import bitprocessing
-from dendropy.utility import textprocessing
 from dendropy.utility import container
 from dendropy.utility import error
 from dendropy.utility import deprecate
@@ -989,8 +986,7 @@ class TaxonNamespace(
         """
         Removes all |Taxon| objects from this namespace.
         """
-        # self._taxa.clear() # Python 2 ``list`` class does not have `clear()` method
-        del self._taxa[:]
+        self._taxa.clear()
         self._accession_index_taxon_map.clear()
         self._taxon_accession_index_map.clear()
         self._taxon_bitmask_map.clear()

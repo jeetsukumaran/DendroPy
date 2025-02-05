@@ -9,6 +9,7 @@ dist/*
 setup.cfg
 setuptools-*.egg
 __pycache__
+.eggs
 
 # PyCharm
 **/.idea

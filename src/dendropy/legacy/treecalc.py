@@ -26,7 +26,6 @@ or `dendropy.calculate.treescore`,
 import dendropy
 from dendropy.calculate import treecompare
 from dendropy.calculate import treemeasure
-from dendropy.calculate import treescore
 from dendropy.utility import deprecate
 
 ##############################################################################

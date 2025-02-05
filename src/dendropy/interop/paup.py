@@ -26,7 +26,6 @@ import sys
 import subprocess
 import tempfile
 import re
-import csv
 
 import dendropy
 from dendropy.utility import textprocessing
@@ -34,7 +33,6 @@ from dendropy.utility import error
 from dendropy.utility import metavar
 from dendropy.utility import container
 from dendropy.utility import messaging
-from dendropy.utility import filesys
 from dendropy.utility import processio
 from dendropy.dataio import nexuswriter
 _LOG = messaging.get_logger(__name__)

@@ -1,6 +1,6 @@
 name: ci
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   examples:
@@ -21,17 +21,27 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Refresh Package Sources
+        run: |
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" > /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list'
+          sudo apt-get update -y
       - name: Install dependencies
         run: |
-          sudo apt-get install libpython2.7  # required by paup
+          sudo apt-get install aptitude
+          sudo aptitude install -y gcc-7 g++-7 gfortran-7
+          sudo apt-get install -y libpython2.7  # required by paup
           python -m pip install --upgrade pip
       - name: Install paup
         run: |
           temp_dir=$(mktemp -d)
-          wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a168_ubuntu64.gz
-          gunzip ${temp_dir}/paup4a168_ubuntu64.gz
-          chmod +x ${temp_dir}/paup4a168_ubuntu64
-          sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
+          wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
+          gunzip ${temp_dir}/paup4a169_ubuntu64.gz
+          chmod +x ${temp_dir}/paup4a169_ubuntu64
+          sudo mv ${temp_dir}/paup4a169_ubuntu64 /usr/local/bin/paup
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
       - name: Install dendropy
         run: |
@@ -71,8 +81,6 @@ jobs:
       fail-fast: False
       matrix:
         python-version:
-          - "2.7"
-          - "3.5"
           - "3.6"
           - "3.7"
           - "3.8"
@@ -86,31 +94,95 @@ jobs:
         continue-on-error: true
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Refresh Package Sources
+        run: |
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" > /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list'
+          sudo apt-get update -y
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install python2 libpython2.7  # required by paup
+          sudo apt-get install aptitude
+          sudo aptitude install -y gcc-7 g++-7 gfortran-7
+          sudo apt-get install -y libpython2.7  # required by paup
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f .github/workflows/requirements.txt ]; then pip install -r .github/workflows/requirements.txt; fi
       - name: Install paup
         run: |
           temp_dir=$(mktemp -d)
-          wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a168_ubuntu64.gz
-          gunzip ${temp_dir}/paup4a168_ubuntu64.gz
-          chmod +x ${temp_dir}/paup4a168_ubuntu64
-          sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
+          wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
+          gunzip ${temp_dir}/paup4a169_ubuntu64.gz
+          chmod +x ${temp_dir}/paup4a169_ubuntu64
+          sudo mv ${temp_dir}/paup4a169_ubuntu64 /usr/local/bin/paup
           echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
-      - name: Python2 compatibility workaround # TODO remove when Python2 compatibility dropped
-        if: matrix.python-version == '2.7'
+      - name: Unit tests with setup.py
         run: |
-          rm tests/dendropy
-          curl --silent --show-error --retry 5 https://bootstrap.pypa.io/pip/2.7/get-pip.py | sudo python2
-          python2 -m pip install setuptools --upgrade
-          python2 setup.py test
-      - name: Test with setup.py
-        if: matrix.python-version != '2.7'
+          python setup.py pytest --addopts '-m "not smoke"'
+      - name: Smoke tests with setup.py
         run: |
-          python setup.py test
+          python setup.py pytest --addopts "-m smoke"
+
+  entrypoints:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: False
+      matrix:
+        python-version:
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        continue-on-error: true
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Refresh Package Sources
+        run: |
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" > /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list'
+          sudo apt-get update -y
+      - name: Install dependencies
+        run: |
+          sudo apt-get install aptitude
+          sudo aptitude install -y gcc-7 g++-7 gfortran-7
+          sudo apt-get install libpython2.7  # required by paup
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install .
+      - name: Test sumtrees
+        run: |
+          which sumtrees
+          sumtrees --help
+          sumtrees  2>&1 | grep sumtrees || exit 1
+      - name: Test sumlabels
+        run: |
+          which sumlabels
+          sumlabels --help
+          sumlabels 2>&1 | grep sumlabels || exit 1
+      - name: Test dendropy-format
+        run: |
+          which dendropy-format
+          dendropy-format --help
+          dendropy-format 2>&1 | grep dendropy-format || exit 1
+      - name: Test deprecated entrypoints
+        run: |
+          which sumtrees.py
+          sumtrees.py --help
+          sumtrees.py  2>&1 | grep sumtrees.py || exit 1
+          which sumlabels.py
+          sumlabels.py --help
+          sumlabels.py  2>&1 | grep sumlabels.py || exit 1
+
   coverage:
     runs-on: ubuntu-20.04
     steps:
@@ -119,14 +191,25 @@ jobs:
       uses: actions/setup-python@master
       with:
         python-version: 3.8
-    - name: Install paup
+    - name: Refresh Package Sources
       run: |
-        sudo apt-get install libpython2.7  # required by paup
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse" > /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list'
+          sudo apt-get update -y
+    - name: Install dependencies
+      run: |
+        sudo apt-get install aptitude
+        sudo aptitude install -y gcc-7 g++-7 gfortran-7
+        sudo apt-get install -y libpython2.7  # required by paup
+        python -m pip install --upgrade pip
         temp_dir=$(mktemp -d)
-        wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a168_ubuntu64.gz
-        gunzip ${temp_dir}/paup4a168_ubuntu64.gz
-        chmod +x ${temp_dir}/paup4a168_ubuntu64
-        sudo mv ${temp_dir}/paup4a168_ubuntu64 /usr/local/bin/paup
+        wget -P ${temp_dir} http://phylosolutions.com/paup-test/paup4a169_ubuntu64.gz
+        gunzip ${temp_dir}/paup4a169_ubuntu64.gz
+        chmod +x ${temp_dir}/paup4a169_ubuntu64
+        sudo mv ${temp_dir}/paup4a169_ubuntu64 /usr/local/bin/paup
         echo "export DENDROPY_PAUP_EXECUTABLE_PATH=/usr/local/bin/paup" >> "${GITHUB_ENV}"
     - name: Install coverage dependencies
       run: |
@@ -134,9 +217,10 @@ jobs:
         python3 -m pip install pytest-cov
     - name: Generate coverage report
       run: |
-        python3 -m pytest tests --cov=tests/dendropy --cov-report=xml
-    - uses: codecov/codecov-action@v3
+        python3 -m pytest tests/unittests --cov=tests --cov-report=xml
+    - uses: codecov/codecov-action@v4
       with:
+        token: ae13d715-bae4-4e6d-9dce-f47e7d7c7c01
         flags: unittests # optional
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
@@ -189,6 +273,40 @@ jobs:
         run: |
           find . -type f -name '*.py' -exec rm {} \;
           python3 -c "import dendropy; print(dendropy.__version__)"
+  docs:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        continue-on-error: true
+        with:
+          python-version: 3.9
+      - name: Upgrade pip
+        run: python3 -m pip install pip --upgrade
+      - name: Install from source
+        run: python3 -m pip install .
+      - name: Install documentation build dependencies
+        run: python3 -m pip install -r docs/requirements.txt
+      - name: Build documentation
+        run: make -C docs html
+      - name: Deploy docs
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/build/html # The folder the action should deploy.
+        # uses: jsmrcaga/action-netlify-deploy@v2.0.0
+        # with:
+        #   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        #   NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        #   NETLIFY_DEPLOY_MESSAGE: "Prod deploy v${{ github.ref }}"
+        #   NETLIFY_DEPLOY_TO_PROD: true
+        #   install_command: "echo Skipping installing the dependencies"
+        #   build_command: "echo Skipping building the web files"
+        #   build_directory: docs/build/html
   deploy:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
@@ -212,3 +330,23 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+  paper:
+    runs-on: ubuntu-latest
+    name: Paper Draft
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build draft PDF
+        uses: openjournals/openjournals-draft-action@master
+        with:
+          journal: joss
+          # This should be the path to the paper within your repo.
+          paper-path: joss/paper.md
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper
+          # This is the output path where Pandoc will write the compiled
+          # PDF. Note, this should be the same directory as the input
+          # paper.md
+          path: joss/paper.pdf

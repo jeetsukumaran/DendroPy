@@ -24,17 +24,7 @@ Communications using web/internet protocols.
 from dendropy.utility import textprocessing
 from dendropy.utility import error
 
-import sys
-if sys.hexversion < 0x03000000:
-    from urllib2 import Request
-    from urllib2 import urlopen
-    from urllib import urlencode
-    from urllib2 import HTTPError
-else:
-    from urllib.request import Request
-    from urllib.request import urlopen
-    from urllib.parse import urlencode
-    from urllib.error import HTTPError
+from urllib.request import urlopen
 import re
 
 def read_url(url, strip_markup=False):

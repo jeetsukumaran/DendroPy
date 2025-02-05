@@ -143,7 +143,9 @@ class ConsoleMessenger(object):
                 msg = self.text_wrapper.fill(self.message_leader[level]() + msg)
         return msg
 
-    def log(self, msg, level=0, wrap=True, prefix="", newline=True):
+    def log(self, msg, level=None, wrap=True, prefix="", newline=True):
+        if level is None:
+            level = 0
         if self.silent:
             return
         if level >= self.messaging_level:

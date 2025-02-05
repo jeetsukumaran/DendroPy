@@ -1,8 +1,8 @@
 # /usr/bin/env python
 
+from io import StringIO
 import dendropy
 from dendropy.utility import container
-from dendropy.utility.textprocessing import StringIO
 
 
 phylogeny_str = """\

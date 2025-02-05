@@ -21,7 +21,6 @@
 Functions to calculate some general statistics.
 """
 
-import math
 from dendropy.calculate import probability
 from operator import itemgetter
 

@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import copy
-from dendropy.utility.textprocessing import StringIO
+import warnings
+from io import StringIO
 from dendropy.utility import terminal
 from dendropy.utility import error
 from dendropy.utility import bitprocessing
@@ -940,15 +941,6 @@ class Tree(
         suppress_unifurcations : bool
             If |True|, nodes of outdegree 1 will be deleted. Only will
             be done if some nodes are excluded from the cloned tree.
-        is_apply_filter_to_leaf_nodes : bool
-            If ``True`` then the above filter will be applied to leaf nodes. If
-            ``False`` then it will not (and all leaf nodes will be
-            automatically included, unless excluded by an ancestral node being
-            filtered out).
-        is_apply_filter_to_internal_nodes : bool
-            If ``True`` then the above filter will be applied to internal nodes. If
-            ``False`` then it will not (internal nodes without children will
-            still be filtered out).
 
         Examples
         --------
@@ -1005,15 +997,6 @@ class Tree(
         suppress_unifurcations : bool
             If |True|, nodes of outdegree 1 will be deleted. Only will
             be done if some nodes are excluded from the cloned tree.
-        is_apply_filter_to_leaf_nodes : bool
-            If ``True`` then the above filter will be applied to leaf nodes. If
-            ``False`` then it will not (and all leaf nodes will be
-            automatically included, unless excluded by an ancestral node being
-            filtered out).
-        is_apply_filter_to_internal_nodes : bool
-            If ``True`` then the above filter will be applied to internal nodes. If
-            ``False`` then it will not (internal nodes without children will
-            still be filtered out).
 
         Examples
         --------
@@ -1522,6 +1505,13 @@ class Tree(
             The most-recent common ancestor of the nodes specified, or |None|
             if no such node exists.
         """
+        if not self.is_rooted:
+            warnings.warn(
+                "Calculating MRCA on an unrooted tree implicitly implicitly "
+                "treats seed node as root. "
+                "Set tree.is_rooted = True to silence this warning.",
+            )
+
         start_node = kwargs.get("start_node", self.seed_node)
         leafset_bitmask = None
         if "leafset_bitmask" in kwargs:
@@ -2420,6 +2410,15 @@ class Tree(
     def _set_seed_node(self, node):
         self._seed_node = node
         if self._seed_node is not None:
+            if node.parent_node is not None:
+                warnings.warn(
+                    "New seed_node has parent_node. The new seed_node and all "
+                    "descendants will be spliced out of their current context "
+                    "into this Tree. If this is not the desired behavior, pass "
+                    "node.extract_subtree() instead of node. Otherwise, to "
+                    "suppress this warning set node.parent_node = None before "
+                    "passing as new seed_node.",
+                )
             self._seed_node.parent_node = None
 
     seed_node = property(_get_seed_node, _set_seed_node)
@@ -2510,6 +2509,9 @@ class Tree(
                     new_seed_node.remove_child(nsn_ch)
                     for ch in nsn_ch._child_nodes:
                         new_seed_node.add_child(ch)
+            if new_seed_node is not None:
+                # uncouple before splicing
+                new_seed_node._parent_node = None
             self.seed_node = new_seed_node
 
         if update_bipartitions:
@@ -2601,9 +2603,10 @@ class Tree(
         """
         Takes an internal edge, ``edge``, adds a new node to it, and then roots
         the tree on the new node.
-        ``length1`` and ``length2`` will be assigned to the new (sub-)edge leading
-        to the old parent of the original edge, while ``length2`` will be
-        assigned to the old child of the original edge.
+        ``length1`` will be assigned to the new (sub-)edge leading
+        to the original parent of the original edge.
+        ``length2`` will be assigned to the new (sub-)edge leading to the original
+        child of the original edge.
         If ``update_bipartitions`` is True, then the edges' ``bipartition`` and the tree's
         ``bipartition_encoding`` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
@@ -2765,8 +2768,8 @@ class Tree(
                     nd._parent_node = None
                 else:
                     # assert nd is self.seed_node
+                    children[0]._parent_node = None
                     self.seed_node = children[0]
-                    self.seed_node._parent_node = None
         if bipartitions_to_delete:
             old_encoding = self.bipartition_encoding
             self.bipartition_encoding = [
@@ -3113,9 +3116,12 @@ class Tree(
 
     def ladderize(self, ascending=True):
         """
-        Sorts child nodes in ascending (if ``ascending`` is |False|) or
+        Sorts child nodes in ascending (if ``ascending`` is |True|) or
         descending (if ``ascending`` is |False|) order in terms of the number of
         children each child node has.
+
+        Ladderize sort is stable. To control order between nodes with
+        same child count, call ``reorder`` prior to ladderization.
         """
         node_desc_counts = {}
         for nd in self.postorder_node_iter():
@@ -3128,8 +3134,24 @@ class Tree(
                 total += len(nd._child_nodes)
                 node_desc_counts[nd] = total
                 nd._child_nodes.sort(
-                    key=lambda n: node_desc_counts[n], reverse=not ascending
+                    key=node_desc_counts.__getitem__,
+                    reverse=not ascending,
                 )
+
+    def reorder(
+        self,
+        ascending=True,
+        key=lambda nd: getattr(getattr(nd, "taxon", None), "label", ""),
+    ):
+        """
+        Reorder the children of each node in the tree, by default in ascending
+        order by Taxon with missing taxa treated as labeled as empty string.
+        Does not alter tree topology.
+
+        Specify ``key`` to sort by a different attribute or function of nodes.
+        """
+        for nd in self.preorder_node_iter():
+            nd._child_nodes.sort(key=key, reverse=not ascending)
 
     def truncate_from_root(self, distance_from_root):
         self.calc_node_root_distances()
@@ -3639,8 +3661,8 @@ class Tree(
                     parent.insert_child(index=pos, node=child_nodes[0])
                     head_node._parent_node = None
                 else:
+                    child_nodes[0]._parent_node = None
                     self.seed_node = child_nodes[0]
-                    self.seed_node._parent_node = None
             else:
                 if num_children == 0:
                     tree_edges.append(edge)
@@ -3956,7 +3978,7 @@ class Tree(
 
     def __str__(self):
         "Dump Newick string."
-        return "%s" % self._as_newick_string()
+        return self.as_string("newick").strip()
 
     def __repr__(self):
         return "<{} object at {}>".format(self.__class__.__name__, hex(id(self)))

@@ -17,21 +17,14 @@
 ##
 ##############################################################################
 
-import sys
 import collections
-import warnings
-from dendropy.datamodel import basemodel
 from dendropy.datamodel import taxonmodel
 from dendropy.utility import deprecate
 from dendropy.utility import textprocessing
-if sys.version_info.major >= 3 and sys.version_info.minor >= 4:
-    import pathlib
-    def _is_pathlib_path(x):
-        return isinstance(x, pathlib.PurePath)
-else:
-    from dendropy.utility.filesys import pre_py34_open as open
-    def _is_pathlib_path(x):
-        return False
+
+import pathlib
+def _is_pathlib_path(x):
+    return isinstance(x, pathlib.PurePath)
 
 ###############################################################################
 ## IOService

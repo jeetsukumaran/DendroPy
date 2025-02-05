@@ -1,8 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import warnings
 import dendropy
 from dendropy.interop import seqgen
+
+warnings.warn("This example requires seqgen to be installed to run.")
 
 trees = dendropy.TreeList.get(
         path="pythonidae.mcmc.nex",

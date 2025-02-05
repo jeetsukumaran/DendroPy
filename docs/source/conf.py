@@ -186,10 +186,10 @@ rst_prolog = """
 .. _mth: http://people.ku.edu/~mtholder
 
 .. |DendroPy| replace:: DendroPy
-.. _DendroPy: http://www.dendropy.org/
-.. |dendropy_homepage_url| replace:: http://www.dendropy.org/
-.. |dendropy_primer_url| replace:: http://www.dendropy.org/primer/index.html
-.. |dendropy_library_url| replace:: http://www.dendropy.org/library/index.html
+.. _DendroPy: https://jeetsukumaran.github.io/DendroPy/
+.. |dendropy_homepage_url| replace::https://jeetsukumaran.github.io/DendroPy/
+.. |dendropy_primer_url| replace::https://jeetsukumaran.github.io/DendroPy/primer/index.html
+.. |dendropy_library_url| replace::https://jeetsukumaran.github.io/DendroPy/library/index.html
 .. |dendropy_download_url| replace:: http://pypi.python.org/pypi/DendroPy
 .. |dendropy_public_repo_url| replace:: http://github.com/jeetsukumaran/DendroPy
 
@@ -294,7 +294,7 @@ rst_prolog += """\
 """ % (version, version)
 
 rst_prolog += """\
-.. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2010. DendroPy: A Python library for phylogenetic computing. *Bioinformatics* 26: 1569-1571.
+.. |dendropy_citation| replace:: Moreno, M. A., Holder, M. T., & Sukumaran, J. (2024). DendroPy 5: a mature Python library for phylogenetic computing. Journal of Open Source Software, 9(101), 6943, https://doi.org/10.21105/joss.06943
 .. |dendropy_copyright| replace:: Copyright {copyright}. All rights reserved.
 .. |
 """.format(copyright=copyright)

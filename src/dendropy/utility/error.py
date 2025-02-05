@@ -21,12 +21,6 @@
 Errors, exceptions, warnings, etc.
 """
 
-import sys
-import re
-import warnings
-import inspect
-import subprocess
-
 class ImmutableTaxonNamespaceError(TypeError):
     def __init__(self, message):
         TypeError.__init__(self, message)

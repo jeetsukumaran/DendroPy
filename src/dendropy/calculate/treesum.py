@@ -21,10 +21,9 @@
 Tree summarization and consensus tree building.
 """
 
-import math
+import copy
 import collections
 import dendropy
-from dendropy.datamodel import taxonmodel
 from dendropy.calculate.statistics import mean_and_sample_variance
 
 ##############################################################################
@@ -259,16 +258,18 @@ class TreeSummarizer(object):
             if split in split_distribution.split_node_ages:
                 ages = split_distribution.split_node_ages[split]
                 nd.age = summarization_fn(ages)
-            else:
+            elif nd.parent_node is not None:
                 # default to age of parent if split not found
                 nd.age = nd.parent_node.age
+            else:
+                nd.age = 0
             ## force parent nodes to be at least as old as their oldest child
             if collapse_negative_edges:
                 for child in nd.child_nodes():
                     if child.age > nd.age:
                         nd.age = child.age
         if set_edge_lengths:
-            tree.set_edge_lengths_from_node_ages(allow_negative_edges=allow_negative_edges)
+            tree.set_edge_lengths_from_node_ages(error_on_negative_edge_lengths=allow_negative_edges)
         return tree
 
     def summarize_edge_lengths_on_tree(self,
@@ -362,7 +363,16 @@ class TopologyCounter(object):
         """
         Set of all splits on tree: default topology hash.
         """
-        return frozenset(tree.bipartition_encoding)
+        def copy_and_freeze(bipartition):
+            bipartition = copy.copy(bipartition)
+            bipartition.is_mutable = False
+            return bipartition
+        return frozenset(
+            bipartition
+            if not bipartition.is_mutable
+            else copy_and_freeze(bipartition)
+            for bipartition in tree.bipartition_encoding
+        )
 
     def __init__(self):
         self.topology_hash_map = {}

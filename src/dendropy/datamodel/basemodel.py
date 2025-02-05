@@ -23,11 +23,8 @@ Infrastructure for phylogenetic data objects.
 
 import os
 import copy
+from io import StringIO
 import sys
-import collections
-from dendropy.utility.textprocessing import StringIO
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    from dendropy.utility.filesys import pre_py34_open as open
 from dendropy.utility import container
 from dendropy.utility import bibtex
 from dendropy.utility import textprocessing
@@ -579,13 +576,12 @@ class Serializable(object):
 
         ::
 
-                d.write(path="path/to/file.dat",
-                        schema="nexus",
-                        preserve_underscores=True)
-                f = open("path/to/file.dat")
-                d.write(file=f,
-                        schema="nexus",
-                        preserve_underscores=True)
+                # Using a file path:
+                d.write(path="path/to/file.dat", schema="nexus")
+
+                # Using an open file:
+                with open("path/to/file.dat", "w") as f:
+                    d.write(file=f, schema="nexus")
 
         """
         return Serializable._write_to(self, **kwargs)
@@ -1204,6 +1200,15 @@ class AnnotationSet(container.OrderedSet):
         annotation : |Annotation|
             The new |Annotation| created.
         """
+
+        deprecate.dendropy_deprecation_warning(
+            message=(
+                "BibTexEntry is deprecated as of DendroPy 5.0 and will be removed in a future release ."
+                "It no longer maintaned, and known to be broken. "
+                "If this functionality is needed, please open an issue on GitHub."
+            ),
+        )
+
         if read_as == "bibtex":
             return self.add_bibtex(citation=citation,
                     store_as=store_as,
@@ -1247,6 +1252,15 @@ class AnnotationSet(container.OrderedSet):
         annotation : |Annotation|
             The new |Annotation| created.
         """
+
+        deprecate.dendropy_deprecation_warning(
+            message=(
+                "BibTexEntry is deprecated as of DendroPy 5.0 and will be removed in a future release ."
+                "It no longer maintaned, and known to be broken. "
+                "If this functionality is needed, please open an issue on GitHub."
+            ),
+        )
+
         bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
 

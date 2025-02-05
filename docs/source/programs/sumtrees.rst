@@ -37,21 +37,21 @@ with the main download page here:
 How to Install the Package
 ==========================
 
-DendroPy is fully easy-installable and can be installed using |pip|_::
+DendroPy is fully easy installable and can be installed using |pip|_::
 
-    $ sudo pip install -U dendropy
+    $ python -m pip install dendropy
 
 If you do not have |pip|_ installed, you should *definitely* `install it <https://pip.pypa.io/en/latest/installing.html>`_ !
-Note: the "``sudo``" command should only be used if installing system-wide on a machine on which you have administrative privileges. Otherwise, you would use the "``--user``" flag for a local user install::
+You may wish to use the "``--user``" flag for a local user install::
 
-    $ pip install --user -U dendropy
+    $ python3 -m pip install --user dendropy
 
 These, and other ways of obtaining and installing DendroPy (e.g., by downloading the |dendropy_source_archive|_, or by cloning the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_), are discussed in detail in the ":doc:`/downloading`" section.
 
 Checking the Installation
 =========================
 
-If the installation was successful, you should be able to type "``sumtrees.py``" in the terminal window and see something like the following (with possibly a different date or version number)::
+If the installation was successful, you should be able to type "``sumtrees``" in the terminal window and see something like the following (with possibly a different date or version number)::
 
     /==========================================================================\
     |                                 SumTrees                                 |
@@ -82,7 +82,7 @@ If the installation was successful, you should be able to type "``sumtrees.py``"
     | 4.0.0.dev (DendroPy4-feea2b0, 2015-06-02 20:13:49).                      |
     \==========================================================================/
 
-    usage: sumtrees.py [-i FORMAT] [-b BURNIN] [--force-rooted] [--force-unrooted]
+    usage: sumtrees [-i FORMAT] [-b BURNIN] [--force-rooted] [--force-unrooted]
                     [-v] [--weighted-trees] [--preserve-underscores]
                     [--taxon-name-file FILEPATH] [-t FILE] [-s SUMMARY-TYPE]
                     [-f #.##] [--allow-unknown-target-tree-taxa]
@@ -100,8 +100,8 @@ If the installation was successful, you should be able to type "``sumtrees.py``"
                     [--usage-examples] [--describe]
                     [TREE-FILEPATH [TREE-FILEPATH ...]]
 
-    Type 'sumtrees.py --help' for details on usage.
-    Type 'sumtrees.py --usage-examples' for examples of usage.
+    Type 'sumtrees --help' for details on usage.
+    Type 'sumtrees --usage-examples' for examples of usage.
 
 You can now delete the original downloaded archive and unpacked directory if you want.
 
@@ -110,13 +110,13 @@ How to Use the Program
 
 SumTrees is typically invoked by providing it a list of one or more tree files to be summarized::
 
-    $ sumtrees.py [OPTIONS] <TREEFILE> [<TREEFILE> [<TREEFILE> ...]]]
+    $ sumtrees [OPTIONS] <TREEFILE> [<TREEFILE> [<TREEFILE> ...]]]
 
 Common options include specification of a target topology onto which to map the support ("``-t``" or "``--target``"), a summary tree to use (e.g., "``-s mcct``" or "``--summary-target=mcct``" an output file ("``-o``" or "``--output``"), and a burn-in value ("``-b``" or "``--burnin``").
 
 Full help on program usage and options is given by using the "``--help``" option::
 
-    $ sumtrees.py --help
+    $ sumtrees --help
 
 
 Quick Recipes
@@ -126,36 +126,36 @@ Summarization of Posterior Probabilities of Clades with a Consensus Tree
 ------------------------------------------------------------------------
 Summarize a set of tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths being the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``result.tre``"::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -f0.95 -b200 -o result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --min-clade-freq=0.95 --burnin=200 --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -f0.95 -b200 -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 Summarization of Posterior Probabilities of Clades with a Maximum Clade Credibility Tree (MCCT)
 -----------------------------------------------------------------------------------------------
 
 Summarize a set of tree files using a tree in the input set that maximizes the product of clade support, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``result.tre``"::
 
-    $ sumtrees.py --summary-target=mcct --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -s mcct -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --summary-target=mcct --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -s mcct -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 Non-parametric Bootstrap Support of a Model Tree
 ------------------------------------------------
 Calculate support for nodes on a specific tree, "``best.tre``" as given by a set of tree files, with support reported as percentages rounded to integers, and saving the result to "``result.tre``"::
 
-    $ sumtrees.py --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
 
 Set Node Ages of Target or Summary Tree(s) to Mean/Median Node Age of Input Trees
 ---------------------------------------------------------------------------------
 
 Summarize a set of ultrametric tree files using a 95% majority-rule consensus tree, with support for clades indicated as proportions (posterior probabilities) using branch labels, and branch lengths adjusted so the ages of internal nodes are the mean across all trees, dropping the first 200 trees in each file as a burn-in::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --edges=mean-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -f0.95 -b200 -o result.tre -l -e mean-age treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --min-clade-freq=0.95 --burnin=200 --edges=mean-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -f0.95 -b200 -o result.tre -l -e mean-age treefile1.tre treefile2.tre treefile3.tre
 
 To use the median age instead::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burnin=200 --edges=median-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -f0.95 -b200 -o result.tre -e median-age treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --min-clade-freq=0.95 --burnin=200 --edges=median-age --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -f0.95 -b200 -o result.tre -e median-age treefile1.tre treefile2.tre treefile3.tre
 
 Running in Parallel Mode
 ------------------------
@@ -164,16 +164,16 @@ Running in parallel mode will analyze each input source in its own independent p
 Multiprocessing analysis is invoked by adding the "``-m``" or "``--multiprocessing``"  flag to the SumTrees command, and passing in the maximum number of processes to run in parallel.
 For example, if your machine has two cores, and you want to run the previous analyses using both of them, you would specify that SumTrees run in parallel mode with two processes by adding "``-m2``" or "``--multiprocessing=2``" to the SumTrees command invocation::
 
-    $ sumtrees.py --multiprocessing=2 --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -m2 -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py --multiprocessing=2 --min-clade-freq=0.95 --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -m2 -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --multiprocessing=2 --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -m2 -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --multiprocessing=2 --min-clade-freq=0.95 --burnin=200 --support-as-labels --output-tree-filepath=result.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -m2 -f0.95 -b200 -l -o result.tre treefile1.tre treefile2.tre treefile3.tre
 
 You can specify as many processes as you want, up to the total number of tree support files passed as input sources.
 If you want to use *all* the available cores on your machine, you can use the "``-M``" or "``--maximum-multiprocessing``" flag::
 
-    $ sumtrees.py --maximum-multiprocessing --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -M -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --maximum-multiprocessing --decimals=0 --percentages --output-tree-filepath=result.tre --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -M -d0 -p -o result.tre -t best.tre treefile1.tre treefile2.tre treefile3.tre
 
 If you specify fewer processes than input sources, then the files will be cycled through the processes.
 
@@ -182,14 +182,14 @@ Primers and Examples
 
 At its most basic, you will need to supply SumTrees with the path to one or more tree files in Newick or NEXUS format that you want to summarize::
 
-    $ sumtrees.py phylo.tre
+    $ sumtrees phylo.tre
 
 As no target tree was provided and no summary tree type was specified, SumTrees will, by default construct ad 50% majority-rule clade consensus tree of all the trees found in the file "``phylo.tre``" as  the summarization target.
 The internal node labels of the resulting consensus tree will, by default, indicate the proportion of trees in "``phylo.tre``" in which that clade was found, while the branch lengths of the resulting consensus tree being set to the mean of the branch lengths of that clade across all the trees in "``phylo.tre``".
 
 If you have split searches across multiple runs (across, for example, multiple computers, so as to speed up the search time), such that you have multiple tree files ("``phylo.run1.tre``", "``phylo.run2.tre``", "``phylo.run3.tre``", ...), you can instruct SumTrees to consider all these files together when summarizing the support by simply listing them one after another separated by spaces::
 
-    $ sumtrees.py phylo.run1.tre phylo.run2.tre phylo.run3.tre
+    $ sumtrees phylo.run1.tre phylo.run2.tre phylo.run3.tre
 
 As before, the above command will construct a 50% majority-rule consensus tree with clade supported indicated by internal node labels and branch lengths being the mean across all trees, but this time it will use all the trees found across all the files listed: "``phylo.run1.tre``", "``phylo.run2.tre``", and "``phylo.run3.tre``".
 
@@ -197,23 +197,23 @@ You will notice that the final resulting tree is displayed to the terminal and n
 It will probably be more useful if we can save it to a file for visualization for further analysis.
 This can be done in one of two ways, either by redirecting the screen output to a file, using the standard (at least on UNIX and UNIX-like systems) redirection operator, ``>``::
 
-    $ sumtrees.py phylo.tre > phylo.consensus.sumtrees
+    $ sumtrees phylo.tre > phylo.consensus.sumtrees
 
 or by using the or "``--output-tree-filepath``" option::
 
-    $ sumtrees.py --output-tree-filepath=phylo.consensus.sumtrees phylo.tre
+    $ sumtrees --output-tree-filepath=phylo.consensus.sumtrees phylo.tre
 
 If the files are in different directories, or you are not in the same directory as the files, you should use the full directory path specification::
 
-    $ sumtrees.py --output-tree-filepath=/Users/myself/MyProjects/phylo1/final/phylo.consensus.sumtrees /Users/myself/MyProjects/phylo1/phylo.tre
+    $ sumtrees --output-tree-filepath=/Users/myself/MyProjects/phylo1/final/phylo.consensus.sumtrees /Users/myself/MyProjects/phylo1/phylo.tre
 
 More extended options specify things like: where to save the output (by default it goes to the screen), the topology or tree to which to map the support (user-supplied or consensus tree), the output format (NEXUS by default, but it can also be Newick), whether support is indicated in terms of proportions or percentages etc.
 All of these options are specified on the command line when invoking the program, with multiple options separated by spaces.
 Many of the options have two alternate forms, a long form (a word or phrase preceded by two dashes, e.g., "``--option``") and a short form (a single letter preceded by a single dash, "``-o``").
 The long form of the options needs an equals sign before setting the paramater (e.g., "``--option=1``"), while the short one does not (e.g., "``-o1``" or "``-o 1``").
 Most of the options have default values that will be used if not explicitly set when the program is invoked.
-The order that the options are given does *not* matter, i.e., "``sumtrees.py --option1=something --option2=something``" is the same as "``sumtrees.py --option2=something --option1=something``".
-As mentioned above, full details on these options, their long and short forms, as well as their default values will be given by invoking the program with the "``--help``" or "``-h``" option: "``sumtrees.py --help``".
+The order that the options are given does *not* matter, i.e., "``sumtrees --option1=something --option2=something``" is the same as "``sumtrees --option2=something --option1=something``".
+As mentioned above, full details on these options, their long and short forms, as well as their default values will be given by invoking the program with the "``--help``" or "``-h``" option: "``sumtrees --help``".
 
 Specifying and Customization of the Summarization Target
 ========================================================
@@ -243,11 +243,11 @@ For example, say you have completed a 1000-replicate non-parametric analysis of 
 You want to construct a 70% majority-rule consensus tree of the replicates, with support indicated as percentages on the node labels.
 If the bootstrap replicates are in the file "``phylo-boots.tre``", you would then enter the following command::
 
-    $ sumtrees.py --summary-target=consensus --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+    $ sumtrees --summary-target=consensus --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
 
 Or, using the short option syntax::
 
-    $ sumtrees.py -s consensus -f0.7 -p -d0 phylo-boots.tre
+    $ sumtrees -s consensus -f0.7 -p -d0 phylo-boots.tre
 
 Here, the "``--min-clade-freq=0.7``" or "``-f0.7``" option lowers the minimum threshold for clade inclusion to 70%.
 If you want a 95% majority-rule consensus tree instead, you would use "``--min-clade-freq=0.95``" or "``-f0.95``".
@@ -259,26 +259,26 @@ Note that even if you instruct SumTrees to report the support in terms of percen
 
     As noted, if no target topology is specified (either using the "``--summary-target``"/"``-s``" or "``--target-tree-filepath``"/"``-t``" options), then SumTrees by default will construct and use a majority-rule consensus topology as a target, and hence the explicit specification of this as a target is not needed. Thus, the following will produce exactly the same results as above::
 
-        $ sumtrees.py --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
-        $ sumtrees.py -f0.7 -p -d0 phylo-boots.tre
+        $ sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+        $ sumtrees -f0.7 -p -d0 phylo-boots.tre
 
 Again, if we want to actually save the results to the file, we should use the "``--output-tree-filepath``" option::
 
-    $ sumtrees.py --output-tree-filepath=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
-    $ sumtrees.py -o phylo-mle-support.sumtrees -f0.7 --p --d0 phylo-boots.tre
+    $ sumtrees --output-tree-filepath=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
+    $ sumtrees -o phylo-mle-support.sumtrees -f0.7 --p --d0 phylo-boots.tre
 
 Maximum Clade Credibility Topology
 ..................................
 
 The Maximum Clade Credibility Topology, or MCCT, is the topology that maximizes the *product* of the split support. You can use this as the target topology by specifying "``--summary-target=mcct``" or "``-s mcct``"::
 
-    $ sumtrees.py --summary-target=mcct phylo-boots.tre
-    $ sumtrees.py -s mcct phylo-boots.tre
+    $ sumtrees --summary-target=mcct phylo-boots.tre
+    $ sumtrees -s mcct phylo-boots.tre
 
 As might be expected, in can be combined with other options. For example, to discard the first 200 trees from each of the input sources and write the results to a file, "``results.tre``::
 
-    $ sumtrees.py --summary-target=mcct --burnin=200 --output-tree-filepath=results.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -s mcct -b 200 -o results.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees --summary-target=mcct --burnin=200 --output-tree-filepath=results.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees -s mcct -b 200 -o results.tre treefile1.tre treefile2.tre treefile3.tre
 
 .. .. note::
 
@@ -290,17 +290,17 @@ Specifying a Custom Topology or Set of Topologies
 Say you also have a maximum likelihood estimate of the phylogeny, and want to annotate the nodes of the maximum likelihood tree with the proportion of trees out of the bootstrap replicates in which the node is found.
 Then, assuming your maximum likelihood tree is in the file, "``phylo-mle.tre``", and the bootstrap tree file is "``phylo-boots.tre``", you would use the "``--target-tree-filepath``" options, as in the following command::
 
-    $ sumtrees.py --target-tree-filepath=phylo-mle.tre phylo-boots.tre
+    $ sumtrees --target-tree-filepath=phylo-mle.tre phylo-boots.tre
 
 Here, "``--target-tree-filepath``" specifies the target topology onto which the support will be mapped, while the remaining (unprefixed) argument specifies the tree file that is the source of the support.
 An equivalent form of the same command, using the short option syntax is::
 
-    $ sumtrees.py -t phylo-mle.tre phylo-boots.tre
+    $ sumtrees -t phylo-mle.tre phylo-boots.tre
 
 If you want the support expressed in percentages instead of proportions, and the final tree saved to a file, you would enter::
 
-    $ sumtrees.py --output phylo-mle-support.sumtrees --target-tree-filepath phylo-mle.tre --proportions --decimals=0 phylo-boots.tre
-    $ sumtrees.py -o phylo-mle-support.sumtrees -t phylo-mle.tre -p -d0 phylo-boots.tre
+    $ sumtrees --output phylo-mle-support.sumtrees --target-tree-filepath phylo-mle.tre --proportions --decimals=0 phylo-boots.tre
+    $ sumtrees -o phylo-mle-support.sumtrees -t phylo-mle.tre -p -d0 phylo-boots.tre
 
 Collapsing Clades/Edges/Splits Below a Minimum Support Frequency Threshold
 --------------------------------------------------------------------------
@@ -308,12 +308,12 @@ Collapsing Clades/Edges/Splits Below a Minimum Support Frequency Threshold
 The "``-f``" or "``--min-clade-freq``" flag sets the threshold below which clades will be collapsed.
 This applies to all summary targets: user-specified target topologies as well consensus trees, MCCT trees, etc.::
 
-        $ sumtrees.py --min-clade-freq=0.75 --percentages --decimals=0 phylo-boots.tre
-        $ sumtrees.py -f0.75 -p -d0 phylo-boots.tre
-        $ sumtrees.py --min-clade-freq=0.95 --summary-target=mcct phylo-boots.tre
-        $ sumtrees.py -f0.95 -s mcct phylo-boots.tre
-        $ sumtrees.py --min-clade-freq=0.75 --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-        $ sumtrees.py -f0.75 -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+        $ sumtrees --min-clade-freq=0.75 --percentages --decimals=0 phylo-boots.tre
+        $ sumtrees -f0.75 -p -d0 phylo-boots.tre
+        $ sumtrees --min-clade-freq=0.95 --summary-target=mcct phylo-boots.tre
+        $ sumtrees -f0.95 -s mcct phylo-boots.tre
+        $ sumtrees --min-clade-freq=0.75 --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+        $ sumtrees -f0.75 -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
 
 Note that the minimum support frequency threshold is specified as proportion scaled from 0 to 1, even if the percentages are requested as the support units.
 
@@ -335,13 +335,13 @@ In all cases, these defaults can be overridden by using the "``--set-edges``" or
 
 So, for example, to construct a consensus tree of a post-burnin set of ultrametric trees, with the node ages set to the *mean* instead of the median node age::
 
-    $ sumtrees.py --set-edges=mean-age --summarize-node-ages --burnin=200 beast1.trees beast2.trees beast3.trees
-    $ sumtrees.py --e mean-age --summarize-node-ages --b 200 beast1.trees beast2.trees beast3.trees
+    $ sumtrees --set-edges=mean-age --summarize-node-ages --burnin=200 beast1.trees beast2.trees beast3.trees
+    $ sumtrees --e mean-age --summarize-node-ages --b 200 beast1.trees beast2.trees beast3.trees
 
 Or to set the edges of a user-specifed tree to the median edge length of the input trees::
 
-    $ sumtrees.py --set-edges=median-length --target=mle.tre boots1.tre boots2.tre
-    $ sumtrees.py --e median-length -t mle.tre boots1.tre boots2.tre
+    $ sumtrees --set-edges=median-length --target=mle.tre boots1.tre boots2.tre
+    $ sumtrees --e median-length -t mle.tre boots1.tre boots2.tre
 
 
 Summarizing Rooted and Ultrametric Trees
@@ -352,14 +352,14 @@ Forcing Trees to be Treated as Rooted
 
 SumTrees treats all trees as unrooted unless specified otherwise. You can force SumTrees to treat all trees as rooted by passing it the "``--force-rooted``" flag::
 
-    $ sumtrees.py --force-rooted phylo.trees
+    $ sumtrees --force-rooted phylo.trees
 
 Summarizing Node Ages
 ---------------------
 
 If the trees are rooted **and** ultrametric, the "``--summarize-node-ages``" flag will result in SumTrees summarizing node age information as well::
 
-    $ sumtrees.py --summarize-node-ages phylo.trees
+    $ sumtrees --summarize-node-ages phylo.trees
 
 This will calculate and report statistics such as the mean, standard deviation, ranges, high posterior density intervals, etc. of the node ages.
 
@@ -368,8 +368,8 @@ Setting the Node Ages of the Summary Trees
 
 If the tree is rooted and ultrametric, instead of summarizing edge lengths to be the mean of the edge lengths across the input set, you probably want to set the edge lengths of the summary tree so the node ages correspond to the mean or median of the node ages of the input set::
 
-    $ sumtrees.py --set-edges=mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
-    $ sumtrees.py --e mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
+    $ sumtrees --set-edges=mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
+    $ sumtrees --e mean-age --summarize-node-ages beast1.trees beast2.trees beast3.trees
 
 Rooting the Target Topology
 ---------------------------
@@ -387,16 +387,16 @@ The following options allow for re-rooting of the target topology or topologies:
 
 For example::
 
-    $ sumtrees.py --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
-    $ sumtrees.py --root-target-at-midpoint -s mcct trees1.tre trees2.tre
-    $ sumtrees.py --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
+    $ sumtrees --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
+    $ sumtrees --root-target-at-midpoint -s mcct trees1.tre trees2.tre
+    $ sumtrees --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
 
 .. note:
 
     Note that, under the Nexus/Newick standards, underscores are automatically converted to spaces. So the taxon label in the above specification is read by DendroPy *not* as "Python_regius", but "Python regius". The same holds for the input tree files. If want to suppress this conversion of underscores to spaces, specify the "``--preserve-underscores``" flag::
 
-        $ sumtrees.py --preserve-underscores --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
-        $ sumtrees.py --preserve-underscores --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
+        $ sumtrees --preserve-underscores --root-target-at-outgroup Python_regius --target=mle.tre boots1.tre boots2.tre
+        $ sumtrees --preserve-underscores --set-outgroup Python_regius -s mcct trees1.tre trees2.tre
 
 Assigning the Ages of Non-Contemporaneous Tips ("Tip-Dating")
 =============================================================
@@ -437,7 +437,7 @@ and a tip age data file, '``data/x1.ages.tsv``', consisting of tab-separated val
 
 then the following is the invocation to summarize the trees and their node ages::
 
-   $ sumtrees.py \
+   $ sumtrees \
     --tip-ages data/x1.ages.tsv
     --summarize-node-ages \
     data/x1-1.tre
@@ -452,7 +452,7 @@ If the tip age data file is given in a comma-separated file, '``data/x1.ages.csv
 
 then the invocation is::
 
-   $ sumtrees.py \
+   $ sumtrees \
     --tip-ages data/x1.ages.csv
     --tip-ages-format=csv \
     --summarize-node-ages \
@@ -472,30 +472,30 @@ In parallel mode, each input source will be handled in a separate process, resul
 At its most basic, running in parallel mode involves nothing more than adding the "``-m``" or "``--multiprocessing`` option to the SumTrees invocation, and passing in the number of parallel processes to run.
 So, for example, if you have four tree files that you want to summarize, and you want to run these using two processes in parallel::
 
-    $ sumtrees.py --multiprocessing=2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m 2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees --multiprocessing=2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees -m 2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 Or, to run in four processes simultaneously::
 
-    $ sumtrees.py --multiprocessing=4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees --multiprocessing=4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 If you want to use all the available cores on the current machine, use the "``-M``" or "``--maximum-multiprocessing``" flag::
 
-    $ sumtrees.py --maximum-multiprocessing phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -M phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees --maximum-multiprocessing phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees -M phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 
 Other options as described above, can, of course be added as needed::
 
-    $ sumtrees.py --multiprocessing=4 --burnin=200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m 4 -b 200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees --multiprocessing=4 --burnin=200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees -m 4 -b 200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-    $ sumtrees.py --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -M -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees -M -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-    $ sumtrees.py --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 --output-tree-filepath=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -M -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees --maximum-multiprocessing --burnin=200 --min-clade-freq=0.75 --output-tree-filepath=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees -M -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 Parallelization Strategy: Deciding on the Number of Processes
 -------------------------------------------------------------
@@ -509,7 +509,7 @@ When running SumTrees in parallel mode, you can specify *any* number of parallel
 For example, you might have an octo-core machine available, which means that you have 8 processors available.
 If your analysis has 40 independent support files, you can invoke SumTrees with 40 parallel processes::
 
-    $ sumtrees.py --multiprocessing=40 -o result.tre t1.tre ... t40.tre
+    $ sumtrees --multiprocessing=40 -o result.tre t1.tre ... t40.tre
 
 SumTrees will indeed launch 40 parallel processes to process the files, and it will seem like 40 processes are being executed in parallel.
 In reality, however, the operating system is actually cycling the processes through the available processors in rapid succession, such that, on a nanosecond time-scale, only 8 processes are actually executing simultaneously: one on each of the available cores.
@@ -537,7 +537,7 @@ For example, if your cluster uses the `Sun Grid Engine <http://gridengine.sunsou
         #$ -cwd
         #$ -V
         #$ -pe mpi 4
-        sumtrees.py -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
+        sumtrees -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
 
 The "``#$ -pe mpi 4``" line tells the SGE scheduler to allocate four processors to the job in the "``mpi``" parallel environment, while the "``-m4``" part of the SumTrees command tells SumTrees to run 4 processes in parallel.
 
@@ -548,7 +548,7 @@ If you are using PBS/Torque as a scheduler, the equivalent job script might be:
         # /bin/sh
         #PBS -l nodes=2:ncpus=2
         cd $PBS_O_WORKDIR
-        sumtrees.py -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
+        sumtrees -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
 
 Here, the "``#PBS -l nodes=2:ncpus=2``" requests two processors on two nodes, while the "``-m4``" part of the SumTrees command, as before, tells SumTrees to run 4 processes in parallel.
 
@@ -562,18 +562,18 @@ Improving Performance
 
     * Run SumTrees in parallel mode (see "`Running in Parallel Mode`_" or "`Parallelizing SumTrees`_")::
 
-        $ sumtrees.py -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+        $ sumtrees -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
     * Reduce the tree-processing logging frequency.
       By default, SumTrees will report back every 500th tree in a tree file, just to let you know where it is and to give you a sense of how long it will take. You can use the "``-g``"  or "``--log-frequency``" flag to control this behavior. If you have very large files, you may be content to have SumTrees report back every 5000th or even every 10000th tree instead::
 
-        $ sumtrees.py --log-frequency=10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-        $ sumtrees.py -g10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+        $ sumtrees --log-frequency=10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+        $ sumtrees -g10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
       If you are content to let SumTrees run without reporting its progress *within* each file (SumTrees will still report back whenever it begins or ends working on a file), then you can switch off tree processing logging altogether by specifying a logging frequency of 0::
 
-        $ sumtrees.py --log-frequency=0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-        $ sumtrees.py -g0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+        $ sumtrees --log-frequency=0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+        $ sumtrees -g0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 Troubleshooting
 ===============
@@ -628,9 +628,9 @@ Manual Installation
 The |DendroPy|_ library is actually quite straightforward to install manually, especially if you have any familiarity with Python and how Python files are organized.
 There are a couple of different things you could do:
 
-* Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, "``$PYTHONPATH``", and place the file "``programs/sumtrees.py``" on your system path.
+* Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, "``$PYTHONPATH``", and place the file "``programs/sumtrees``" on your system path.
 
-* Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``programs/sumtrees.py``" on your system path.
+* Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``programs/sumtrees``" on your system path.
 
 Repository Access
 =================

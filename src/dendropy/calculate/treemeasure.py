@@ -23,13 +23,18 @@ Statistics, metrics, measurements, and values calculated on (single) trees.
 
 import math
 from dendropy.calculate import phylogeneticdistance
+from dendropy.utility import deprecate
 
 EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
-## legacy: will soon be deprecated
+
 class PatristicDistanceMatrix(phylogeneticdistance.PhylogeneticDistanceMatrix):
 
     def __init__(self, tree):
+        deprecate.dendropy_deprecation_warning(
+            message="PatristicDistanceMatrix is deprecated since Dendropy 5. "
+            "Use entropy. phylogenetic distance.PhylogeneticDistanceMatrix instead.",
+        )
         phylogeneticdistance.PhylogeneticDistanceMatrix.__init__(self)
         self.compile_from_tree(tree=tree)
 
@@ -248,3 +253,26 @@ def treeness(tree):
             internal += nd.edge.length
     return internal/(external + internal)
 
+def node_ages(tree, is_internal_only=False):
+    """
+    Returns vector of branching events indexed in backward time.
+    """
+    return sorted(age for (node, age) in tree.resolve_node_ages().items() if (not is_internal_only) or node.is_internal())
+
+def node_depths(tree, is_internal_only=False):
+    """
+    Returns vector of branching events indexed in forward time.
+    """
+    return sorted(age for (node, age) in tree.resolve_node_depths().items() if (not is_internal_only) or node.is_internal())
+
+def coalescence_ages(tree):
+    """
+    Returns vector of splits indexed in backward time.
+    """
+    return node_ages(tree, is_internal_only=True)
+
+def divergence_times(tree):
+    """
+    Returns vector of splits indexed in forward time.
+    """
+    return divergence_times(tree, is_internal_only=True)

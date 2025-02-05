@@ -23,8 +23,8 @@ BibTeX interface.
 
 import re
 import textwrap
-import sys
 from dendropy.utility.container import OrderedCaselessDict
+from dendropy.utility import deprecate
 
 # default order of fields
 BIBTEX_FIELDS = [
@@ -109,6 +109,15 @@ class BibTexEntry(object):
         Sets up internal dictionary of BibTeX fields, and initializes
         if argument is given.
         """
+
+        deprecate.dendropy_deprecation_warning(
+            message=(
+                "BibTexEntry is deprecated as of DendroPy 5.0 and will be removed in a future release ."
+                "It no longer maintaned, and known to be broken. "
+                "If this functionality is needed, please open an issue on GitHub."
+            ),
+        )
+        
         self.bibtype = None
         self.citekey = None
         if isinstance(citation, BibTexEntry):
@@ -300,10 +309,20 @@ class BibTexDb(object):
     A BibTeX database.
     """
 
+
     def __init__(self, bibfilepath=None):
         """
         Initializes database, optionally from file.
         """
+
+        deprecate.dendropy_deprecation_warning(
+            message=(
+                "BibTexEntry is deprecated as of DendroPy 5.0 and will be removed in a future release ."
+                "It no longer maintaned, and known to be broken. "
+                "If this functionality is needed, please open an issue on GitHub."
+            ),
+        )
+        
         self.entries = []
         if bibfilepath:
            self.add_from_file(bibfilepath)

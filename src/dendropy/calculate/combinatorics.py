@@ -21,13 +21,18 @@
 Combinatoric and related functionCombinatoric and related functions.
 """
 
-import math
+from dendropy.utility import deprecate
 
 def factorial(num):
     """factorial(n): return the factorial of the integer num.
     factorial(0) = 1
     factorial(n) with n<0 is -factorial(abs(n))
     """
+    deprecate.dendropy_deprecation_warning(
+        preamble="Deprecated since Dendropy 5:",
+        old_construct="combinatorics.factorial",
+        new_construct="math.factorial"
+    )
     result = 1
     for i in range(1, abs(num)+1):
         result *= i

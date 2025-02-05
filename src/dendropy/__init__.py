@@ -17,6 +17,7 @@
 ##
 ##############################################################################
 
+from io import StringIO
 import sys
 
 ###############################################################################
@@ -104,10 +105,10 @@ from dendropy.legacy import treesum
 ## PACKAGE METADATA
 import collections
 __project__ = "DendroPy"
-__version__ = "4.6.1"
-__author__ = "Jeet Sukumaran and Mark T. Holder"
+__version__ = "5.0.2"
+__author__ = "Jeet Sukumaran and Mark T. Holder and Matthew Andres Moreno"
 __copyright__ = "Copyright 2010-2022 Jeet Sukumaran and Mark T. Holder."
-__citation__ = "Sukumaran, J and MT Holder. 2010. DendroPy: a Python library for phylogenetic computing. Bioinformatics 26: 1569-1571."
+__citation__ = "Moreno, M. A., Holder, M. T., & Sukumaran, J. (2024). DendroPy 5: a mature Python library for phylogenetic computing. Journal of Open Source Software, 9(101), 6943, https://doi.org/10.21105/joss.06943"
 PACKAGE_VERSION = __version__ # for backwards compatibility (with sate)
 
 def _get_revision_object():
@@ -163,7 +164,6 @@ def description(dest=None):
             fieldvalue=fieldvalue))
 
 def description_text():
-    from dendropy.utility.textprocessing import StringIO
     s = StringIO()
     description(s)
     return s.getvalue()

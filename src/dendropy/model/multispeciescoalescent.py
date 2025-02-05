@@ -19,13 +19,9 @@
 
 from __future__ import division
 import math
-import dendropy
 import heapq
-from dendropy.model import reconcile
-from dendropy.model import coalescent
 from dendropy.utility import constants
 from dendropy.utility import error
-# from dendropy.calculate import combinatorics
 
 class MultispeciesCoalescent(object):
 

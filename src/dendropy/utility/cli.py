@@ -25,11 +25,7 @@ import re
 import argparse
 import os
 import sys
-if sys.hexversion < 0x03000000:
-    import __builtin_ as builtins  # verbosity added to mollify linter
-    input_str = builtins.raw_input
-else:
-    input_str = input
+input_str = input
 import textwrap
 
 import dendropy

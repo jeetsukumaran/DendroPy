@@ -22,16 +22,23 @@ Some common mathematical functions.
 """
 
 import functools
+from dendropy.utility import deprecate
+import math
 
 def gcd(a, b):
     """Return greatest common divisor using Euclid's Algorithm."""
+    deprecate.dendropy_deprecation_warning(
+        preamble="Deprecated since Dendropy 5:",
+        old_construct="mathfn.gcd",
+        new_construct="math.gcd"
+    )
     while b:
         a, b = b, a % b
     return a
 
 def lcm(a, b):
     """Return lowest common multiple."""
-    return a * b // gcd(a, b)
+    return a * b // math.gcd(a, b)
 
 def LCM(*args):
     """Return lcm of args."""

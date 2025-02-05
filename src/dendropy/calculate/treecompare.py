@@ -24,7 +24,6 @@ Statistics, metrics, measurements, and values calculated *between* *two* trees.
 import math
 import collections
 import itertools
-import dendropy
 from dendropy.utility import error
 
 ###############################################################################

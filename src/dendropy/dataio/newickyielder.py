@@ -21,7 +21,6 @@
 Implementation of NEWICK-schema tree iterator.
 """
 
-import sys
 from dendropy.dataio import ioservice
 from dendropy.dataio import newickreader
 from dendropy.dataio import nexusprocessing
