@@ -2,6 +2,8 @@
 
    <div align="center">
 
+|logo|
+
 .. |logo| image:: https://raw.githubusercontent.com/jeetsukumaran/DendroPy/DendroPy4/doc/source/_static/dendropy_logo.png
    :target: https://github.com/jeetsukumaran/DendroPy
    :alt: DendroPy wordmark
