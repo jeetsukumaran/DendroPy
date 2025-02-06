@@ -33,8 +33,6 @@
 
    </div>
 
------
-
 
 DendroPy is a Python library for phylogenetic computing.
 It provides classes and functions for the simulation, processing, and
