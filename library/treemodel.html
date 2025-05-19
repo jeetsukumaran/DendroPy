@@ -369,6 +369,13 @@ details.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.as_tikz_plot">
+<span class="sig-name descname"><span class="pre">as_tikz_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#Tree.as_tikz_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.as_tikz_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a string representation of this tree using TikZ code.
+See <a href="#id1"><span class="problematic" id="id2">|TikzTreePlot|</span></a> for details on arguments.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.calc_node_ages">
 <span class="sig-name descname"><span class="pre">calc_node_ages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ultrametricity_precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_force_max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_force_min_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_node_age_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_return_internal_node_ages_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#Tree.calc_node_ages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.calc_node_ages" title="Link to this definition">¶</a></dt>
 <dd><p>Adds an attribute called “age” to  each node, with the value equal to
@@ -2346,6 +2353,12 @@ details.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.write_tikz_plot">
+<span class="sig-name descname"><span class="pre">write_tikz_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#Tree.write_tikz_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.write_tikz_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Writes a TikZ representation of this tree to <code class="docutils literal notranslate"><span class="pre">stream</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.write_to_path">
 <span class="sig-name descname"><span class="pre">write_to_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.write_to_path" title="Link to this definition">¶</a></dt>
 <dd><p>Writes to file specified by <code class="docutils literal notranslate"><span class="pre">dest</span></code>.</p>
@@ -3937,6 +3950,7 @@ coordinates of each node.</p>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.as_ascii_plot"><code class="docutils literal notranslate"><span class="pre">Tree.as_ascii_plot</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.as_python_source"><code class="docutils literal notranslate"><span class="pre">Tree.as_python_source</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.as_string"><code class="docutils literal notranslate"><span class="pre">Tree.as_string</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.as_tikz_plot"><code class="docutils literal notranslate"><span class="pre">Tree.as_tikz_plot</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.calc_node_ages"><code class="docutils literal notranslate"><span class="pre">Tree.calc_node_ages</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.calc_node_root_distances"><code class="docutils literal notranslate"><span class="pre">Tree.calc_node_root_distances</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.clone"><code class="docutils literal notranslate"><span class="pre">Tree.clone</span></code></a></li>
@@ -4050,6 +4064,7 @@ coordinates of each node.</p>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.write"><code class="docutils literal notranslate"><span class="pre">Tree.write</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.write_as_dot"><code class="docutils literal notranslate"><span class="pre">Tree.write_as_dot</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.write_ascii_plot"><code class="docutils literal notranslate"><span class="pre">Tree.write_ascii_plot</span></code></a></li>
+<li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.write_tikz_plot"><code class="docutils literal notranslate"><span class="pre">Tree.write_tikz_plot</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.write_to_path"><code class="docutils literal notranslate"><span class="pre">Tree.write_to_path</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.write_to_stream"><code class="docutils literal notranslate"><span class="pre">Tree.write_to_stream</span></code></a></li>
 <li><a class="reference internal" href="#dendropy.datamodel.treemodel.Tree.yield_from_files"><code class="docutils literal notranslate"><span class="pre">Tree.yield_from_files</span></code></a></li>

@@ -4736,7 +4736,27 @@
             <span class="n">show_internal_node_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">node_label_compose_fn</span><span class="o">=</span><span class="n">_print_node</span><span class="p">,</span>
             <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Tree.as_tikz_plot">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.as_tikz_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">as_tikz_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a string representation of this tree using TikZ code.</span>
+<span class="sd">        See |TikzTreePlot| for details on arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tp</span> <span class="o">=</span> <span class="n">TikzTreePlot</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tp</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Tree.write_tikz_plot">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.write_tikz_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_tikz_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a TikZ representation of this tree to ``stream``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_tikz_plot</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+</div>
 
 
 
@@ -4975,6 +4995,185 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span></div>
 
+
+
+<span class="k">class</span> <span class="nc">TikzTreePlot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">NullEdgeLengthError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="ne">ValueError</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        plot_metric : str</span>
+<span class="sd">            A string which specifies how branches should be scaled, one of:</span>
+<span class="sd">            &#39;age&#39; (distance from tips), &#39;depth&#39; (distance from root),</span>
+<span class="sd">            &#39;level&#39; (number of branches from root) or &#39;length&#39; (edge</span>
+<span class="sd">            length/weights).</span>
+<span class="sd">        show_internal_node_labels : bool</span>
+<span class="sd">            Whether or not to write out internal node labels.</span>
+<span class="sd">        show_external_node_labels : bool</span>
+<span class="sd">            Whether or not to write out external node labels.</span>
+<span class="sd">        node_label_compose_fn : function object</span>
+<span class="sd">            A function that takes a Node object as an argument and returns</span>
+<span class="sd">            the string to be used to display it.</span>
+<span class="sd">        scale : float</span>
+<span class="sd">            Scale factor for the entire tree plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;plot_metric&quot;</span><span class="p">,</span> <span class="s2">&quot;depth&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_external_node_labels</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_external_node_labels&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_internal_node_labels</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_internal_node_labels&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compose_node</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;node_label_compose_fn&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compose_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compose_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_compose_node</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unrecognized or unsupported arguments: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">default_compose_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">taxon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">taxon</span><span class="o">.</span><span class="n">label</span>
+        <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">label</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;@&quot;</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_label_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_calc_node_offsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span> <span class="o">==</span> <span class="s2">&quot;depth&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
+                <span class="n">cnds</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span> <span class="o">==</span> <span class="s2">&quot;depth&quot;</span><span class="p">:</span>  <span class="c1"># &#39;number of branchings from tip&#39;</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cnds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">curr_node_offset</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">depths</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cnds</span><span class="p">]</span>
+                        <span class="n">curr_node_offset</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">depths</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>  <span class="c1"># &#39;sum of edge weights from tip&#39;</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cnds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">curr_node_offset</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">cnds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">curr_node_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">cnds</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">cnds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Unrecognized plot metric &#39;</span><span class="si">%s</span><span class="s2">&#39; (must be one of: &#39;age&#39;, &#39;depth&#39;,&quot;</span>
+                        <span class="s2">&quot; &#39;level&#39;, or &#39;length&#39;)&quot;</span>
+                        <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">curr_node_offset</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># [x, y] coordinates</span>
+            <span class="n">flipped_origin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">nd</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">flipped_origin</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">nd</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">preorder_node_iter</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span> <span class="o">==</span> <span class="s2">&quot;level&quot;</span><span class="p">:</span>  <span class="c1"># &#39;number of branchings from root&#39;</span>
+                    <span class="n">curr_edge_len</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span> <span class="o">==</span> <span class="s2">&quot;length&quot;</span><span class="p">:</span>  <span class="c1"># &#39;sum of edge weights from root&#39;</span>
+                    <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">curr_edge_len</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">length</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">curr_edge_len</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Unrecognized plot metric &#39;</span><span class="si">%s</span><span class="s2">&#39; (must be one of: &#39;age&#39;, &#39;depth&#39;,&quot;</span>
+                        <span class="s2">&quot; &#39;level&#39;, or &#39;length&#39;)&quot;</span>
+                        <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_metric</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">nd</span><span class="o">.</span><span class="n">_parent_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">curr_edge_len</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">nd</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">curr_edge_len</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">nd</span><span class="o">.</span><span class="n">_parent_node</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="mi">0</span>
+                    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_assign_y_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign y-coordinates to nodes based on their position in the tree.&quot;&quot;&quot;</span>
+        <span class="n">leaf_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">leaf_node_iter</span><span class="p">())</span>
+        <span class="n">y_spacing</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">leaf_nodes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">y_spacing</span>
+
+        <span class="k">def</span> <span class="nf">assign_internal_y_coords</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
+                <span class="k">return</span>
+            <span class="n">children</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">child_nodes</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
+                <span class="n">assign_internal_y_coords</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+            <span class="n">y_coords</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">child</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y_coords</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_coords</span><span class="p">)</span>
+
+        <span class="n">assign_internal_y_coords</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">seed_node</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_label_for_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_label_map</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">_child_nodes</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_internal_node_labels</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compose_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">_child_nodes</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_external_node_labels</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compose_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_label_map</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+            <span class="k">return</span> <span class="n">label</span>
+
+    <span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate TikZ code for the tree.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_node_offsets</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assign_y_coordinates</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+
+        <span class="c1"># Scale coordinates</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">coord</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+            <span class="p">]</span>
+
+        <span class="c1"># Generate TikZ code</span>
+        <span class="n">tikz_code</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tikz_code</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">begin</span><span class="si">{tikzpicture}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Draw edges</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">preorder_node_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">_parent_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parent_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">_parent_node</span><span class="p">]</span>
+                <span class="n">node_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+                <span class="n">tikz_code</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">draw (</span><span class="si">{</span><span class="n">parent_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">parent_coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) -- &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">node_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">node_coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">);&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Draw nodes and labels</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">preorder_node_iter</span><span class="p">():</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_coords</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_label_for_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            
+            <span class="c1"># Draw node</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
+                <span class="n">tikz_code</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">node[anchor=west] at (</span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) </span><span class="se">{{</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tikz_code</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">node[circle,fill,inner sep=1pt] at (</span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) </span><span class="se">{{}}</span><span class="s2">;&quot;</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">label</span><span class="p">:</span>
+                    <span class="n">tikz_code</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">node[anchor=east] at (</span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mf">0.1</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) </span><span class="se">{{</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="n">tikz_code</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">end</span><span class="si">{tikzpicture}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tikz_code</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write TikZ code to the destination stream.&quot;&quot;&quot;</span>
+        <span class="n">dest</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">tree</span><span class="p">))</span>
 </pre></div>
 
             <div class="clearer"></div>
