@@ -4359,6 +4359,20 @@ class Tree(
             width=width,
         )
 
+    def as_tikz_plot(self, **kwargs):
+        """
+        Returns a string representation of this tree using TikZ code.
+        See |TikzTreePlot| for details on arguments.
+        """
+        tp = TikzTreePlot(**kwargs)
+        return tp.compose(self)
+
+    def write_tikz_plot(self, stream, **kwargs):
+        """
+        Writes a TikZ representation of this tree to ``stream``.
+        """
+        return stream.write(self.as_tikz_plot(**kwargs))
+
 
 class AsciiTreePlot(object):
     class NullEdgeLengthError(ValueError):
@@ -4583,3 +4597,182 @@ class AsciiTreePlot(object):
                 row[c + n] = letter
         except:
             pass
+
+
+class TikzTreePlot(object):
+    class NullEdgeLengthError(ValueError):
+        def __init__(self, *args, **kwargs):
+            ValueError.__init__(self, *args, **kwargs)
+
+    def __init__(self, **kwargs):
+        """
+        Keyword Arguments
+        -----------------
+        plot_metric : str
+            A string which specifies how branches should be scaled, one of:
+            'age' (distance from tips), 'depth' (distance from root),
+            'level' (number of branches from root) or 'length' (edge
+            length/weights).
+        show_internal_node_labels : bool
+            Whether or not to write out internal node labels.
+        show_external_node_labels : bool
+            Whether or not to write out external node labels.
+        node_label_compose_fn : function object
+            A function that takes a Node object as an argument and returns
+            the string to be used to display it.
+        scale : float
+            Scale factor for the entire tree plot.
+        """
+        self.plot_metric = kwargs.pop("plot_metric", "depth")
+        self.show_external_node_labels = kwargs.pop("show_external_node_labels", True)
+        self.show_internal_node_labels = kwargs.pop("show_internal_node_labels", False)
+        self.compose_node = kwargs.pop("node_label_compose_fn", None)
+        self.scale = kwargs.pop("scale", 1.0)
+        if self.compose_node is None:
+            self.compose_node = self.default_compose_node
+        if kwargs:
+            raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+
+    def default_compose_node(self, node):
+        if node.taxon is not None and node.taxon.label is not None:
+            return node.taxon.label
+        elif node.label is not None:
+            return node.label
+        else:
+            return "@"
+
+    def reset(self):
+        self.node_coords = {}
+        self.node_label_map = {}
+
+    def _calc_node_offsets(self, tree):
+        if self.plot_metric == "age" or self.plot_metric == "depth":
+            for nd in tree.postorder_node_iter():
+                cnds = nd.child_nodes()
+                if self.plot_metric == "depth":  # 'number of branchings from tip'
+                    if len(cnds) == 0:
+                        curr_node_offset = 0.0
+                    else:
+                        depths = [self.node_coords[v][0] for v in cnds]
+                        curr_node_offset = max(depths) + 1
+                elif self.plot_metric == "age":  # 'sum of edge weights from tip'
+                    if len(cnds) == 0:
+                        curr_node_offset = 0.0
+                    else:
+                        if cnds[0].edge.length is not None:
+                            curr_node_offset = self.node_coords[cnds[0]][0] + cnds[0].edge.length
+                else:
+                    raise ValueError(
+                        "Unrecognized plot metric '%s' (must be one of: 'age', 'depth',"
+                        " 'level', or 'length')"
+                        % self.plot_metric
+                    )
+                self.node_coords[nd] = [curr_node_offset, 0]  # [x, y] coordinates
+            flipped_origin = max(coord[0] for coord in self.node_coords.values())
+            for nd in self.node_coords:
+                self.node_coords[nd][0] = flipped_origin - self.node_coords[nd][0]
+        else:
+            for nd in tree.preorder_node_iter():
+                if self.plot_metric == "level":  # 'number of branchings from root'
+                    curr_edge_len = 1
+                elif self.plot_metric == "length":  # 'sum of edge weights from root'
+                    if nd.edge.length is not None:
+                        curr_edge_len = nd.edge.length
+                    else:
+                        curr_edge_len = 0
+                else:
+                    raise ValueError(
+                        "Unrecognized plot metric '%s' (must be one of: 'age', 'depth',"
+                        " 'level', or 'length')"
+                        % self.plot_metric
+                    )
+                if nd._parent_node is None:
+                    self.node_coords[nd] = [curr_edge_len, 0]
+                else:
+                    self.node_coords[nd] = [
+                        curr_edge_len + self.node_coords[nd._parent_node][0],
+                        0
+                    ]
+
+    def _assign_y_coordinates(self, tree):
+        """Assign y-coordinates to nodes based on their position in the tree."""
+        leaf_nodes = list(tree.leaf_node_iter())
+        y_spacing = 1.0
+        for i, node in enumerate(leaf_nodes):
+            self.node_coords[node][1] = i * y_spacing
+
+        def assign_internal_y_coords(node):
+            if node.is_leaf():
+                return
+            children = node.child_nodes()
+            for child in children:
+                assign_internal_y_coords(child)
+            y_coords = [self.node_coords[child][1] for child in children]
+            self.node_coords[node][1] = sum(y_coords) / len(y_coords)
+
+        assign_internal_y_coords(tree.seed_node)
+
+    def get_label_for_node(self, node):
+        try:
+            return self.node_label_map[node]
+        except KeyError:
+            if node._child_nodes and self.show_internal_node_labels:
+                label = self.compose_node(node)
+            elif not node._child_nodes and self.show_external_node_labels:
+                label = self.compose_node(node)
+            else:
+                label = ""
+            self.node_label_map[node] = label
+            return label
+
+    def compose(self, tree):
+        """Generate TikZ code for the tree."""
+        self.reset()
+        self._calc_node_offsets(tree)
+        self._assign_y_coordinates(tree)
+
+        # Scale coordinates
+        for node in self.node_coords:
+            self.node_coords[node] = [
+                coord * self.scale for coord in self.node_coords[node]
+            ]
+
+        # Generate TikZ code
+        tikz_code = []
+        tikz_code.append("\\begin{tikzpicture}")
+        
+        # Draw edges
+        for node in tree.preorder_node_iter():
+            if node._parent_node is not None:
+                parent_coords = self.node_coords[node._parent_node]
+                node_coords = self.node_coords[node]
+                tikz_code.append(
+                    f"\\draw ({parent_coords[0]},{parent_coords[1]}) -- "
+                    f"({node_coords[0]},{node_coords[1]});"
+                )
+
+        # Draw nodes and labels
+        for node in tree.preorder_node_iter():
+            coords = self.node_coords[node]
+            label = self.get_label_for_node(node)
+            
+            # Draw node
+            if node.is_leaf():
+                tikz_code.append(
+                    f"\\node[anchor=west] at ({coords[0]},{coords[1]}) {{{label}}};"
+                )
+            else:
+                tikz_code.append(
+                    f"\\node[circle,fill,inner sep=1pt] at ({coords[0]},{coords[1]}) {{}};"
+                )
+                if label:
+                    tikz_code.append(
+                        f"\\node[anchor=east] at ({coords[0]-0.1},{coords[1]}) {{{label}}};"
+                    )
+
+        tikz_code.append("\\end{tikzpicture}")
+        return "\n".join(tikz_code)
+
+    def draw(self, tree, dest):
+        """Write TikZ code to the destination stream."""
+        dest.write(self.compose(tree))
