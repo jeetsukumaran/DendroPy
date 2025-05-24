@@ -4367,6 +4367,14 @@ class Tree(
         tp = TikzTreePlot(**kwargs)
         return tp.compose(self)
 
+    def display_tikz_plot(self, **kwargs):
+        """
+        Assumes `jupyter_tikz` is installed.
+        """
+        tp = TikzTreePlot(**kwargs)
+        tikz_code = tp.compose(self)
+        return TikzTreePlot._run_latex(tikz_code)
+
     def write_tikz_plot(self, stream, **kwargs):
         """
         Writes a TikZ representation of this tree to ``stream``.
@@ -4600,6 +4608,13 @@ class AsciiTreePlot(object):
 
 
 class TikzTreePlot(object):
+
+    @classmethod
+    def _run_latex(cls, tikz_code):
+        from jupyter_tikz import TexFragment
+        tikz_picture = TexFragment(tikz_code)
+        return tikz_picture.run_latex()
+
     class NullEdgeLengthError(ValueError):
         def __init__(self, *args, **kwargs):
             ValueError.__init__(self, *args, **kwargs)
@@ -4740,7 +4755,7 @@ class TikzTreePlot(object):
         # Generate TikZ code
         tikz_code = []
         tikz_code.append("\\begin{tikzpicture}")
-        
+
         # Draw edges
         for node in tree.preorder_node_iter():
             if node._parent_node is not None:
@@ -4755,7 +4770,7 @@ class TikzTreePlot(object):
         for node in tree.preorder_node_iter():
             coords = self.node_coords[node]
             label = self.get_label_for_node(node)
-            
+
             # Draw node
             if node.is_leaf():
                 tikz_code.append(
