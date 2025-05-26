@@ -4361,12 +4361,11 @@ class Tree(
         )
 
     def as_tikz_plot(self, **kwargs):
-<<<<<<< HEAD
         """
         Returns a string representation of this tree using TikZ code.
         See |TikzTreePlot| for details on arguments.
         """
-        tp = TikzTreePlot(**kwargs)
+        tp = plot.TikzTreePlot(**kwargs)
         return tp.compose(self)
 
     def write_tikz_plot(self, stream, **kwargs):
@@ -4379,6 +4378,4 @@ class Tree(
         """
         Assumes `jupyter_tikz` is installed.
         """
-        tp = TikzTreePlot(**kwargs)
-        tikz_code = tp.compose(self)
-        return TikzTreePlot._display(tikz_code)
+        return plot.TikzTreePlot._display(self.as_tikz_plot(**kwargs))
