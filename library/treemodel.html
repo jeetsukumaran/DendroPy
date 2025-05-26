@@ -339,7 +339,7 @@ Tree of Life Project):</p>
 <dt class="sig sig-object py" id="dendropy.datamodel.treemodel.Tree.as_ascii_plot">
 <span class="sig-name descname"><span class="pre">as_ascii_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#Tree.as_ascii_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.Tree.as_ascii_plot" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a string representation a graphic of this tree using ASCII
-characters. See <a class="reference internal" href="#dendropy.datamodel.treemodel.AsciiTreePlot" title="dendropy.datamodel.treemodel.AsciiTreePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsciiTreePlot</span></code></a> for details on arguments.</p>
+characters. See <code class="xref py py-class docutils literal notranslate"><span class="pre">AsciiTreePlot</span></code> for details on arguments.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3871,52 +3871,7 @@ in quotes.</p></li>
 
 </section>
 <section id="the-asciitreeplot-class">
-<h2>The <a class="reference internal" href="#dendropy.datamodel.treemodel.AsciiTreePlot" title="dendropy.datamodel.treemodel.AsciiTreePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsciiTreePlot</span></code></a> Class<a class="headerlink" href="#the-asciitreeplot-class" title="Link to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.AsciiTreePlot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dendropy.datamodel.treemodel.</span></span><span class="sig-name descname"><span class="pre">AsciiTreePlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#AsciiTreePlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.AsciiTreePlot" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>plot_metric</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A string which specifies how branches should be scaled, one of:
-‘age’ (distance from tips), ‘depth’ (distance from root),
-‘level’ (number of branches from root) or ‘length’ (edge
-length/weights).</p></li>
-<li><p><strong>show_internal_node_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether or not to write out internal node labels.</p></li>
-<li><p><strong>leaf_spacing_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Positive integer: number of rows between each leaf.</p></li>
-<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Force a particular display width, in terms of number of columns.</p></li>
-<li><p><strong>node_label_compose_fn</strong> (<em>function object</em>) – A function that takes a Node object as an argument and returns
-the string to be used to display it.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py exception">
-<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.AsciiTreePlot.NullEdgeLengthError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NullEdgeLengthError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#AsciiTreePlot.NullEdgeLengthError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.AsciiTreePlot.NullEdgeLengthError" title="Link to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.AsciiTreePlot.NullEdgeLengthError.with_traceback">
-<span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dendropy.datamodel.treemodel.AsciiTreePlot.NullEdgeLengthError.with_traceback" title="Link to this definition">¶</a></dt>
-<dd><p>Exception.with_traceback(tb) –
-set self.__traceback__ to tb and return self.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.AsciiTreePlot.calc_plot">
-<span class="sig-name descname"><span class="pre">calc_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_scale_factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#AsciiTreePlot.calc_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.AsciiTreePlot.calc_plot" title="Link to this definition">¶</a></dt>
-<dd><p>First pass through tree, post-order traversal to calculate
-coordinates of each node.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dendropy.datamodel.treemodel.AsciiTreePlot.draw_node">
-<span class="sig-name descname"><span class="pre">draw_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/datamodel/treemodel/_tree.html#AsciiTreePlot.draw_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.datamodel.treemodel.AsciiTreePlot.draw_node" title="Link to this definition">¶</a></dt>
-<dd><p>Second pass through tree, plotting nodes onto given self.grid.</p>
-</dd></dl>
-
-</dd></dl>
-
+<h2>The <code class="xref py py-class docutils literal notranslate"><span class="pre">AsciiTreePlot</span></code> Class<a class="headerlink" href="#the-asciitreeplot-class" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -4176,18 +4131,7 @@ coordinates of each node.</p>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#the-asciitreeplot-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">AsciiTreePlot</span></code> Class</a><ul>
-<li><a class="reference internal" href="#dendropy.datamodel.treemodel.AsciiTreePlot"><code class="docutils literal notranslate"><span class="pre">AsciiTreePlot</span></code></a><ul>
-<li><a class="reference internal" href="#dendropy.datamodel.treemodel.AsciiTreePlot.NullEdgeLengthError"><code class="docutils literal notranslate"><span class="pre">AsciiTreePlot.NullEdgeLengthError</span></code></a><ul>
-<li><a class="reference internal" href="#dendropy.datamodel.treemodel.AsciiTreePlot.NullEdgeLengthError.with_traceback"><code class="docutils literal notranslate"><span class="pre">AsciiTreePlot.NullEdgeLengthError.with_traceback</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#dendropy.datamodel.treemodel.AsciiTreePlot.calc_plot"><code class="docutils literal notranslate"><span class="pre">AsciiTreePlot.calc_plot</span></code></a></li>
-<li><a class="reference internal" href="#dendropy.datamodel.treemodel.AsciiTreePlot.draw_node"><code class="docutils literal notranslate"><span class="pre">AsciiTreePlot.draw_node</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#the-asciitreeplot-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">AsciiTreePlot</span></code> Class</a></li>
 </ul>
 </li>
 </ul>
