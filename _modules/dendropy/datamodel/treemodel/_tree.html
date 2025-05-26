@@ -4749,6 +4749,15 @@
         <span class="k">return</span> <span class="n">tp</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Tree.write_tikz_plot">
+<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.write_tikz_plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_tikz_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a TikZ representation of this tree to ``stream``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_tikz_plot</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="Tree.display_tikz_plot">
 <a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.display_tikz_plot">[docs]</a>
     <span class="k">def</span> <span class="nf">display_tikz_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -4757,18 +4766,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tp</span> <span class="o">=</span> <span class="n">TikzTreePlot</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">tikz_code</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">TikzTreePlot</span><span class="o">.</span><span class="n">_run_latex</span><span class="p">(</span><span class="n">tikz_code</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Tree.write_tikz_plot">
-<a class="viewcode-back" href="../../../../library/treemodel.html#dendropy.datamodel.treemodel.Tree.write_tikz_plot">[docs]</a>
-    <span class="k">def</span> <span class="nf">write_tikz_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Writes a TikZ representation of this tree to ``stream``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_tikz_plot</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">TikzTreePlot</span><span class="o">.</span><span class="n">_display</span><span class="p">(</span><span class="n">tikz_code</span><span class="p">)</span></div>
 </div>
-
 
 
 <div class="viewcode-block" id="AsciiTreePlot">
@@ -5011,8 +5010,11 @@
 <span class="k">class</span> <span class="nc">TikzTreePlot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_run_latex</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tikz_code</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">jupyter_tikz</span> <span class="kn">import</span> <span class="n">TexFragment</span>
+    <span class="k">def</span> <span class="nf">_display</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tikz_code</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">jupyter_tikz</span> <span class="kn">import</span> <span class="n">TexFragment</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">LibraryDependencyError</span><span class="p">(</span><span class="s2">&quot;This method requires `jupyter_tikz` to be installed in the Python environment: `$ python3 -m pip install jupyter_tikz`&quot;</span><span class="p">)</span>
         <span class="n">tikz_picture</span> <span class="o">=</span> <span class="n">TexFragment</span><span class="p">(</span><span class="n">tikz_code</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tikz_picture</span><span class="o">.</span><span class="n">run_latex</span><span class="p">()</span>
 
@@ -5140,6 +5142,9 @@
                 <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">node_label_map</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
             <span class="k">return</span> <span class="n">label</span>
+
+    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">tree</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate TikZ code for the tree.&quot;&quot;&quot;</span>
