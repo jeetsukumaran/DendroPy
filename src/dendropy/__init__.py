@@ -35,7 +35,6 @@ from dendropy.datamodel.treemodel import Bipartition
 from dendropy.datamodel.treemodel import Edge
 from dendropy.datamodel.treemodel import Node
 from dendropy.datamodel.treemodel import Tree
-from dendropy.datamodel.treemodel import AsciiTreePlot
 from dendropy.datamodel.treecollectionmodel import TreeList
 from dendropy.datamodel.treecollectionmodel import SplitDistribution
 from dendropy.datamodel.treecollectionmodel import TreeArray
@@ -66,8 +65,10 @@ from dendropy.datamodel.charmatrixmodel import StandardCharacterDataSequence
 from dendropy.datamodel.charmatrixmodel import StandardCharacterMatrix
 from dendropy.datamodel.charmatrixmodel import ContinuousCharacterDataSequence
 from dendropy.datamodel.charmatrixmodel import ContinuousCharacterMatrix
-from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
 from dendropy.datamodel.datasetmodel import DataSet
+from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
+from dendropy.plot import AsciiTreePlot
+from dendropy.plot import TikzTreePlot
 from dendropy.utility.error import ImmutableTaxonNamespaceError
 from dendropy.utility.error import DataParseError
 from dendropy.utility.error import UnsupportedSchemaError
