@@ -4379,3 +4379,9 @@ class Tree(
         Assumes `jupyter_tikz` is installed.
         """
         return plot.TikzTreePlot._display(self.as_tikz_plot(**kwargs))
+
+    def display_plot(self, **kwargs):
+        """
+        Top-level display function. Delegation to other plotters possible in the future.
+        """
+        return self.display_tikz_plot(**kwargs)
