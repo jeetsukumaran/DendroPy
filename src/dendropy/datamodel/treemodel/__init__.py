@@ -26,5 +26,3 @@ from dendropy.datamodel.treemodel._bipartition import Bipartition
 from dendropy.datamodel.treemodel._edge import Edge
 from dendropy.datamodel.treemodel._node import Node
 from dendropy.datamodel.treemodel._tree import Tree
-from dendropy.datamodel.treemodel._tree import AsciiTreePlot
-from dendropy.datamodel.treemodel._tree import TikzTreePlot
