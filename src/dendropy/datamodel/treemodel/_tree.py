@@ -4367,20 +4367,19 @@ class Tree(
         tp = TikzTreePlot(**kwargs)
         return tp.compose(self)
 
-    def display_tikz_plot(self, **kwargs):
-        """
-        Assumes `jupyter_tikz` is installed.
-        """
-        tp = TikzTreePlot(**kwargs)
-        tikz_code = tp.compose(self)
-        return TikzTreePlot._run_latex(tikz_code)
-
     def write_tikz_plot(self, stream, **kwargs):
         """
         Writes a TikZ representation of this tree to ``stream``.
         """
         return stream.write(self.as_tikz_plot(**kwargs))
 
+    def display_tikz_plot(self, **kwargs):
+        """
+        Assumes `jupyter_tikz` is installed.
+        """
+        tp = TikzTreePlot(**kwargs)
+        tikz_code = tp.compose(self)
+        return TikzTreePlot._display(tikz_code)
 
 class AsciiTreePlot(object):
     class NullEdgeLengthError(ValueError):
@@ -4610,8 +4609,11 @@ class AsciiTreePlot(object):
 class TikzTreePlot(object):
 
     @classmethod
-    def _run_latex(cls, tikz_code):
-        from jupyter_tikz import TexFragment
+    def _display(cls, tikz_code):
+        try:
+            from jupyter_tikz import TexFragment
+        except ImportError:
+            raise error.LibraryDependencyError("This method requires `jupyter_tikz` to be installed in the Python environment: `$ python3 -m pip install jupyter_tikz`")
         tikz_picture = TexFragment(tikz_code)
         return tikz_picture.run_latex()
 
@@ -4739,6 +4741,9 @@ class TikzTreePlot(object):
                 label = ""
             self.node_label_map[node] = label
             return label
+
+    def display(self, tree):
+        return self.__class__._display(self.compose(tree))
 
     def compose(self, tree):
         """Generate TikZ code for the tree."""
