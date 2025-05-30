@@ -29,19 +29,34 @@ class TikzTreePlot(object):
             Whether or not to write out internal node labels.
         show_external_node_labels : bool
             Whether or not to write out external node labels.
+        show_edge_labels : bool
+            Whether or not to write out edge labels.
         node_label_compose_fn : function object
             A function that takes a Node object as an argument and returns
             the string to be used to display it.
+        edge_label_compose_fn : function object
+            A function that takes a Node object as an argument and returns
+            the string to be used to display its incoming edge label.
         scale : float
             Scale factor for the entire tree plot.
         """
         self.plot_metric = kwargs.pop("plot_metric", "depth")
         self.show_external_node_labels = kwargs.pop("show_external_node_labels", True)
         self.show_internal_node_labels = kwargs.pop("show_internal_node_labels", False)
+        self.show_edge_labels = kwargs.pop("show_edge_labels", False)
         self.compose_node = kwargs.pop("node_label_compose_fn", None)
+        self.compose_edge = kwargs.pop("edge_label_compose_fn", None)
         self.scale = kwargs.pop("scale", 1.0)
         if self.compose_node is None:
             self.compose_node = self.default_compose_node
+        if self.compose_edge is None:
+            self.compose_edge = self.default_compose_edge
+
+        self.tikzpicture_options = kwargs.pop("tikzpicture_options", None)
+        self.scope_options = kwargs.pop("scope_options", None)
+        self.extend_drawing_area_x = kwargs.pop("extend_drawing_area_x", None)
+        self.extend_drawing_area_y = kwargs.pop("extend_drawing_area_y", None)
+
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
 
@@ -53,9 +68,17 @@ class TikzTreePlot(object):
         else:
             return "@"
 
+    def default_compose_edge(self, node):
+        """Default edge label composer - returns edge length if available."""
+        if node.edge is not None and node.edge.length is not None:
+            return str(node.edge.length)
+        else:
+            return ""
+
     def reset(self):
         self.node_coords = {}
         self.node_label_map = {}
+        self.edge_label_map = {}
 
     def _calc_node_offsets(self, tree):
         if self.plot_metric == "age" or self.plot_metric == "depth":
@@ -137,6 +160,18 @@ class TikzTreePlot(object):
             self.node_label_map[node] = label
             return label
 
+    def get_label_for_edge(self, node):
+        """Get label for the incoming edge of a node."""
+        try:
+            return self.edge_label_map[node]
+        except KeyError:
+            if self.show_edge_labels and node._parent_node is not None:
+                label = self.compose_edge(node)
+            else:
+                label = ""
+            self.edge_label_map[node] = label
+            return label
+
     def display(self, tree):
         return self.__class__._display(self.compose(tree))
 
@@ -154,7 +189,8 @@ class TikzTreePlot(object):
 
         # Generate TikZ code
         tikz_code = []
-        tikz_code.append("\\begin{tikzpicture}")
+        tikzpicture_options = f"[{self.tikzpicture_options}]" if self.tikzpicture_options else ""
+        tikz_code.append("\\begin{tikzpicture}" + tikzpicture_options)
 
         # Draw edges
         for node in tree.preorder_node_iter():
@@ -165,6 +201,22 @@ class TikzTreePlot(object):
                     f"\\draw ({parent_coords[0]},{parent_coords[1]}) -- "
                     f"({node_coords[0]},{node_coords[1]});"
                 )
+
+        # Draw edge labels
+        if self.show_edge_labels:
+            for node in tree.preorder_node_iter():
+                if node._parent_node is not None:
+                    edge_label = self.get_label_for_edge(node)
+                    if edge_label:
+                        parent_coords = self.node_coords[node._parent_node]
+                        node_coords = self.node_coords[node]
+                        # Calculate midpoint of edge
+                        mid_x = (parent_coords[0] + node_coords[0]) / 2
+                        mid_y = (parent_coords[1] + node_coords[1]) / 2
+                        tikz_code.append(
+                            f"\\node[font=\\tiny,fill=white,inner sep=1pt] at "
+                            f"({mid_x},{mid_y}) {{{edge_label}}};"
+                        )
 
         # Draw nodes and labels
         for node in tree.preorder_node_iter():
@@ -185,10 +237,22 @@ class TikzTreePlot(object):
                         f"\\node[anchor=east] at ({coords[0]-0.1},{coords[1]}) {{{label}}};"
                     )
 
+        if self.extend_drawing_area_x or self.extend_drawing_area_y:
+            xs = [coords[0] for coords in self.node_coords.values()]
+            ys = [coords[1] for coords in self.node_coords.values()]
+            min_x = min(xs)
+            max_x = max(xs)
+            min_y = min(ys)
+            max_y = max(ys)
+            extend_x = self.extend_drawing_area_x if self.extend_drawing_area_x is not None else 0
+            extend_y = self.extend_drawing_area_y if self.extend_drawing_area_y is not None else 0
+            tikz_code.append(
+                f"\\path[draw=none] ({min_x-extend_x},{min_y-extend_y}) rectangle ({max_x+extend_x},{max_y+extend_y});"
+            )
+
         tikz_code.append("\\end{tikzpicture}")
         return "\n".join(tikz_code)
 
     def draw(self, tree, dest):
         """Write TikZ code to the destination stream."""
         dest.write(self.compose(tree))
-
