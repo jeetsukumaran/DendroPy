@@ -101,7 +101,7 @@ setup(
     tests_require=["pytest"],
     install_requires = ['setuptools'],
     zip_safe = True,
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     classifiers = [
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
@@ -109,15 +109,15 @@ setup(
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         ],
     keywords='phylogenetics phylogeny phylogenies phylogeography evolution evolutionary biology systematics coalescent population genetics phyloinformatics bioinformatics',
 )
-

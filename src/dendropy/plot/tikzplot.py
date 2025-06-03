@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from dendropy.utility import error
+
 class TikzTreePlot(object):
 
     @classmethod

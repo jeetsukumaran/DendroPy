@@ -4,17 +4,18 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   examples:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: False
       matrix:
         python-version:
-          - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
+          - "3.13"
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -70,28 +71,27 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ruff==0.0.292
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with ruff
         run: |
           # stop the build if there are Python syntax errors or undefined names
           ./lint.sh
   tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: False
       matrix:
         python-version:
-          - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
+          - "3.13"
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
-        continue-on-error: true
         with:
           python-version: ${{ matrix.python-version }}
       - name: Refresh Package Sources
@@ -107,8 +107,9 @@ jobs:
           sudo apt-get install aptitude
           sudo aptitude install -y gcc-7 g++-7 gfortran-7
           sudo apt-get install -y libpython2.7  # required by paup
-          python -m pip install --upgrade pip
-          if [ -f .github/workflows/requirements.txt ]; then pip install -r .github/workflows/requirements.txt; fi
+          # setuptools<68 is a guessed threshold
+          python -m pip install --upgrade pip "setuptools<68"
+          pip install -r .github/workflows/requirements.txt
       - name: Install paup
         run: |
           temp_dir=$(mktemp -d)
@@ -125,22 +126,22 @@ jobs:
           python setup.py pytest --addopts "-m smoke"
 
   entrypoints:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: False
       matrix:
         python-version:
-          - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
+          - "3.13"
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
-        continue-on-error: true
         with:
           python-version: ${{ matrix.python-version }}
       - name: Refresh Package Sources
@@ -157,7 +158,6 @@ jobs:
           sudo aptitude install -y gcc-7 g++-7 gfortran-7
           sudo apt-get install libpython2.7  # required by paup
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m pip install .
       - name: Test sumtrees
         run: |
@@ -184,7 +184,7 @@ jobs:
           sumlabels.py  2>&1 | grep sumlabels.py || exit 1
 
   coverage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@master
     - name: Setup Python
@@ -282,7 +282,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
-        continue-on-error: true
         with:
           python-version: 3.9
       - name: Upgrade pip
