@@ -4,7 +4,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   examples:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: False
       matrix:
@@ -76,7 +76,7 @@ jobs:
           # stop the build if there are Python syntax errors or undefined names
           ./lint.sh
   tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: False
       matrix:
@@ -125,7 +125,7 @@ jobs:
           python setup.py pytest --addopts "-m smoke"
 
   entrypoints:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: False
       matrix:
@@ -184,7 +184,7 @@ jobs:
           sumlabels.py  2>&1 | grep sumlabels.py || exit 1
 
   coverage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@master
     - name: Setup Python
