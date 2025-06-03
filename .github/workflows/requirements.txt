@@ -24,8 +24,6 @@ pyparsing==3.1.4
     # via packaging
 pytest==7.0.1
     # via -r requirements.in
-setuptools==60.10.0
-    # via -r requirements.in
 tomli==1.2.3
     # via
     #   -r requirements.in
