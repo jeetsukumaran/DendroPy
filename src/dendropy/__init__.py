@@ -106,7 +106,7 @@ from dendropy.legacy import treesum
 ## PACKAGE METADATA
 import collections
 __project__ = "DendroPy"
-__version__ = "5.0.6"
+__version__ = "5.0.7"
 __author__ = "Jeet Sukumaran and Mark T. Holder and Matthew Andres Moreno"
 __copyright__ = "Copyright 2010-2022 Jeet Sukumaran and Mark T. Holder."
 __citation__ = "Moreno, M. A., Holder, M. T., & Sukumaran, J. (2024). DendroPy 5: a mature Python library for phylogenetic computing. Journal of Open Source Software, 9(101), 6943, https://doi.org/10.21105/joss.06943"
