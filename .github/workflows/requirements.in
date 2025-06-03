@@ -5,5 +5,5 @@ packaging==21.3
 tomli==1.2.3
 importlib-metadata==4.8.3
 typing-extensions==4.1.1
-zipp==3.6.0
+zipp==3.19.1
 attrs==24.2.0

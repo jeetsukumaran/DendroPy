@@ -30,7 +30,7 @@ tomli==1.2.3
     #   pytest
 typing-extensions==4.1.1
     # via -r requirements.in
-zipp==3.6.0
+zipp==3.19.1
     # via
     #   -r requirements.in
     #   importlib-metadata
