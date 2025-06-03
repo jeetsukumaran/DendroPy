@@ -71,7 +71,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ruff==0.0.292
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with ruff
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -109,7 +108,7 @@ jobs:
           sudo aptitude install -y gcc-7 g++-7 gfortran-7
           sudo apt-get install -y libpython2.7  # required by paup
           python -m pip install --upgrade pip
-          if [ -f .github/workflows/requirements.txt ]; then pip install -r .github/workflows/requirements.txt; fi
+          pip install -r .github/workflows/requirements.txt
       - name: Install paup
         run: |
           temp_dir=$(mktemp -d)
@@ -158,7 +157,6 @@ jobs:
           sudo aptitude install -y gcc-7 g++-7 gfortran-7
           sudo apt-get install libpython2.7  # required by paup
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m pip install .
       - name: Test sumtrees
         run: |
