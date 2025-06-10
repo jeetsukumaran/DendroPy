@@ -28,7 +28,7 @@ pockets==0.9.1
     # via sphinxcontrib-napoleon
 pygments==2.16.1
     # via sphinx
-requests==2.31.0
+requests==2.32.4
     # via sphinx
 six==1.16.0
     # via
