@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from dendropy.utility import terminal
 
 class TreeDrawComposer(object):
@@ -18,24 +15,44 @@ class TreeDrawComposer(object):
             'age' (distance from tips), 'depth' (distance from root),
             'level' (number of branches from root) or 'length' (edge
             length/weights).
+        show_internal_node_labels : bool
+            Whether or not to write out internal node labels.
         leaf_spacing_factor : int
             Positive integer: number of rows between each leaf.
         width : int
             Force a particular display width, in terms of number of columns.
+        node_label_compose_fn : function object
+            A function that takes a Node object as an argument and returns
+            the string to be used to display it.
         """
         self.plot_metric = kwargs.pop("plot_metric", "depth")
+        self.show_external_node_labels = kwargs.pop("show_external_node_labels", True)
+        self.show_internal_node_labels = kwargs.pop("show_internal_node_labels", False)
         self.leaf_spacing_factor = kwargs.pop("leaf_spacing_factor", 2)
         self.width = kwargs.pop("width", None)
         self.display_width = kwargs.pop("display_width", self.width)  # legacy
+        self.compose_node = kwargs.pop("node_label_compose_fn", None)
+        if self.compose_node is None:
+            self.compose_node = self.default_compose_node
         if kwargs:
             raise TypeError("Unrecognized or unsupported arguments: {}".format(kwargs))
+
+    def default_compose_node(self, node):
+        if node.taxon is not None and node.taxon.label is not None:
+            return node.taxon.label
+        elif node.label is not None:
+            return node.label
+        else:
+            return "@"
 
     def reset(self):
         self.node_row = {}
         self.node_col = {}
         self.node_offset = {}
         self.current_leaf_row = 0
-        self.line_segments = []
+        self.node_label_map = {}
+        self.line_segments_x = []
+        self.line_segments_y = []
         self.internal_nodes = []
         self.internal_node_positions = []
         self.leaf_nodes = []
@@ -92,16 +109,31 @@ class TreeDrawComposer(object):
                         curr_edge_len + self.node_offset[nd._parent_node]
                     )
 
+    def get_label_for_node(self, node):
+        try:
+            return self.node_label_map[node]
+        except KeyError:
+            if node._child_nodes and self.show_internal_node_labels:
+                label = self.compose_node(node)
+            elif not node._child_nodes and self.show_external_node_labels:
+                label = self.compose_node(node)
+            else:
+                label = ""
+            self.node_label_map[node] = label
+            return label
+
     def compose(self, tree):
         self.reset()
         if self.display_width is None:
             display_width = terminal.terminal_width() - 1
         else:
             display_width = self.display_width
-        
-        # Calculate effective display width (simplified from original)
-        effective_display_width = display_width - 10  # Leave some margin
-        
+        max_label_len = max(
+            [len(self.get_label_for_node(i)) for i in tree.leaf_node_iter()]
+        )
+        if max_label_len <= 0:
+            max_label_len = 0
+        effective_display_width = display_width - max_label_len - 1
         self._calc_node_offsets(tree)
         widths = [
             self.node_offset[i]
@@ -116,30 +148,23 @@ class TreeDrawComposer(object):
             )
         edge_scale_factor = float(effective_display_width) / max_width
         self.calc_plot(tree.seed_node, edge_scale_factor=edge_scale_factor)
-        
-        # Collect coordinates instead of drawing
-        self.collect_coordinates(tree.seed_node)
+        self.collect_segments(tree.seed_node)
         
         # Calculate bounds
-        all_x_coords = [pos[0] for pos in self.internal_node_positions + self.leaf_node_positions]
-        all_y_coords = [pos[1] for pos in self.internal_node_positions + self.leaf_node_positions]
-        
-        # Also consider line segment coordinates for bounds
-        for segment in self.line_segments:
-            all_x_coords.extend([segment[0][0], segment[1][0]])
-            all_y_coords.extend([segment[0][1], segment[1][1]])
-        
-        bounds_x_max = max(all_x_coords) if all_x_coords else 0
-        bounds_y_max = max(all_y_coords) if all_y_coords else 0
+        all_x = self.line_segments_x + [pos[0] for pos in self.internal_node_positions + self.leaf_node_positions]
+        all_y = self.line_segments_y + [pos[1] for pos in self.internal_node_positions + self.leaf_node_positions]
         
         return {
-            'line_segments': self.line_segments,
+            'line_segment_xs': self.line_segments_x,
+            'line_segment_ys': self.line_segments_y,
             'internal_nodes': self.internal_nodes,
             'internal_node_positions': self.internal_node_positions,
             'leaf_nodes': self.leaf_nodes,
             'leaf_node_positions': self.leaf_node_positions,
-            'bounds_x_max': bounds_x_max,
-            'bounds_y_max': bounds_y_max
+            'bounds_x_min': min(all_x) if all_x else 0,
+            'bounds_y_min': min(all_y) if all_y else 0,
+            'bounds_x_max': max(all_x) if all_x else 0,
+            'bounds_y_max': max(all_y) if all_y else 0
         }
 
     def calc_plot(self, node, edge_scale_factor):
@@ -159,9 +184,14 @@ class TreeDrawComposer(object):
         
         self.node_col[node] = int(float(self.node_offset[node]) * edge_scale_factor)
 
-    def collect_coordinates(self, node):
+    def add_line_segment(self, x1, y1, x2, y2):
+        """Helper method to add a line segment"""
+        self.line_segments_x.extend([x1, x2])
+        self.line_segments_y.extend([y1, y2])
+
+    def collect_segments(self, node):
         """
-        Second pass through tree, collecting coordinates instead of drawing.
+        Second pass through tree, collecting line segments and node positions.
         """
         child_nodes = node.child_nodes()
         
@@ -171,24 +201,23 @@ class TreeDrawComposer(object):
             self.internal_node_positions.append((self.node_col[node], self.node_row[node]))
             
             for i, child_node in enumerate(child_nodes):
-                # Recursively process child
-                self.collect_coordinates(child_node)
+                # Horizontal line from parent to child
+                self.add_line_segment(
+                    self.node_col[node], self.node_row[child_node],
+                    self.node_col[child_node], self.node_row[child_node]
+                )
                 
-                # Add horizontal line from parent to child
-                self.line_segments.append([
-                    (self.node_col[node], self.node_row[child_node]),
-                    (self.node_col[child_node], self.node_row[child_node])
-                ])
+                # Recursive call to process child
+                self.collect_segments(child_node)
             
-            # Add vertical line connecting all children (if more than one child)
+            # Vertical lines connecting children
             if len(child_nodes) > 1:
-                child_rows = [self.node_row[child] for child in child_nodes]
-                min_row = min(child_rows)
-                max_row = max(child_rows)
-                self.line_segments.append([
-                    (self.node_col[node], min_row),
-                    (self.node_col[node], max_row)
-                ])
+                min_y = min(self.node_row[child] for child in child_nodes)
+                max_y = max(self.node_row[child] for child in child_nodes)
+                self.add_line_segment(
+                    self.node_col[node], min_y,
+                    self.node_col[node], max_y
+                )
         else:
             # This is a leaf node
             self.leaf_nodes.append(node)

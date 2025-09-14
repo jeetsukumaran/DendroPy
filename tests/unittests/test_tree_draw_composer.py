@@ -27,6 +27,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from support import curated_test_tree
 from dendropy.utility.messaging import get_logger
+from dendropy.plot.treedrawcomposer import TreeDrawComposer
 _LOG = get_logger(__name__)
 
 class TreeDrawComposerTest(
@@ -40,7 +41,11 @@ class TreeDrawComposerTest(
         self.tree = tree1
 
     def test_plot(self):
-        _LOG.debug(self.tree.as_ascii_plot(plot_metric='depth'))
+        tdc = TreeDrawComposer()
+        tree = self.tree
+        result = tdc.compose(tree)
+        print(result["line_segment_xs"])
+        print(result["line_segment_ys"])
 
     # def test_plot_by_depth(self):
     #     _LOG.debug(self.tree.as_ascii_plot(plot_metric='depth'))
