@@ -27,10 +27,10 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from support import curated_test_tree
 from dendropy.utility.messaging import get_logger
-from dendropy.plot.treedrawcomposer import TreeDrawComposer
+from dendropy.plot.treedrawlayout import TreeDrawLayout
 _LOG = get_logger(__name__)
 
-class TreeDrawComposerTest(
+class TreeDrawLayoutTest(
         curated_test_tree.CuratedTestTree,
         unittest.TestCase):
 
@@ -41,7 +41,7 @@ class TreeDrawComposerTest(
         self.tree = tree1
 
     def test_plot(self):
-        tdc = TreeDrawComposer()
+        tdc = TreeDrawLayout()
         tree = self.tree
         result = tdc.compose(tree)
         print(result["line_segment_xs"])
