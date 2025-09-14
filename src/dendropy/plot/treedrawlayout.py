@@ -1,6 +1,6 @@
 from dendropy.utility import terminal
 
-class TreeDrawComposer(object):
+class TreeDrawLayout(object):
     class NullEdgeLengthError(ValueError):
         def __init__(self, *args, **kwargs):
             ValueError.__init__(self, *args, **kwargs)
@@ -125,7 +125,7 @@ class TreeDrawComposer(object):
     def compose(self, tree):
         self.reset()
         if self.display_width is None:
-            display_width = terminal.terminal_width() - 1
+            display_width = 800
         else:
             display_width = self.display_width
         max_label_len = max(
@@ -142,7 +142,7 @@ class TreeDrawComposer(object):
         ]
         max_width = float(max(widths))
         if max_width == 0:
-            raise TreeDrawComposer.NullEdgeLengthError(
+            raise TreeDrawLayout.NullEdgeLengthError(
                 "Tree cannot be plotted under metric '%s' due to zero or null edge"
                 " lengths: '%s'" % (self.plot_metric, tree._as_newick_string())
             )
