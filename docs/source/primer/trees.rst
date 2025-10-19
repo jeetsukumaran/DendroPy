@@ -206,6 +206,10 @@ You can also, as mentioned above, using the :meth:`~dendropy.datamodel.treemodel
     print(t.as_string(schema="nexus"))
     print(t.as_string(schema="newick"))
 
+In addition to string representations, DendroPy trees can also be visualized using the `iplotx <https://github.com/fabilab/iplotx/>`_ package. This workflow can be used to create static raster (e.g., PNG, JPEG)
+or vector images (e.g. SVG, PDF), animations, and interactive plots, and supports extensive style customisations and scale bars. An example of using iplotx to visualise a DendroPy tree can be found 
+in the `iplotx documentation <https://iplotx.readthedocs.io/>`_,
+`here <https://iplotx.readthedocs.io/en/latest/gallery/tree/plot_scalebar.html#sphx-glr-gallery-tree-plot-scalebar-py>`_.
 
 Building a Tree Programmatically
 ================================
