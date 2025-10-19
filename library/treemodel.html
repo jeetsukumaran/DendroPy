@@ -385,18 +385,18 @@ instead of this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ultrametricity_precision</strong> (<em>numeric</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em> or </em><em>None</em>) – If the lengths of different paths to the node differ by more than
+<li><p><strong>ultrametricity_precision</strong> (<em>numeric</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> or </em><em>None</em>) – If the lengths of different paths to the node differ by more than
 <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision</span></code>, then a ValueError exception will be
 raised indicating deviation from ultrametricity. If
 <code class="docutils literal notranslate"><span class="pre">ultrametricity_precision</span></code> is negative or False, then this check
 will be skipped.</p></li>
-<li><p><strong>is_force_max_age</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">is_force_max_age</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then each node will be set to the
+<li><p><strong>is_force_max_age</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">is_force_max_age</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then each node will be set to the
 maximum possible age, by being set to the oldest age given its
 child set and the subtending edge lengths. This option only makes a
 difference if the tree is not ultrametric, and so the
 ultrametricity precision check is ignore if this option is set to
 True.</p></li>
-<li><p><strong>is_force_min_age</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">is_force_min_age</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> then each node will be set to the
+<li><p><strong>is_force_min_age</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">is_force_min_age</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> then each node will be set to the
 minimum possible age, by being set to the youngest age given its
 child set and the subtending edge lengths. This option only makes a
 difference if the tree is not ultrametric, and so the
@@ -508,7 +508,7 @@ annotations are unchanged, unless the id of the object reference is fo</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>) – Source of annotations to copy.</p></li>
-<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
+<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
 purpose of this is to update the parent or owner objects of dynamic
 attribute annotations.
 If a dynamic attribute <a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
@@ -568,7 +568,7 @@ or <code class="docutils literal notranslate"><span class="pre">False</span></co
 edges will be included.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – List of <a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – List of <a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -580,15 +580,15 @@ edges will be included.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted as they are
+<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted as they are
 encountered.</p></li>
-<li><p><strong>collapse_unrooted_basal_bifurcation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then a basal bifurcation on an unrooted tree will be
+<li><p><strong>collapse_unrooted_basal_bifurcation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then a basal bifurcation on an unrooted tree will be
 collapsed to a trifurcation. This mean that an unrooted tree like
 ‘(A,(B,C))’ will be changed to ‘(A,B,C)’ after this.</p></li>
-<li><p><strong>suppress_storage</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – By default, the bipartition encoding is stored as a list (assigned
+<li><p><strong>suppress_storage</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – By default, the bipartition encoding is stored as a list (assigned
 to <code class="docutils literal notranslate"><span class="pre">self.bipartition_encoding</span></code>) and returned. If <code class="docutils literal notranslate"><span class="pre">suppress_storage</span></code>
 is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the list is not created.</p></li>
-<li><p><strong>is_bipartitions_mutable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – By default, the <a class="reference internal" href="#dendropy.datamodel.treemodel.Bipartition" title="dendropy.datamodel.treemodel.Bipartition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code></a> instances coded will be locked
+<li><p><strong>is_bipartitions_mutable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – By default, the <a class="reference internal" href="#dendropy.datamodel.treemodel.Bipartition" title="dendropy.datamodel.treemodel.Bipartition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bipartition</span></code></a> instances coded will be locked
 or frozen, allowing their use in hashing containers such as
 dictionary (keys) and sets. To allow modification of values, the
 <code class="docutils literal notranslate"><span class="pre">is_mutable</span></code> attribute must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -624,20 +624,20 @@ not copied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>extraction_source_reference_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name of attribute to set on cloned nodes that references
+<li><p><strong>extraction_source_reference_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of attribute to set on cloned nodes that references
 corresponding original node. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then attribute (and
 reference) will not be created.</p></li>
 <li><p><strong>node_filter_fn</strong> (<em>None</em><em> or </em><em>function object</em>) – If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then entire tree structure is cloned.
 If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, must be a function object that returns <code class="docutils literal notranslate"><span class="pre">True</span></code>
 if a particular <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> instance on the original tree should
 be included in the cloned tree, or <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></li>
-<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
+<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
 be done if some nodes are excluded from the cloned tree.</p></li>
-<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
+<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (and all leaf nodes will be
 automatically included, unless excluded by an ancestral node being
 filtered out).</p></li>
-<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
+<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (internal nodes without children will
 still be filtered out).</p></li>
 <li><p><strong>tree_factory</strong> (<em>function</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, must be a function that optionally takes a
@@ -702,7 +702,7 @@ not copied.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>taxa</strong> (iterable of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances) – List or some other iterable of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects to include.</p></li>
-<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
+<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
 be done if some nodes are excluded from the cloned tree.</p></li>
 </ul>
 </dd>
@@ -745,7 +745,7 @@ comments, and other attributes are not copied.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>labels</strong> (<em>iterable</em><em> of </em><em>str instances</em>) – List or some other iterable of strings to match.</p></li>
-<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
+<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
 be done if some nodes are excluded from the cloned tree.</p></li>
 </ul>
 </dd>
@@ -788,13 +788,13 @@ not copied.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>taxa</strong> (iterable of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances) – List or some other iterable of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects to exclude.</p></li>
-<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
+<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
 be done if some nodes are excluded from the cloned tree.</p></li>
-<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
+<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (and all leaf nodes will be
 automatically included, unless excluded by an ancestral node being
 filtered out).</p></li>
-<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
+<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (internal nodes without children will
 still be filtered out).</p></li>
 </ul>
@@ -838,13 +838,13 @@ not copied.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>labels</strong> (<em>iterable</em><em> of </em><em>str instances</em>) – List or some other iterable of strings to match.</p></li>
-<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
+<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted. Only will
 be done if some nodes are excluded from the cloned tree.</p></li>
-<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
+<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (and all leaf nodes will be
 automatically included, unless excluded by an ancestral node being
 filtered out).</p></li>
-<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
+<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (internal nodes without children will
 still be filtered out).</p></li>
 </ul>
@@ -892,16 +892,16 @@ evaluate to <code class="docutils literal notranslate"><span class="pre">True</s
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filter_fn</strong> (<em>function object</em>) – A function that takes a <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> object and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if
 the object is to be allowed as a leaf node, and <code class="docutils literal notranslate"><span class="pre">False</span></code> if otherwise.</p></li>
-<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then filter is repeatedly applied until all leaf nodes
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then filter is repeatedly applied until all leaf nodes
 evaluate to <code class="docutils literal notranslate"><span class="pre">True</span></code> under <code class="docutils literal notranslate"><span class="pre">filter_fn</span></code>. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then only a
 single pass is made on the current leaf set. This may result in new
 leaves for which the <code class="docutils literal notranslate"><span class="pre">filter_fn</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (e.g., the parent node
 of a cherry in which both children evaluated to <code class="docutils literal notranslate"><span class="pre">False</span></code>
 under <code class="docutils literal notranslate"><span class="pre">filter_fn</span></code> now is a leaf node which may be <code class="docutils literal notranslate"><span class="pre">False</span></code>
 under <code class="docutils literal notranslate"><span class="pre">filter_fn</span></code>).</p></li>
-<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted as they are
+<li><p><strong>suppress_unifurcations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, nodes of outdegree 1 will be deleted as they are
 encountered.</p></li>
-<li><p><strong>update_bipartitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then bipartitions will be calculated.</p></li>
+<li><p><strong>update_bipartitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then bipartitions will be calculated.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1049,7 +1049,7 @@ with each other, then the sequence of bipartitions given in
 or some other preference criteria.</p></li>
 <li><p><strong>taxon_namespace</strong> (<a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> instance) – The operational taxonomic unit concept namespace to use to manage
 taxon definitions.</p></li>
-<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Specifies whether or not the tree is rooted.</p></li>
+<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Specifies whether or not the tree is rooted.</p></li>
 <li><p><strong>edge_lengths</strong> (iterable or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – An iterable of edge lengths. This should be in the same order
 as the bipartitions in the bipartition encoding.</p></li>
 </ul>
@@ -1067,7 +1067,7 @@ as the bipartitions in the bipartition encoding.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>split_bitmasks</strong> (<em>iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – An iterable of split bitmasks representing a tree.
+<li><p><strong>split_bitmasks</strong> (<em>iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – An iterable of split bitmasks representing a tree.
 Splits will be added to the tree in the order given by
 iterating over this. Splits that are incompatible with the
 tree will be skipped. So if not all splits are compatible
@@ -1076,7 +1076,7 @@ with each other, then the sequence of splits given in
 or some other preference criteria.</p></li>
 <li><p><strong>taxon_namespace</strong> (<a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> instance) – The operational taxonomic unit concept namespace to use to manage
 taxon definitions.</p></li>
-<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Specifies whether or not the tree is rooted.</p></li>
+<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Specifies whether or not the tree is rooted.</p></li>
 <li><p><strong>edge_lengths</strong> (dict or <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, then no edge lengths will be added.
 Otherwise, this should be a dictionary mapping splits to edge
 lengths.</p></li>
@@ -1325,7 +1325,7 @@ the iterator, or <code class="docutils literal notranslate"><span class="pre">Fa
 root is included. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the seed node is omitted.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – List of internal <a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – List of internal <a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1347,7 +1347,7 @@ root is included. If <code class="docutils literal notranslate"><span class="pre
 <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the seed node is omitted.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – List of internal <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – List of internal <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1395,7 +1395,7 @@ the iterator, or <code class="docutils literal notranslate"><span class="pre">Fa
 <dd><p>Returns list of leaf edges on the tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – List of leaf <a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – List of leaf <a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1432,7 +1432,7 @@ the iterator, or <code class="docutils literal notranslate"><span class="pre">Fa
 <dd><p>Returns list of leaf nodes on the tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – List of leaf <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – List of leaf <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1685,7 +1685,7 @@ the list, or <code class="docutils literal notranslate"><span class="pre">False<
 then all nodes visited will be included.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – List of <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in the tree.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – List of <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects in the tree.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1717,7 +1717,7 @@ tree in its current state.</p>
 with <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><em>set</em></a><em>(</em><em>)</em>) – Set to populate. If not specified, a new one will be created.</p>
+<dd class="field-odd"><p><strong>taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><em>set</em></a><em>(</em><em>)</em>) – Set to populate. If not specified, a new one will be created.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>set[|Taxon|]</em> – Set of taxa associated with <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
@@ -2161,9 +2161,9 @@ the sum of edge lengths from the root.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The maximum number of children a node can have before being
+<li><p><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The maximum number of children a node can have before being
 resolved.</p></li>
-<li><p><strong>update_bipartitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then bipartitions will be calculated.</p></li>
+<li><p><strong>update_bipartitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then bipartitions will be calculated.</p></li>
 <li><p><strong>rng</strong> (<code class="docutils literal notranslate"><span class="pre">random.Random</span></code> object or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – If <code class="docutils literal notranslate"><span class="pre">rng</span></code> is an object with a <code class="docutils literal notranslate"><span class="pre">sample()</span></code> method then the polytomy
 will be resolved by sequentially adding, generating all tree
 topologies equiprobably. <code class="docutils literal notranslate"><span class="pre">rng.sample()</span></code> should behave like
@@ -2218,7 +2218,7 @@ tips equal the value of the <code class="docutils literal notranslate"><span cla
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>minimum_edge_length</strong> (<em>numeric</em>) – All edge lengths calculated to have a value less than this will be
 set to this.</p></li>
-<li><p><strong>error_on_negative_edge_lengths</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, an inferred edge length that is less than 0 will result
+<li><p><strong>error_on_negative_edge_lengths</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, an inferred edge length that is less than 0 will result
 in a ValueError.</p></li>
 </ul>
 </dd>
@@ -2247,7 +2247,7 @@ Returns a dictionary mapping the old taxa to their new counterparts.</p>
 <dd><p>Delete all nodes of outdegree-one from this tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>update_bipartitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the bipartitions encoding will be calculated.</p>
+<dd class="field-odd"><p><strong>update_bipartitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the bipartitions encoding will be calculated.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2453,7 +2453,7 @@ taxon definitions.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>taxon</strong> (<a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>, optional) – The <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instance representing the operational taxonomic
 unit concept associated with this Node.</p></li>
-<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a><em>, </em><em>optional</em>) – A label for this node.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a><em>, </em><em>optional</em>) – A label for this node.</p></li>
 <li><p><strong>edge_length</strong> (<em>numeric</em><em>, </em><em>optional</em>) – Length or weight of the edge subtending this node.</p></li>
 </ul>
 </dd>
@@ -2480,7 +2480,7 @@ unit concept associated with this Node.</p></li>
 <dd><p>Return parent and child nodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – A list with all child nodes and parent node of this node.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – A list with all child nodes and parent node of this node.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2652,7 +2652,7 @@ list construction.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – A <code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> objects that have <code class="docutils literal notranslate"><span class="pre">self</span></code> as a tail node.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – A <code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> objects that have <code class="docutils literal notranslate"><span class="pre">self</span></code> as a tail node.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2686,7 +2686,7 @@ list construction.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – A <code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects that have <code class="docutils literal notranslate"><span class="pre">self</span></code> as a parent.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – A <code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects that have <code class="docutils literal notranslate"><span class="pre">self</span></code> as a parent.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2761,7 +2761,7 @@ annotations are unchanged, unless the id of the object reference is fo</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>) – Source of annotations to copy.</p></li>
-<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
+<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
 purpose of this is to update the parent or owner objects of dynamic
 attribute annotations.
 If a dynamic attribute <a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
@@ -2860,18 +2860,18 @@ specialized or different types of edges on the tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>extraction_source_reference_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name of attribute to set on cloned nodes that references
+<li><p><strong>extraction_source_reference_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of attribute to set on cloned nodes that references
 corresponding original node. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then attribute (and
 reference) will not be created.</p></li>
 <li><p><strong>node_filter_fn</strong> (<em>None</em><em> or </em><em>function object</em>) – If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then entire tree structure is cloned.
 If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, must be a function object that returns <code class="docutils literal notranslate"><span class="pre">True</span></code>
 if a particular <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> instance on the original tree should
 be included in the cloned tree, or <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></li>
-<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
+<li><p><strong>is_apply_filter_to_leaf_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to leaf nodes. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (and all leaf nodes will be
 automatically included, unless excluded by an ancestral node being
 filtered out).</p></li>
-<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
+<li><p><strong>is_apply_filter_to_internal_nodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the above filter will be applied to internal nodes. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code> then it will not (internal nodes without children will
 still be filtered out).</p></li>
 <li><p><strong>node_factory</strong> (<em>function</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, must be a function that takes no arguments and
@@ -2902,7 +2902,7 @@ returns a new <a class="reference internal" href="#dendropy.datamodel.treemodel.
 <dd><p>Return parent and child edges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – A list of edges linking to this node, with outgoing edges (edges
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Edge" title="dendropy.datamodel.treemodel.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a>] – A list of edges linking to this node, with outgoing edges (edges
 connecting to child nodes) followed by the edge connecting
 this node to its parent.</p>
 </dd>
@@ -3028,7 +3028,7 @@ actual list is required.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – A <code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects descended from this node
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – A <code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> objects descended from this node
 (inclusive of <code class="docutils literal notranslate"><span class="pre">self</span></code>) that are the leaves.</p>
 </dd>
 </dl>
@@ -3293,7 +3293,7 @@ as a parent.</p>
 <dd><p>Return all other children of parent, excluding self.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – A list of all nodes descended from the same parent as <code class="docutils literal notranslate"><span class="pre">self</span></code>,
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>] – A list of all nodes descended from the same parent as <code class="docutils literal notranslate"><span class="pre">self</span></code>,
 excluding <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 </dd>
 </dl>
@@ -3330,7 +3330,7 @@ objects: these are preserved as references.</p>
 node <code class="docutils literal notranslate"><span class="pre">tail_node</span></code>.</p></li>
 <li><p><strong>length</strong> (<em>numerical</em><em>, </em><em>optional</em>) – A value representing the weight of the edge.</p></li>
 <li><p><strong>rootedge</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Is the child node of this edge the root or seed node of the tree?</p></li>
-<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a><em>, </em><em>optional</em>) – Label for this edge.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a><em>, </em><em>optional</em>) – Label for this edge.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3401,7 +3401,7 @@ annotations are unchanged, unless the id of the object reference is fo</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>) – Source of annotations to copy.</p></li>
-<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
+<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
 purpose of this is to update the parent or owner objects of dynamic
 attribute annotations.
 If a dynamic attribute <a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
@@ -3582,9 +3582,9 @@ bipartition is associated. In, general, this will be $0b1111…n$,
 where $n$ is the number of taxa, <em>except</em> in cases of trees with
 incomplete leaf-sets, where the positions corresponding to the
 missing taxa will have the bits unset.</p></li>
-<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Specifies whether or not the tree with which this bipartition is
+<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Specifies whether or not the tree with which this bipartition is
 associated is rooted.</p></li>
-<li><p><strong>is_mutable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Specifies whether or not the tree is mutable.</p></li>
+<li><p><strong>is_mutable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Specifies whether or not the tree is mutable.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3637,7 +3637,7 @@ where $n$ is the number of taxa, <em>except</em> in cases of trees with
 incomplete leaf-sets, where the positions corresponding to the
 missing taxa will have the bits unset. If not specified or <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 the current value of <code class="docutils literal notranslate"><span class="pre">self.tree_leafset_bitmask</span></code> is used.</p></li>
-<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Specifies whether or not the tree with which this bipartition is
+<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Specifies whether or not the tree with which this bipartition is
 associated is rooted. If not specified or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the current value
 of <code class="docutils literal notranslate"><span class="pre">self.is_rooted</span></code> is used.</p></li>
 </ul>
@@ -3661,8 +3661,8 @@ of <code class="docutils literal notranslate"><span class="pre">self.is_rooted</
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>m1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – A bitmask representing a split.</p></li>
-<li><p><strong>m2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – A bitmask representing a split.</p></li>
+<li><p><strong>m1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – A bitmask representing a split.</p></li>
+<li><p><strong>m2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – A bitmask representing a split.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -3756,9 +3756,9 @@ bitstring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>symbol1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The symbol to represent group ‘0’ in the bitmask.</p></li>
+<li><p><strong>symbol1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The symbol to represent group ‘0’ in the bitmask.</p></li>
 <li><p><strong>symbol1</strong> – The symbol to represent group ‘1’ in the bitmask.</p></li>
-<li><p><strong>reverse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the first taxon will correspond to the
+<li><p><strong>reverse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the first taxon will correspond to the
 most-significant bit, instead of the least-significant bit, as is
 the default.</p></li>
 </ul>
@@ -3811,7 +3811,7 @@ bipartition.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>] – List of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects specified or spanned by
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a>] – List of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> objects specified or spanned by
 <code class="docutils literal notranslate"><span class="pre">bitmask</span></code>.</p>
 </dd>
 </dl>
@@ -3832,9 +3832,9 @@ bitstring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>symbol1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The symbol to represent group ‘0’ in the bitmask.</p></li>
+<li><p><strong>symbol1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The symbol to represent group ‘0’ in the bitmask.</p></li>
 <li><p><strong>symbol1</strong> – The symbol to represent group ‘1’ in the bitmask.</p></li>
-<li><p><strong>reverse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the first taxon will correspond to the
+<li><p><strong>reverse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the first taxon will correspond to the
 most-significant bit, instead of the least-significant bit, as is
 the default.</p></li>
 </ul>

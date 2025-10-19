@@ -187,7 +187,7 @@ instances themselves) to <a class="reference internal" href="treemodel.html#dend
 by the slice. The <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> is the same as <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>index</strong> (<em>integer</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.13)"><em>slice</em></a>) – Index or slice.</p>
+<dd class="field-odd"><p><strong>index</strong> (<em>integer</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.14)"><em>slice</em></a>) – Index or slice.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>t</strong> (<em>|Tree| object or |TreeList| object</em>)</p>
@@ -348,7 +348,7 @@ annotations are unchanged, unless the id of the object reference is fo</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>) – Source of annotations to copy.</p></li>
-<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
+<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
 purpose of this is to update the parent or owner objects of dynamic
 attribute annotations.
 If a dynamic attribute <a class="reference internal" href="basemodel.html#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
@@ -641,7 +641,7 @@ are handled: ‘migrate’ or ‘add’. See above for details.</p></li>
 known as the “Maximum Clade Credibility Tree” or MCCT.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
+<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
 the score. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: these are skipped. This should only
 make a difference when dealing with splits collected from trees of
 different leaf sets.</p>
@@ -658,7 +658,7 @@ different leaf sets.</p>
 <dd><p>Return the tree with that maximizes the <em>sum</em> of split supports.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
+<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
 the score. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: these are skipped. This should only
 make a difference when dealing with splits collected from trees of
 different leaf sets.</p>
@@ -754,7 +754,7 @@ t3 = copy.deepcopy(t1)</p>
 with <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.13)"><em>set</em></a><em>(</em><em>)</em>) – Set to populate. If not specified, a new one will be created.</p>
+<dd class="field-odd"><p><strong>taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><em>set</em></a><em>(</em><em>)</em>) – Set to populate. If not specified, a new one will be created.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>taxa</strong> (<em>set[|Taxon|]</em>) – Set of taxa associated with <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
@@ -1183,15 +1183,15 @@ computation time.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>taxon_namespace</strong> (<a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a>) – The operational taxonomic unit concept namespace to manage taxon
 references.</p></li>
-<li><p><strong>is_rooted_trees</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If not set, then it will be set based on the rooting state of the
+<li><p><strong>is_rooted_trees</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If not set, then it will be set based on the rooting state of the
 first tree added. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then trying to add an unrooted tree
 will result in an error. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then trying to add a rooted
 tree will result in an error.</p></li>
-<li><p><strong>ignore_edge_lengths</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then edge lengths of splits will not be stored. If
+<li><p><strong>ignore_edge_lengths</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then edge lengths of splits will not be stored. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, then edge lengths will be stored.</p></li>
-<li><p><strong>ignore_node_ages</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then node ages of splits will not be stored. If
+<li><p><strong>ignore_node_ages</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then node ages of splits will not be stored. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, then node ages will be stored.</p></li>
-<li><p><strong>use_tree_weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then tree weights will not be used to weight splits.</p></li>
+<li><p><strong>use_tree_weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then tree weights will not be used to weight splits.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1263,7 +1263,7 @@ collection.</p>
 <li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – A <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> instance. This must have the same rooting state as
 all the other trees accessioned into this collection as well as
 that of <code class="docutils literal notranslate"><span class="pre">self.is_rooted_trees</span></code>.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
 updated. Otherwise, if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the tree is assumed to have its
 splits already encoded and updated.</p></li>
 <li><p><strong>index</strong> (<em>integer</em>) – Insert before index.</p></li>
@@ -1291,7 +1291,7 @@ splits already encoded and updated.</p></li>
 <li><p><strong>trees</strong> (iterator over or iterable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> instances) – An iterator over or iterable of <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> instances. Thess must
 have the same rooting state as all the other trees accessioned into
 this collection as well as that of <code class="docutils literal notranslate"><span class="pre">self.is_rooted_trees</span></code>.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
 updated. Otherwise, if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the tree is assumed to have its
 splits already encoded and updated.</p></li>
 </ul>
@@ -1310,7 +1310,7 @@ by <code class="docutils literal notranslate"><span class="pre">index</span></co
 <li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – A <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> instance. This must have the same rooting state as
 all the other trees accessioned into this collection as well as
 that of <code class="docutils literal notranslate"><span class="pre">self.is_rooted_trees</span></code>.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
 updated. Otherwise, if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the tree is assumed to have its
 splits already encoded and updated.</p></li>
 </ul>
@@ -1334,7 +1334,7 @@ encoding in the collection.</p>
 the collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
+<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
 the score. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: these are skipped. This should only
 make a difference when dealing with splits collected from trees of
 different leaf sets.</p>
@@ -1354,7 +1354,7 @@ corresponds to the trees accessioned in the collection.</p>
 collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
+<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
 the score. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: these are skipped. This should only
 make a difference when dealing with splits collected from trees of
 different leaf sets.</p>
@@ -1376,7 +1376,7 @@ corresponds to the trees accessioned in the collection.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>min_freq</strong> (<em>real</em>) – The minimum frequency of a split in this distribution for it to be
 added to the tree.</p></li>
-<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Should tree be rooted or not? If <em>all</em> trees counted for splits are
+<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Should tree be rooted or not? If <em>all</em> trees counted for splits are
 explicitly rooted or unrooted, then this will default to <code class="docutils literal notranslate"><span class="pre">True</span></code> or
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, respectively. Otherwise it defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>**split_summarization_kwargs</strong> (<em>keyword arguments</em>) – These will be passed directly to the underlying
@@ -1420,7 +1420,7 @@ by <code class="docutils literal notranslate"><span class="pre">index</span></co
 <li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – A <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> instance. This must have the same rooting state as
 all the other trees accessioned into this collection as well as
 that of <code class="docutils literal notranslate"><span class="pre">self.is_rooted_trees</span></code>.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
 updated. Otherwise, if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the tree is assumed to have its
 splits already encoded and updated.</p></li>
 </ul>
@@ -1443,7 +1443,7 @@ splits already encoded and updated.</p></li>
 known as the “Maximum Clade Credibility Tree” or MCCT.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
+<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
 the score. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: these are skipped. This should only
 make a difference when dealing with splits collected from trees of
 different leaf sets.</p>
@@ -1460,7 +1460,7 @@ different leaf sets.</p>
 <dd><p>Return the tree with that maximizes the <em>sum</em> of split supports.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
+<dd class="field-odd"><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
 the score. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: these are skipped. This should only
 make a difference when dealing with splits collected from trees of
 different leaf sets.</p>
@@ -1577,14 +1577,14 @@ collection, with the frequency added as an attributed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sort_descending</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then topologies will be sorted in <em>descending</em> frequency
+<li><p><strong>sort_descending</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then topologies will be sorted in <em>descending</em> frequency
 order (i.e., topologies with the highest frequencies will be listed
 first). If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then they will be sorted in <em>ascending</em>
 frequency. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), then they will not be sorted.</p></li>
-<li><p><strong>frequency_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name of attribute to add to each <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> representing
+<li><p><strong>frequency_attr_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of attribute to add to each <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> representing
 the frequency of that topology in the collection. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
 then the attribute will not be added.</p></li>
-<li><p><strong>frequency_annotation_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name of annotation to add to the annotations of each <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>,
+<li><p><strong>frequency_annotation_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of annotation to add to the annotations of each <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>,
 representing the frequency of that topology in the collection. The
 value of this annotation will be dynamically-bound to the attribute
 specified by <code class="docutils literal notranslate"><span class="pre">frequency_attr_name</span></code> unless that is <code class="docutils literal notranslate"><span class="pre">None</span></code>. If
@@ -1632,7 +1632,7 @@ be added.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>min_freq</strong> (<em>real</em>) – The minimum frequency of a split in this distribution for it to be
 added to the tree.</p></li>
-<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Should tree be rooted or not? If <em>all</em> trees counted for splits are
+<li><p><strong>is_rooted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Should tree be rooted or not? If <em>all</em> trees counted for splits are
 explicitly rooted or unrooted, then this will default to <code class="docutils literal notranslate"><span class="pre">True</span></code> or
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, respectively. Otherwise it defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>**split_summarization_kwargs</strong> (<em>keyword arguments</em>) – These will be passed directly to the underlying
@@ -1655,7 +1655,7 @@ with splits, and no attempt is made to normalize taxa.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tree</strong> (a <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> object.) – The tree on which to count the splits.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
 updated. Otherwise, if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the tree is assumed to have its
 splits already encoded and updated.</p></li>
 </ul>
@@ -1687,9 +1687,9 @@ highest <em>sum</em> of split support (see
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – The tree for which the score should be calculated.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the splits are assumed to have already been encoded
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the splits are assumed to have already been encoded
 and will not be updated on the trees.</p></li>
-<li><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
+<li><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
 the score. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: these are skipped. This should only
 make a difference when dealing with splits collected from trees of
 different leaf sets.</p></li>
@@ -1727,14 +1727,14 @@ split in the current split distribution.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – The <a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> which will be scored.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> [default], then the tree will have its splits encoded or
 updated. Otherwise, if <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the tree is assumed to have its
 splits already encoded and updated.</p></li>
-<li><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included.
+<li><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included.
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then these are skipped. This should only make a
 difference when dealing with splits collected from trees of
 different leaf sets.</p></li>
-<li><p><strong>traversal_strategy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – One of: “preorder” or “postorder”. Specfies order in which splits
+<li><p><strong>traversal_strategy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – One of: “preorder” or “postorder”. Specfies order in which splits
 are visited.</p></li>
 </ul>
 </dd>
@@ -1768,9 +1768,9 @@ current distribtion.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – The tree for which the score should be calculated.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the splits are assumed to have already been encoded
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the splits are assumed to have already been encoded
 and will not be updated on the trees.</p></li>
-<li><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
+<li><p><strong>include_external_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then non-internal split posteriors will be included in
 the score. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>: these are skipped. This should only
 make a difference when dealing with splits collected from trees of
 different leaf sets.</p></li>
@@ -1790,7 +1790,7 @@ different leaf sets.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tree</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a> instance) – Tree to be decorated with support values.</p></li>
-<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then bipartitions will not be recalculated.</p></li>
+<li><p><strong>is_bipartitions_updated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then bipartitions will not be recalculated.</p></li>
 <li><p><strong>**split_summarization_kwargs</strong> (<em>keyword arguments</em>) – These will be passed directly to the underlying
 <a class="reference internal" href="#dendropy.datamodel.treecollectionmodel.SplitDistributionSummarizer" title="dendropy.datamodel.treecollectionmodel.SplitDistributionSummarizer"><code class="xref any py py-class docutils literal notranslate"><span class="pre">SplitDistributionSummarizer</span></code></a> object. See
 <a class="reference internal" href="#dendropy.datamodel.treecollectionmodel.SplitDistributionSummarizer.configure" title="dendropy.datamodel.treecollectionmodel.SplitDistributionSummarizer.configure"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SplitDistributionSummarizer.configure</span></code></a> for options.</p></li>
@@ -1828,13 +1828,13 @@ options.</p>
 </ul>
 </div></blockquote>
 </p></li>
-<li><p><strong>add_support_as_node_attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Adds each node’s support value as an attribute of the node,
+<li><p><strong>add_support_as_node_attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Adds each node’s support value as an attribute of the node,
 “<code class="docutils literal notranslate"><span class="pre">support</span></code>”.</p></li>
-<li><p><strong>add_support_as_node_annotation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Adds support as a metadata annotation, “<code class="docutils literal notranslate"><span class="pre">support</span></code>”. If
+<li><p><strong>add_support_as_node_annotation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Adds support as a metadata annotation, “<code class="docutils literal notranslate"><span class="pre">support</span></code>”. If
 <code class="docutils literal notranslate"><span class="pre">add_support_as_node_attribute</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the value will be
 dynamically-bound to the value of the node’s “<code class="docutils literal notranslate"><span class="pre">support</span></code>” attribute.</p></li>
-<li><p><strong>set_support_as_node_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Sets the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute of each node to the support value.</p></li>
-<li><p><strong>add_node_age_summaries_as_node_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – <p>Summarizes the distribution of the ages of each node in the
+<li><p><strong>set_support_as_node_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Sets the <code class="docutils literal notranslate"><span class="pre">label</span></code> attribute of each node to the support value.</p></li>
+<li><p><strong>add_node_age_summaries_as_node_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – <p>Summarizes the distribution of the ages of each node in the
 following attributes:</p>
 <blockquote>
 <div><ul>
@@ -1846,7 +1846,7 @@ following attributes:</p>
 </ul>
 </div></blockquote>
 </p></li>
-<li><p><strong>add_node_age_summaries_as_node_annotations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – <p>Summarizes the distribution of the ages of each node in the
+<li><p><strong>add_node_age_summaries_as_node_annotations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – <p>Summarizes the distribution of the ages of each node in the
 following metadata annotations:</p>
 <blockquote>
 <div><ul>
@@ -1861,7 +1861,7 @@ following metadata annotations:</p>
 values will be dynamically-bound to the corresponding node
 attributes.</p>
 </p></li>
-<li><p><strong>add_edge_length_summaries_as_edge_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – <p>Summarizes the distribution of the lengths of each edge in the
+<li><p><strong>add_edge_length_summaries_as_edge_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – <p>Summarizes the distribution of the lengths of each edge in the
 following attribtutes:</p>
 <blockquote>
 <div><ul>
@@ -1873,7 +1873,7 @@ following attribtutes:</p>
 </ul>
 </div></blockquote>
 </p></li>
-<li><p><strong>add_edge_length_summaries_as_edge_annotations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – <p>Summarizes the distribution of the lengths of each edge in the
+<li><p><strong>add_edge_length_summaries_as_edge_annotations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – <p>Summarizes the distribution of the lengths of each edge in the
 following metadata annotations:</p>
 <blockquote>
 <div><ul>
@@ -1888,13 +1888,13 @@ following metadata annotations:</p>
 values will be dynamically-bound to the corresponding edge
 attributes.</p>
 </p></li>
-<li><p><strong>support_label_decimals</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of decimal places to express when rendering the support
+<li><p><strong>support_label_decimals</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of decimal places to express when rendering the support
 value as a string for the node label.</p></li>
-<li><p><strong>support_as_percentages</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether or not to express the support value as percentages (default
+<li><p><strong>support_as_percentages</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Whether or not to express the support value as percentages (default
 is probability or proportion).</p></li>
 <li><p><strong>minimum_edge_length</strong> (<em>numeric</em>) – All edge lengths calculated to have a value less than this will be
 set to this.</p></li>
-<li><p><strong>error_on_negative_edge_lengths</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, an inferred edge length that is less than 0 will result
+<li><p><strong>error_on_negative_edge_lengths</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, an inferred edge length that is less than 0 will result
 in a ValueError.</p></li>
 </ul>
 </dd>

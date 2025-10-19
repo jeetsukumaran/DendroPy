@@ -101,7 +101,7 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rooting</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a><em>, </em><em>{</em><em>[</em><em>'default-unrooted'</em><em>]</em><em>, </em><em>'default-rooted'</em><em>, </em><em>'force-unrooted'</em><em>, </em><em>'force-rooted'}</em>) – <p>Specifies how trees in the data source should be intepreted with
+<li><p><strong>rooting</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a><em>, </em><em>{</em><em>[</em><em>'default-unrooted'</em><em>]</em><em>, </em><em>'default-rooted'</em><em>, </em><em>'force-unrooted'</em><em>, </em><em>'force-rooted'}</em>) – <p>Specifies how trees in the data source should be intepreted with
 respect to their rooting:</p>
 <blockquote>
 <div><dl class="simple">
@@ -390,7 +390,7 @@ will not be written as NHX statements.</p></li>
 <li><p><strong>suppress_item_comments</strong> (boolean, default: <code class="docutils literal notranslate"><span class="pre">True</span></code>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, any additional comments associated with trees, nodes,
 edges, etc. will be written. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>: comments will be
 ignored.</p></li>
-<li><p><strong>node_label_element_separator</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a><em>, </em><em>default: ' '</em>) – If both <code class="docutils literal notranslate"><span class="pre">suppress_leaf_taxon_labels</span></code> and
+<li><p><strong>node_label_element_separator</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a><em>, </em><em>default: ' '</em>) – If both <code class="docutils literal notranslate"><span class="pre">suppress_leaf_taxon_labels</span></code> and
 <code class="docutils literal notranslate"><span class="pre">suppress_leaf_node_labels</span></code> are <code class="docutils literal notranslate"><span class="pre">False</span></code>, then this will be the
 string used to join them. Defaults to ‘ ‘ (space).</p></li>
 <li><p><strong>node_label_compose_fn</strong> (function object or <code class="docutils literal notranslate"><span class="pre">None</span></code>, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, should be a function that takes a <a class="reference internal" href="../library/treemodel.html#dendropy.datamodel.treemodel.Node" title="dendropy.datamodel.treemodel.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a>
@@ -404,7 +404,7 @@ labelling function, ignoring <code class="docutils literal notranslate"><span cl
 <li><p><strong>edge_label_compose_fn</strong> (function object or <code class="docutils literal notranslate"><span class="pre">None</span></code>, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, should be a function that takes an Edge object as
 an argument, and returns the string to be used to represent the
 edge length in the tree statement.</p></li>
-<li><p><strong>real_value_format_specifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a><em>, </em><em>default: ''</em>) – Format specification for real/float values. Will be applied to edge
+<li><p><strong>real_value_format_specifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a><em>, </em><em>default: ''</em>) – Format specification for real/float values. Will be applied to edge
 lengths (if <code class="docutils literal notranslate"><span class="pre">edge_label_compose_fn</span></code> is not given) as well as
 annotations. The format specifier should be given in Python’s
 string format specification mini-language. E.g. “.8f”, “.4E”,

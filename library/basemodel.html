@@ -135,7 +135,7 @@ annotations are unchanged, unless the id of the object reference is fo</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>) – Source of annotations to copy.</p></li>
-<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
+<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
 purpose of this is to update the parent or owner objects of dynamic
 attribute annotations.
 If a dynamic attribute <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
@@ -221,7 +221,7 @@ annotations are unchanged, unless the id of the object reference is fo</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="#dendropy.datamodel.basemodel.Annotable" title="dendropy.datamodel.basemodel.Annotable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotable</span></code></a>) – Source of annotations to copy.</p></li>
-<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
+<li><p><strong>attribute_object_mapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Like the <code class="docutils literal notranslate"><span class="pre">memo</span></code> of <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code>, maps object id’s to objects. The
 purpose of this is to update the parent or owner objects of dynamic
 attribute annotations.
 If a dynamic attribute <a class="reference internal" href="#dendropy.datamodel.basemodel.Annotation" title="dendropy.datamodel.basemodel.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code></a>
@@ -355,9 +355,9 @@ name.</p></li>
 <li><p><strong>name_is_prefixed</strong> (<em>string</em><em>, </em><em>optional</em>) – Mainly for NeXML <em>input</em>: name will be split into prefix and local part
 before storage (e.g., “dc:citations” will result in prefix = “dc” and
 name=”citations”)</p></li>
-<li><p><strong>annotate_as_reference</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – The value should be interpreted as a URI that points to content.</p></li>
-<li><p><strong>is_hidden</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Do not write or print this annotation when writing data.</p></li>
-<li><p><strong>owner_instance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a><em>, </em><em>optional</em>) – The object whose attribute is to be used as the value of the
+<li><p><strong>annotate_as_reference</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – The value should be interpreted as a URI that points to content.</p></li>
+<li><p><strong>is_hidden</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Do not write or print this annotation when writing data.</p></li>
+<li><p><strong>owner_instance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a><em>, </em><em>optional</em>) – The object whose attribute is to be used as the value of the
 annotation. Defaults to <code class="docutils literal notranslate"><span class="pre">self.target</span></code>.</p></li>
 </ul>
 </dd>
@@ -417,7 +417,7 @@ is True, then actual content will be the result of calling
 <code class="docutils literal notranslate"><span class="pre">getattr(object,</span> <span class="pre">&quot;attribute_name&quot;)</span></code>.</p></li>
 <li><p><strong>annotate_as_reference</strong> (<em>boolean</em><em>, </em><em>optional</em>) – The value should be interpreted as a URI that points to content.</p></li>
 <li><p><strong>is_hidden</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Do not write or print this annotation when writing data.</p></li>
-<li><p><strong>real_value_format_specifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Format specifier for printing or rendering values as string, given
+<li><p><strong>real_value_format_specifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Format specifier for printing or rendering values as string, given
 in Python’s format specification mini-language. E.g., ‘.8f’, ‘4E’,
 ‘&gt;04d’.</p></li>
 </ul>
@@ -601,13 +601,13 @@ be generated based on the following keyword arguments:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a>) – String specifying an Annotation object attribute name to be used
+<li><p><strong>key_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a>) – String specifying an Annotation object attribute name to be used
 as keys for the dictionary.</p></li>
-<li><p><strong>key_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a>) – Function that takes an Annotation object as an argument and returns
+<li><p><strong>key_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a>) – Function that takes an Annotation object as an argument and returns
 the value to be used as a key for the dictionary.</p></li>
-<li><p><strong>value_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a>) – String specifying an Annotation object attribute name to be used
+<li><p><strong>value_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a>) – String specifying an Annotation object attribute name to be used
 as values for the dictionary.</p></li>
-<li><p><strong>value_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.13)"><em>string</em></a>) – Function that takes an Annotation object as an argument and returns
+<li><p><strong>value_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.14)"><em>string</em></a>) – Function that takes an Annotation object as an argument and returns
 the value to be used as a value for the dictionary.</p></li>
 <li><p><strong>neither</strong> (<em>At most one</em><em> of </em><em>value_attr</em><em> or </em><em>value_fn can be specified. If</em>) – </p></li>
 <li><p><strong>Annotation.name.</strong> (<em>is specified</em><em>, </em><em>then by default the keys are generated from</em>) – </p></li>

@@ -116,7 +116,7 @@ underlying reader and thus have to be valid numerical values.</p></li>
 <li><p><strong>taxon_namespace</strong> (<a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.TaxonNamespace" title="dendropy.datamodel.taxonmodel.TaxonNamespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaxonNamespace</span></code></a> instance) – The taxon namespace with which to manage taxa. If this has
 not already been pre-populated with the taxon names, then
 <code class="docutils literal notranslate"><span class="pre">is_allow_new_taxa</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>is_allow_new_taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>: we do <em>not</em> expect to encounter any new taxa in the
+<li><p><strong>is_allow_new_taxa</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>: we do <em>not</em> expect to encounter any new taxa in the
 data file, and it is an error if we do. If <code class="docutils literal notranslate"><span class="pre">True</span></code>: we do expect to
 encounter new taxa in the data file. The default value of this
 depends on the value passed to <code class="docutils literal notranslate"><span class="pre">taxon_namespace</span></code>. If
@@ -133,9 +133,9 @@ defined in the taxon namespace.  This is to err on the side of
 caution, to avoid (or rather, highlight) problems due to incorrect
 or mismatching labels between the data source and the current taxon
 namespace.</p></li>
-<li><p><strong>is_first_row_column_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – By default <code class="docutils literal notranslate"><span class="pre">True</span></code>: assumes that first row lists the taxon names.
+<li><p><strong>is_first_row_column_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – By default <code class="docutils literal notranslate"><span class="pre">True</span></code>: assumes that first row lists the taxon names.
 Set to <code class="docutils literal notranslate"><span class="pre">False</span></code> if there is no header row.</p></li>
-<li><p><strong>is_first_column_row_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – By default <code class="docutils literal notranslate"><span class="pre">True</span></code>: assumes that first column lists the taxon names.
+<li><p><strong>is_first_column_row_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – By default <code class="docutils literal notranslate"><span class="pre">True</span></code>: assumes that first column lists the taxon names.
 Set to <code class="docutils literal notranslate"><span class="pre">False</span></code> if there is now row name column.</p></li>
 <li><p><strong>label_transform_fn</strong> (<em>function object</em>) – If not None, this should be a function object that takes a string
 as an argument and returns another string. This function will be
@@ -222,11 +222,11 @@ returns <code class="docutils literal notranslate"><span class="pre">True</span>
 In trees sampled from multiple communites, <code class="docutils literal notranslate"><span class="pre">filter_fn</span></code> can be
 used to restrict the calculation to only one community based on
 some criteria.</p></li>
-<li><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the edge-weighted distance, i.e., considering edge
+<li><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the edge-weighted distance, i.e., considering edge
 lengths, is returned. Otherwise the the path steps or the number of
 edges rather then the sum of is_weighted_edge_distances edges, connecting two
 taxa is considered.</p></li>
-<li><p><strong>is_normalize_by_tree_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the results are normalized by the total tree length
+<li><p><strong>is_normalize_by_tree_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the results are normalized by the total tree length
 or steps/edges (depending on whether edge-weighted or unweighted
 distances are used, respectively). Otherwise, raw distances are
 used.</p></li>
@@ -285,11 +285,11 @@ returns <code class="docutils literal notranslate"><span class="pre">True</span>
 In trees sampled from multiple communites, <code class="docutils literal notranslate"><span class="pre">filter_fn</span></code> can be
 used to restrict the calculation to only one community based on
 some criteria.</p></li>
-<li><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the edge-weighted distance, i.e., considering edge
+<li><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the edge-weighted distance, i.e., considering edge
 lengths, is returned. Otherwise the the path steps or the number of
 edges rather then the sum of is_weighted_edge_distances edges, connecting two
 taxa is considered.</p></li>
-<li><p><strong>is_normalize_by_tree_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the results are normalized by the total tree length
+<li><p><strong>is_normalize_by_tree_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the results are normalized by the total tree length
 or steps/edges (depending on whether edge-weighted or unweighted
 distances are used, respectively). Otherwise, raw distances are
 used.</p></li>
@@ -338,7 +338,7 @@ American Naturalist 156: 145-155.</p>
 Saitou and Nei (1987) for the data in the matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then edge lengths will be considered for distances.
+<dd class="field-odd"><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then edge lengths will be considered for distances.
 Otherwise, just the number of edges.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -425,8 +425,8 @@ of each set being <a class="reference internal" href="taxonmodel.html#dendropy.d
 composition of a community. The standardized effect size of this
 statistic will be calculated for each community as specified by a
 set of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances.</p></li>
-<li><p><strong>num_randomization_replicates</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of randomization replicates.</p></li>
-<li><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then edge lengths will be considered for distances.
+<li><p><strong>num_randomization_replicates</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of randomization replicates.</p></li>
+<li><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then edge lengths will be considered for distances.
 Otherwise, just the number of edges.</p></li>
 </ul>
 </dd>
@@ -504,8 +504,8 @@ of each set being <a class="reference internal" href="taxonmodel.html#dendropy.d
 composition of a community. The standardized effect size of this
 statistic will be calculated for each community as specified by a
 set of <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.taxonmodel.Taxon" title="dendropy.datamodel.taxonmodel.Taxon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxon</span></code></a> instances.</p></li>
-<li><p><strong>num_randomization_replicates</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of randomization replicates.</p></li>
-<li><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then edge lengths will be considered for distances.
+<li><p><strong>num_randomization_replicates</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of randomization replicates.</p></li>
+<li><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then edge lengths will be considered for distances.
 Otherwise, just the number of edges.</p></li>
 </ul>
 </dd>
@@ -571,7 +571,7 @@ the associated taxon namespace.</p>
 based on the distances in the matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then edge lengths will be considered for distances.
+<dd class="field-odd"><p><strong>is_weighted_edge_distances</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then edge lengths will be considered for distances.
 Otherwise, just the number of edges.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

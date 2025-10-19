@@ -224,15 +224,15 @@ object) based on the HKY model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
 <li><p><strong>tree_model</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – Tree on which to simulate.</p></li>
-<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
+<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
 reflect true expected number of changes).</p></li>
-<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
+<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
 <li><p><strong>char_matrix</strong> (<a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a>) – If given, new sequences for taxa on <code class="docutils literal notranslate"><span class="pre">tree_model</span></code> leaf_nodes will be
 appended to existing sequences of corresponding taxa in char_matrix; if
 not, a new <a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a> object will be created.</p></li>
-<li><p><strong>retain_sequences_on_tree</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, sequence annotations will be cleared from tree after
+<li><p><strong>retain_sequences_on_tree</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, sequence annotations will be cleared from tree after
 simulation. Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> if you want to, e.g., evolve and accumulate
 different sequences on tree, or retain information for other purposes.</p></li>
 <li><p><strong>rng</strong> (<em>random number generator</em>) – If not given, ‘GLOBAL_RNG’ will be used.</p></li>
@@ -259,13 +259,13 @@ the given tree and character model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
 <li><p><strong>tree_model</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – Tree on which to simulate.</p></li>
 <li><p><strong>seq_model</strong> (<a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel" title="dendropy.model.discrete.NucleotideCharacterEvolutionModel"><em>dendropy.model.discrete.NucleotideCharacterEvolutionModel</em></a>) – The character substitution model under which to to evolve the
 characters.</p></li>
-<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
+<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
 reflect true expected number of changes).</p></li>
-<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
+<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
 <li><p><strong>dataset</strong> (<a class="reference internal" href="datasetmodel.html#dendropy.datamodel.datasetmodel.DataSet" title="dendropy.datamodel.datasetmodel.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a>) – If given, the new dendropy.CharacterMatrix object will be
 added to this (along with a new taxon_namespace if
 required). Otherwise, a new dendropy.DataSet
@@ -291,17 +291,17 @@ in the same <code class="docutils literal notranslate"><span class="pre">char_ma
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
+<li><p><strong>seq_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Length of sequence (number of characters).</p></li>
 <li><p><strong>tree_model</strong> (<a class="reference internal" href="treemodel.html#dendropy.datamodel.treemodel.Tree" title="dendropy.datamodel.treemodel.Tree"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tree</span></code></a>) – Tree on which to simulate.</p></li>
 <li><p><strong>seq_model</strong> (<a class="reference internal" href="#dendropy.model.discrete.NucleotideCharacterEvolutionModel" title="dendropy.model.discrete.NucleotideCharacterEvolutionModel"><em>dendropy.model.discrete.NucleotideCharacterEvolutionModel</em></a>) – The character substitution model under which to to evolve the
 characters.</p></li>
-<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
+<li><p><strong>mutation_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Mutation <em>modifier</em> rate (should be 1.0 if branch lengths on tree
 reflect true expected number of changes).</p></li>
-<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
+<li><p><strong>root_states``</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a>) – Vector of root states (length must equal <code class="docutils literal notranslate"><span class="pre">seq_len</span></code>).</p></li>
 <li><p><strong>char_matrix</strong> (<a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a>) – If given, new sequences for taxa on <code class="docutils literal notranslate"><span class="pre">tree_model</span></code> leaf_nodes will be
 appended to existing sequences of corresponding taxa in char_matrix; if
 not, a new <a class="reference internal" href="charmatrixmodel.html#dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix" title="dendropy.datamodel.charmatrixmodel.DnaCharacterMatrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">DnaCharacterMatrix</span></code></a> object will be created.</p></li>
-<li><p><strong>retain_sequences_on_tree</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, sequence annotations will be cleared from tree after
+<li><p><strong>retain_sequences_on_tree</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, sequence annotations will be cleared from tree after
 simulation. Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> if you want to, e.g., evolve and accumulate
 different sequences on tree, or retain information for other purposes.</p></li>
 <li><p><strong>rng</strong> (<em>random number generator</em>) – If not given, ‘GLOBAL_RNG’ will be used.</p></li>
