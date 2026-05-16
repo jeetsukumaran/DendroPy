@@ -24,3 +24,7 @@ tags
 # Tooling
 .pytest_cache/*
 .ruff_cache/*
+
+# [epiq]: local hydrated state is never committed
+.epiq/events/
+.epiq/log/
