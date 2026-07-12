@@ -242,8 +242,8 @@ class TreeSummarizer(object):
         """
         if summarization_fn is None:
             summarization_fn = lambda x: float(sum(x))/len(x)
-        if is_bipartitions_updated:
-            tree.encode_splits()
+        if not is_bipartitions_updated:
+            tree.encode_bipartitions()
         #'height',
         #'height_median',
         #'height_95hpd',

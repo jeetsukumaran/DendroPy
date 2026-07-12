@@ -26,8 +26,10 @@ import unittest
 import dendropy
 import random
 import itertools
+import warnings
 from dendropy.calculate import treecompare
 from dendropy.calculate import statistics
+from dendropy.calculate import treesum
 import os
 import sys
 sys.path.insert(0, os.path.dirname(__file__))
@@ -217,6 +219,64 @@ class TestTreeEdgeSummarization(unittest.TestCase):
             exp_edge = expected_tree.bipartition_edge_map[exp_bipartition]
             obs_edge = target_tree.bipartition_edge_map[exp_bipartition]
             self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
+
+class TestSummarizeNodeAgesOnTree(unittest.TestCase):
+    """
+    Regression tests for TreeSummarizer.summarize_node_ages_on_tree().
+    """
+
+    def setUp(self):
+        self.taxon_namespace = dendropy.TaxonNamespace(["A", "B", "C"])
+        support_newicks = [
+            "(A:1,(B:1,C:1):1):0;",
+            "(A:2,(B:1,C:2):1):0;",
+            "(A:1,(B:2,C:1):2):0;",
+        ]
+        self.support_trees = dendropy.TreeList(taxon_namespace=self.taxon_namespace)
+        for newick in support_newicks:
+            tree = dendropy.Tree.get(
+                    data=newick,
+                    schema="newick",
+                    taxon_namespace=self.taxon_namespace)
+            tree.encode_bipartitions()
+            self.support_trees.append(tree)
+        self.split_distribution = dendropy.SplitDistribution(
+                taxon_namespace=self.taxon_namespace)
+        for tree in self.support_trees:
+            self.split_distribution.count_splits_on_tree(tree)
+
+    def _get_target_tree(self):
+        target_tree = dendropy.Tree.get(
+                data="(A:1,(B:1,C:1):1):0;",
+                schema="newick",
+                taxon_namespace=self.taxon_namespace)
+        target_tree.encode_bipartitions()
+        return target_tree
+
+    def test_is_bipartitions_updated_true_skips_reencoding(self):
+        # 'is_bipartitions_updated=True' used to trigger a *re*-encode via
+        # the deprecated 'encode_splits()' (inverted vs. every sibling
+        # summarization method in this module, which all skip re-encoding
+        # when the caller asserts bipartitions are already current).
+        target_tree = self._get_target_tree()
+        summarizer = treesum.TreeSummarizer()
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            summarizer.summarize_node_ages_on_tree(
+                    tree=target_tree,
+                    split_distribution=self.split_distribution,
+                    set_edge_lengths=False,
+                    collapse_negative_edges=False,
+                    is_bipartitions_updated=True,
+                    )
+        deprecation_warnings = [
+                w for w in caught
+                if "encode_splits" in str(w.message)]
+        self.assertEqual(
+                len(deprecation_warnings), 0,
+                "summarize_node_ages_on_tree(is_bipartitions_updated=True) "
+                "should not re-encode bipartitions via the deprecated "
+                "encode_splits()")
 
 class TestTopologyCounter(dendropytest.ExtendedTestCase):
 
