@@ -1362,7 +1362,7 @@ class PhylogeneticDistanceMatrix(object):
         for rep_idx in range(num_randomization_replicates):
             null_model_matrix.shuffle_taxa(
                     is_shuffle_phylogenetic_distances=is_shuffle_phylogenetic_distances,
-                    is_shuffle_phylogenetic_path_steps=is_shuffle_phylogenetic_distances,
+                    is_shuffle_phylogenetic_path_steps=is_shuffle_phylogenetic_path_steps,
                     is_shuffle_mrca=False,
                     rng=rng)
             for comparison_regime_idx, comparison_regime in enumerate(comparison_regimes):

@@ -339,6 +339,55 @@ class PhylogeneticDistanceMatrixShuffleTest(unittest.TestCase):
         self.assertEqual(pdc1, pdc2)
         self.assertNotEqual(pdc0, pdc1)
 
+class PhylogeneticDistanceMatrixStandardizedEffectSizeShuffleTest(unittest.TestCase):
+    """
+    Regression test for _calculate_standardized_effect_size(): for the
+    unweighted-edge-distance case, the null model randomization must
+    actually shuffle '_taxon_phylogenetic_path_steps' (the matrix that
+    unweighted statistics read from), not silently leave it untouched.
+    """
+
+    def setUp(self):
+        self.tree = dendropy.Tree.get_from_path(
+                src=pathmap.tree_source_path("community.tree.newick"),
+                schema="newick",
+                rooting="force-rooted")
+        self.pdm = dendropy.PhylogeneticDistanceMatrix.from_tree(self.tree)
+        taxa = list(self.pdm.taxon_iter())
+        filter_fn = lambda taxon: taxon in set(taxa)
+        self.comparison_regime = list(self.pdm.distinct_taxon_pair_iter(filter_fn=filter_fn))
+
+    def test_unweighted_null_model_shuffles_path_steps(self):
+        import random
+        from dendropy.calculate.phylogeneticdistance import PhylogeneticDistanceMatrix
+
+        observed_kwargs = []
+        original_shuffle_taxa = PhylogeneticDistanceMatrix.shuffle_taxa
+        def recording_shuffle_taxa(self, *args, **kwargs):
+            observed_kwargs.append(dict(kwargs))
+            return original_shuffle_taxa(self, *args, **kwargs)
+        PhylogeneticDistanceMatrix.shuffle_taxa = recording_shuffle_taxa
+        try:
+            self.pdm._calculate_standardized_effect_size(
+                    statisticf_name="_calculate_mean_pairwise_distance",
+                    comparison_regimes=[self.comparison_regime],
+                    is_weighted_edge_distances=False,
+                    is_normalize_by_tree_size=False,
+                    num_randomization_replicates=3,
+                    rng=random.Random(1),
+                    )
+        finally:
+            PhylogeneticDistanceMatrix.shuffle_taxa = original_shuffle_taxa
+        self.assertTrue(len(observed_kwargs) > 0)
+        for kwargs in observed_kwargs:
+            self.assertTrue(
+                    kwargs["is_shuffle_phylogenetic_path_steps"],
+                    "is_weighted_edge_distances=False must shuffle "
+                    "phylogenetic path steps for the null model to be "
+                    "meaningful (unweighted statistics read from "
+                    "'_taxon_phylogenetic_path_steps', not "
+                    "'_taxon_phylogenetic_distances')")
+
 class TreePatristicDistTest(unittest.TestCase):
 
     def setUp(self):
