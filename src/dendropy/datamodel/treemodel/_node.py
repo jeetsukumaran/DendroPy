@@ -1374,6 +1374,8 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         elif self._parent_node and self.edge.length == None:
             # what do we do here: parent node exists, but my
             # length does not?
+            if self._parent_node.edge.length == None:
+                return 0.0
             return float(self._parent_node.edge.length)
         elif not self._parent_node and self.edge.length == None:
             # no parent node, and no edge length

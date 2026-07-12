@@ -340,5 +340,21 @@ class TestNodeSetChildNodes(unittest.TestCase):
         self.assertIn(child1, parent.child_nodes())
         self.assertIs(child1.parent_node, parent)
 
+class TestNodeDistanceFromRoot(unittest.TestCase):
+
+    def test_none_edge_length_with_parent_also_none(self):
+        # Regression test: when a node's own edge length is None and it
+        # has a parent, distance_from_root() falls back to
+        # float(parent.edge.length); if the parent's edge length is also
+        # None, this raised a TypeError instead of degrading gracefully
+        # (as the sibling all-None-length branch a few lines down does,
+        # which returns 0.0).
+        parent = dendropy.Node(label="parent")
+        child = dendropy.Node(label="child")
+        parent.set_child_nodes([child])
+        parent.edge.length = None
+        child.edge.length = None
+        self.assertEqual(child.distance_from_root(), 0.0)
+
 if __name__ == "__main__":
     unittest.main()
