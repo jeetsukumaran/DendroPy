@@ -278,6 +278,23 @@ class TestSummarizeNodeAgesOnTree(unittest.TestCase):
                 "should not re-encode bipartitions via the deprecated "
                 "encode_splits()")
 
+    def test_collapse_negative_edges_does_not_crash(self):
+        # 'collapse_negative_edges=True' used to compare a not-yet-visited
+        # child's 'age' (still None, since ages are assigned in preorder)
+        # against its parent's, raising a TypeError.
+        target_tree = self._get_target_tree()
+        summarizer = treesum.TreeSummarizer()
+        result_tree = summarizer.summarize_node_ages_on_tree(
+                tree=target_tree,
+                split_distribution=self.split_distribution,
+                set_edge_lengths=True,
+                collapse_negative_edges=True,
+                is_bipartitions_updated=True,
+                )
+        for nd in result_tree.preorder_node_iter():
+            if nd.parent_node is not None:
+                self.assertGreaterEqual(nd.parent_node.age, nd.age)
+
 class TestTopologyCounter(dendropytest.ExtendedTestCase):
 
     def get_regime(self,

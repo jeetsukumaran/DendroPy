@@ -263,8 +263,12 @@ class TreeSummarizer(object):
                 nd.age = nd.parent_node.age
             else:
                 nd.age = 0
-            ## force parent nodes to be at least as old as their oldest child
-            if collapse_negative_edges:
+        if collapse_negative_edges:
+            ## force parent nodes to be at least as old as their oldest
+            ## child; this requires a postorder pass, since the preorder
+            ## pass above visits parents before the children whose ages
+            ## it needs to compare against
+            for nd in tree.postorder_node_iter():
                 for child in nd.child_nodes():
                     if child.age > nd.age:
                         nd.age = child.age
