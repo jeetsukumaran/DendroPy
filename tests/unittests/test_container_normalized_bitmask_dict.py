@@ -45,8 +45,14 @@ class TestNormalizedBitmaskDict(unittest.TestCase):
             self.assertIn(s[1][0], d)
             self.assertEqual(d[s[0][0]], d[s[1][0]])
 
-        for k, v in d.items():
-            pass
+        # Regression test: NormalizedBitmaskDict.__setitem__() used to call
+        # dict.__setitem__() directly, bypassing OrderedDict's internal
+        # bookkeeping. This left len()/__repr__() correct but silently
+        # broke iteration (.items()/.keys()/.values()/__iter__()), which
+        # would all report zero entries despite the dict being non-empty.
+        seen_keys = set(k for k, v in d.items())
+        self.assertEqual(len(seen_keys), len(splits))
+        self.assertEqual(len(d), len(splits))
 
         del d[splits[0][0][0]]
         del d[splits[1][1][0]]
@@ -54,6 +60,12 @@ class TestNormalizedBitmaskDict(unittest.TestCase):
         self.assertNotIn(splits[0][1][0], d)
         self.assertNotIn(splits[1][0][0], d)
         self.assertNotIn(splits[1][1][0], d)
+
+        # Regression test: __delitem__() had the same dict-vs-OrderedDict
+        # bypass problem; confirm iteration still reflects the deletions.
+        seen_keys_after_delete = set(k for k, v in d.items())
+        self.assertEqual(len(seen_keys_after_delete), len(splits) - 2)
+        self.assertEqual(len(d), len(splits) - 2)
 
 if __name__ == "__main__":
     unittest.main()

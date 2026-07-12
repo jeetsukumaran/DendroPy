@@ -283,7 +283,7 @@ class NormalizedBitmaskDict(collections.OrderedDict):
     def normalize_key_and_assign_value(self, key, value):
         "*Almost* like __setitem__(), but returns value of normalized key to calling code."
         normalized_key = self.normalize_key(key)
-        dict.__setitem__(self, normalized_key, value)
+        collections.OrderedDict.__setitem__(self, normalized_key, value)
         return normalized_key
 
     def normalize_key(self, key):
@@ -301,7 +301,7 @@ class NormalizedBitmaskDict(collections.OrderedDict):
     def __delitem__(self, key):
         "Remove item with normalized key."
         key = self.normalize_key(key)
-        dict.__delitem__(self, key)
+        collections.OrderedDict.__delitem__(self, key)
 
     def __contains__(self, key):
         "Returns true if has normalized key."
