@@ -1019,7 +1019,7 @@ class TreeList(
             tree.poll_taxa(taxa)
         return taxa
 
-    def reindex_subcomponent_taxa():
+    def reindex_subcomponent_taxa(self):
         raise NotImplementedError()
 
    ##############################################################################

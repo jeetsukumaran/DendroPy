@@ -25,6 +25,7 @@ import unittest
 import collections
 import dendropy
 import random
+import warnings
 import os
 import sys
 sys.path.insert(0, os.path.dirname(__file__))
@@ -1010,6 +1011,22 @@ class TestTreeListMigrateAndReconstructTaxonNamespace(
                 unify_taxa_by_label=True,
                 case_sensitive_label_mapping=False,
                 original_tns=original_tns)
+
+    def test_reindex_subcomponent_taxa_raises_not_implemented(self):
+        # Regression: the stub was defined without a `self` parameter, so
+        # calling it as an instance method raised TypeError instead of the
+        # intended NotImplementedError.
+        with self.assertRaises(NotImplementedError):
+            self.tree_list.reindex_subcomponent_taxa()
+
+    def test_reindex_taxa_raises_not_implemented(self):
+        # `reindex_taxa` is deprecated and delegates to
+        # `reindex_subcomponent_taxa`; it should surface NotImplementedError
+        # rather than a TypeError about positional argument counts.
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            with self.assertRaises(NotImplementedError):
+                self.tree_list.reindex_taxa()
 
 class TestTreeListAppend(
         curated_test_tree.CuratedTestTree,
