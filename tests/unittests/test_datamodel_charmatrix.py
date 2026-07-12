@@ -439,6 +439,22 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
         self.verify_sequence_equal(c1[tns[1]], [2, 2, 2, 3, 3, 3])
         self.verify_sequence_equal(c1[tns[2]], [4, 4, 4])
 
+class CharacterMatrixConcatenateTest(dendropytest.ExtendedTestCase):
+
+    def test_unequal_length_sequence_error_message(self):
+        # Regression test: the error message used the '%d' printf-style
+        # placeholder but applied '.format()' to the string, so the
+        # placeholder was never substituted and the matrix index was
+        # missing from the raised message.
+        tns = get_taxon_namespace(2)
+        cm1 = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        cm1[tns[0]] = [1, 1, 1, 1]
+        cm1[tns[1]] = [1, 1]
+        with self.assertRaises(ValueError) as ctx:
+            charmatrixmodel.CharacterMatrix.concatenate([cm1])
+        self.assertIn("1", str(ctx.exception))
+        self.assertNotIn("%d", str(ctx.exception))
+
 class CharacterMatrixTaxonManagement(dendropytest.ExtendedTestCase):
 
     def test_assign_taxon_namespace(self):

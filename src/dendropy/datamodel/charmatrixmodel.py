@@ -628,7 +628,7 @@ class CharacterMatrix(
             v1 = len(cm[0])
             for t, s in cm.items():
                 if len(s) != v1:
-                    raise ValueError("Unequal length sequences in character matrix %d".format(cidx+1))
+                    raise ValueError("Unequal length sequences in character matrix {}".format(cidx+1))
             concatenated_chars.extend_matrix(cm)
             if cm.label is None:
                 new_label = "locus%03d" % cidx
