@@ -1674,7 +1674,7 @@ class Taxon(
         else:
             basemodel.DataObject.__init__(self, label=label)
             self._lower_cased_label = None
-        self.comments = []
+            self.comments = []
 
     def _get_label(self):
         return self._label
