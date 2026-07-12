@@ -407,7 +407,7 @@ class TaxonNamespaceAssociated(object):
         self.reindex_subcomponent_taxa()
         return self.taxon_namespace
 
-    def reindex_subcomponent_taxa():
+    def reindex_subcomponent_taxa(self):
         """
         DEPRECATED: Use :meth:`reconstruct_taxon_namespace()` instead.
         Derived classes should override this to ensure that their various
