@@ -496,7 +496,7 @@ def simulate_discrete_chars(
     tree = seq_evolver.evolve_states(
         tree=tree_model,
         seq_len=seq_len,
-        root_states=None,
+        root_states=root_states,
         rng=rng)
     tree.migrate_taxon_namespace(tree_model.taxon_namespace)
     if char_matrix is None:
