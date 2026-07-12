@@ -475,6 +475,21 @@ class CharacterMatrixConcatenateTest(dendropytest.ExtendedTestCase):
         self.assertIn("dupe", labels)
         self.assertEqual(len(labels), 2)
 
+class CharacterMatrixAppendTaxonSequenceTest(dendropytest.ExtendedTestCase):
+
+    def test_append_taxon_sequence_with_symbols(self):
+        # Regression test: 'default_symbol_state_map' does not exist on
+        # DiscreteCharacterMatrix (or any subclass); any non-empty call
+        # raised an AttributeError.
+        tns = get_taxon_namespace(1)
+        cm = dendropy.DnaCharacterMatrix(taxon_namespace=tns)
+        taxon = tns[0]
+        cm.append_taxon_sequence(taxon, "ACGT")
+        self.assertEqual(len(cm[taxon]), 4)
+        self.assertEqual(
+                [s.symbol for s in cm[taxon]],
+                ["A", "C", "G", "T"])
+
 class CharacterMatrixTaxonManagement(dendropytest.ExtendedTestCase):
 
     def test_assign_taxon_namespace(self):

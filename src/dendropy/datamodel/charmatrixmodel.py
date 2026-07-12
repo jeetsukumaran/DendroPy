@@ -1759,7 +1759,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 symbol = value
             else:
                 symbol = str(value)
-            self[taxon].append(self.default_symbol_state_map[symbol])
+            self[taxon].append(self.default_state_alphabet.full_symbol_state_map[symbol])
 
     def remap_to_state_alphabet_by_symbol(self,
             state_alphabet,
