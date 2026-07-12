@@ -637,7 +637,7 @@ class CharacterMatrix(
             cs_label = new_label
             i = 2
             while cs_label in concatenated_chars.character_subsets:
-                label = "%s_%03d" % (new_label, i)
+                cs_label = "%s_%03d" % (new_label, i)
                 i += 1
             character_indices = range(pos_start, pos_start + cm.vector_size)
             pos_start += cm.vector_size
