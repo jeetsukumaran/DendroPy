@@ -727,7 +727,7 @@
             <span class="n">v1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">cm</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="n">v1</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unequal length sequences in character matrix </span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cidx</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unequal length sequences in character matrix </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cidx</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
             <span class="n">concatenated_chars</span><span class="o">.</span><span class="n">extend_matrix</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cm</span><span class="o">.</span><span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">new_label</span> <span class="o">=</span> <span class="s2">&quot;locus</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cidx</span>
@@ -736,7 +736,7 @@
             <span class="n">cs_label</span> <span class="o">=</span> <span class="n">new_label</span>
             <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
             <span class="k">while</span> <span class="n">cs_label</span> <span class="ow">in</span> <span class="n">concatenated_chars</span><span class="o">.</span><span class="n">character_subsets</span><span class="p">:</span>
-                <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">new_label</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="n">cs_label</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">new_label</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
                 <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">character_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">pos_start</span><span class="p">,</span> <span class="n">pos_start</span> <span class="o">+</span> <span class="n">cm</span><span class="o">.</span><span class="n">vector_size</span><span class="p">)</span>
             <span class="n">pos_start</span> <span class="o">+=</span> <span class="n">cm</span><span class="o">.</span><span class="n">vector_size</span>
@@ -1968,7 +1968,7 @@
                 <span class="n">symbol</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">symbol</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_symbol_state_map</span><span class="p">[</span><span class="n">symbol</span><span class="p">])</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">taxon</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_state_alphabet</span><span class="o">.</span><span class="n">full_symbol_state_map</span><span class="p">[</span><span class="n">symbol</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">remap_to_state_alphabet_by_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">state_alphabet</span><span class="p">,</span>

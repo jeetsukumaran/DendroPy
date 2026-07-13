@@ -579,7 +579,7 @@
 <span class="sd">    mutation_rate : float</span>
 <span class="sd">        Mutation *modifier* rate (should be 1.0 if branch lengths on tree</span>
 <span class="sd">        reflect true expected number of changes).</span>
-<span class="sd">    root_states``   : list</span>
+<span class="sd">    root_states     : list</span>
 <span class="sd">        Vector of root states (length must equal ``seq_len``).</span>
 <span class="sd">    char_matrix   : |DnaCharacterMatrix|</span>
 <span class="sd">        If given, new sequences for taxa on ``tree_model`` leaf_nodes will be</span>
@@ -602,7 +602,7 @@
     <span class="n">tree</span> <span class="o">=</span> <span class="n">seq_evolver</span><span class="o">.</span><span class="n">evolve_states</span><span class="p">(</span>
         <span class="n">tree</span><span class="o">=</span><span class="n">tree_model</span><span class="p">,</span>
         <span class="n">seq_len</span><span class="o">=</span><span class="n">seq_len</span><span class="p">,</span>
-        <span class="n">root_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">root_states</span><span class="o">=</span><span class="n">root_states</span><span class="p">,</span>
         <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
     <span class="n">tree</span><span class="o">.</span><span class="n">migrate_taxon_namespace</span><span class="p">(</span><span class="n">tree_model</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">char_matrix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

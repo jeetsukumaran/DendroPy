@@ -1826,7 +1826,7 @@
 <span class="sd">            string, then the ``label`` attribute of ``self`` is set to this value.</span>
 <span class="sd">            If a |Taxon| object, then the ``label`` attribute of ``self`` is</span>
 <span class="sd">            set to the same value as the ``label`` attribute the other</span>
-<span class="sd">            |Taxon| object and all annotations/metadata are copied.</span>
+<span class="sd">            |Taxon| object and all annotations/comments/metadata are copied.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">Taxon</span><span class="p">):</span>
             <span class="n">other_taxon</span> <span class="o">=</span> <span class="n">label</span>
@@ -1840,7 +1840,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">basemodel</span><span class="o">.</span><span class="n">DataObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lower_cased_label</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">_get_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span>
