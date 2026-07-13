@@ -473,7 +473,7 @@ def simulate_discrete_chars(
     mutation_rate : float
         Mutation *modifier* rate (should be 1.0 if branch lengths on tree
         reflect true expected number of changes).
-    root_states``   : list
+    root_states     : list
         Vector of root states (length must equal ``seq_len``).
     char_matrix   : |DnaCharacterMatrix|
         If given, new sequences for taxa on ``tree_model`` leaf_nodes will be
