@@ -130,6 +130,17 @@ class TaxonCloning(compare_and_validate.Comparator, unittest.TestCase):
             self.assertEqual(t2.annotations[1].value, "z")
             t1.label = "a"
 
+    def test_construct_from_another_preserves_comments(self):
+        # Regression test: Taxon.__init__() unconditionally reset
+        # 'self.comments = []' after the if/else branch that (for the
+        # Taxon-from-Taxon case) had just deep-copied 'comments' from the
+        # source Taxon, silently discarding it.
+        t1 = Taxon("a")
+        t1.comments.append("hello world")
+        for t2 in (Taxon(t1), copy.deepcopy(t1), t1.clone(2)):
+            self.assertIsNot(t1, t2)
+            self.assertEqual(t2.comments, ["hello world"])
+
     def test_simple_copy(self):
         t1 = Taxon("a")
         with self.assertRaises(TypeError):

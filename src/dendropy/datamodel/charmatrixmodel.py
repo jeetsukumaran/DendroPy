@@ -628,7 +628,7 @@ class CharacterMatrix(
             v1 = len(cm[0])
             for t, s in cm.items():
                 if len(s) != v1:
-                    raise ValueError("Unequal length sequences in character matrix %d".format(cidx+1))
+                    raise ValueError("Unequal length sequences in character matrix {}".format(cidx+1))
             concatenated_chars.extend_matrix(cm)
             if cm.label is None:
                 new_label = "locus%03d" % cidx
@@ -637,7 +637,7 @@ class CharacterMatrix(
             cs_label = new_label
             i = 2
             while cs_label in concatenated_chars.character_subsets:
-                label = "%s_%03d" % (new_label, i)
+                cs_label = "%s_%03d" % (new_label, i)
                 i += 1
             character_indices = range(pos_start, pos_start + cm.vector_size)
             pos_start += cm.vector_size
@@ -1759,7 +1759,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 symbol = value
             else:
                 symbol = str(value)
-            self[taxon].append(self.default_symbol_state_map[symbol])
+            self[taxon].append(self.default_state_alphabet.full_symbol_state_map[symbol])
 
     def remap_to_state_alphabet_by_symbol(self,
             state_alphabet,

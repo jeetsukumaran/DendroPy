@@ -439,6 +439,57 @@ class CharacterMatrixBinaryOps(dendropytest.ExtendedTestCase):
         self.verify_sequence_equal(c1[tns[1]], [2, 2, 2, 3, 3, 3])
         self.verify_sequence_equal(c1[tns[2]], [4, 4, 4])
 
+class CharacterMatrixConcatenateTest(dendropytest.ExtendedTestCase):
+
+    def test_unequal_length_sequence_error_message(self):
+        # Regression test: the error message used the '%d' printf-style
+        # placeholder but applied '.format()' to the string, so the
+        # placeholder was never substituted and the matrix index was
+        # missing from the raised message.
+        tns = get_taxon_namespace(2)
+        cm1 = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        cm1[tns[0]] = [1, 1, 1, 1]
+        cm1[tns[1]] = [1, 1]
+        with self.assertRaises(ValueError) as ctx:
+            charmatrixmodel.CharacterMatrix.concatenate([cm1])
+        self.assertIn("1", str(ctx.exception))
+        self.assertNotIn("%d", str(ctx.exception))
+
+    def test_concatenate_does_not_hang_on_duplicate_labels(self):
+        # Regression test: when two matrices being concatenated share the
+        # same (or no) label, the de-duplication loop computed a new
+        # candidate label into 'label' but checked/looped on 'cs_label',
+        # which never changed -- an infinite loop on any label collision.
+        tns = get_taxon_namespace(2)
+        cm1 = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        cm1.label = "dupe"
+        cm1[tns[0]] = [1, 1]
+        cm1[tns[1]] = [1, 1]
+        cm2 = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
+        cm2.label = "dupe"
+        cm2[tns[0]] = [2, 2]
+        cm2[tns[1]] = [2, 2]
+        concatenated = charmatrixmodel.CharacterMatrix.concatenate([cm1, cm2])
+        self.assertEqual(len(concatenated.character_subsets), 2)
+        labels = set(concatenated.character_subsets.keys())
+        self.assertIn("dupe", labels)
+        self.assertEqual(len(labels), 2)
+
+class CharacterMatrixAppendTaxonSequenceTest(dendropytest.ExtendedTestCase):
+
+    def test_append_taxon_sequence_with_symbols(self):
+        # Regression test: 'default_symbol_state_map' does not exist on
+        # DiscreteCharacterMatrix (or any subclass); any non-empty call
+        # raised an AttributeError.
+        tns = get_taxon_namespace(1)
+        cm = dendropy.DnaCharacterMatrix(taxon_namespace=tns)
+        taxon = tns[0]
+        cm.append_taxon_sequence(taxon, "ACGT")
+        self.assertEqual(len(cm[taxon]), 4)
+        self.assertEqual(
+                [s.symbol for s in cm[taxon]],
+                ["A", "C", "G", "T"])
+
 class CharacterMatrixTaxonManagement(dendropytest.ExtendedTestCase):
 
     def test_assign_taxon_namespace(self):

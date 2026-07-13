@@ -1660,7 +1660,7 @@ class Taxon(
             string, then the ``label`` attribute of ``self`` is set to this value.
             If a |Taxon| object, then the ``label`` attribute of ``self`` is
             set to the same value as the ``label`` attribute the other
-            |Taxon| object and all annotations/metadata are copied.
+            |Taxon| object and all annotations/comments/metadata are copied.
         """
         if isinstance(label, Taxon):
             other_taxon = label
@@ -1674,7 +1674,7 @@ class Taxon(
         else:
             basemodel.DataObject.__init__(self, label=label)
             self._lower_cased_label = None
-        self.comments = []
+            self.comments = []
 
     def _get_label(self):
         return self._label
