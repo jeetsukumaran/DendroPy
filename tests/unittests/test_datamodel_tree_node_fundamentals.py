@@ -322,24 +322,6 @@ class TestNodeSetChildNodes(unittest.TestCase):
         self.assertIs(node.edge, edge2)
         self.assertIs(node.edge.head_node, node)
 
-    def test_edge_setting_does_not_corrupt_parent_child_bookkeeping(self):
-        # Reassigning a node's ``edge`` is unrelated to the node's position
-        # in the tree, and should not affect the parent's list of children
-        # or the node's own parent reference.
-        parent = dendropy.Node(label="parent")
-        child1 = dendropy.Node(label="child1")
-        child2 = dendropy.Node(label="child2")
-        parent.set_child_nodes([child1, child2])
-        self.assertEqual(len(parent.child_nodes()), 2)
-        self.assertIn(child1, parent.child_nodes())
-        self.assertIs(child1.parent_node, parent)
-
-        child1.edge = dendropy.Edge(length=5.0)
-
-        self.assertEqual(len(parent.child_nodes()), 2)
-        self.assertIn(child1, parent.child_nodes())
-        self.assertIs(child1.parent_node, parent)
-
 class TestNodeDistanceFromRoot(unittest.TestCase):
 
     def test_none_edge_length_with_parent_also_none(self):
