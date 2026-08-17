@@ -1038,6 +1038,9 @@ class NexusReader(ioservice.DataReader):
         # advance to '('; comments will be processed by newick reader
         self._nexus_tokenizer.next_token()
         tree = self._build_tree_from_newick_tree_string(tree_factory, taxon_symbol_mapper)
+        if tree is None:
+            # e.g. the stream ends right after "TREE <name> ="
+            raise self._nexus_error("Expecting tree definition for Tree '%s'" % tree_name)
         tree.label = tree_name
         nexusprocessing.process_comments_for_item(tree, pre_tree_comments, self.extract_comment_metadata)
         nexusprocessing.process_comments_for_item(tree, tree_comments, self.extract_comment_metadata)

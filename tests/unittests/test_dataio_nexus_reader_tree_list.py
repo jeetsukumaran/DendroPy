@@ -24,6 +24,7 @@ import copy
 import sys
 import unittest
 import dendropy
+from dendropy.dataio import nexusreader
 import os
 sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
@@ -66,6 +67,18 @@ class NexusStandardTreeParsingTestCase(
                     tree_list=tree_list,
                     tree_file_title=tree_file_title,
                     tree_offset=0)
+
+class NexusReaderTruncatedTreeStatementTestCase(dendropytest.ExtendedTestCase):
+
+    def test_tree_statement_without_definition(self):
+        # a NEXUS stream ending right after "TREE <name> =" used to raise a
+        # bare AttributeError instead of a NexusReaderError
+        data_str = "#NEXUS\nBEGIN TREES;\n    TREE t1 =\n"
+        self.assertRaises(
+                nexusreader.NexusReader.NexusReaderError,
+                dendropy.TreeList.get_from_string,
+                data_str,
+                "nexus")
 
 class NexusMultiTreeListTestCase(dendropytest.ExtendedTestCase):
 
