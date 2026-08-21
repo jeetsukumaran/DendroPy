@@ -230,7 +230,10 @@ class PopulationPairSummaryStatistics(object):
         self.tajimas_d = 0.0
         if self.ignore_uncertain:
             self.state_attr = "fundamental_indexes_with_gaps_as_missing"
-            self.states_to_ignore = set([self.state_alphabet.gap_state, self.state_alphabet.no_data_state])
+            self.states_to_ignore = set([
+                getattr(self.state_alphabet.gap_state, self.state_attr),
+                getattr(self.state_alphabet.no_data_state, self.state_attr),
+            ])
         else:
             self.state_attr = "fundamental_indexes"
             self.states_to_ignore = set()
@@ -298,12 +301,10 @@ class PopulationPairSummaryStatistics(object):
         for sx in self.pop1_seqs:
             for sy in self.pop2_seqs:
                 for cidx, c in enumerate(sx):
-                    c1 = c
-                    c2 = sy[cidx]
-                    if c1 in self.states_to_ignore or c2 in self.states_to_ignore:
+                    f1 = getattr(c, self.state_attr)
+                    f2 = getattr(sy[cidx], self.state_attr)
+                    if f1 in self.states_to_ignore or f2 in self.states_to_ignore:
                         continue
-                    f1 = getattr(c1, self.state_attr)
-                    f2 = getattr(c2, self.state_attr)
                     if f1 != f2:
                         diffs += 1
         dxy = float(1)/(len(self.pop1_seqs) * len(self.pop2_seqs)) * float(diffs)
@@ -322,12 +323,10 @@ class PopulationPairSummaryStatistics(object):
             for sy in self.pop2_seqs:
                 diffs = 0
                 for cidx, c in enumerate(sx):
-                    c1 = c
-                    c2 = sy[cidx]
-                    if c1 in self.states_to_ignore or c2 in self.states_to_ignore:
+                    f1 = getattr(c, self.state_attr)
+                    f2 = getattr(sy[cidx], self.state_attr)
+                    if f1 in self.states_to_ignore or f2 in self.states_to_ignore:
                         continue
-                    f1 = getattr(c1, self.state_attr)
-                    f2 = getattr(c2, self.state_attr)
                     if f1 != f2:
                         diffs += 1
                 ss_diffs += (float(diffs - mean_diff) ** 2)
