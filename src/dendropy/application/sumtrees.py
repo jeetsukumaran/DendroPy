@@ -74,16 +74,18 @@ def _available_cpu_count():
     Number of CPUs usable by this process, accounting for
     taskset/cpuset (i.e., SLURM).
     """
-    process_cpu_count = getattr(os, "process_cpu_count", None)
-    if process_cpu_count is not None:
-        count = process_cpu_count()
-        if count is not None:
-            return count
-    try:
-        return len(os.sched_getaffinity(0))
-    except (AttributeError, OSError):
-        return multiprocessing.cpu_count()
-
+    for how in (
+        lambda: os.process_cpu_count,
+        lambda: len(os.sched_getaffinity(0)),
+        multiprocessing.cpu_count,
+    ):
+        try:
+            return how()
+        except (AttributeError, OSError):
+            continue
+        return 1
+    
+    
 ##############################################################################
 ## Primary Analyzing
 
