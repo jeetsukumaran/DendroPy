@@ -71,9 +71,8 @@ Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Availa
 
 def _available_cpu_count():
     """
-    Number of CPUs usable by this process: ``os.process_cpu_count()``
-    (Python 3.13+) if available, else the ``os.sched_getaffinity`` affinity
-    mask, else ``multiprocessing.cpu_count()``.
+    Number of CPUs usable by this process, accounting for
+    taskset/cpuset (i.e., SLURM).
     """
     process_cpu_count = getattr(os, "process_cpu_count", None)
     if process_cpu_count is not None:
