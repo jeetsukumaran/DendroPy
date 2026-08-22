@@ -128,5 +128,28 @@ class PopulationPairSummaryStatisticsTests(dendropytest.ExtendedTestCase):
         self.assertAlmostEqual(pp.tajimas_d, 1.65318627677, 4)
         self.assertAlmostEqual(pp.wakeleys_psi, 0.8034976, 2)
 
+class PopulationPairAmbiguityTests(dendropytest.ExtendedTestCase):
+    "Ambiguous / gap / no-data bases are treated as missing between populations."
+
+    def _dxy(self, pop2_char):
+        # Both populations carry a within-population difference (so calc() does
+        # not divide by zero); only pop2 sequence-a site 3 varies between calls.
+        s = ">P1_a\nCAAAA\n>P1_b\nAAAAA\n>P2_a\nAA%sAG\n>P2_b\nAAAAA\n" % pop2_char
+        matrix = dendropy.DnaCharacterMatrix.get_from_string(s, "fasta")
+        p1 = [matrix[t] for t in matrix.taxon_namespace if t.label.startswith("P1")]
+        p2 = [matrix[t] for t in matrix.taxon_namespace if t.label.startswith("P2")]
+        return popgenstat.PopulationPairSummaryStatistics(
+                p1, p2).average_number_of_pairwise_differences_between
+
+    def test_ambiguous_and_gap_treated_as_missing(self):
+        # '?' excludes the varying site, leaving d_xy = 1.0; 'N' and '-' must match.
+        self.assertAlmostEqual(self._dxy("?"), 1.0, 8)
+        self.assertAlmostEqual(self._dxy("N"), 1.0, 8)
+        self.assertAlmostEqual(self._dxy("-"), 1.0, 8)
+
+    def test_partial_ambiguity_still_compared(self):
+        # A partial code (R = A|G) is not missing, so it must still be compared.
+        self.assertNotAlmostEqual(self._dxy("R"), self._dxy("?"), 8)
+
 if __name__ == "__main__":
     unittest.main()
