@@ -75,7 +75,7 @@ def _available_cpu_count():
     taskset/cpuset (i.e., SLURM).
     """
     for how in (
-        lambda: os.process_cpu_count,
+        lambda: os.process_cpu_count(),
         lambda: len(os.sched_getaffinity(0)),
         multiprocessing.cpu_count,
     ):
