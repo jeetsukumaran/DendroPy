@@ -67,6 +67,26 @@ Sukumaran, J and MT Holder. {prog_name}: {prog_subtitle}. {prog_version}. Availa
 """.format(prog_name=_program_name, prog_subtitle=_program_subtitle, prog_version=_program_version)
 
 ##############################################################################
+## Utility
+
+def _available_cpu_count():
+    """
+    Number of CPUs usable by this process, accounting for
+    taskset/cpuset (i.e., SLURM).
+    """
+    for how in (
+        lambda: os.process_cpu_count(),
+        lambda: len(os.sched_getaffinity(0)),
+        multiprocessing.cpu_count,
+    ):
+        try:
+            return how()
+        except (AttributeError, OSError):
+            continue
+        return 1
+    
+    
+##############################################################################
 ## Primary Analyzing
 
 def _read_into_tree_array(
@@ -1454,7 +1474,7 @@ def main():
     ######################################################################
     ## Multiprocessing Setup
 
-    num_cpus = multiprocessing.cpu_count()
+    num_cpus = _available_cpu_count()
     if len(tree_sources) > 1 and args.multiprocess is not None:
         if (
                 args.multiprocess.lower() == "max"
