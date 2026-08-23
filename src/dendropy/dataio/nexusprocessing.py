@@ -280,8 +280,77 @@ class NexusTaxonSymbolMapper(object):
 ###############################################################################
 ## Metadata
 
-FIGTREE_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
-NHX_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(:|$)')
+def _split_on_top_level_delimiter(text, delimiter):
+    """
+    Split ``text`` on ``delimiter``, but only where it occurs outside any
+    ``{...}`` group and outside a double-quoted span. This lets comment-metadata
+    fields and list values contain nested braces and quoted delimiters without
+    being split incorrectly. Only ``"`` is treated as a quote (BEAST/FigTree
+    quote free text with double quotes); an apostrophe is an ordinary character.
+    If braces or quotes end up unbalanced (malformed input), fall back to a
+    naive split so trailing fields are not silently swallowed.
+    """
+    if '{' not in text and '"' not in text:
+        # Fast path: with no braces or quotes there is nothing to protect, so a
+        # plain split is equivalent to (and much faster than) the char scan.
+        # Assumes single-character delimiters; keep the guarded characters in
+        # sync with the grouping/quote characters the scan below recognizes.
+        return text.split(delimiter)
+    parts = []
+    buf = []
+    depth = 0
+    in_quote = False
+    for ch in text:
+        if in_quote:
+            buf.append(ch)
+            if ch == '"':
+                in_quote = False
+        elif ch == '"':
+            in_quote = True
+            buf.append(ch)
+        elif ch == '{':
+            depth += 1
+            buf.append(ch)
+        elif ch == '}':
+            if depth > 0:
+                depth -= 1
+            buf.append(ch)
+        elif ch == delimiter and depth == 0:
+            parts.append("".join(buf))
+            buf = []
+        else:
+            buf.append(ch)
+    parts.append("".join(buf))
+    if depth != 0 or in_quote:
+        return text.split(delimiter)
+    return parts
+
+def _parse_comment_metadata_value(value, value_type, strip_spaces):
+    """
+    Parse a single metadata value into a scalar, boolean, or (possibly nested)
+    list. A ``{...}`` value becomes a list, recursing on nested ``{...}`` groups
+    (splitting only on top-level commas); ``value_type``, when given, is applied
+    at the leaf level.
+    """
+    if strip_spaces:
+        value = value.strip()
+    if value.startswith('{') and value.endswith('}'):
+        inner = value[1:-1]
+        if inner.strip() == "":
+            return []
+        return [
+            _parse_comment_metadata_value(item, value_type, strip_spaces)
+            for item in _split_on_top_level_delimiter(inner, ',')
+        ]
+    if len(value) >= 2 and value.startswith('"') and value.endswith('"'):
+        return value[1:-1]
+    if value.lower() == "false":
+        return False
+    if value.lower() == "true":
+        return True
+    if value_type is not None:
+        return value_type(value)
+    return value
 
 def parse_comment_metadata_to_annotations(
         comment,
@@ -323,40 +392,31 @@ def parse_comment_metadata_to_annotations(
     if field_value_types is None:
         field_value_types = {}
     if comment.startswith("&&NHX:"):
-        pattern = NHX_COMMENT_FIELD_PATTERN
+        field_delimiter = ":"
         comment = comment[6:]
     elif comment.startswith("&&"):
-        pattern = NHX_COMMENT_FIELD_PATTERN
+        field_delimiter = ":"
         comment = comment[2:]
     elif comment.startswith("&"):
-        pattern = FIGTREE_COMMENT_FIELD_PATTERN
+        field_delimiter = ","
         comment = comment[1:]
     else:
         # unrecognized metadata pattern
         return annotations
-    for match_group in pattern.findall(comment):
-        key, val = match_group[:2]
+    for field in _split_on_top_level_delimiter(comment, field_delimiter):
+        field_parts = _split_on_top_level_delimiter(field, "=")
+        if len(field_parts) < 2:
+            # not a key=value field (e.g. a stray delimiter or empty segment)
+            continue
+        key = field_parts[0]
+        val = "=".join(field_parts[1:])
         if strip_leading_trailing_spaces:
             key = key.strip()
-            val = val.strip()
-        if key in field_value_types:
-            value_type = field_value_types[key]
-        else:
-            value_type = None
-        if val.startswith('{'):
-            if value_type is not None:
-                val = [value_type(v) for v in val[1:-1].split(',')]
-            else:
-                val = val[1:-1].split(',')
-        elif val.startswith('"') and val.endswith('"'):
-            val = val[1:-1]
-        elif val.lower() == "false":
-            val = False
-        elif val.lower() == "true":
-            val = True
-        else:
-            if value_type is not None:
-                val = value_type(val)
+        if key == "":
+            continue
+        value_type = field_value_types.get(key)
+        val = _parse_comment_metadata_value(
+                val, value_type, strip_leading_trailing_spaces)
         if key in field_name_map:
             key = field_name_map[key]
         annote = basemodel.Annotation(

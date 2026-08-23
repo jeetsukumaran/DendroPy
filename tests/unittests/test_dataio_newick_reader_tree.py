@@ -673,6 +673,97 @@ class CommentMetaDataTests(dendropytest.ExtendedTestCase):
         for idx, nd in enumerate(tree.postorder_node_iter()):
             self.assertEqual(nd.annotations.values_as_dict(), expected[idx])
 
+class NestedListCommentMetadataTests(dendropytest.ExtendedTestCase):
+    "Nested-list comment metadata (issue #145) plus regression coverage."
+
+    def _leaf_annotations(self, bracket):
+        tree = dendropy.Tree.get_from_string(
+                "(A[%s],B);" % bracket,
+                "newick",
+                suppress_internal_node_taxa=True,
+                extract_comment_metadata=True)
+        leaf = [nd for nd in tree.leaf_node_iter()
+                if nd.taxon is not None and nd.taxon.label == "A"][0]
+        return leaf.annotations
+
+    def test_nested_list_figtree(self):
+        # Issue #145: BEAST extended-newick nested-list annotation value.
+        ann = self._leaf_annotations(
+                "&rate=1.0,mutations=3.0,"
+                "history_all={{57,0.08,C,T},{134,0.079,A,G},{4,0.07,C,T}}")
+        self.assertEqual(
+                ann.get_value("history_all"),
+                [["57", "0.08", "C", "T"],
+                 ["134", "0.079", "A", "G"],
+                 ["4", "0.07", "C", "T"]])
+        self.assertEqual(ann.get_value("rate"), "1.0")
+        self.assertEqual(ann.get_value("mutations"), "3.0")
+
+    def test_flat_list_regression(self):
+        ann = self._leaf_annotations("&x={a,b,c}")
+        self.assertEqual(ann.get_value("x"), ["a", "b", "c"])
+
+    def test_scalar_and_bool_regression(self):
+        ann = self._leaf_annotations("&x=1.0,flag=true,other=false")
+        self.assertEqual(ann.get_value("x"), "1.0")
+        self.assertEqual(ann.get_value("flag"), True)
+        self.assertEqual(ann.get_value("other"), False)
+
+    def test_deeply_nested_list(self):
+        ann = self._leaf_annotations("&x={{{1,2}}}")
+        self.assertEqual(ann.get_value("x"), [[["1", "2"]]])
+
+    def test_quoted_value_with_comma(self):
+        # Sibling bug: a quoted value containing the field delimiter must not split.
+        ann = self._leaf_annotations('&note="a, b",n=2')
+        self.assertEqual(ann.get_value("note"), "a, b")
+        self.assertEqual(ann.get_value("n"), "2")
+
+    def test_nested_list_nhx(self):
+        ann = self._leaf_annotations("&&NHX:x=1:hist={{1,2},{3,4}}")
+        self.assertEqual(ann.get_value("x"), "1")
+        self.assertEqual(ann.get_value("hist"), [["1", "2"], ["3", "4"]])
+
+    def test_single_and_empty_group(self):
+        ann = self._leaf_annotations("&a={x},b={}")
+        self.assertEqual(ann.get_value("a"), ["x"])
+        self.assertEqual(ann.get_value("b"), [])
+
+    def test_field_value_types_applied_at_leaf(self):
+        # R5: typing applies to leaf scalars of a (possibly nested) list.
+        from dendropy.dataio import nexusprocessing
+        annotations = nexusprocessing.parse_comment_metadata_to_annotations(
+                "&depths={{1,2},{3,4}}",
+                field_value_types={"depths": int})
+        value = {a.name: a.value for a in annotations}["depths"]
+        self.assertEqual(value, [[1, 2], [3, 4]])
+
+    def test_apostrophe_in_value_preserves_following_fields(self):
+        # An apostrophe is a literal character, not a string quote (BEAST/FigTree
+        # quote with double quotes); it must not swallow the following fields.
+        from dendropy.dataio import nexusprocessing
+        values = {a.name: a.value for a in
+                  nexusprocessing.parse_comment_metadata_to_annotations(
+                      "&label=it's,rate=1.0")}
+        self.assertEqual(values["label"], "it's")
+        self.assertEqual(values["rate"], "1.0")
+
+    def test_unbalanced_brace_does_not_swallow_following_fields(self):
+        # Malformed input (missing closing brace) degrades gracefully: it does
+        # not raise, and the trailing field is not silently dropped.
+        from dendropy.dataio import nexusprocessing
+        values = {a.name: a.value for a in
+                  nexusprocessing.parse_comment_metadata_to_annotations(
+                      "&x={a,b,y=2")}
+        self.assertEqual(values["y"], "2")
+
+    def test_list_elements_are_interpreted_like_scalars(self):
+        # List elements are parsed like scalar values: boolean literals and
+        # double-quoted strings are recognized (consistent with scalar handling).
+        ann = self._leaf_annotations('&flags={true,false},names={"a","b"}')
+        self.assertEqual(ann.get_value("flags"), [True, False])
+        self.assertEqual(ann.get_value("names"), ["a", "b"])
+
 # class NewickTreeTaxonNamespaceTest(dendropytest.ExtendedTestCase):
 
 #     def test_namespace_passing(self):
