@@ -1,6 +1,6 @@
 BSD 3-Clause License
 
-Copyright (c) 2010-2024, Jeet Sukumaran, Mark T Holder, and Matthew Andres Moreno
+Copyright (c) 2010-2026, Jeet Sukumaran, Mark T Holder, and Matthew Andres Moreno
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
