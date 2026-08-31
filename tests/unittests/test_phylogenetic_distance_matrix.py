@@ -913,6 +913,132 @@ class PhylogeneticPathTest(unittest.TestCase):
                 # print("{}, {}: {}".format(t1.label, t2.label, obs_edges1_labels))
                 self.assertEqual(expected[(t1.label, t2.label)], obs_edges1_labels)
 
+class PhylogeneticDistanceMatrixTaxonOrderTest(unittest.TestCase):
+    """
+    Results must not depend on where taxon objects land in memory.
+
+    ``Taxon`` hashes by identity, so a ``set`` of taxa iterates in memory
+    address order. The matrix keeps its taxa and its taxon pairs in the order
+    they were accessioned into the taxon namespace, which makes every result
+    derived from them a function of the input alone.
+    """
+
+    NEWICK = ("(((a:0.11,b:0.07):0.05,(c:0.09,d:0.13):0.04):0.06,"
+              "((e:0.12,f:0.08):0.03,(g:0.10,h:0.14):0.05):0.07);")
+
+    # Symmetric under exchanging b and c, so Q(a,b) and Q(a,c) are equal and
+    # the first minimum in node pool order wins.
+    TIED_DISTANCES = {
+            ("a", "b"): 1.0, ("a", "c"): 1.0, ("b", "c"): 2.0,
+            ("a", "d"): 3.0, ("a", "e"): 3.0,
+            ("b", "d"): 3.0, ("c", "d"): 3.0,
+            ("b", "e"): 3.0, ("c", "e"): 3.0,
+            ("d", "e"): 3.0,
+            }
+
+    def build_pdm(self):
+        tree = dendropy.Tree.get(data=self.NEWICK, schema="newick")
+        return tree.phylogenetic_distance_matrix()
+
+    def build_tied_pdm(self):
+        labels = ["a", "b", "c", "d", "e"]
+        tns = dendropy.TaxonNamespace()
+        taxa = {label: tns.require_taxon(label=label) for label in labels}
+        distances = {taxon: {taxon: 0.0} for taxon in taxa.values()}
+        for (label1, label2), d in self.TIED_DISTANCES.items():
+            distances[taxa[label1]][taxa[label2]] = d
+            distances[taxa[label2]][taxa[label1]] = d
+        pdm = dendropy.PhylogeneticDistanceMatrix()
+        pdm.compile_from_dict(distances=distances, taxon_namespace=tns)
+        return pdm
+
+    def newick(self, tree):
+        return tree.as_string(schema="newick", suppress_rooting=True).strip()
+
+    def topology(self, tree, labels):
+        """
+        The unrooted topology, as the set of non-trivial label bipartitions.
+        """
+        bipartitions = set()
+        for node in tree:
+            leaves = frozenset(nd.taxon.label for nd in node.leaf_iter())
+            if 1 < len(leaves) < len(labels):
+                complement = frozenset(set(labels) - leaves)
+                bipartitions.add(frozenset([leaves, complement]))
+        return frozenset(bipartitions)
+
+    def assert_same_across_rebuilds(self, result_fn, n=20):
+        """
+        Builds the matrix ``n`` times from the same data and compares results.
+
+        Each build makes new ``Taxon`` objects at new addresses, which is what
+        reading the same file twice does.
+        """
+        results = set(result_fn(self.build_pdm()) for _ in range(n))
+        self.assertEqual(len(results), 1, results)
+
+    def test_mapped_taxa_follow_the_taxon_namespace(self):
+        pdm = self.build_pdm()
+        self.assertEqual(list(pdm.taxon_iter()), list(pdm.taxon_namespace))
+
+    def test_mapped_taxon_pairs_follow_the_taxon_namespace(self):
+        pdm = self.build_pdm()
+        accession = pdm.taxon_namespace.accession_index
+        pairs = list(pdm.distinct_taxon_pair_iter())
+        expected = sorted(pairs, key=lambda p: (accession(p[0]), accession(p[1])))
+        self.assertEqual(pairs, expected)
+        for taxon1, taxon2 in pairs:
+            self.assertLess(accession(taxon1), accession(taxon2))
+
+    def test_nj_tree_is_the_same_across_rebuilds(self):
+        self.assert_same_across_rebuilds(
+                lambda pdm: self.newick(pdm.nj_tree()))
+
+    def test_upgma_tree_is_the_same_across_rebuilds(self):
+        self.assert_same_across_rebuilds(
+                lambda pdm: self.newick(pdm.upgma_tree()))
+
+    def test_taxon_iter_is_the_same_across_rebuilds(self):
+        self.assert_same_across_rebuilds(
+                lambda pdm: tuple(t.label for t in pdm.taxon_iter()))
+
+    def test_distinct_taxon_pair_iter_is_the_same_across_rebuilds(self):
+        self.assert_same_across_rebuilds(
+                lambda pdm: tuple((t1.label, t2.label)
+                                  for t1, t2 in pdm.distinct_taxon_pair_iter()))
+
+    def test_distances_are_in_the_same_order_across_rebuilds(self):
+        self.assert_same_across_rebuilds(
+                lambda pdm: tuple(pdm.distances()))
+
+    def test_data_table_rows_are_the_same_across_rebuilds(self):
+        self.assert_same_across_rebuilds(
+                lambda pdm: tuple(pdm.as_data_table().row_name_iter()))
+
+    def test_csv_output_is_the_same_across_rebuilds(self):
+        def to_csv(pdm):
+            out = StringIO()
+            pdm.write_csv(out)
+            return out.getvalue()
+        self.assert_same_across_rebuilds(to_csv)
+
+    def test_nj_tree_topology_is_the_same_when_q_values_tie(self):
+        """
+        A tie in the Q matrix must not be broken by object identity.
+
+        Joining (a,b) and joining (a,c) are both valid answers here, and the
+        strict comparison in the Q scan keeps whichever pair the node pool
+        reaches first. The pool order decides the topology, not just the
+        branch lengths.
+        """
+        labels = ["a", "b", "c", "d", "e"]
+        topologies = set()
+        for _ in range(20):
+            pdm = self.build_tied_pdm()
+            topologies.add(self.topology(pdm.nj_tree(), labels))
+        self.assertEqual(len(topologies), 1, topologies)
+
+
 if __name__ == "__main__":
     unittest.main()
 

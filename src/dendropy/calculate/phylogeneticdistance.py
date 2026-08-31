@@ -239,8 +239,8 @@ class PhylogeneticDistanceMatrix(object):
 
     def clear(self):
         self.taxon_namespace = None
-        self._mapped_taxa = set()
-        self._all_distinct_mapped_taxa_pairs = set()
+        self._mapped_taxa = container.OrderedSet()
+        self._all_distinct_mapped_taxa_pairs = container.OrderedSet()
         self._tree_length = None
         self._num_edges = None
         self._taxon_phylogenetic_distances = {}
@@ -303,8 +303,8 @@ class PhylogeneticDistanceMatrix(object):
                             for desc2, (desc2_plen, desc2_psteps, desc2_pedges) in c2.desc_paths.items():
                                 self._mapped_taxa.add(desc2.taxon)
                                 self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
-                                # self._all_distinct_mapped_taxa_pairs.add( tuple([desc1.taxon, desc2.taxon]) )
-                                self._all_distinct_mapped_taxa_pairs.add( frozenset([desc1.taxon, desc2.taxon]) )
+                                self._all_distinct_mapped_taxa_pairs.add(
+                                        (desc1.taxon, desc2.taxon))
                                 if c2.edge_length is None:
                                     c2_edge_length = 0.0
                                 else:
@@ -318,6 +318,7 @@ class PhylogeneticDistanceMatrix(object):
                                     self._taxon_phylogenetic_path_edges[desc1.taxon][desc2.taxon] = pedges
                     del(c1.desc_paths)
         self._mirror_lookups()
+        self._canonicalize_taxon_order()
         # assert self._tree_length == tree.length()
 
     def compile_from_dict(self, distances, taxon_namespace):
@@ -329,6 +330,53 @@ class PhylogeneticDistanceMatrix(object):
             for t2 in distances[t1]:
                 self._taxon_phylogenetic_distances[t1][t2] = distances[t1][t2]
         self._mirror_lookups()
+        self._canonicalize_taxon_order()
+
+    def _taxon_sort_keys(self):
+        """
+        Returns a map from each mapped taxon to its sort key.
+
+        ``Taxon`` hashes by identity, so a taxon has no order of its own that
+        survives a restart. The accession index is assigned when a taxon enters
+        the namespace, which makes it stable across runs, and it distinguishes
+        taxa that share a label. A taxon outside the namespace sorts after the
+        rest, by label.
+        """
+        accession_index = self.taxon_namespace.accession_index
+        keys = {}
+        for taxon in self._mapped_taxa:
+            try:
+                keys[taxon] = (0, accession_index(taxon), "")
+            except KeyError:
+                keys[taxon] = (1, 0, str(taxon.label))
+        return keys
+
+    def _canonicalize_taxon_order(self):
+        """
+        Sorts the mapped taxa and the mapped taxon pairs into namespace order.
+
+        Every iteration over these two collections reaches a result: the node
+        pool that ``nj_tree`` and ``upgma_tree`` build from, the rows and
+        columns of ``write_csv`` and ``as_data_table``, and the sequence that
+        ``taxon_iter``, ``distinct_taxon_pair_iter`` and ``distances`` yield.
+        Sorting them here gives all of those one order.
+
+        Each pair is also oriented, so that ``distinct_taxon_pair_iter`` yields
+        its two taxa in namespace order rather than in address order.
+        """
+        if self.taxon_namespace is None:
+            return
+        keys = self._taxon_sort_keys()
+        self._mapped_taxa = container.OrderedSet(
+                sorted(self._mapped_taxa, key=keys.__getitem__))
+        oriented = set()
+        for taxon1, taxon2 in self._all_distinct_mapped_taxa_pairs:
+            if keys[taxon2] < keys[taxon1]:
+                oriented.add((taxon2, taxon1))
+            else:
+                oriented.add((taxon1, taxon2))
+        self._all_distinct_mapped_taxa_pairs = container.OrderedSet(
+                sorted(oriented, key=lambda pair: (keys[pair[0]], keys[pair[1]])))
 
     def _mirror_lookups(self):
         for ddata in (
@@ -379,8 +427,8 @@ class PhylogeneticDistanceMatrix(object):
     def clone(self):
         o = self.__class__()
         o.taxon_namespace = self.taxon_namespace
-        o._mapped_taxa = set(self._mapped_taxa)
-        o._all_distinct_mapped_taxa_pairs = set(self._all_distinct_mapped_taxa_pairs)
+        o._mapped_taxa = container.OrderedSet(self._mapped_taxa)
+        o._all_distinct_mapped_taxa_pairs = container.OrderedSet(self._all_distinct_mapped_taxa_pairs)
         o._tree_length = self._tree_length
         o._num_edges = self._num_edges
         for src, dest in (
