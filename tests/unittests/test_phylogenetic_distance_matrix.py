@@ -913,6 +913,106 @@ class PhylogeneticPathTest(unittest.TestCase):
                 # print("{}, {}: {}".format(t1.label, t2.label, obs_edges1_labels))
                 self.assertEqual(expected[(t1.label, t2.label)], obs_edges1_labels)
 
+class PhylogeneticDistanceMatrixFromDictTaxonPairsTest(unittest.TestCase):
+    """
+    A matrix built from a dict or a CSV must know its taxon pairs.
+
+    ``compile_from_tree`` records every distinct pair of mapped taxa as it
+    walks the tree. ``compile_from_dict``, which ``from_csv`` builds through,
+    has to record the same pairs, or every method that iterates them reports
+    an empty matrix.
+    """
+
+    CSV = ".,A,B,C,D\nA,0,1,2,2\nB,1,0,2,2\nC,2,2,0,1\nD,2,2,1,0\n"
+    EXPECTED_DISTANCES = [1.0, 1.0, 2.0, 2.0, 2.0, 2.0]
+
+    def build_from_csv(self):
+        return dendropy.PhylogeneticDistanceMatrix.from_csv(
+                StringIO(self.CSV),
+                is_first_row_column_names=True,
+                is_first_column_row_names=True,
+                is_allow_new_taxa=True,
+                delimiter=",")
+
+    def build_from_dict(self, distances_by_label):
+        labels = sorted(set(
+                label for pair in distances_by_label for label in pair))
+        tns = dendropy.TaxonNamespace()
+        taxa = {label: tns.require_taxon(label=label) for label in labels}
+        distances = {taxon: {taxon: 0.0} for taxon in taxa.values()}
+        for (label1, label2), d in distances_by_label.items():
+            distances[taxa[label1]][taxa[label2]] = d
+        pdm = dendropy.PhylogeneticDistanceMatrix()
+        pdm.compile_from_dict(distances=distances, taxon_namespace=tns)
+        return pdm
+
+    def test_every_distinct_pair_is_recorded(self):
+        pdm = self.build_from_csv()
+        n = len(list(pdm.taxon_iter()))
+        self.assertEqual(len(list(pdm.distinct_taxon_pair_iter())),
+                         n * (n - 1) // 2)
+
+    def test_the_pairs_are_every_combination_of_the_taxa(self):
+        pdm = self.build_from_csv()
+        pairs = [frozenset(pair) for pair in pdm.distinct_taxon_pair_iter()]
+        observed = set(frozenset(t.label for t in pair) for pair in pairs)
+        expected = set(frozenset(labels) for labels in
+                       [("A", "B"), ("A", "C"), ("A", "D"),
+                        ("B", "C"), ("B", "D"), ("C", "D")])
+        self.assertEqual(observed, expected)
+        # Each pair appears once, and no taxon is paired with itself.
+        self.assertEqual(len(pairs), len(expected))
+
+    def test_distances_match_the_source(self):
+        pdm = self.build_from_csv()
+        self.assertEqual(sorted(pdm.distances()), self.EXPECTED_DISTANCES)
+
+    def test_sum_of_distances_matches_the_source(self):
+        pdm = self.build_from_csv()
+        self.assertEqual(pdm.sum_of_distances(), sum(self.EXPECTED_DISTANCES))
+
+    def test_max_pairwise_distance_taxa_is_found(self):
+        pdm = self.build_from_csv()
+        taxa = pdm.max_pairwise_distance_taxa()
+        self.assertIsNotNone(taxa)
+        self.assertEqual(pdm.patristic_distance(*taxa),
+                         max(self.EXPECTED_DISTANCES))
+
+    def test_mean_pairwise_distance_is_calculable(self):
+        pdm = self.build_from_csv()
+        self.assertAlmostEqual(
+                pdm.mean_pairwise_distance(),
+                sum(self.EXPECTED_DISTANCES) / len(self.EXPECTED_DISTANCES),
+                7)
+
+    def test_a_dict_matrix_agrees_with_the_equivalent_tree_matrix(self):
+        tree = dendropy.Tree.get(
+                data="((A:0.5,B:0.5):0.5,(C:0.5,D:0.5):0.5);",
+                schema="newick")
+        from_tree = tree.phylogenetic_distance_matrix()
+        distances_by_label = {}
+        for taxon1, taxon2 in from_tree.distinct_taxon_pair_iter():
+            distances_by_label[(taxon1.label, taxon2.label)] = \
+                    from_tree.patristic_distance(taxon1, taxon2)
+        from_dict = self.build_from_dict(distances_by_label)
+        self.assertEqual(sorted(from_dict.distances()),
+                         sorted(from_tree.distances()))
+        self.assertAlmostEqual(from_dict.sum_of_distances(),
+                               from_tree.sum_of_distances(), 7)
+
+    def test_one_triangle_of_the_input_still_gives_every_pair(self):
+        """
+        The pairs are collected after the lookups are mirrored.
+        """
+        pdm = self.build_from_dict({
+                ("A", "B"): 1.0,
+                ("A", "C"): 2.0,
+                ("B", "C"): 3.0,
+                })
+        self.assertEqual(len(list(pdm.distinct_taxon_pair_iter())), 3)
+        self.assertEqual(sorted(pdm.distances()), [1.0, 2.0, 3.0])
+
+
 if __name__ == "__main__":
     unittest.main()
 
