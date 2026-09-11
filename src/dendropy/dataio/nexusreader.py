@@ -217,15 +217,20 @@ class NexusReader(ioservice.DataReader):
         suppress_edge_lengths : boolean, default: |False|
             If |True|, edge length values will not be processed. If |False|,
             edge length values will be processed.
-        extract_comment_metadata : boolean, default: |True|
+        extract_comment_metadata : boolean or callable, default: |True|
             If |True| (default), any comments that begin with '&' or '&&' will
             be parsed and stored as part of the annotation set of the
             corresponding object (accessible through the ``annotations``
-            attribute of the object). This requires that the comment
-            contents conform to a particular format (NHX or BEAST: 'field =
-            value'). If |False|, then the comments will not be parsed,
-            but will be instead stored directly as elements of the ``comments``
-            list attribute of the associated object.
+            attribute of the object), using
+            :func:`dendropy.dataio.nexusprocessing.parse_comment_metadata_dendropy_v5_0_0`
+            (see its docstring for the comment format and known
+            limitations). If |False|, then the comments will not be
+            parsed, but will be instead stored directly as elements of
+            the ``comments`` list attribute of the associated object.
+            A callable may be given instead: it will be called with a
+            single comment token string and must return an iterable of
+            (field name, value) pairs, which is then converted into
+            |Annotation| objects.
         store_tree_weights : boolean, default: |False|
             If |True|, process the tree weight (e.g. "[&W 1/2]") comment
             associated with each tree, if any. Defaults to |False|.
@@ -290,6 +295,14 @@ class NexusReader(ioservice.DataReader):
             If |True|, then unsupported or unrecognized keyword arguments will
             not result in an error. Default is |False|: unsupported keyword
             arguments will result in an error.
+
+        See Also
+        --------
+
+        :func:`dendropy.dataio.nexusprocessing.parse_comment_metadata_dendropy_v5_0_0`
+        :func:`dendropy.dataio.nexusprocessing.parse_comment_metadata_beast2_v2_7_8`
+        :func:`dendropy.dataio.nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting`
+
         """
 
         # base
