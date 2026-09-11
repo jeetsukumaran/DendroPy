@@ -962,7 +962,9 @@ class NodeAgeAndDepthVectorTest(unittest.TestCase):
     # Tests check consistency between age and depth.
     def get_tree(self):
         return dendropy.Tree.get_from_string(
-               "[&R] ((A:1,B:1):2,(C:2,D:2):1);")
+               "[&R] ((A:1,B:1):2,(C:2,D:2):1);",
+               schema="newick",
+           )
 
     def test_divergence_times_are_internal_node_depths(self):
         tree = self.get_tree()
