@@ -202,9 +202,14 @@ class Beast2V2_7_8CommentMetadataParsingTestCase(dendropytest.ExtendedTestCase):
                 "& rate = 0.5 , hpd = { 1.1 , 2.2 } ")
         self.assertEqual(list(d), [("rate", 0.5), ("hpd", [1.1, 2.2])])
 
-    def test_quoting_protects_whitespace(self):
+    def test_key_is_not_unquoted(self):
+        # unlike a value, TreeParser.processMetadata() takes a key's
+        # getText() as-is: a quoted key keeps its quotes (and so its
+        # whitespace, which is otherwise insignificant)
         d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8('&" a key "=1')
-        self.assertEqual(list(d), [(" a key ", 1.0)])
+        self.assertEqual(list(d), [('" a key "', 1.0)])
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8("&'a key'=1")
+        self.assertEqual(list(d), [("'a key'", 1.0)])
 
     def test_empty_comment_returns_empty(self):
         self.assertEqual(

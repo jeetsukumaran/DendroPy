@@ -502,7 +502,9 @@ def _beast2_v2_7_8_parser_and_transformer():
     class _ToMetadata(standalone.Transformer):
 
         def key(self, token):
-            return _beast2_v2_7_8_unquote(token.value)
+            # unlike a value, a key is not unquoted: TreeParser.processMetadata()
+            # takes attribKey.getText() as-is
+            return token.value
 
         def attrib(self, key, value_tree):
             return key, _beast2_v2_7_8_materialize_value(value_tree)
