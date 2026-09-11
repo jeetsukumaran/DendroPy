@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import copy
+import functools
 import warnings
 from io import StringIO
 from dendropy.utility import terminal
@@ -2494,6 +2495,19 @@ class Tree(
             edges_to_invert = []
             current_node = new_seed_node
             while current_node:
+
+                @functools.lru_cache()
+                def warn_node_support_values_once():
+                    warnings.warn("""Support value detected as a node attribute, which can cause unexpected results when rerooting.
+
+See <https://doi.org/10.1093/molbev/msx055> for details on this issue. Consider
+using the `is_assign_internal_labels_to_edges` kwarg when loading data to assign support values to edges instead of nodes.
+
+See <https://docs.python.org/3/library/warnings.html#warning-filter> for information on how to suppress this warning with a using a filter.""")
+
+                if any("support" in attr for attr in current_node.__dict__):
+                    warn_node_support_values_once()
+
                 if current_node._parent_node is not None:
                     edges_to_invert.append(current_node.edge)
                 current_node = current_node._parent_node
