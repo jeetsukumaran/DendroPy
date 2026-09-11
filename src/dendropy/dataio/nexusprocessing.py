@@ -26,6 +26,7 @@ import re
 import itertools
 import decimal
 import functools
+import warnings
 from dendropy.dataio.tokenizer import Tokenizer
 from dendropy.utility import textprocessing
 from dendropy.utility import container
@@ -466,6 +467,16 @@ def _beast2_v2_7_8_unquote(text):
     # BEAST2 tests only the leading quote, then strips both ends
     return text[1:-1] if text[:1] in ("'", '"') else text
 
+def _warn_if_nhx_marker(comment):
+    if comment.startswith("&&NHX"):
+        warnings.warn(
+                "Parser does not support \"&&NHX\" annotations: the"
+                " marker is not stripped. To silence, use an alternate"
+                " comment metadata parser, strip it first"
+                " (extract_comment_metadata=lambda c: parser(re.sub("
+                " r'^&&NHX:?', '&', c))), or insert whitespace"
+                " (lambda c: '& ' + c[1:] if c.startswith('&&NHX') else c).")
+
 def _beast2_v2_7_8_raw_text(value_tree):
     # BEAST2 skips whitespace in its lexer, so the ``getText()`` that
     # ``processMetadata()`` calls on each element never contains any
@@ -587,17 +598,15 @@ def parse_comment_metadata_beast2_v2_7_8(comment):
 
     Notes
     -----
-    A leading "&&" is stripped like a single "&" (unlike real BEAST2's
-    lexer) for parity with :func:`parse_comment_metadata_dendropy_v5_0_0`.
+    Does not support "&&NHX" style annotations.
 
     See Also
     --------
     parse_comment_metadata_dendropy_v5_0_0
     parse_comment_metadata_beast2_v2_7_8_nesting
     """
-    if comment.startswith("&&"):
-        body = comment[2:]
-    elif comment.startswith("&"):
+    _warn_if_nhx_marker(comment)
+    if comment.startswith("&"):
         body = comment[1:]
     else:
         # unrecognized metadata pattern
@@ -652,13 +661,16 @@ def parse_comment_metadata_beast2_v2_7_8_nesting(comment):
         If ``comment`` is not well-formed according to the BEAST2
         v2.7.8 metadata comment grammar.
 
+    Notes
+    -----
+    Does not support "&&NHX" style annotations.
+
     See Also
     --------
     parse_comment_metadata_beast2_v2_7_8
     """
-    if comment.startswith("&&"):
-        body = comment[2:]
-    elif comment.startswith("&"):
+    _warn_if_nhx_marker(comment)
+    if comment.startswith("&"):
         body = comment[1:]
     else:
         # unrecognized metadata pattern
