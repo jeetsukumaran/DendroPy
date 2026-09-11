@@ -914,14 +914,7 @@ class PhylogeneticPathTest(unittest.TestCase):
                 self.assertEqual(expected[(t1.label, t2.label)], obs_edges1_labels)
 
 class PhylogeneticDistanceMatrixFromDictTaxonPairsTest(unittest.TestCase):
-    """
-    A matrix built from a dict or a CSV must know its taxon pairs.
-
-    ``compile_from_tree`` records every distinct pair of mapped taxa as it
-    walks the tree. ``compile_from_dict``, which ``from_csv`` builds through,
-    has to record the same pairs, or every method that iterates them reports
-    an empty matrix.
-    """
+    # Regression tests for PR #245
 
     CSV = ",A,B,C,D\nA,0,1,2,2\nB,1,0,2,2\nC,2,2,0,1\nD,2,2,1,0\n"
     EXPECTED_DISTANCES = [1.0, 1.0, 2.0, 2.0, 2.0, 2.0]
