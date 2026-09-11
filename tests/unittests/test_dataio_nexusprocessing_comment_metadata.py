@@ -211,6 +211,12 @@ class Beast2V2_7_8CommentMetadataParsingTestCase(dendropytest.ExtendedTestCase):
         d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8("&'a key'=1")
         self.assertEqual(list(d), [("'a key'", 1.0)])
 
+    def test_double_ampersand_is_stripped_like_single(self):
+        # departs from exact BEAST2 fidelity
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8(
+                "&&subject='Pythonidae'")
+        self.assertEqual(list(d), [("subject", "Pythonidae")])
+
     def test_empty_comment_returns_empty(self):
         self.assertEqual(
                 list(nexusprocessing.parse_comment_metadata_beast2_v2_7_8("&")), [])
@@ -253,6 +259,91 @@ class Beast2V2_7_8CommentMetadataParsingTestCase(dendropytest.ExtendedTestCase):
         self.assertEqual(
                 d["rate_range"],
                 [4.938776751387227E-4, 0.036916549293719556])
+
+
+class Beast2V2_7_8NestingCommentMetadataParsingTestCase(dendropytest.ExtendedTestCase):
+
+    def test_scalars_match_base_parser(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                '&rate=0.0123,label="hello",tag=bareword')
+        self.assertEqual(
+                list(d), [("rate", 0.0123), ("label", "hello"), ("tag", "bareword")])
+
+    def test_flat_all_numeric_vector_matches_base_parser(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                "&hpd={1.1,2.2,3.3}")
+        self.assertEqual(list(d), [("hpd", [1.1, 2.2, 3.3])])
+
+    def test_flat_string_only_vector_matches_base_parser(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                "&x={C,T,A,G}")
+        self.assertEqual(list(d), [("x", ["C", "T", "A", "G"])])
+
+    def test_flat_mixed_vector_is_individually_typed(self):
+        # the base parser falls back to raw text for the whole vector
+        # here (["1", '"a"']); the nesting parser instead materializes
+        # each element on its own
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                '&x={1,"a"}')
+        self.assertEqual(list(d), [("x", [1.0, "a"])])
+
+    def test_nested_numeric_vector_resolves_to_nested_floats(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                "&x={{1,2},{3,4}}")
+        self.assertEqual(list(d), [("x", [[1.0, 2.0], [3.0, 4.0]])])
+
+    def test_nested_vector_resolves_issue_145_with_nested_types(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                ISSUE_145_COMMENT)
+        self.assertEqual(
+                list(d),
+                [("history_all",
+                  [[57.0, 0.08, "C", "T"],
+                   [134.0, 0.079, "A", "G"],
+                   [4.0, 0.07, "C", "T"]])])
+
+    def test_doubly_nested_all_numeric_vector_fully_resolves(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                "&x={{{1,2},{3,4}},{5,6}}")
+        self.assertEqual(
+                list(d), [("x", [[[1.0, 2.0], [3.0, 4.0]], [5.0, 6.0]])])
+
+    def test_nested_vector_mixing_all_numeric_and_string_subvectors(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                "&x={{A,T},{57,0.08}}")
+        self.assertEqual(list(d), [("x", [["A", "T"], [57.0, 0.08]])])
+
+    def test_repeated_field_names_keep_the_last_value(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                "&x=1,x=2,y=9")
+        self.assertEqual(list(d), [("x", 2.0), ("y", 9.0)])
+
+    def test_double_ampersand_is_stripped_like_single(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                "&&subject='Pythonidae'")
+        self.assertEqual(list(d), [("subject", "Pythonidae")])
+
+    def test_empty_comment_returns_empty(self):
+        self.assertEqual(
+                list(nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting("&")),
+                [])
+
+    def test_unrecognized_comment_returns_empty(self):
+        d = nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                "not a metadata comment")
+        self.assertEqual(list(d), [])
+
+    def test_malformed_unbalanced_vector_raises(self):
+        with self.assertRaises(ValueError):
+            nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting("&x={1,2")
+
+    def test_real_mcc_tree_example_comment_has_no_nested_vectors(self):
+        # this fixture has no nested vectors, so both parsers agree
+        base = dict(nexusprocessing.parse_comment_metadata_beast2_v2_7_8(
+                REAL_MCC_TREE_EXAMPLE_COMMENT))
+        nested = dict(nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting(
+                REAL_MCC_TREE_EXAMPLE_COMMENT))
+        self.assertEqual(base, nested)
 
 
 class CommentMetadataToAnnotationsTestCase(dendropytest.ExtendedTestCase):
