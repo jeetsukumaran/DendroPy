@@ -688,8 +688,7 @@ def process_comments_for_item(item,
             else None)
     for comment in item_comments:
         if metacomment_parse_fn is not None and comment.startswith("&"):
-            # materialized so that an emptiness test is safe for any
-            # iterable, a generator included
+            # materialize to make emptiness test safe for generators
             metadata = list(metacomment_parse_fn(comment))
             if metadata:
                 _comment_metadata_to_annotations(
