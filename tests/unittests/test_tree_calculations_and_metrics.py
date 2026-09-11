@@ -956,6 +956,38 @@ class TreeUnaryMetricsTest(unittest.TestCase):
         g = treemeasure.pybus_harvey_gamma(tree)
         self.assertAlmostEqual(g, 0.546276, 4)
 
+class NodeAgeAndDepthVectorTest(unittest.TestCase):
+
+    # Non-ultrametric to ensure distinct age and depth values.
+    # Tests check consistency between age and depth.
+    def get_tree(self):
+        return dendropy.Tree.get_from_string(
+               "[&R] ((A:1,B:1):2,(C:2,D:2):1);",
+               schema="newick",
+           )
+
+    def test_divergence_times_are_internal_node_depths(self):
+        tree = self.get_tree()
+        # Root at depth 0; the two internal children at depths 2 and 1; the
+        # four leaves (excluded) at depth 3.
+        self.assertEqual(treemeasure.divergence_times(tree), [0.0, 1.0, 2.0])
+
+    def test_divergence_times_agrees_with_node_depths(self):
+        tree = self.get_tree()
+        self.assertEqual(
+                treemeasure.divergence_times(tree),
+                treemeasure.node_depths(tree, is_internal_only=True))
+
+    def test_divergence_times_are_not_coalescence_ages(self):
+        tree = self.get_tree()
+        self.assertNotEqual(
+                treemeasure.divergence_times(tree),
+                treemeasure.coalescence_ages(tree))
+
+    def test_coalescence_ages_are_internal_node_ages(self):
+        tree = self.get_tree()
+        self.assertEqual(treemeasure.coalescence_ages(tree), [1.0, 2.0, 3.0])
+
 class TreeEuclideanDistTest(unittest.TestCase):
 
     def runTest(self):

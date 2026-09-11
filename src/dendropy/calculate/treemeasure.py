@@ -276,4 +276,4 @@ def divergence_times(tree):
     """
     Returns vector of splits indexed in forward time.
     """
-    return divergence_times(tree, is_internal_only=True)
+    return node_depths(tree, is_internal_only=True)
