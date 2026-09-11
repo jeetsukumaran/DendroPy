@@ -277,7 +277,7 @@ or to cast field values to desired types::
     rate = 0.1
     generation = 1000
 
-Note the use of ``dict.get()``'s second argument for default pass-through in both examples: a field not named in the dictionary (``rate``, above) is returned unchanged.
+Note the use of ``dict.get()``'s second argument for default pass-through in both examples.
 
 
 Direct Composition with Literal Values
