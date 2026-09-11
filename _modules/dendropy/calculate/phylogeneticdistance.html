@@ -378,6 +378,11 @@
             <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="n">distances</span><span class="p">[</span><span class="n">t1</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_phylogenetic_distances</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="n">t2</span><span class="p">]</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="n">t2</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mirror_lookups</span><span class="p">()</span>
+        <span class="c1"># Runs after mirroring, in case caller only provided one triangle</span>
+        <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapped_taxa</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxon_phylogenetic_distances</span><span class="p">[</span><span class="n">t1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">t1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">t2</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_all_distinct_mapped_taxa_pairs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">([</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">]))</span>
 
     <span class="k">def</span> <span class="nf">_mirror_lookups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">ddata</span> <span class="ow">in</span> <span class="p">(</span>
