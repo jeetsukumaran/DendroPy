@@ -259,7 +259,7 @@ Such a callable can wrap one of the built-in parsers to post-process the (field 
     rate = 0.1
     transition_history = [[57.0, 0.08, 'C', 'T'], [134.0, 0.079, 'A', 'G']]
 
-or to cast field values to application-specific types::
+or to cast field values to desired types::
 
     >>> cast_map = {"generation": int}
     >>> extract_comment_metadata = lambda comment: [
