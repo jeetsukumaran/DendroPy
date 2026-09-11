@@ -329,6 +329,11 @@ class PhylogeneticDistanceMatrix(object):
             for t2 in distances[t1]:
                 self._taxon_phylogenetic_distances[t1][t2] = distances[t1][t2]
         self._mirror_lookups()
+        # Runs after mirroring, in case caller only provided one triangle
+        for t1 in self._mapped_taxa:
+            for t2 in self._taxon_phylogenetic_distances[t1]:
+                if t1 is not t2:
+                    self._all_distinct_mapped_taxa_pairs.add(frozenset([t1, t2]))
 
     def _mirror_lookups(self):
         for ddata in (
