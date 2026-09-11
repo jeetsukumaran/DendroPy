@@ -217,9 +217,67 @@ unless the keyword argument ``extract_comment_metadata=True`` is passed in to th
     ... "nexus",
     ... extract_comment_metadata=True)
 
-In general, support for metadata in NEXUS and NEWICK formats is very basic and lossy, and is limited to a small range of phylogenetic data types (taxa, trees, nodes, edges).
+In general, |DendroPy|'s default support for metadata in NEXUS and NEWICK formats is very basic and lossy, and is limited to a small range of phylogenetic data types (taxa, trees, nodes, edges).
 These issues and limits are fundamental to the NEXUS and NEWICK formats, and thus if metadata is important to you and your work, you should be working with NeXML format.
 The NeXML format provides for rich, flexible and robust metadata annotation for the broad range of phylogenetic data, and |DendroPy| provides full support for metadata reading and writing in NeXML.
+
+Parameter ``extract_comment_metadata`` also accepts a callable, allowing you to select an alternative comment metadata parser.
+This is useful because different tools emit subtly different comment metadata syntax; in particular, |DendroPy|'s default parser does not support nested list ("vector") values, e.g. ``history_all={{57,0.08,C,T},{134,0.079,A,G}}``.
+The :func:`~dendropy.dataio.nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting` function infers value types the way BEAST2 v2.7.8 does (unquoted numeric tokens become Python ``float``), but, unlike BEAST2 itself, recursively decomposes nested vectors into real nested lists instead of preserving them as raw bracketed text::
+
+    >>> import dendropy
+    >>> from dendropy.dataio.nexusprocessing import parse_comment_metadata_beast2_v2_7_8_nesting
+    >>> tree = dendropy.Tree.get(
+    ... data="((A[&rate=0.1,history_all={{57,0.08,C,T},{134,0.079,A,G}}]:1.0,B:1.0):1.0,C:1.0);",
+    ... schema="newick",
+    ... extract_comment_metadata=parse_comment_metadata_beast2_v2_7_8_nesting,
+    ... )
+    >>> leaf_a = tree.find_node_with_taxon_label("A")
+    >>> for a in leaf_a.annotations:
+    ...     print("%s = %s" % (a.name, a.value))
+    rate = 0.1
+    history_all = [[57.0, 0.08, 'C', 'T'], [134.0, 0.079, 'A', 'G']]
+
+A strict-fidelity variant, :func:`~dendropy.dataio.nexusprocessing.parse_comment_metadata_beast2_v2_7_8`, is also available if you need output that matches BEAST2's own (non-recursive) handling of nested vectors exactly.
+
+You can also supply your own callable, so long as it accepts a single comment string argument (e.g. ``"&rate=0.1,class='example'"``) and returns an iterable of (field name, value) pairs.
+Such a callable can wrap one of the built-in parsers to post-process the (field name, value) pairs it returns, for example to rename fields::
+
+    >>> rename_map = {"history_all": "transition_history"}
+    >>> extract_comment_metadata = lambda comment: [
+    ... (rename_map.get(k, k), v)
+    ... for k, v in parse_comment_metadata_beast2_v2_7_8_nesting(comment)
+    ... ]
+    >>> tree = dendropy.Tree.get(
+    ... data="((A[&rate=0.1,history_all={{57,0.08,C,T},{134,0.079,A,G}}]:1.0,B:1.0):1.0,C:1.0);",
+    ... schema="newick",
+    ... extract_comment_metadata=extract_comment_metadata,
+    ... )
+    >>> leaf_a = tree.find_node_with_taxon_label("A")
+    >>> for a in leaf_a.annotations:
+    ...     print("%s = %s" % (a.name, a.value))
+    rate = 0.1
+    transition_history = [[57.0, 0.08, 'C', 'T'], [134.0, 0.079, 'A', 'G']]
+
+or to cast field values to application-specific types::
+
+    >>> cast_map = {"generation": int}
+    >>> extract_comment_metadata = lambda comment: [
+    ... (k, cast_map.get(k, lambda x: x)(v))
+    ... for k, v in parse_comment_metadata_beast2_v2_7_8_nesting(comment)
+    ... ]
+    >>> tree = dendropy.Tree.get(
+    ... data="((A[&rate=0.1,generation=1000]:1.0,B:1.0):1.0,C:1.0);",
+    ... schema="newick",
+    ... extract_comment_metadata=extract_comment_metadata,
+    ... )
+    >>> leaf_a = tree.find_node_with_taxon_label("A")
+    >>> for a in leaf_a.annotations:
+    ...     print("%s = %r" % (a.name, a.value))
+    rate = 0.1
+    generation = 1000
+
+Note the use of ``dict.get()``'s second argument for default pass-through in both examples: a field not named in the dictionary (``rate``, above) is returned unchanged.
 
 
 Direct Composition with Literal Values
