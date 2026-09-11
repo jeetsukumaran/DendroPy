@@ -257,15 +257,20 @@
 <span class="sd">        suppress_edge_lengths : boolean, default: |False|</span>
 <span class="sd">            If |True|, edge length values will not be processed. If |False|,</span>
 <span class="sd">            edge length values will be processed.</span>
-<span class="sd">        extract_comment_metadata : boolean, default: |True|</span>
+<span class="sd">        extract_comment_metadata : boolean or callable, default: |True|</span>
 <span class="sd">            If |True| (default), any comments that begin with &#39;&amp;&#39; or &#39;&amp;&amp;&#39; will</span>
 <span class="sd">            be parsed and stored as part of the annotation set of the</span>
 <span class="sd">            corresponding object (accessible through the ``annotations``</span>
-<span class="sd">            attribute of the object). This requires that the comment</span>
-<span class="sd">            contents conform to a particular format (NHX or BEAST: &#39;field =</span>
-<span class="sd">            value&#39;). If |False|, then the comments will not be parsed,</span>
-<span class="sd">            but will be instead stored directly as elements of the ``comments``</span>
-<span class="sd">            list attribute of the associated object.</span>
+<span class="sd">            attribute of the object), using</span>
+<span class="sd">            :func:`dendropy.dataio.nexusprocessing.parse_comment_metadata_dendropy_v5_0_0`</span>
+<span class="sd">            (see its docstring for the comment format and known</span>
+<span class="sd">            limitations). If |False|, then the comments will not be</span>
+<span class="sd">            parsed, but will be instead stored directly as elements of</span>
+<span class="sd">            the ``comments`` list attribute of the associated object.</span>
+<span class="sd">            A callable may be given instead: it will be called with a</span>
+<span class="sd">            single comment token string and must return an iterable of</span>
+<span class="sd">            (field name, value) pairs, which is then converted into</span>
+<span class="sd">            |Annotation| objects.</span>
 <span class="sd">        store_tree_weights : boolean, default: |False|</span>
 <span class="sd">            If |True|, process the tree weight (e.g. &quot;[&amp;W 1/2]&quot;) comment</span>
 <span class="sd">            associated with each tree, if any. Defaults to |False|.</span>
@@ -330,6 +335,14 @@
 <span class="sd">            If |True|, then unsupported or unrecognized keyword arguments will</span>
 <span class="sd">            not result in an error. Default is |False|: unsupported keyword</span>
 <span class="sd">            arguments will result in an error.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        :func:`dendropy.dataio.nexusprocessing.parse_comment_metadata_dendropy_v5_0_0`</span>
+<span class="sd">        :func:`dendropy.dataio.nexusprocessing.parse_comment_metadata_beast2_v2_7_8`</span>
+<span class="sd">        :func:`dendropy.dataio.nexusprocessing.parse_comment_metadata_beast2_v2_7_8_nesting`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># base</span>
