@@ -923,7 +923,7 @@ class PhylogeneticDistanceMatrixFromDictTaxonPairsTest(unittest.TestCase):
     an empty matrix.
     """
 
-    CSV = ".,A,B,C,D\nA,0,1,2,2\nB,1,0,2,2\nC,2,2,0,1\nD,2,2,1,0\n"
+    CSV = ",A,B,C,D\nA,0,1,2,2\nB,1,0,2,2\nC,2,2,0,1\nD,2,2,1,0\n"
     EXPECTED_DISTANCES = [1.0, 1.0, 2.0, 2.0, 2.0, 2.0]
 
     def build_from_csv(self):
@@ -1001,9 +1001,6 @@ class PhylogeneticDistanceMatrixFromDictTaxonPairsTest(unittest.TestCase):
                                from_tree.sum_of_distances(), 7)
 
     def test_one_triangle_of_the_input_still_gives_every_pair(self):
-        """
-        The pairs are collected after the lookups are mirrored.
-        """
         pdm = self.build_from_dict({
                 ("A", "B"): 1.0,
                 ("A", "C"): 2.0,
