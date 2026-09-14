@@ -979,11 +979,6 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         #     raise ValueError("A Node cannot have 'None' for an edge")
         if new_edge is self._edge:
             return
-        if self._parent_node is not None:
-            try:
-                self._parent_node._child_nodes.remove(self)
-            except ValueError:
-                pass
 
         ## Minimal management
         self._edge = new_edge
