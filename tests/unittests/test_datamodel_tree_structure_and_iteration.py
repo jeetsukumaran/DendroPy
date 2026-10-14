@@ -318,6 +318,17 @@ class TestTreeIterators(curated_test_tree.CuratedTestTree, unittest.TestCase):
         visited_labels = [nd.label for nd in nodes]
         self.assertSequenceEqual(visited_labels, self.levelorder_sequence)
 
+    def test_node_levelorder_iter(self):
+        tree = dendropy.Tree.get(data="((a,b)c,(d,e)f)g;", schema="newick")
+        labels = lambda it: [nd.label or nd.taxon.label for nd in it]
+        self.assertEqual(labels(tree.seed_node.levelorder_iter()),
+                ["g", "c", "f", "a", "b", "d", "e"])
+        self.assertEqual(labels(tree.seed_node.child_nodes()[1].levelorder_iter()),
+                ["f", "d", "e"])
+        self.assertEqual(
+                labels(tree.seed_node.levelorder_iter(lambda nd: nd.is_leaf())),
+                ["a", "b", "d", "e"])
+
     def test_levelorder_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         f = lambda x: x.edge.length > 13

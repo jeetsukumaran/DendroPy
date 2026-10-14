@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from collections import deque
 from io import StringIO
 from dendropy.utility import deprecate
 from dendropy.utility import error
@@ -288,9 +289,9 @@ class Node(basemodel.DataObject, basemodel.Annotable):
         """
         if filter_fn is None or filter_fn(self):
             yield self
-        remaining = self.child_nodes()
+        remaining = deque(self.child_nodes())
         while len(remaining) > 0:
-            node = remaining.pop(0)
+            node = remaining.popleft()
             if filter_fn is None or filter_fn(node):
                 yield node
             child_nodes = node.child_nodes()
