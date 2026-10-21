@@ -4344,7 +4344,10 @@ class Tree(
         width=120,
     ):
         if not is_bipartitions_updated:
-            self.encode_bipartitions()
+            self.encode_bipartitions(
+                collapse_unrooted_basal_bifurcation=False,
+                suppress_unifurcations=False,
+            )
 
         def _print_node(nd):
             d = []
