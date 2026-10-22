@@ -131,6 +131,10 @@ Arrangements) model</p>
 <dd><p>Given a tree with bipartitions encoded, and two taxa on that tree, returns the
 patristic distance between the two. Much more inefficient than constructing
 a PhylogeneticDistanceMatrix object.</p>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation, modifying
+the tree. Alternatively, call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with
+desired options then pass <code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">

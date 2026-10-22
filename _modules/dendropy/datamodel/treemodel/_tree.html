@@ -2610,6 +2610,25 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span></div>
 
 
+    <span class="k">def</span> <span class="nf">_has_unrooted_basal_bifurcation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Returns |True| if unrooted with a basal bifurcation that can be collapsed.&quot;</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed_node</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_rooted</span>
+            <span class="ow">and</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">seed</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">seed</span><span class="o">.</span><span class="n">_child_nodes</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_warn_using_uncollapsed_bipartition_encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Reusing bipartition encoding without collapsing basal &quot;</span>
+            <span class="s2">&quot;bifurcation; results may incorrectly count the basal split &quot;</span>
+            <span class="s2">&quot;twice. Call collapse_basal_bifurcation() then &quot;</span>
+            <span class="s2">&quot;update_bipartitions(), or pass is_bipartitions_updated=False.&quot;</span><span class="p">,</span>
+            <span class="ne">UserWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_get_seed_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed_node</span>
 

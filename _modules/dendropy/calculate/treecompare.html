@@ -102,6 +102,13 @@
 <span class="sd">        The symmetric difference (a.k.a. the unweighted Robinson-Foulds</span>
 <span class="sd">        distance) between ``tree1`` and ``tree2``.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">    suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">    :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">    ``is_bipartitions_updated=True``.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 
@@ -135,6 +142,13 @@
 <span class="k">def</span> <span class="nf">unweighted_robinson_foulds_distance</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Alias for ``symmetric_difference()``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">    suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">    :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">    ``is_bipartitions_updated=True``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">symmetric_difference</span><span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">,</span> <span class="n">is_bipartitions_updated</span><span class="p">)</span></div>
 
@@ -178,6 +192,13 @@
 <span class="sd">    -------</span>
 <span class="sd">    d : float</span>
 <span class="sd">        The edge-weighted Robinson-Foulds distance between ``tree1`` and ``tree2``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">    suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">    :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">    ``is_bipartitions_updated=True``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -248,6 +269,13 @@
 <span class="sd">    t : tuple(int)</span>
 <span class="sd">        A pair of integers, with first integer being the number of false</span>
 <span class="sd">        positives and the second being the number of false negatives.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">    suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">    :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">    ``is_bipartitions_updated=True``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -328,6 +356,13 @@
 <span class="sd">    d : int</span>
 <span class="sd">        The Euclidean distance between ``tree1`` and ``tree2``.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">    suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">    :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">    ``is_bipartitions_updated=True``.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 
@@ -392,6 +427,12 @@
 <span class="sd">    s : list[|Bipartition|]</span>
 <span class="sd">        A list of bipartitions that are in the first tree but not in the second.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">    suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">    :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">    ``is_bipartitions_updated=True``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">missing</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">comparison_tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
@@ -402,6 +443,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">reference_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">_has_unrooted_basal_bifurcation</span><span class="p">():</span>
+            <span class="n">reference_tree</span><span class="o">.</span><span class="n">_warn_using_uncollapsed_bipartition_encoding</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">comparison_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">comparison_tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">bipartition</span> <span class="ow">in</span> <span class="n">reference_tree</span><span class="o">.</span><span class="n">bipartition_encoding</span><span class="p">:</span>
@@ -818,10 +861,11 @@
         <span class="n">tree1</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
         <span class="n">tree2</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">tree1</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tree1</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">tree2</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tree2</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="p">(</span><span class="n">tree1</span><span class="p">,</span> <span class="n">tree2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">bipartition_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">tree</span><span class="o">.</span><span class="n">_has_unrooted_basal_bifurcation</span><span class="p">():</span>
+                <span class="n">tree</span><span class="o">.</span><span class="n">_warn_using_uncollapsed_bipartition_encoding</span><span class="p">()</span>
 
     <span class="n">tree1_bipartition_edge_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">tree2</span><span class="o">.</span><span class="n">bipartition_edge_map</span><span class="p">)</span> <span class="c1"># O(n*(2*bind + dict_item_cost))</span>
     <span class="n">tree2_bipartition_edge_map</span> <span class="o">=</span> <span class="n">tree1</span><span class="o">.</span><span class="n">bipartition_edge_map</span>

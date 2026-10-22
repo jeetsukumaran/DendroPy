@@ -87,6 +87,12 @@
 <span class="sd">    Given a tree with bipartitions encoded, and two taxa on that tree, returns the</span>
 <span class="sd">    patristic distance between the two. Much more inefficient than constructing</span>
 <span class="sd">    a PhylogeneticDistanceMatrix object.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Encoding bipartitions may collapse an unrooted basal bifurcation, modifying</span>
+<span class="sd">    the tree. Alternatively, call :meth:`Tree.encode_bipartitions()` with</span>
+<span class="sd">    desired options then pass ``is_bipartitions_updated=True``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mrca</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">mrca</span><span class="p">(</span><span class="n">taxa</span><span class="o">=</span><span class="p">[</span><span class="n">taxon1</span><span class="p">,</span> <span class="n">taxon2</span><span class="p">],</span> <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="n">is_bipartitions_updated</span><span class="p">)</span>
     <span class="n">dist</span> <span class="o">=</span> <span class="mi">0</span>

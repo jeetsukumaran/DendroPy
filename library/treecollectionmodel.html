@@ -411,6 +411,11 @@ objects are migrated into <code class="docutils literal notranslate"><span class
 in which the split is found.</p>
 <p>If the tree(s) in the collection are unrooted, then the bipartition
 will be normalized for the comparison.</p>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1032,6 +1037,11 @@ given <a class="reference internal" href="taxonmodel.html#dendropy.datamodel.tax
 <dd><p>Return <a class="reference internal" href="#dendropy.datamodel.treecollectionmodel.SplitDistribution" title="dendropy.datamodel.treecollectionmodel.SplitDistribution"><code class="xref any py py-class docutils literal notranslate"><span class="pre">SplitDistribution</span></code></a> collecting information on splits in
 contained trees. Keyword arguments get passed directly to
 <a class="reference internal" href="#dendropy.datamodel.treecollectionmodel.SplitDistribution" title="dendropy.datamodel.treecollectionmodel.SplitDistribution"><code class="xref any py py-class docutils literal notranslate"><span class="pre">SplitDistribution</span></code></a> constructor.</p>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1278,6 +1288,11 @@ splits already encoded and updated.</p></li>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1297,6 +1312,11 @@ splits already encoded and updated.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1316,6 +1336,11 @@ splits already encoded and updated.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1434,6 +1459,11 @@ splits already encoded and updated.</p></li>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1669,6 +1699,11 @@ splits already encoded and updated.</p></li>
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1699,6 +1734,11 @@ different leaf sets.</p></li>
 <dd class="field-even"><p><strong>s</strong> (<em>numeric</em>) – The log product of the support of the splits of the tree.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1744,6 +1784,11 @@ proportional frequency that the split is found in the current
 distribution.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1780,6 +1825,11 @@ different leaf sets.</p></li>
 <dd class="field-even"><p><strong>s</strong> (<em>numeric</em>) – The sum of the support of the splits of the tree.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1797,6 +1847,11 @@ different leaf sets.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 </dd></dl>

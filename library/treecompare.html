@@ -77,6 +77,11 @@ calculated before, either explicitly or implicitly.</p></li>
 <dd class="field-even"><p><strong>d</strong> (<em>int</em>) – The Euclidean distance between <code class="docutils literal notranslate"><span class="pre">tree1</span></code> and <code class="docutils literal notranslate"><span class="pre">tree2</span></code>.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
 <span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
@@ -128,6 +133,11 @@ calculated before, either explicitly or implicitly.</p></li>
 positives and the second being the number of false negatives.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
 <span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
@@ -176,6 +186,11 @@ calculated before, either explicitly or implicitly.</p></li>
 <dd class="field-even"><p><strong>s</strong> (<em>list[|Bipartition|]</em>) – A list of bipartitions that are in the first tree but not in the second.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -223,6 +238,11 @@ before, either explicitly or implicitly.</p></li>
 distance) between <code class="docutils literal notranslate"><span class="pre">tree1</span></code> and <code class="docutils literal notranslate"><span class="pre">tree2</span></code>.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dendropy</span> <span class="kn">import</span> <span class="n">TaxonNamespace</span><span class="p">,</span> <span class="n">Tree</span>
 <span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>
@@ -246,6 +266,11 @@ distance) between <code class="docutils literal notranslate"><span class="pre">t
 <dt class="sig sig-object py" id="dendropy.calculate.treecompare.unweighted_robinson_foulds_distance">
 <span class="sig-prename descclassname"><span class="pre">dendropy.calculate.treecompare.</span></span><span class="sig-name descname"><span class="pre">unweighted_robinson_foulds_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_bipartitions_updated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dendropy/calculate/treecompare.html#unweighted_robinson_foulds_distance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dendropy.calculate.treecompare.unweighted_robinson_foulds_distance" title="Link to this definition">¶</a></dt>
 <dd><p>Alias for <code class="docutils literal notranslate"><span class="pre">symmetric_difference()</span></code>.</p>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -278,6 +303,11 @@ before, either explicitly or implicitly.</p></li>
 <dd class="field-even"><p><strong>d</strong> (<em>float</em>) – The edge-weighted Robinson-Foulds distance between <code class="docutils literal notranslate"><span class="pre">tree1</span></code> and <code class="docutils literal notranslate"><span class="pre">tree2</span></code>.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Encoding bipartitions may collapse an unrooted basal bifurcation or
+suppress unifurcations, modifying the tree. Alternatively, call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Tree.encode_bipartitions</span></code> with desired options then pass
+<code class="docutils literal notranslate"><span class="pre">is_bipartitions_updated=True</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dendropy</span>
 <span class="kn">from</span> <span class="nn">dendropy.calculate</span> <span class="kn">import</span> <span class="n">treecompare</span>

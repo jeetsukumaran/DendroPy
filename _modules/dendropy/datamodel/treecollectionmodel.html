@@ -1142,6 +1142,13 @@
 <span class="sd">        Return `SplitDistribution` collecting information on splits in</span>
 <span class="sd">        contained trees. Keyword arguments get passed directly to</span>
 <span class="sd">        `SplitDistribution` constructor.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="s2">&quot;taxon_namespace&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;taxon_namespace&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;taxon_namespace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span>
@@ -1266,6 +1273,13 @@
 
 <span class="sd">        If the tree(s) in the collection are unrooted, then the bipartition</span>
 <span class="sd">        will be normalized for the comparison.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">split</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">is_bipartitions_updated</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;is_bipartitions_updated&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -1457,6 +1471,13 @@
 <span class="sd">            A list of edge length values from ``tree``.</span>
 <span class="sd">        a :</span>
 <span class="sd">            A list of node age values from ``tree``.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_trees_counted</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -1482,6 +1503,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">tree_rooting_types_counted</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_bipartitions_updated</span><span class="p">:</span>
             <span class="n">tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">tree</span><span class="o">.</span><span class="n">_has_unrooted_basal_bifurcation</span><span class="p">():</span>
+            <span class="n">tree</span><span class="o">.</span><span class="n">_warn_using_uncollapsed_bipartition_encoding</span><span class="p">()</span>
         <span class="n">splits</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">edge_lengths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">node_ages</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1664,6 +1687,13 @@
 <span class="sd">            List of values for splits in the tree corresponding to the</span>
 <span class="sd">            proportional frequency that the split is found in the current</span>
 <span class="sd">            distribution.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">traversal_strategy</span> <span class="o">==</span> <span class="s2">&quot;preorder&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">include_external_splits</span><span class="p">:</span>
@@ -1679,6 +1709,8 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Traversal strategy not supported: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">traversal_strategy</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_bipartitions_updated</span><span class="p">:</span>
             <span class="n">tree</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">tree</span><span class="o">.</span><span class="n">_has_unrooted_basal_bifurcation</span><span class="p">():</span>
+            <span class="n">tree</span><span class="o">.</span><span class="n">_warn_using_uncollapsed_bipartition_encoding</span><span class="p">()</span>
         <span class="n">split_frequencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_split_frequencies</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">iter_fn</span><span class="p">():</span>
             <span class="n">split</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">split_bitmask</span>
@@ -1764,6 +1796,13 @@
 <span class="sd">        -------</span>
 <span class="sd">        s : numeric</span>
 <span class="sd">            The log product of the support of the splits of the tree.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log_product_of_split_support</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">split_support</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_support_iter</span><span class="p">(</span>
@@ -1806,6 +1845,13 @@
 <span class="sd">        -------</span>
 <span class="sd">        s : numeric</span>
 <span class="sd">            The sum of the support of the splits of the tree.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sum_of_split_support</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">split_support</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_support_iter</span><span class="p">(</span>
@@ -1929,6 +1975,12 @@
 <span class="sd">            `SplitDistributionSummarizer` object. See</span>
 <span class="sd">            :meth:`SplitDistributionSummarizer.configure` for options.</span>
 
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">TaxonNamespaceIdentityError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>
@@ -2467,6 +2519,13 @@
 <span class="sd">            A list of split bitmasks from ``tree``.</span>
 <span class="sd">        e :</span>
 <span class="sd">            A list of edge length values from ``tree``.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon_namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">TaxonNamespaceIdentityError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">)</span>
@@ -2528,6 +2587,12 @@
 <span class="sd">            updated. Otherwise, if |True|, then the tree is assumed to have its</span>
 <span class="sd">            splits already encoded and updated.</span>
 
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">tree</span> <span class="ow">in</span> <span class="n">trees</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span>
@@ -2682,6 +2747,12 @@
 <span class="sd">            updated. Otherwise, if |True|, then the tree is assumed to have its</span>
 <span class="sd">            splits already encoded and updated.</span>
 
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_tree</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
                 <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="n">is_bipartitions_updated</span><span class="p">)</span></div>
@@ -2715,6 +2786,13 @@
 <span class="sd">            A list of split bitmasks from ``tree``.</span>
 <span class="sd">        e :</span>
 <span class="sd">            A list of edge length values ``tree``.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Encoding bipartitions may collapse an unrooted basal bifurcation or</span>
+<span class="sd">        suppress unifurcations, modifying the tree. Alternatively, call</span>
+<span class="sd">        :meth:`Tree.encode_bipartitions()` with desired options then pass</span>
+<span class="sd">        ``is_bipartitions_updated=True``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_tree</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
                 <span class="n">is_bipartitions_updated</span><span class="o">=</span><span class="n">is_bipartitions_updated</span><span class="p">,</span>
