@@ -35,7 +35,7 @@ _LOG = messaging.get_logger(__name__)
 class QuantileSampleSizeTests(unittest.TestCase):
 
     def test_insufficient_lower_quantile_rank(self):
-        for size in range(1, 11):
+        for size in range(11):
             with self.subTest(size=size):
                 values = list(range(size))
                 with self.assertRaises(ValueError):
