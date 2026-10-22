@@ -957,6 +957,21 @@ class TreeRestructuring(dendropytest.ExtendedTestCase):
         t.polytomize_root(set_as_unrooted_tree=True)
         self.assertEqual(t.is_rooted, False)
 
+    def test_has_unrooted_basal_bifurcation(self):
+        for newick, is_rooted, expected in (
+            ("((A,B),(C,D));", False, True),
+            ("((A,B),(C,D));", None, True),
+            ("(A,(B,C));", False, True),
+            ("((A,B),(C,D));", True, False),
+            ("(A,B,(C,D));", False, False),
+            ("(A,B);", False, False),
+        ):
+            t = dendropy.Tree.get(data=newick, schema="newick")
+            t.is_rooted = is_rooted
+            self.assertEqual(t._has_unrooted_basal_bifurcation(), expected)
+            t.collapse_basal_bifurcation(set_as_unrooted_tree=False)
+            self.assertFalse(t._has_unrooted_basal_bifurcation())
+
     def test_collapse_basal_bifurcation(self):
         self.assertFalse(self.fail_incomplete_tests())
 

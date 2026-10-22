@@ -204,6 +204,8 @@ class TreeSummarizer(object):
         assert tree.taxon_namespace is split_distribution.taxon_namespace
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
+        elif tree._has_unrooted_basal_bifurcation():
+            tree._warn_using_uncollapsed_bipartition_encoding()
         split_edge_length_summaries = split_distribution.split_edge_length_summaries
         split_node_age_summaries = split_distribution.split_node_age_summaries
         fields = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
@@ -259,6 +261,8 @@ class TreeSummarizer(object):
             summarization_fn = lambda x: float(sum(x))/len(x)
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
+        elif tree._has_unrooted_basal_bifurcation():
+            tree._warn_using_uncollapsed_bipartition_encoding()
         #'height',
         #'height_median',
         #'height_95hpd',
@@ -315,6 +319,8 @@ class TreeSummarizer(object):
             summarization_fn = lambda x: float(sum(x))/len(x)
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
+        elif tree._has_unrooted_basal_bifurcation():
+            tree._warn_using_uncollapsed_bipartition_encoding()
         for edge in tree.postorder_edge_iter():
             split = edge.bipartition.split_bitmask
             if (split in split_distribution.split_edge_lengths

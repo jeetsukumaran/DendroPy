@@ -388,6 +388,8 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
     else:
         if reference_tree.bipartition_encoding is None:
             reference_tree.encode_bipartitions()
+        elif reference_tree._has_unrooted_basal_bifurcation():
+            reference_tree._warn_using_uncollapsed_bipartition_encoding()
         if comparison_tree.bipartition_encoding is None:
             comparison_tree.encode_bipartitions()
     for bipartition in reference_tree.bipartition_encoding:
@@ -797,10 +799,11 @@ def _get_length_diffs(
         tree1.encode_bipartitions()
         tree2.encode_bipartitions()
     else:
-        if tree1.bipartition_encoding is None:
-            tree1.encode_bipartitions()
-        if tree2.bipartition_encoding is None:
-            tree2.encode_bipartitions()
+        for tree in (tree1, tree2):
+            if tree.bipartition_encoding is None:
+                tree.encode_bipartitions()
+            elif tree._has_unrooted_basal_bifurcation():
+                tree._warn_using_uncollapsed_bipartition_encoding()
 
     tree1_bipartition_edge_map = dict(tree2.bipartition_edge_map) # O(n*(2*bind + dict_item_cost))
     tree2_bipartition_edge_map = tree1.bipartition_edge_map

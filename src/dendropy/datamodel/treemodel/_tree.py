@@ -2405,6 +2405,25 @@ class Tree(
             self.is_rooted = False
         return self.seed_node
 
+    def _has_unrooted_basal_bifurcation(self):
+        "Returns |True| if unrooted with a basal bifurcation that can be collapsed."
+        seed = self.seed_node
+        return (
+            not self._is_rooted
+            and seed is not None
+            and len(seed._child_nodes) == 2
+            and any(len(ch._child_nodes) >= 2 for ch in seed._child_nodes)
+        )
+
+    def _warn_using_uncollapsed_bipartition_encoding(self):
+        warnings.warn(
+            "Reusing bipartition encoding with uncollapsed basal "
+            "bifurcation; results may incorrectly count the basal split "
+            "twice. Call collapse_basal_bifurcation() then "
+            "update_bipartitions(), or pass is_bipartitions_updated=False.",
+            UserWarning,
+        )
+
     def _get_seed_node(self):
         return self._seed_node
 
