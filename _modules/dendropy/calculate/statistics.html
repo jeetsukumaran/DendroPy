@@ -263,7 +263,11 @@
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
     <span class="n">idx5</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">idx95</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="mf">0.95</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">idx5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">:</span>
+        <span class="c1"># @mmore500: 20 is a conservative threshold, where behavior of other</span>
+        <span class="c1"># packages seems to mostly be returning the entire range of values</span>
+        <span class="c1"># ... open to relaxing this in the future, but for now, this is a</span>
+        <span class="c1"># conservative initial bugfix RE PR #247</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sample size too small: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="n">idx5</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="n">idx95</span><span class="p">]</span></div>
 
