@@ -205,7 +205,7 @@ def quantile_5_95(values):
     size = len(values)
     idx5 = int(round(size * 0.05)) - 1
     idx95 = int(round(size * 0.95)) - 1
-    if idx5 == 0:
+    if idx5 < 0:
         raise ValueError("Sample size too small: %s" % len(values))
     return values[idx5], values[idx95]
 
