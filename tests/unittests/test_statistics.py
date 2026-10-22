@@ -32,6 +32,25 @@ from dendropy.utility import messaging
 
 _LOG = messaging.get_logger(__name__)
 
+class QuantileSampleSizeTests(unittest.TestCase):
+
+    def test_insufficient_sample_size(self):
+        for size in range(20):
+            with self.subTest(size=size):
+                values = list(range(size))
+                with self.assertRaises(ValueError):
+                    statistics.quantile_5_95(values)
+                if size:
+                    self.assertIsNone(statistics.summarize(values)["quant_5_95"])
+
+    def test_first_order_statistic_is_valid(self):
+        for size, expected in [(20, (0, 18)), (21, (0, 19)),
+                               (29, (0, 27)), (30, (1, 27))]:
+            with self.subTest(size=size):
+                self.assertEqual(
+                    statistics.quantile_5_95(list(reversed(range(size)))),
+                    expected)
+
 class HpdCalculationTests(dendropytest.ExtendedTestCase):
     """
     Test reference values as given by ``hpd.emp``, in the "TeachingDemos" package
@@ -646,4 +665,3 @@ class FishersExactTests(dendropytest.ExtendedTestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -205,7 +205,11 @@ def quantile_5_95(values):
     size = len(values)
     idx5 = int(round(size * 0.05)) - 1
     idx95 = int(round(size * 0.95)) - 1
-    if idx5 == 0:
+    if size < 20:
+        # @mmore500: 20 is a conservative threshold, where behavior of other
+        # packages seems to mostly be returning the entire range of values
+        # ... open to relaxing this in the future, but for now, this is a
+        # conservative initial bugfix RE PR #247
         raise ValueError("Sample size too small: %s" % len(values))
     return values[idx5], values[idx95]
 
