@@ -1392,6 +1392,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             self.tree_rooting_types_counted.add(False)
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
+        elif tree._has_unrooted_basal_bifurcation():
+            tree._warn_using_uncollapsed_bipartition_encoding()
         splits = []
         edge_lengths = []
         node_ages = []
@@ -1584,6 +1586,8 @@ class SplitDistribution(taxonmodel.TaxonNamespaceAssociated):
             raise ValueError("Traversal strategy not supported: '{}'".format(traversal_strategy))
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
+        elif tree._has_unrooted_basal_bifurcation():
+            tree._warn_using_uncollapsed_bipartition_encoding()
         split_frequencies = self._get_split_frequencies()
         for nd in iter_fn():
             split = nd.edge.split_bitmask
