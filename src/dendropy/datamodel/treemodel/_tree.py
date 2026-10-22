@@ -1539,7 +1539,10 @@ class Tree(
         if start_node.edge.bipartition.leafset_bitmask == 0 or not kwargs.get(
             "is_bipartitions_updated", True
         ):
-            self.encode_bipartitions(suppress_unifurcations=False)
+            self.encode_bipartitions(
+                collapse_unrooted_basal_bifurcation=False,
+                suppress_unifurcations=False,
+            )
 
         if (
             start_node.edge.bipartition.leafset_bitmask & leafset_bitmask
@@ -4341,7 +4344,10 @@ class Tree(
         width=120,
     ):
         if not is_bipartitions_updated:
-            self.encode_bipartitions()
+            self.encode_bipartitions(
+                collapse_unrooted_basal_bifurcation=False,
+                suppress_unifurcations=False,
+            )
 
         def _print_node(nd):
             d = []
