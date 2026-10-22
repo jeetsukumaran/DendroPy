@@ -1650,7 +1650,10 @@
         <span class="k">if</span> <span class="n">start_node</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">leafset_bitmask</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;is_bipartitions_updated&quot;</span><span class="p">,</span> <span class="kc">True</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">(</span><span class="n">suppress_unifurcations</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">(</span>
+                <span class="n">collapse_unrooted_basal_bifurcation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">suppress_unifurcations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">start_node</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">bipartition</span><span class="o">.</span><span class="n">leafset_bitmask</span> <span class="o">&amp;</span> <span class="n">leafset_bitmask</span>
@@ -4720,7 +4723,10 @@
         <span class="n">width</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_bipartitions_updated</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encode_bipartitions</span><span class="p">(</span>
+                <span class="n">collapse_unrooted_basal_bifurcation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">suppress_unifurcations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_print_node</span><span class="p">(</span><span class="n">nd</span><span class="p">):</span>
             <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
