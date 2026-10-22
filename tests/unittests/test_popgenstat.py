@@ -23,6 +23,7 @@ Tests population genetic statistic calculation.
 """
 
 import unittest
+import itertools
 import math
 import dendropy
 import os
@@ -107,6 +108,27 @@ class SinglePopTest(dendropytest.ExtendedTestCase):
 
     def test_wattersons_theta(self):
         self.assertAlmostEqual(popgenstat.wattersons_theta(self.data, ignore_uncertain=True), 49.00528, 4)
+
+    def test_missing_first_sample(self):
+        for states in itertools.permutations("N?-AC"):
+            with self.subTest(states=states):
+                matrix = dendropy.DnaCharacterMatrix.from_dict({
+                    str(index): state for index, state in enumerate(states)
+                })
+                self.assertEqual(popgenstat.num_segregating_sites(matrix), 1)
+                self.assertAlmostEqual(popgenstat.wattersons_theta(matrix), 0.48)
+
+    def test_missing_and_invariant_columns(self):
+        matrix = dendropy.DnaCharacterMatrix.from_dict({
+            "a": "NA-?A", "b": "ACANA", "c": "CCCCC",
+        })
+        self.assertEqual(popgenstat.num_segregating_sites(matrix), 4)
+        self.assertEqual(
+            popgenstat.num_segregating_sites(matrix, ignore_uncertain=False), 5)
+        missing = dendropy.DnaCharacterMatrix.from_dict({
+            "a": "N?-", "b": "?N-", "c": "NN?",
+        })
+        self.assertEqual(popgenstat.num_segregating_sites(missing), 0)
 
 class PopulationPairSummaryStatisticsTests(dendropytest.ExtendedTestCase):
 
