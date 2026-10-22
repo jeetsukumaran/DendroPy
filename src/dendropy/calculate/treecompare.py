@@ -123,8 +123,8 @@ def weighted_robinson_foulds_distance(
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
     is_bipartitions_updated : bool
-        If |True|, then the bipartitions on *both* trees will be updated before
-        comparison. If |False| (default) then the bipartitions will only be
+        If |False| (default), then the bipartitions on *both* trees will be updated
+        before comparison. If |True| then the bipartitions will only be
         calculated for a |Tree| object if they have not been calculated
         before, either explicitly or implicitly.
 
@@ -189,8 +189,8 @@ def false_positives_and_negatives(
         same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
-        If |True|, then the bipartitions on *both* trees will be updated
-        before comparison. If |False| (default) then the bipartitions
+        If |False| (default), then the bipartitions on *both* trees will be updated
+        before comparison. If |True| then the bipartitions
         will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 
@@ -266,8 +266,8 @@ def euclidean_distance(
     edge_weight_attr : string
         Name of attribute on edges of trees to be used as the weight.
     is_bipartitions_updated : bool
-        If |True|, then the bipartitions on *both* trees will be updated
-        before comparison. If |False| (default) then the bipartitions
+        If |False| (default), then the bipartitions on *both* trees will be updated
+        before comparison. If |True| then the bipartitions
         will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 
@@ -327,8 +327,8 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
         same |TaxonNamespace| reference as ``tree1`` and must have
         bipartitions encoded.
     is_bipartitions_updated : bool
-        If |True|, then the bipartitions on *both* trees will be updated
-        before comparison. If |False| (default) then the bipartitions
+        If |False| (default), then the bipartitions on *both* trees will be updated
+        before comparison. If |True| then the bipartitions
         will only be calculated for a |Tree| object if they have not been
         calculated before, either explicitly or implicitly.
 
