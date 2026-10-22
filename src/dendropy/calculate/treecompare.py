@@ -62,6 +62,13 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
         The symmetric difference (a.k.a. the unweighted Robinson-Foulds
         distance) between ``tree1`` and ``tree2``.
 
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
+
     Examples
     --------
 
@@ -92,6 +99,13 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
 def unweighted_robinson_foulds_distance(tree1, tree2, is_bipartitions_updated=False):
     """
     Alias for ``symmetric_difference()``.
+
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
     """
     return symmetric_difference(tree1, tree2, is_bipartitions_updated)
 
@@ -132,6 +146,13 @@ def weighted_robinson_foulds_distance(
     -------
     d : float
         The edge-weighted Robinson-Foulds distance between ``tree1`` and ``tree2``.
+
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
 
     Examples
     --------
@@ -199,6 +220,13 @@ def false_positives_and_negatives(
     t : tuple(int)
         A pair of integers, with first integer being the number of false
         positives and the second being the number of false negatives.
+
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
 
     Examples
     --------
@@ -276,6 +304,13 @@ def euclidean_distance(
     d : int
         The Euclidean distance between ``tree1`` and ``tree2``.
 
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
+
     Examples
     --------
 
@@ -337,6 +372,12 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
     s : list[|Bipartition|]
         A list of bipartitions that are in the first tree but not in the second.
 
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
     """
     missing = []
     if reference_tree.taxon_namespace is not comparison_tree.taxon_namespace:

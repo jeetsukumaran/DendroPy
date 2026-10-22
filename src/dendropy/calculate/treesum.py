@@ -193,6 +193,13 @@ class TreeSummarizer(object):
             ``length_hpd95``,
             ``length_range``,
         These attributes will be added to the annotations dictionary to be persisted.
+
+        Notes
+        -----
+        Encoding bipartitions may collapse an unrooted basal bifurcation or
+        suppress unifurcations, modifying the tree. Alternatively, call
+        :meth:`Tree.encode_bipartitions()` with desired options then pass
+        ``is_bipartitions_updated=True``.
         """
         assert tree.taxon_namespace is split_distribution.taxon_namespace
         if not is_bipartitions_updated:
@@ -240,6 +247,13 @@ class TreeSummarizer(object):
         correspond to the ``age`` attribute value.
         If ``collapse_negative_edges`` is True, then edge lengths with negative values will be set to 0.
         If ``allow_negative_edges`` is True, then no error will be raised if edges have negative lengths.
+
+        Notes
+        -----
+        Encoding bipartitions may collapse an unrooted basal bifurcation or
+        suppress unifurcations, modifying the tree. Alternatively, call
+        :meth:`Tree.encode_bipartitions()` with desired options then pass
+        ``is_bipartitions_updated=True``.
         """
         if summarization_fn is None:
             summarization_fn = lambda x: float(sum(x))/len(x)
@@ -289,6 +303,13 @@ class TreeSummarizer(object):
         summarized.
         ``summarization_fn`` should take an iterable of floats, and return a float. If |None|, it
         defaults to calculating the mean (``lambda x: float(sum(x))/len(x)``).
+
+        Notes
+        -----
+        Encoding bipartitions may collapse an unrooted basal bifurcation or
+        suppress unifurcations, modifying the tree. Alternatively, call
+        :meth:`Tree.encode_bipartitions()` with desired options then pass
+        ``is_bipartitions_updated=True``.
         """
         if summarization_fn is None:
             summarization_fn = lambda x: float(sum(x))/len(x)
@@ -314,6 +335,13 @@ class TreeSummarizer(object):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,
         if passed as an argument) is returned collating the split data in the files.
+
+        Notes
+        -----
+        Encoding bipartitions may collapse an unrooted basal bifurcation or
+        suppress unifurcations, modifying the tree. Alternatively, call
+        :meth:`Tree.encode_bipartitions()` with desired options then pass
+        ``is_bipartitions_updated=True``.
         """
         if split_distribution is None:
             split_distribution = dendropy.SplitDistribution()
@@ -333,6 +361,13 @@ class TreeSummarizer(object):
         """
         Returns a consensus tree of all trees in ``trees``, with minumum frequency
         of split to be added to the consensus tree given by ``min_freq``.
+
+        Notes
+        -----
+        Encoding bipartitions may collapse an unrooted basal bifurcation or
+        suppress unifurcations, modifying the tree. Alternatively, call
+        :meth:`Tree.encode_bipartitions()` with desired options then pass
+        ``is_bipartitions_updated=True``.
         """
         taxon_namespace = trees[0].taxon_namespace
         split_distribution = dendropy.SplitDistribution(taxon_namespace=taxon_namespace)
@@ -349,6 +384,13 @@ def consensus_tree(trees, min_freq=0.5, is_bipartitions_updated=False, **kwargs)
     """
     Returns a consensus tree of all trees in ``trees``, with minumum frequency
     of split to be added to the consensus tree given by ``min_freq``.
+
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
     """
     tsum = TreeSummarizer(**kwargs)
     return tsum.consensus_tree(trees,
@@ -401,6 +443,13 @@ class TopologyCounter(object):
             is_bipartitions_updated=False):
         """
         Logs/registers a tree.
+
+        Notes
+        -----
+        Encoding bipartitions may collapse an unrooted basal bifurcation or
+        suppress unifurcations, modifying the tree. Alternatively, call
+        :meth:`Tree.encode_bipartitions()` with desired options then pass
+        ``is_bipartitions_updated=True``.
         """
         if not is_bipartitions_updated:
             tree.encode_bipartitions()
