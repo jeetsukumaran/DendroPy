@@ -44,6 +44,12 @@ def patristic_distance(tree, taxon1, taxon2, is_bipartitions_updated=False):
     Given a tree with bipartitions encoded, and two taxa on that tree, returns the
     patristic distance between the two. Much more inefficient than constructing
     a PhylogeneticDistanceMatrix object.
+
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation, modifying
+    the tree. Alternatively, call :meth:`Tree.encode_bipartitions()` with
+    desired options then pass ``is_bipartitions_updated=True``.
     """
     mrca = tree.mrca(taxa=[taxon1, taxon2], is_bipartitions_updated=is_bipartitions_updated)
     dist = 0

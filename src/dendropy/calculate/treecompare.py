@@ -62,6 +62,13 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
         The symmetric difference (a.k.a. the unweighted Robinson-Foulds
         distance) between ``tree1`` and ``tree2``.
 
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
+
     Examples
     --------
 
@@ -92,6 +99,13 @@ def symmetric_difference(tree1, tree2, is_bipartitions_updated=False):
 def unweighted_robinson_foulds_distance(tree1, tree2, is_bipartitions_updated=False):
     """
     Alias for ``symmetric_difference()``.
+
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
     """
     return symmetric_difference(tree1, tree2, is_bipartitions_updated)
 
@@ -132,6 +146,13 @@ def weighted_robinson_foulds_distance(
     -------
     d : float
         The edge-weighted Robinson-Foulds distance between ``tree1`` and ``tree2``.
+
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
 
     Examples
     --------
@@ -199,6 +220,13 @@ def false_positives_and_negatives(
     t : tuple(int)
         A pair of integers, with first integer being the number of false
         positives and the second being the number of false negatives.
+
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
 
     Examples
     --------
@@ -276,6 +304,13 @@ def euclidean_distance(
     d : int
         The Euclidean distance between ``tree1`` and ``tree2``.
 
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
+
     Examples
     --------
 
@@ -337,6 +372,12 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
     s : list[|Bipartition|]
         A list of bipartitions that are in the first tree but not in the second.
 
+    Notes
+    -----
+    Encoding bipartitions may collapse an unrooted basal bifurcation or
+    suppress unifurcations, modifying the tree. Alternatively, call
+    :meth:`Tree.encode_bipartitions()` with desired options then pass
+    ``is_bipartitions_updated=True``.
     """
     missing = []
     if reference_tree.taxon_namespace is not comparison_tree.taxon_namespace:
@@ -347,6 +388,8 @@ def find_missing_bipartitions(reference_tree, comparison_tree, is_bipartitions_u
     else:
         if reference_tree.bipartition_encoding is None:
             reference_tree.encode_bipartitions()
+        elif reference_tree._has_unrooted_basal_bifurcation():
+            reference_tree._warn_using_uncollapsed_bipartition_encoding()
         if comparison_tree.bipartition_encoding is None:
             comparison_tree.encode_bipartitions()
     for bipartition in reference_tree.bipartition_encoding:
@@ -756,10 +799,11 @@ def _get_length_diffs(
         tree1.encode_bipartitions()
         tree2.encode_bipartitions()
     else:
-        if tree1.bipartition_encoding is None:
-            tree1.encode_bipartitions()
-        if tree2.bipartition_encoding is None:
-            tree2.encode_bipartitions()
+        for tree in (tree1, tree2):
+            if tree.bipartition_encoding is None:
+                tree.encode_bipartitions()
+            elif tree._has_unrooted_basal_bifurcation():
+                tree._warn_using_uncollapsed_bipartition_encoding()
 
     tree1_bipartition_edge_map = dict(tree2.bipartition_edge_map) # O(n*(2*bind + dict_item_cost))
     tree2_bipartition_edge_map = tree1.bipartition_edge_map
