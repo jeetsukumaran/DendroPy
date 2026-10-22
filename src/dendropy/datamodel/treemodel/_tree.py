@@ -2417,7 +2417,7 @@ class Tree(
 
     def _warn_using_uncollapsed_bipartition_encoding(self):
         warnings.warn(
-            "Reusing bipartition encoding with uncollapsed basal "
+            "Reusing bipartition encoding without collapsing basal "
             "bifurcation; results may incorrectly count the basal split "
             "twice. Call collapse_basal_bifurcation() then "
             "update_bipartitions(), or pass is_bipartitions_updated=False.",
