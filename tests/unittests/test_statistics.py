@@ -34,16 +34,17 @@ _LOG = messaging.get_logger(__name__)
 
 class QuantileSampleSizeTests(unittest.TestCase):
 
-    def test_insufficient_lower_quantile_rank(self):
-        for size in range(11):
+    def test_insufficient_sample_size(self):
+        for size in range(20):
             with self.subTest(size=size):
                 values = list(range(size))
                 with self.assertRaises(ValueError):
                     statistics.quantile_5_95(values)
-                self.assertIsNone(statistics.summarize(values)["quant_5_95"])
+                if size:
+                    self.assertIsNone(statistics.summarize(values)["quant_5_95"])
 
     def test_first_order_statistic_is_valid(self):
-        for size, expected in [(11, (0, 9)), (20, (0, 18)),
+        for size, expected in [(20, (0, 18)), (21, (0, 19)),
                                (29, (0, 27)), (30, (1, 27))]:
             with self.subTest(size=size):
                 self.assertEqual(
