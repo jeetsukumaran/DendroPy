@@ -222,6 +222,20 @@ class TestMedian(unittest.TestCase):
     def testMedian(self):
         self.assertEqual(statistics.median([2, 9, 9, 7, 9, 2, 4, 5, 8]), 7)
 
+class EmpiricalCdfTests(unittest.TestCase):
+
+    def test_tied_observations(self):
+        values = [3, 1, 2, 2]
+        for value, expected in [(0, 0.0), (1, 0.25), (1.5, 0.25),
+                                (2, 0.75), (3, 1.0), (4, 1.0)]:
+            with self.subTest(value=value):
+                self.assertEqual(statistics.empirical_cdf(values, value), expected)
+        self.assertEqual(values, [3, 1, 2, 2])
+
+    def test_constant_sample(self):
+        self.assertEqual(statistics.empirical_cdf([7] * 20, 7), 1.0)
+
+
 class TestVarianceCovariance(unittest.TestCase):
 
     def setUp(self):
