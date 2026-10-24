@@ -27,23 +27,24 @@ from operator import itemgetter
 
 def _mean_and_variance_pop_n(values):
     n = 0
-    total = 0.0
+    s = 0.0
+    ss = 0.0
     mean = 0.0
-    m2 = 0.0
     for i, v in enumerate(values):
-        total += v
+        n += 1
+        s += v
         if i == 0:
             shift = v
-        # Center on the first observation to retain small differences around
-        # large values, then update the centered second moment in one pass.
+        # Center observations to avoid cancellation in the second moment.
         shifted = v - shift
-        n = i + 1
         delta = shifted - mean
         mean += delta / n
-        m2 += delta * (shifted - mean)
+        ss += delta * (shifted - mean)
     if n == 0:
         raise IndexError("values in mean_and_variance cannot be empty")
-    return float(total) / n, m2 / n, n
+    mean = float(s)/n
+    var = ss/n
+    return mean, var, n
 
 def mean_and_population_variance(values):
     """Returns the mean and population variance while only passing over the
