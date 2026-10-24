@@ -24,8 +24,8 @@ Tree summarization and consensus tree building.
 
 import copy
 import collections
+import statistics
 import dendropy
-from dendropy.calculate.statistics import mean_and_sample_variance
 
 ##############################################################################
 ## TreeSummarizer
@@ -93,8 +93,7 @@ class TreeSummarizer(object):
             split_edge_lengths = {}
             for split, edges in split_distribution.split_edge_lengths.items():
                 if len(edges) > 0:
-                    mean, var = mean_and_sample_variance(edges)
-                    elen = mean
+                    elen = statistics.mean(edges)
                 else:
                     elen = None
                 split_edge_lengths[split] = elen
@@ -108,8 +107,7 @@ class TreeSummarizer(object):
             if include_edge_lengths and split in split_distribution.split_edge_lengths:
                 edges = split_distribution.split_edge_lengths[split]
                 if len(edges) > 0:
-                    mean, var = mean_and_sample_variance(edges)
-                    elen = mean
+                    elen = statistics.mean(edges)
                 else:
                     elen = None
                 node.edge.length = elen

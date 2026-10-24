@@ -22,43 +22,46 @@
 Functions to calculate some general statistics.
 """
 
+import statistics as _statistics
+
 from dendropy.calculate import probability
+from dendropy.utility import deprecate
 from operator import itemgetter
 
-def _mean_and_variance_pop_n(values):
-    n = 0
-    total = 0.0
-    mean = 0.0
-    m2 = 0.0
-    origin = None
-    for v in values:
-        total += v
-        if origin is None:
-            origin = v
-        # Center on the first observation to retain small differences around
-        # large values, then update the centered second moment in one pass.
-        shifted = v - origin
-        n += 1
-        delta = shifted - mean
-        mean += delta / n
-        m2 += delta * (shifted - mean)
-    if n == 0:
-        raise IndexError("values in mean_and_variance cannot be empty")
-    return float(total) / n, m2 / n, n
-
 def mean_and_population_variance(values):
-    """Returns the mean and population variance while only passing over the
-    elements in values once."""
-    return _mean_and_variance_pop_n(values)[:2]
+    """Return the mean and population variance (deprecated).
+
+    Use :func:`statistics.mean` and :func:`statistics.pvariance` instead.
+    Materialize a single-pass iterable before calling both functions.
+    """
+    deprecate.dendropy_deprecation_warning(
+        old_construct="dendropy.calculate.statistics.mean_and_population_variance(values)",
+        new_construct="values = list(values)\nstatistics.mean(values), statistics.pvariance(values)",
+    )
+    values = list(values)
+    if not values:
+        raise IndexError("values in mean_and_variance cannot be empty")
+    return float(_statistics.mean(values)), float(_statistics.pvariance(values))
+
 
 def mean_and_sample_variance(values):
-    """Returns the mean and sample variance while only passing over the
-    elements in values once."""
-    mean, pop_var, n = _mean_and_variance_pop_n(values)
-    if n == 1:
+    """Return the mean and sample variance (deprecated).
+
+    Use :func:`statistics.mean` and :func:`statistics.variance` instead.
+    Materialize a single-pass iterable before calling both functions.
+    The historical infinite variance for a single value is preserved.
+    """
+    deprecate.dendropy_deprecation_warning(
+        old_construct="dendropy.calculate.statistics.mean_and_sample_variance(values)",
+        new_construct="values = list(values)\nstatistics.mean(values), statistics.variance(values)",
+    )
+    values = list(values)
+    if not values:
+        raise IndexError("values in mean_and_variance cannot be empty")
+    mean = float(_statistics.mean(values))
+    if len(values) == 1:
         return mean, float('inf')
-    samp_var = n*pop_var/(n-1)
-    return mean, samp_var
+    return mean, float(_statistics.variance(values))
 
 def mode(values, bin_size=0.1):
     """
@@ -499,7 +502,8 @@ def summarize(values):
     except (ValueError, OverflowError):
         summary['range'] = None
     try:
-        summary['mean'], summary['var'] = mean_and_sample_variance(values)
+        summary['mean'] = _statistics.mean(values)
+        summary['var'] = _statistics.variance(values) if len(values) > 1 else float('inf')
         try:
             #summary['sd'] = math.sqrt(summary['var'])
             summary['sd'] = summary['var'] ** 0.5

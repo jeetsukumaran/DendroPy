@@ -23,12 +23,13 @@ Tests statistical routines.
 """
 
 import unittest
+import warnings
 import os
 import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
 from dendropy.calculate import statistics
-from dendropy.utility import messaging
+from dendropy.utility import messaging, deprecate
 
 _LOG = messaging.get_logger(__name__)
 
@@ -41,20 +42,30 @@ class StableVarianceTests(unittest.TestCase):
                     values = [offset + i for i in range(20)]
                     if reverse:
                         values.reverse()
-                    self.assertEqual(statistics.mean_and_population_variance(iter(values)),
-                                     (offset + 9.5, 33.25))
-                    self.assertEqual(statistics.mean_and_sample_variance(iter(values)),
-                                     (offset + 9.5, 35.0))
-                    summary = statistics.summarize(values)
+                    with self.assertWarnsRegex(deprecate.CriticalDeprecationWarning, "statistics.pvariance"):
+                        self.assertEqual(statistics.mean_and_population_variance(iter(values)),
+                                         (offset + 9.5, 33.25))
+                    with self.assertWarnsRegex(deprecate.CriticalDeprecationWarning, "statistics.variance"):
+                        self.assertEqual(statistics.mean_and_sample_variance(iter(values)),
+                                         (offset + 9.5, 35.0))
+                    with warnings.catch_warnings(record=True) as caught:
+                        warnings.simplefilter('always')
+                        summary = statistics.summarize(values)
+                    self.assertEqual(caught, [])
                     self.assertEqual(summary['var'], 35.0)
                     self.assertAlmostEqual(summary['sd'], 35.0 ** 0.5)
 
     def test_constant_and_singleton(self):
-        self.assertEqual(statistics.mean_and_sample_variance([1e12] * 20), (1e12, 0.0))
-        self.assertEqual(statistics.mean_and_population_variance([3.0]), (3.0, 0.0))
-        self.assertEqual(statistics.mean_and_sample_variance([3.0]), (3.0, float('inf')))
-        with self.assertRaises(IndexError):
-            statistics.mean_and_sample_variance(iter([]))
+        for function, values, expected in [
+                (statistics.mean_and_sample_variance, [1e12] * 20, (1e12, 0.0)),
+                (statistics.mean_and_population_variance, [3.0], (3.0, 0.0)),
+                (statistics.mean_and_sample_variance, [3.0], (3.0, float('inf')))]:
+            with self.assertWarns(deprecate.CriticalDeprecationWarning):
+                self.assertEqual(function(iter(values)), expected)
+        for function in [statistics.mean_and_sample_variance, statistics.mean_and_population_variance]:
+            with self.assertWarns(deprecate.CriticalDeprecationWarning):
+                with self.assertRaises(IndexError):
+                    function(iter([]))
 
 
 class QuantileSampleSizeTests(unittest.TestCase):
