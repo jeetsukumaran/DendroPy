@@ -22,18 +22,43 @@
 Functions to calculate some general statistics.
 """
 
-import statistics as _statistics
-
 from dendropy.calculate import probability
 from dendropy.utility import deprecate
 from operator import itemgetter
+
+def _mean_and_variance_pop_n(values):
+    n = 0
+    total = 0.0
+    mean = 0.0
+    m2 = 0.0
+    origin = None
+    for v in values:
+        total += v
+        if origin is None:
+            origin = v
+        # Center on the first observation to retain small differences around
+        # large values, then update the centered second moment in one pass.
+        shifted = v - origin
+        n += 1
+        delta = shifted - mean
+        mean += delta / n
+        m2 += delta * (shifted - mean)
+    if n == 0:
+        raise IndexError("values in mean_and_variance cannot be empty")
+    return float(total) / n, m2 / n, n
 
 def mean_and_population_variance(values):
     """Return the mean and population variance (deprecated).
 
     Use :func:`statistics.mean` and :func:`statistics.pvariance` instead.
     Materialize a single-pass iterable before calling both functions.
+    If the standard-library module is unavailable, retain the local calculation
+    without a migration warning.
     """
+    try:
+        from statistics import mean, pvariance
+    except ImportError:
+        return _mean_and_variance_pop_n(values)[:2]
     deprecate.dendropy_deprecation_warning(
         old_construct="dendropy.calculate.statistics.mean_and_population_variance(values)",
         new_construct="values = list(values)\nstatistics.mean(values), statistics.pvariance(values)",
@@ -41,7 +66,7 @@ def mean_and_population_variance(values):
     values = list(values)
     if not values:
         raise IndexError("values in mean_and_variance cannot be empty")
-    return float(_statistics.mean(values)), float(_statistics.pvariance(values))
+    return float(mean(values)), float(pvariance(values))
 
 
 def mean_and_sample_variance(values):
@@ -49,8 +74,17 @@ def mean_and_sample_variance(values):
 
     Use :func:`statistics.mean` and :func:`statistics.variance` instead.
     Materialize a single-pass iterable before calling both functions.
+    If the standard-library module is unavailable, retain the local calculation
+    without a migration warning.
     The historical infinite variance for a single value is preserved.
     """
+    try:
+        from statistics import mean, variance
+    except ImportError:
+        mean_value, pop_var, n = _mean_and_variance_pop_n(values)
+        if n == 1:
+            return mean_value, float('inf')
+        return mean_value, n * pop_var / (n - 1)
     deprecate.dendropy_deprecation_warning(
         old_construct="dendropy.calculate.statistics.mean_and_sample_variance(values)",
         new_construct="values = list(values)\nstatistics.mean(values), statistics.variance(values)",
@@ -58,10 +92,10 @@ def mean_and_sample_variance(values):
     values = list(values)
     if not values:
         raise IndexError("values in mean_and_variance cannot be empty")
-    mean = float(_statistics.mean(values))
+    mean_value = float(mean(values))
     if len(values) == 1:
-        return mean, float('inf')
-    return mean, float(_statistics.variance(values))
+        return mean_value, float('inf')
+    return mean_value, float(variance(values))
 
 def mode(values, bin_size=0.1):
     """
@@ -502,8 +536,13 @@ def summarize(values):
     except (ValueError, OverflowError):
         summary['range'] = None
     try:
-        summary['mean'] = _statistics.mean(values)
-        summary['var'] = _statistics.variance(values) if len(values) > 1 else float('inf')
+        try:
+            import statistics
+        except ImportError:
+            summary['mean'], summary['var'] = mean_and_sample_variance(values)
+        else:
+            summary['mean'] = statistics.mean(values)
+            summary['var'] = statistics.variance(values) if len(values) > 1 else float('inf')
         try:
             #summary['sd'] = math.sqrt(summary['var'])
             summary['sd'] = summary['var'] ** 0.5

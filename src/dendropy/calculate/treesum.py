@@ -24,7 +24,6 @@ Tree summarization and consensus tree building.
 
 import copy
 import collections
-import statistics
 import dendropy
 
 ##############################################################################
@@ -61,6 +60,13 @@ class TreeSummarizer(object):
             edge length will also be calculated and will be stored as
             a length_var attribute.
         """
+        try:
+            from statistics import mean
+        except ImportError:
+            from dendropy.calculate.statistics import mean_and_sample_variance
+
+            def mean(values):
+                return mean_and_sample_variance(values)[0]
         taxon_namespace = split_distribution.taxon_namespace
         taxa_mask = taxon_namespace.all_taxa_bitmask()
         if self.weighted_splits:
@@ -93,7 +99,7 @@ class TreeSummarizer(object):
             split_edge_lengths = {}
             for split, edges in split_distribution.split_edge_lengths.items():
                 if len(edges) > 0:
-                    elen = statistics.mean(edges)
+                    elen = mean(edges)
                 else:
                     elen = None
                 split_edge_lengths[split] = elen
@@ -107,7 +113,7 @@ class TreeSummarizer(object):
             if include_edge_lengths and split in split_distribution.split_edge_lengths:
                 edges = split_distribution.split_edge_lengths[split]
                 if len(edges) > 0:
-                    elen = statistics.mean(edges)
+                    elen = mean(edges)
                 else:
                     elen = None
                 node.edge.length = elen

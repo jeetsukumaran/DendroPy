@@ -22,7 +22,6 @@
 Taxon-to-taxon phylogenetic distances.
 """
 
-import statistics as _statistics
 import math
 import collections
 import csv
@@ -1379,12 +1378,19 @@ class PhylogeneticDistanceMatrix(object):
                     null_model_stat_values[comparison_regime_idx] = []
                 stat_value = getattr(null_model_matrix, statisticf_name)(**statisticf_kwargs)
                 null_model_stat_values[comparison_regime_idx].append(stat_value)
+        try:
+            import statistics as builtin_statistics
+        except ImportError:
+            builtin_statistics = None
         results = []
         for comparison_regime_idx, comparison_regime in enumerate(comparison_regimes):
             obs_value = observed_stat_values[comparison_regime_idx]
             stat_values = null_model_stat_values[comparison_regime_idx]
-            null_model_mean = _statistics.mean(stat_values)
-            null_model_var = _statistics.variance(stat_values) if len(stat_values) > 1 else float('inf')
+            if builtin_statistics is None:
+                null_model_mean, null_model_var = statistics.mean_and_sample_variance(stat_values)
+            else:
+                null_model_mean = builtin_statistics.mean(stat_values)
+                null_model_var = builtin_statistics.variance(stat_values) if len(stat_values) > 1 else float('inf')
             rank = statistics.rank(
                     value_to_be_ranked=obs_value,
                     value_providing_rank=stat_values)

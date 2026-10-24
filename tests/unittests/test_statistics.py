@@ -23,6 +23,8 @@ Tests statistical routines.
 """
 
 import unittest
+from unittest import mock
+import builtins
 import warnings
 import os
 import sys
@@ -54,6 +56,26 @@ class StableVarianceTests(unittest.TestCase):
                     self.assertEqual(caught, [])
                     self.assertEqual(summary['var'], 35.0)
                     self.assertAlmostEqual(summary['sd'], 35.0 ** 0.5)
+
+    def test_without_standard_library_statistics(self):
+        original_import = builtins.__import__
+
+        def import_without_statistics(name, *args, **kwargs):
+            if name == "statistics":
+                raise ImportError("statistics unavailable")
+            return original_import(name, *args, **kwargs)
+
+        values = [1e12 + i for i in range(20)]
+        with mock.patch("builtins.__import__", side_effect=import_without_statistics):
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always")
+                self.assertEqual(statistics.mean_and_sample_variance(iter(values)),
+                                 (1e12 + 9.5, 35.0))
+                self.assertEqual(statistics.mean_and_population_variance(iter(values)),
+                                 (1e12 + 9.5, 33.25))
+                self.assertEqual(statistics.summarize(values)["var"], 35.0)
+            # There is no migration target to warn about in this environment.
+            self.assertEqual(caught, [])
 
     def test_constant_and_singleton(self):
         for function, values, expected in [
