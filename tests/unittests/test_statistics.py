@@ -22,15 +22,53 @@
 Tests statistical routines.
 """
 
+import statistics as stats_psl
 import unittest
 import os
 import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
-from dendropy.calculate import statistics
+from dendropy.calculate import statistics as stats_dp
 from dendropy.utility import messaging
 
 _LOG = messaging.get_logger(__name__)
+
+class StableVarianceTests(unittest.TestCase):
+
+    def test_large_offsets(self):
+        for offset in [0.0, 1e9, 1e10, 1e12, -1e12]:
+            for reverse in [False, True]:
+                with self.subTest(offset=offset, reverse=reverse):
+                    values = [offset + i for i in range(20)]
+                    if reverse:
+                        values.reverse()
+                    mean = stats_psl.mean(values)
+                    pvar = stats_psl.pvariance(values)
+                    var = stats_psl.variance(values)
+                    self.assertEqual(stats_dp.mean_and_population_variance(iter(values)),
+                                     (mean, pvar))
+                    self.assertEqual(stats_dp.mean_and_sample_variance(iter(values)),
+                                     (mean, var))
+                    summary = stats_dp.summarize(values)
+                    self.assertEqual(summary['var'], var)
+                    self.assertAlmostEqual(summary['sd'], stats_psl.stdev(values))
+
+    def test_constant_and_singleton(self):
+        constant = [1e12] * 20
+        mean = stats_psl.mean(constant)
+        pvar = stats_psl.pvariance(constant)
+        var = stats_psl.variance(constant)
+        self.assertEqual(stats_dp.mean_and_population_variance(constant), (mean, pvar))
+        self.assertEqual(stats_dp.mean_and_sample_variance(constant), (mean, var))
+
+        singleton = [3.0]
+        mean = stats_psl.mean(singleton)
+        pvar = stats_psl.pvariance(singleton)
+        self.assertEqual(stats_dp.mean_and_population_variance(singleton), (mean, pvar))
+        self.assertEqual(stats_dp.mean_and_sample_variance(singleton), (mean, float('inf')))
+        with self.assertRaises(IndexError):
+            stats_dp.mean_and_sample_variance(iter([]))
+
 
 class QuantileSampleSizeTests(unittest.TestCase):
 
@@ -39,16 +77,16 @@ class QuantileSampleSizeTests(unittest.TestCase):
             with self.subTest(size=size):
                 values = list(range(size))
                 with self.assertRaises(ValueError):
-                    statistics.quantile_5_95(values)
+                    stats_dp.quantile_5_95(values)
                 if size:
-                    self.assertIsNone(statistics.summarize(values)["quant_5_95"])
+                    self.assertIsNone(stats_dp.summarize(values)["quant_5_95"])
 
     def test_first_order_statistic_is_valid(self):
         for size, expected in [(20, (0, 18)), (21, (0, 19)),
                                (29, (0, 27)), (30, (1, 27))]:
             with self.subTest(size=size):
                 self.assertEqual(
-                    statistics.quantile_5_95(list(reversed(range(size)))),
+                    stats_dp.quantile_5_95(list(reversed(range(size)))),
                     expected)
 
 class HpdCalculationTests(dendropytest.ExtendedTestCase):
@@ -87,7 +125,7 @@ class HpdCalculationTests(dendropytest.ExtendedTestCase):
         #m= 4.07214
         #nnn= 100
         #(97.85931, 101.93145)
-        c1, c2 = statistics.empirical_hpd(v)
+        c1, c2 = stats_dp.empirical_hpd(v)
         self.assertAlmostEqual(c1, 97.85931)
         self.assertAlmostEqual(c2, 101.93145)
 
@@ -136,7 +174,7 @@ class HpdCalculationTests(dendropytest.ExtendedTestCase):
         #  nnn= 1
         #  FINAL =  0.02730827 15.33657
         #  [1]  0.02730827 15.33656772
-        c1, c2 = statistics.empirical_hpd(v)
+        c1, c2 = stats_dp.empirical_hpd(v)
         self.assertAlmostEqual(c1, 0.02730827)
         self.assertAlmostEqual(c2, 15.33656772)
 
@@ -185,7 +223,7 @@ class HpdCalculationTests(dendropytest.ExtendedTestCase):
         #  nnn= 3
         #  FINAL =  0.02099306 0.09889312
         #  [1] 0.02099306 0.09889312
-        c1, c2 = statistics.empirical_hpd(v)
+        c1, c2 = stats_dp.empirical_hpd(v)
         self.assertAlmostEqual(c1, 0.02099306)
         self.assertAlmostEqual(c2, 0.09889312)
 
@@ -195,7 +233,7 @@ class TestMedian(unittest.TestCase):
     """
 
     def testMedian(self):
-        self.assertEqual(statistics.median([2, 9, 9, 7, 9, 2, 4, 5, 8]), 7)
+        self.assertEqual(stats_dp.median([2, 9, 9, 7, 9, 2, 4, 5, 8]), 7)
 
 class EmpiricalCdfTests(unittest.TestCase):
 
@@ -204,11 +242,11 @@ class EmpiricalCdfTests(unittest.TestCase):
         for value, expected in [(0, 0.0), (1, 0.25), (1.5, 0.25),
                                 (2, 0.75), (3, 1.0), (4, 1.0)]:
             with self.subTest(value=value):
-                self.assertEqual(statistics.empirical_cdf(values, value), expected)
+                self.assertEqual(stats_dp.empirical_cdf(values, value), expected)
         self.assertEqual(values, [3, 1, 2, 2])
 
     def test_constant_sample(self):
-        self.assertEqual(statistics.empirical_cdf([7] * 20, 7), 1.0)
+        self.assertEqual(stats_dp.empirical_cdf([7] * 20, 7), 1.0)
 
 
 class TestVarianceCovariance(unittest.TestCase):
@@ -575,7 +613,7 @@ class TestVarianceCovariance(unittest.TestCase):
                     4122.182167280981, -1705.4815430793697, 21.890454372860443]]
 
     def testVarianceCovariance1(self):
-        cov = statistics.variance_covariance(self.data)
+        cov = stats_dp.variance_covariance(self.data)
         for i, x in enumerate(cov):
             for j, y in enumerate(x):
                 self.assertAlmostEqual(cov[i][j], self.expected_cov[i][j])
@@ -649,7 +687,7 @@ class TestVarianceCovariance(unittest.TestCase):
                         -6773734.4112940645, 57672359.799883455,
                         3112971.715860271, 52393351.00087271]]
 
-        cov = statistics.variance_covariance(d)
+        cov = stats_dp.variance_covariance(d)
         for i, x in enumerate(cov):
             for j, y in enumerate(x):
                 self.assertAlmostEqual(cov[i][j], e[i][j])
@@ -663,17 +701,17 @@ class FishersExactTests(dendropytest.ExtendedTestCase):
         self.table = [[12, 5], [29, 2]]
 
     def testLeftTail(self):
-        ft = statistics.FishersExactTest(self.table)
+        ft = stats_dp.FishersExactTest(self.table)
         p = ft.left_tail_p()
         self.assertAlmostEqual(p, 0.044554737835078267)
 
     def testRightTail(self):
-        ft = statistics.FishersExactTest(self.table)
+        ft = stats_dp.FishersExactTest(self.table)
         p = ft.right_tail_p()
         self.assertAlmostEqual(p, 0.99452520602190897)
 
     def testTwoTail(self):
-        ft = statistics.FishersExactTest(self.table)
+        ft = stats_dp.FishersExactTest(self.table)
         p = ft.two_tail_p()
         self.assertAlmostEqual(p, 0.08026855207410688)
 
