@@ -32,6 +32,31 @@ from dendropy.utility import messaging
 
 _LOG = messaging.get_logger(__name__)
 
+class StableVarianceTests(unittest.TestCase):
+
+    def test_large_offsets(self):
+        for offset in [0.0, 1e9, 1e10, 1e12, -1e12]:
+            for reverse in [False, True]:
+                with self.subTest(offset=offset, reverse=reverse):
+                    values = [offset + i for i in range(20)]
+                    if reverse:
+                        values.reverse()
+                    self.assertEqual(statistics.mean_and_population_variance(iter(values)),
+                                     (offset + 9.5, 33.25))
+                    self.assertEqual(statistics.mean_and_sample_variance(iter(values)),
+                                     (offset + 9.5, 35.0))
+                    summary = statistics.summarize(values)
+                    self.assertEqual(summary['var'], 35.0)
+                    self.assertAlmostEqual(summary['sd'], 35.0 ** 0.5)
+
+    def test_constant_and_singleton(self):
+        self.assertEqual(statistics.mean_and_sample_variance([1e12] * 20), (1e12, 0.0))
+        self.assertEqual(statistics.mean_and_population_variance([3.0]), (3.0, 0.0))
+        self.assertEqual(statistics.mean_and_sample_variance([3.0]), (3.0, float('inf')))
+        with self.assertRaises(IndexError):
+            statistics.mean_and_sample_variance(iter([]))
+
+
 class QuantileSampleSizeTests(unittest.TestCase):
 
     def test_insufficient_sample_size(self):

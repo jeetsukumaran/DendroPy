@@ -29,15 +29,19 @@ def _mean_and_variance_pop_n(values):
     n = 0
     s = 0.0
     ss = 0.0
-    for v in values:
-        n += 1
+    for n, v in enumerate(values, start=1):
+        # RE shift for numerical stability, see
+        # https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+        if n == 1:
+            shift = v
+        v -= shift
         s += v
         ss += v*v
     if n == 0:
         raise IndexError("values in mean_and_variance cannot be empty")
-    mean = float(s)/n
-    var = (ss - mean*s)/n
-    return mean, var, n
+    shift_mean = float(s)/n
+    var = ss/n - shift_mean**2
+    return shift_mean + shift, var, n
 
 def mean_and_population_variance(values):
     """Returns the mean and population variance while only passing over the
