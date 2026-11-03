@@ -24,6 +24,7 @@ Tests of summarization.
 
 import collections
 import unittest
+import warnings
 import dendropy
 import random
 import itertools
@@ -50,8 +51,17 @@ class TestConsensusMissingEdgeLengths(unittest.TestCase):
                     schema="newick", taxon_namespace=namespace)
             distribution.count_splits_on_tree(tree)
         before = {split: list(lengths) for split, lengths in distribution.split_edge_lengths.items()}
-        result = treesum.TreeSummarizer().tree_from_splits(
-                distribution, include_edge_lengths=include_edge_lengths)
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", UserWarning)
+            result = treesum.TreeSummarizer().tree_from_splits(
+                    distribution, include_edge_lengths=include_edge_lengths)
+        if include_edge_lengths and (None in root_lengths or missing_tip):
+            self.assertEqual(len(caught), 1)
+            self.assertIs(caught[0].category, UserWarning)
+            self.assertIn("missing lengths (None)", str(caught[0].message))
+            self.assertEqual(caught[0].filename, __file__)
+        else:
+            self.assertEqual(caught, [])
         self.assertEqual(distribution.split_edge_lengths, before)
         return result
 
@@ -77,6 +87,21 @@ class TestConsensusMissingEdgeLengths(unittest.TestCase):
         for node in result:
             self.assertIsNone(node.edge.length)
             self.assertEqual(node.label, "1.0000")
+
+    def test_missing_lengths_on_excluded_splits_do_not_warn(self):
+        trees = dendropy.TreeList.get(
+                data="[&R] ((A:1,B:1):1,C:1):0;\n"
+                     "[&R] ((A:1,C:1),B:1):0;",
+                schema="newick")
+        distribution = dendropy.SplitDistribution(taxon_namespace=trees.taxon_namespace)
+        for tree in trees:
+            distribution.count_splits_on_tree(tree)
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", UserWarning)
+            result = treesum.TreeSummarizer().tree_from_splits(distribution, min_freq=1.0)
+        self.assertEqual(caught, [])
+        self.assertEqual(result.seed_node.num_child_nodes(), 3)
+        self.assertTrue(all(node.edge.length is not None for node in result))
 
 class TestConsensusTree(unittest.TestCase):
 
