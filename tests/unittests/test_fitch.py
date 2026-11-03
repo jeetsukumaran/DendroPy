@@ -27,7 +27,6 @@ import sys
 import random
 import unittest
 import math
-import sys
 import dendropy
 from dendropy.calculate.treescore import fitch_down_pass
 sys.path.insert(0, os.path.dirname(__file__))

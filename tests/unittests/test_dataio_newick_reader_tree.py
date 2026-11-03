@@ -29,8 +29,6 @@ import random
 import dendropy
 from dendropy.utility import error
 from dendropy.dataio import newickreader
-import os
-import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from support import dendropytest
 from support import standard_file_test_trees

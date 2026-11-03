@@ -265,18 +265,6 @@ class PhylogeneticDistanceMatrixCompileTest(unittest.TestCase):
             obs_maxt = self.pdm.max_pairwise_distance_taxa(is_weighted_edge_distances=True)
             self.assertEqual(set(obs_maxt), maxt)
 
-        def test_max_pairwise_weighted_distance_taxa(self):
-            maxd = None
-            maxt = None
-            for taxon1 in self.tree.taxon_namespace:
-                for taxon2 in self.tree.taxon_namespace:
-                    d = self.reference_pdm_weighted_table[taxon1.label, taxon2.label]
-                    if maxd is None or d > maxd:
-                        maxd = d
-                        maxt = set([taxon1, taxon2])
-            obs_maxt = self.pdm.max_pairwise_distance_taxa(is_weighted_edge_distances=True)
-            self.assertEqual(set(obs_maxt), maxt)
-
         def test_max_pairwise_unweighted_distance_taxa(self):
             maxd = None
             maxts = []
