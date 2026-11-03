@@ -72,11 +72,11 @@ class RootingInterpreterForceUnrootedTestCase(unittest.TestCase):
         nr = newickreader.NewickReader(rooting="force-unrooted")
         self.assertIs(nr._parse_tree_rooting_state("&R"), False)
 
-    def test_with_unrooted_token_lcase(self):
+    def test_with_unrooted_token_ucase(self):
         nr = newickreader.NewickReader(rooting="force-unrooted")
         self.assertIs(nr._parse_tree_rooting_state("&u"), False)
 
-    def test_with_unrooted_token_ucase(self):
+    def test_with_unrooted_token_Ucase(self):
         nr = newickreader.NewickReader(rooting="force-unrooted")
         self.assertIs(nr._parse_tree_rooting_state("&U"), False)
 
@@ -102,11 +102,11 @@ class RootingInterpreterForceRootedTestCase(unittest.TestCase):
         nr = newickreader.NewickReader(rooting="force-rooted")
         self.assertIs(nr._parse_tree_rooting_state("&R"), True)
 
-    def test_with_unrooted_token_lcase(self):
+    def test_with_unrooted_token_ucase(self):
         nr = newickreader.NewickReader(rooting="force-rooted")
         self.assertIs(nr._parse_tree_rooting_state("&u"), True)
 
-    def test_with_unrooted_token_ucase(self):
+    def test_with_unrooted_token_Ucase(self):
         nr = newickreader.NewickReader(rooting="force-rooted")
         self.assertIs(nr._parse_tree_rooting_state("&U"), True)
 
@@ -132,11 +132,11 @@ class RootingInterpreterDefaultUnrootedTestCase(unittest.TestCase):
         nr = newickreader.NewickReader(rooting="default-unrooted")
         self.assertIs(nr._parse_tree_rooting_state("&R"), True)
 
-    def test_with_unrooted_token_lcase(self):
+    def test_with_unrooted_token_ucase(self):
         nr = newickreader.NewickReader(rooting="default-unrooted")
         self.assertIs(nr._parse_tree_rooting_state("&u"), False)
 
-    def test_with_unrooted_token_ucase(self):
+    def test_with_unrooted_token_Ucase(self):
         nr = newickreader.NewickReader(rooting="default-unrooted")
         self.assertIs(nr._parse_tree_rooting_state("&U"), False)
 
@@ -162,11 +162,11 @@ class RootingInterpreterDefaultRootedTestCase(unittest.TestCase):
         nr = newickreader.NewickReader(rooting="default-rooted")
         self.assertIs(nr._parse_tree_rooting_state("&R"), True)
 
-    def test_with_unrooted_token_lcase(self):
+    def test_with_unrooted_token_ucase(self):
         nr = newickreader.NewickReader(rooting="default-rooted")
         self.assertIs(nr._parse_tree_rooting_state("&u"), False)
 
-    def test_with_unrooted_token_ucase(self):
+    def test_with_unrooted_token_Ucase(self):
         nr = newickreader.NewickReader(rooting="default-rooted")
         self.assertIs(nr._parse_tree_rooting_state("&U"), False)
 

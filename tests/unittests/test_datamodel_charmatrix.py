@@ -301,7 +301,7 @@ class CharacterMatrixFillAndPackTestCase(dendropytest.ExtendedTestCase):
         for taxon in tns:
             self.assertIn(taxon, char_matrix)
 
-    def test_pack(self):
+    def test_pack_pads_taxa_to_equal_length(self):
         tns = get_taxon_namespace(5)
         char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
         s = ["z"] * 10
@@ -1151,7 +1151,7 @@ class TestCharacterMatrixTaxa(dendropytest.ExtendedTestCase):
     def test_basic_taxa(self):
         self.assertEqual(self.char_matrix.poll_taxa(), self.expected_taxa)
 
-class TestCharacterMatrixTaxa(dendropytest.ExtendedTestCase):
+class TestCharacterMatrixPurgeTaxonNamespace(dendropytest.ExtendedTestCase):
 
     def setUp(self):
         self.char_matrix = charmatrixmodel.CharacterMatrix()
