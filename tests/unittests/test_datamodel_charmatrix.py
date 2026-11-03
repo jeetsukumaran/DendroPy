@@ -142,7 +142,7 @@ class CharacterMatrixBasicCRUDTests(dendropytest.ExtendedTestCase):
         with self.assertRaises(IndexError):
             char_matrix[len(tns)] = []
 
-    def test_setitem_by_idx_not_in_namespace(self):
+    def test_setitem_by_label_not_in_namespace(self):
         tns = get_taxon_namespace(3)
         char_matrix = charmatrixmodel.CharacterMatrix()
         with self.assertRaises(KeyError):
@@ -301,7 +301,7 @@ class CharacterMatrixFillAndPackTestCase(dendropytest.ExtendedTestCase):
         for taxon in tns:
             self.assertIn(taxon, char_matrix)
 
-    def test_fill_taxa(self):
+    def test_pack(self):
         tns = get_taxon_namespace(5)
         char_matrix = charmatrixmodel.CharacterMatrix(taxon_namespace=tns)
         s = ["z"] * 10

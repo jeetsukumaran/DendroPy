@@ -474,7 +474,7 @@ class TestTreeListBasicOperations(dendropytest.ExtendedTestCase):
         self.assertEqual(len(tlist), 4)
         self.assertNotIn(t, tlist)
 
-    def test_remove(self):
+    def test_reverse(self):
         tlist = curated_test_tree_list.get_tree_list(5)
         clist = list(tlist._trees)
         tlist.reverse()

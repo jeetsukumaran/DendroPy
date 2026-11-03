@@ -183,13 +183,6 @@ class TestSpecialTreeConstruction(
                 suppress_leaf_node_taxa=False)
         tree2 = dendropy.Tree(seed_node=tree1.seed_node)
         self.assertIs(tree2.seed_node, tree1.seed_node)
-
-    def test_construction_from_given_seed_node(self):
-        tree1, anodes1, lnodes1, inodes1 = self.get_tree(
-                suppress_internal_node_taxa=False,
-                suppress_leaf_node_taxa=False)
-        tree2 = dendropy.Tree(seed_node=tree1.seed_node)
-        self.assertIs(tree2.seed_node, tree1.seed_node)
         self.assertIsNot(tree1.taxon_namespace, tree2.taxon_namespace)
         self.assertEqual(len(tree1.taxon_namespace), len(tree2.taxon_namespace))
         for taxon1 in tree1.taxon_namespace:

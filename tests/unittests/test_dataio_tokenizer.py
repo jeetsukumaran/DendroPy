@@ -117,7 +117,7 @@ class NexusTokenizerTestCase(unittest.TestCase):
                 ]
         self.check_tokenization(input_str, expected)
 
-    def test_comments(self):
+    def test_capture_comments(self):
         input_str = "([the quick]apple[brown],([fox]banjo,([jumps]cucumber[over the],[really]dogwood)[lazy]eggplant)) rhubarb[dog];";
         expected_comments = {
             "apple"    : ["the quick", "brown"],

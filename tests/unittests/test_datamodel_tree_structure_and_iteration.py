@@ -400,7 +400,7 @@ class TestTreeIterators(curated_test_tree.CuratedTestTree, unittest.TestCase):
         exp = [x[1] for x in nda]
         self.assertSequenceEqual(visited_labels, exp)
 
-    def test_leaf_node_iter_filtered(self):
+    def test_ageorder_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         f = lambda x: x.edge.length > 13
         nodes = [nd for nd in tree.ageorder_node_iter(filter_fn=f)]
