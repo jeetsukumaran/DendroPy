@@ -1288,7 +1288,7 @@ class Tree(
 
         Parameters
         ----------
-        exclude_seed_node : boolean, optional
+        exclude_seed_edge : boolean, optional
             If |False| (default), then the edge subtending the seed node or
             root is included. If |True|, then the seed node is omitted.
 
