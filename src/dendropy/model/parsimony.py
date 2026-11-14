@@ -346,7 +346,7 @@ def parsimony_score(
     chars : a |CharacterMatrix| instance
         A |CharacterMatrix|-derived object with data to be scored. Must have
         the same |TaxonNamespace| as ``tree``.
-    gap_as_missing : bool
+    gaps_as_missing : bool
         If |True| [default], then gaps will be treated as missing data.
         If |False|, then gaps will be treated as a new/additional state.
     weights : iterable

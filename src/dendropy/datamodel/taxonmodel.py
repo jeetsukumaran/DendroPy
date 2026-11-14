@@ -1534,7 +1534,7 @@ class TaxonNamespace(
 
         Parameters
         ----------
-        bitmask : integer
+        split : integer
             Split hash bitmask value.
         preserve_spaces : boolean, optional
             If |False| (default), then spaces in taxon labels will be replaced
