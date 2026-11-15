@@ -151,8 +151,6 @@ def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
     n_to_coalesce : integer
         The waiting time that will be returned will be the waiting time for
         this number of genes in the sample to coalesce.
-    rng : ``Random`` object
-        The random number generator instance.
 
     Returns
     -------
