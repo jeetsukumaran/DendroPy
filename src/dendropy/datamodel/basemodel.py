@@ -1034,7 +1034,7 @@ class AnnotationSet(container.OrderedSet):
             The content of the annotation.
         datatype_hint : string, optional
             Mainly for NeXML output (e.g. "xsd:string").
-        namespace_prefix : string, optional
+        name_prefix : string, optional
             Mainly for NeXML output (e.g. "dc:").
         namespace : string, optional
             Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
@@ -1111,7 +1111,7 @@ class AnnotationSet(container.OrderedSet):
             name.
         datatype_hint : string, optional
             Mainly for NeXML output (e.g. "xsd:string").
-        namespace_prefix : string, optional
+        name_prefix : string, optional
             Mainly for NeXML output (e.g. "dc:").
         namespace : string, optional
             Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").

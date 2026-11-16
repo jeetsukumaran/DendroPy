@@ -399,7 +399,7 @@ class Tree(
             taxon definitions.
         is_rooted : bool
             Specifies whether or not the tree is rooted.
-        edge_lengths : dict or |False| or |None|
+        split_edge_lengths : dict or |False| or |None|
             If |False| or |None|, then no edge lengths will be added.
             Otherwise, this should be a dictionary mapping splits to edge
             lengths.
