@@ -24,6 +24,7 @@ Tree summarization and consensus tree building.
 
 import copy
 import collections
+import warnings
 import dendropy
 from dendropy.calculate.statistics import mean_and_sample_variance
 
@@ -56,6 +57,9 @@ class TreeSummarizer(object):
             rooted=None,
             include_edge_lengths=True):
         """Returns a consensus tree from splits in ``split_distribution``.
+
+        Edge lengths remain undefined if any sampled length is None. A
+        UserWarning is issued if any consensus edge has such missing lengths.
 
         If include_edge_length_var is True, then the sample variance of the
             edge length will also be calculated and will be stored as
@@ -92,7 +96,7 @@ class TreeSummarizer(object):
         if include_edge_lengths:
             split_edge_lengths = {}
             for split, edges in split_distribution.split_edge_lengths.items():
-                if len(edges) > 0:
+                if len(edges) > 0 and None not in edges:
                     mean, var = mean_and_sample_variance(edges)
                     elen = mean
                 else:
@@ -101,19 +105,28 @@ class TreeSummarizer(object):
         else:
             split_edge_lengths = None
 
+        has_missing_edge_lengths = False
         for node in con_tree.postorder_node_iter():
             split = node.edge.bipartition.split_bitmask
             if split in split_freqs:
                 self.map_split_support_to_node(node=node, split_support=split_freqs[split])
             if include_edge_lengths and split in split_distribution.split_edge_lengths:
                 edges = split_distribution.split_edge_lengths[split]
-                if len(edges) > 0:
+                if len(edges) > 0 and None not in edges:
                     mean, var = mean_and_sample_variance(edges)
                     elen = mean
                 else:
                     elen = None
+                    has_missing_edge_lengths |= None in edges
                 node.edge.length = elen
 
+        if has_missing_edge_lengths:
+            warnings.warn(
+                "Some consensus edge lengths are undefined because their "
+                "samples contain missing lengths (None).",
+                UserWarning,
+                stacklevel=2,
+            )
         return con_tree
 
     def compose_support_label(self, split_support_freq):
@@ -498,4 +511,3 @@ class TopologyCounter(object):
 
 ## TreeCounter
 ##############################################################################
-

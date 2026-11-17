@@ -24,6 +24,7 @@ Tests of summarization.
 
 import collections
 import unittest
+import warnings
 import dendropy
 import random
 import itertools
@@ -35,6 +36,72 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from support import pathmap
 from support import dendropytest
+
+class TestConsensusMissingEdgeLengths(unittest.TestCase):
+
+    def _summarize(self, root_lengths, missing_tip=False, include_edge_lengths=True):
+        namespace = dendropy.TaxonNamespace()
+        distribution = dendropy.SplitDistribution(taxon_namespace=namespace)
+        for index, root_length in enumerate(root_lengths):
+            root = "" if root_length is None else ":{}".format(root_length)
+            tip = "" if missing_tip and index == 0 else ":{}".format(index + 1)
+            tree = dendropy.Tree.get(
+                    data="[&R] (A{},(B:{},C:{}):{}){};".format(
+                        tip, index + 2, index + 3, index + 4, root),
+                    schema="newick", taxon_namespace=namespace)
+            distribution.count_splits_on_tree(tree)
+        before = {split: list(lengths) for split, lengths in distribution.split_edge_lengths.items()}
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", UserWarning)
+            result = treesum.TreeSummarizer().tree_from_splits(
+                    distribution, include_edge_lengths=include_edge_lengths)
+        if include_edge_lengths and (None in root_lengths or missing_tip):
+            self.assertEqual(len(caught), 1)
+            self.assertIs(caught[0].category, UserWarning)
+            self.assertIn("missing lengths (None)", str(caught[0].message))
+            self.assertEqual(caught[0].filename, __file__)
+        else:
+            self.assertEqual(caught, [])
+        self.assertEqual(distribution.split_edge_lengths, before)
+        return result
+
+    def test_omitted_root_lengths_stay_undefined(self):
+        result = self._summarize([None, None])
+        self.assertIsNone(result.seed_node.edge.length)
+        self.assertAlmostEqual(result.find_node_with_taxon_label("A").edge.length, 1.5)
+
+    def test_incomplete_edge_sample_stays_undefined(self):
+        result = self._summarize([0.0, None], missing_tip=True)
+        self.assertIsNone(result.seed_node.edge.length)
+        self.assertIsNone(result.find_node_with_taxon_label("A").edge.length)
+        self.assertAlmostEqual(result.find_node_with_taxon_label("B").edge.length, 2.5)
+
+    def test_defined_zero_and_negative_lengths_are_kept(self):
+        for lengths, expected in [([0.0, 0.0], 0.0), ([-2.0, 4.0], 1.0), ([3.0], 3.0)]:
+            with self.subTest(lengths=lengths):
+                result = self._summarize(lengths)
+                self.assertEqual(result.seed_node.edge.length, expected)
+
+    def test_support_only_consensus_with_missing_lengths(self):
+        result = self._summarize([None, None], include_edge_lengths=False)
+        for node in result:
+            self.assertIsNone(node.edge.length)
+            self.assertEqual(node.label, "1.0000")
+
+    def test_missing_lengths_on_excluded_splits_do_not_warn(self):
+        trees = dendropy.TreeList.get(
+                data="[&R] ((A:1,B:1):1,C:1):0;\n"
+                     "[&R] ((A:1,C:1),B:1):0;",
+                schema="newick")
+        distribution = dendropy.SplitDistribution(taxon_namespace=trees.taxon_namespace)
+        for tree in trees:
+            distribution.count_splits_on_tree(tree)
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", UserWarning)
+            result = treesum.TreeSummarizer().tree_from_splits(distribution, min_freq=1.0)
+        self.assertEqual(caught, [])
+        self.assertEqual(result.seed_node.num_child_nodes(), 3)
+        self.assertTrue(all(node.edge.length is not None for node in result))
 
 class TestConsensusTree(unittest.TestCase):
 
